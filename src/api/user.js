@@ -57,4 +57,42 @@ export const getContentList = (time) => {
   })
 }
 
+export const getTeamList = (id) => {
+  return axios.request({
+    url: '/get/team/list',
+    params: {
+      id
+    },
+    method: 'get'
+  })
+}
+
+export const getContentDetail = (id) => {
+  return axios.request({
+    url: '/get/content/detail',
+    params: {
+      id
+    },
+    method: 'get'
+  })
+}
+
+
+export const updateWork = (sid, url, type, team_id, text, name) => {
+  return axios.request({
+    url: '/update/work',
+    method: 'get',
+    params: {
+      sid,
+      url,
+      type,
+      team_id,
+      text,
+      name
+    }
+  })
+}
+
+
+
 

@@ -2,6 +2,7 @@ export default {
   //学生路由中文名
   'student-teacher-home': '首页',
   'message':'消息公告',
+  'teacher_detail':'教师详情',
   //学生个人中心
   'student-personal':'个人中心',
   'student-my-info':'我的资料',

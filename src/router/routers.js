@@ -81,6 +81,31 @@ export default [
       }
     ]
   },
+  //查看教师详情
+  {
+    path: '/detail',
+    name: 'detail',
+    redirect: '/teacher_detail',
+    component: Main,
+    meta: {
+      title: '详情',
+      hideInMenu: true
+    },
+    children: [
+      {
+        path: '/teacher_detail',
+        name: 'teacher_detail',
+        meta: {
+          hideInMenu: true,
+          title: '教师详情',
+          notCache: true,
+          icon: 'md-home',
+          access: ['student']
+        },
+        component: () => import('@/components/main/components/teacher_detail/teacher_detail.vue')
+      }
+    ]
+  },
   {
     path: '/student/personal',
     name: 'student-personal',
