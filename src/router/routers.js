@@ -22,6 +22,7 @@ export default [
     },
     component: () => import('@/view/login/login.vue')
   },
+
   //学生端路由
   {
     path: '/',
@@ -31,7 +32,7 @@ export default [
     meta: {
       hideInMenu: true,
       notCache: true,
-      access: ['student','teacher']
+      access: ['student', 'teacher']
     },
     children: [
       {
@@ -42,9 +43,42 @@ export default [
           title: '首页',
           notCache: true,
           icon: 'md-home',
-          access: ['student','teacher']
+          access: ['student', 'teacher']
         },
         component: () => import('@/view/home')
+      }
+    ]
+  },
+  {
+    path: '/locking',
+    name: 'locking',
+    meta: {
+      title: '锁屏',
+      hideInMenu: true
+    },
+    component: () => import('@/view/lockscreen/components/locking-page.vue')
+  },
+  {
+    path: '/message_index',
+    name: 'message_index',
+    redirect: '/message',
+    component: Main,
+    meta: {
+      title: '消息提醒',
+      hideInMenu: true
+    },
+    children: [
+      {
+        path: '/message',
+        name: 'message',
+        meta: {
+          hideInMenu: true,
+          title: '消息',
+          notCache: true,
+          icon: 'md-home',
+          access: ['student', 'teacher']
+        },
+        component: () => import('@/view/message_index/message_index.vue')
       }
     ]
   },

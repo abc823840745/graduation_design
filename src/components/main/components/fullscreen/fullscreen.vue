@@ -75,6 +75,8 @@ export default {
 
 <style lang="less">
 .full-screen-btn-con .ivu-tooltip-rel{
+  position: relative;
+  float: right;
   height: 64px;
   line-height: 56px;
   i{

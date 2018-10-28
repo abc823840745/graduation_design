@@ -6,7 +6,7 @@ import { forEach, hasOneOf, objEqual } from '@/libs/tools'
 export const TOKEN_KEY = 'token'
 
 export const setToken = (token) => {
-  Cookies.set(TOKEN_KEY, token, {expires: config.cookieExpires || 1})
+  Cookies.set(TOKEN_KEY, token, { expires: config.cookieExpires || 1 })
 }
 
 export const getToken = () => {
@@ -59,7 +59,7 @@ export const getBreadCrumbList = (route, homeRoute) => {
   let res = routeMetched.filter(item => {
     return item.meta === undefined || !item.meta.hide
   }).map(item => {
-    let meta = {...item.meta}
+    let meta = { ...item.meta }
     if (meta.title && typeof meta.title === 'function') meta.title = meta.title(route)
     let obj = {
       icon: (item.meta && item.meta.icon) || '',
@@ -71,12 +71,12 @@ export const getBreadCrumbList = (route, homeRoute) => {
   res = res.filter(item => {
     return !item.meta.hideInMenu
   })
-  return [{...homeItem, to: homeRoute.path}, ...res]
+  return [{ ...homeItem, to: homeRoute.path }, ...res]
 }
 
 export const getRouteTitleHandled = route => {
-  let router = {...route}
-  let meta = {...route.meta}
+  let router = { ...route }
+  let meta = { ...route.meta }
   if (meta.title && typeof meta.title === 'function') meta.title = meta.title(router)
   router.meta = meta
   return router
@@ -97,6 +97,46 @@ export const getTagNavListFromLocalstorage = () => {
   const list = localStorage.tagNaveList
   return list ? JSON.parse(list) : []
 }
+
+export const openNewPage = (vm, name, argu, query) => {
+  let pageOpenedList = vm.$store.state.app.pageOpenedList;
+  let openedPageLen = pageOpenedList.length;
+  let i = 0;
+  let tagHasOpened = false;
+  while (i < openedPageLen) {
+    if (name === pageOpenedList[i].name) { // 页面已经打开
+      vm.$store.commit('pageOpenedList', {
+        index: i,
+        argu: argu,
+        query: query
+      });
+      tagHasOpened = true;
+      break;
+    }
+    i++;
+  }
+  if (!tagHasOpened) {
+    let tag = vm.$store.state.app.tagsList.filter((item) => {
+      if (item.children) {
+        return name === item.children[0].name;
+      } else {
+        return name === item.name;
+      }
+    });
+    tag = tag[0];
+    if (tag) {
+      tag = tag.children ? tag.children[0] : tag;
+      if (argu) {
+        tag.argu = argu;
+      }
+      if (query) {
+        tag.query = query;
+      }
+      vm.$store.commit('increateTag', tag);
+    }
+  }
+  vm.$store.commit('setCurrentPageName', name);
+};
 
 /**
  * @param {Array} routers 路由列表数组
@@ -136,7 +176,13 @@ export const getNewTagList = (list, newRoute) => {
  * @param {*} route 路由列表
  */
 const hasAccess = (access, route) => {
-  if (route.meta && route.meta.access) return hasOneOf(access, route.meta.access)
+  
+  if (route.meta && route.meta.access) {
+    if (Array.isArray(access)) {
+      access = access[0]
+    }
+    return route.meta.access.indexOf(access) != -1 ? true : false
+  }
   else return true
 }
 
@@ -150,6 +196,7 @@ const hasAccess = (access, route) => {
 export const canTurnTo = (name, access, routes) => {
   const routePermissionJudge = (list) => {
     return list.some(item => {
+
       if (item.children && item.children.length) {
         return routePermissionJudge(item.children)
       } else if (item.name === name) {

@@ -13,6 +13,7 @@ let config = {
    */
   homeName: 'student-teacher-home',
   useI18n: true,
+  env: 'dev',
   /**
    * @description api请求基础路径
    */
@@ -24,4 +25,4 @@ let config = {
    * @description 需要加载的插件
    */
 }
-export default  config
+export default config
