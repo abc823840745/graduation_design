@@ -5,7 +5,6 @@
         </Tooltip>
     </div>
 </template>
-
 <script>
     import Cookies from 'js-cookie';
     const setLockBackSize = () => {

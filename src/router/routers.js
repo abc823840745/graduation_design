@@ -22,7 +22,15 @@ export default [
     },
     component: () => import('@/view/login/login.vue')
   },
-
+  {
+    path: '/locking',
+    name: 'locking',
+    meta: {
+      title: '锁屏',
+      hideInMenu: true
+    },
+    component: () => import('@/components/main/components/lockscreen/components/lockingPage.vue')
+  },
   //学生端路由
   {
     path: '/',
@@ -48,15 +56,6 @@ export default [
         component: () => import('@/view/home')
       }
     ]
-  },
-  {
-    path: '/locking',
-    name: 'locking',
-    meta: {
-      title: '锁屏',
-      hideInMenu: true
-    },
-    component: () => import('@/view/lockscreen/components/locking-page.vue')
   },
   {
     path: '/message_index',

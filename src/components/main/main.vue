@@ -23,7 +23,7 @@
       <Content class="main-content-con">
         <Layout class="main-layout-con">
           <div class="tag-nav-wrapper">
-           <tags-nav :value="$route" @input="handleClick" :list="tagNavList" @on-close="handleCloseTag"/>
+            <tags-nav :value="$route" @input="handleClick" :list="tagNavList" @on-close="handleCloseTag" />
           </div>
           <Content class="content-wrapper">
             <keep-alive :include="cacheList">
@@ -67,7 +67,7 @@
     },
     data() {
       return {
-        mesCount: 1,
+        mesCount: 0,
         collapsed: false,
         minLogo,
         maxLogo,
@@ -103,6 +103,7 @@
         return this.$store.state.app.hasReadErrorPage
       }
     },
+   
     methods: {
     ...mapMutations([
       'setBreadCrumb',
@@ -179,6 +180,9 @@
           name: this.$config.homeName
         })
       }
+      setTimeout(()=>{
+        this.mesCount = this.$store.state.user.msgCount
+      },2000)
     }
   }
 

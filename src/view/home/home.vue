@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div  v-if="access=='student'">
+    <div v-if="access=='student'">
       <Row :gutter="20">
         <i-col :xs="12" :md="8" :lg="4" v-for="(infor, i) in inforCardData" :key="`infor-${i}`" style="height: 120px;padding-bottom: 10px;">
           <infor-card shadow :color="infor.color" :icon="infor.icon" :icon-size="36">
@@ -22,9 +22,9 @@
         </i-col>
       </Row>
     </div>
-   <div v-if="access=='teacher'">
-     教师首页
-   </div>
+    <div v-if="access=='teacher'">
+      教师首页
+    </div>
 
   </div>
 </template>
@@ -35,6 +35,7 @@
   import { ChartPie, ChartBar } from '_c/charts'
   import Example from './example.vue'
   import { mapMutations, mapActions, mapGetters } from 'vuex'
+ import { getNewMessage } from '@/api/message'
   export default {
     name: 'student-teacher-home',
     components: {
@@ -74,17 +75,26 @@
     },
     mounted() {
       this.getUserAccess()
+     this.getNewMessage()
     },
-    methods:{
+    methods: {
     ...mapActions([
       'getAccess'
     ]),
-    getUserAccess(){
-      this.getAccess().then(res=>{
-       this.access = res[0]
-      })
-    }
-    }
+     getNewMessage() {
+        let uid = this.$store.state.user.token
+        getNewMessage({ uid }).then((res) => {
+          if (res.data.message == 'ok') {
+           this.$store.commit('setMsgCount',res.data.count) 
+          }
+        })
+      },
+      getUserAccess() {
+        this.getAccess().then(res => {
+          this.access = res[0]
+        })
+      }
+    },
   }
 
 </script>

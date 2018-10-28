@@ -17,12 +17,13 @@
 
 <script>
   import LoginForm from '_c/login-form'
-  import { mapActions,mapMutations } from 'vuex'
+  import { mapActions, mapMutations } from 'vuex'
+ 
   export default {
     components: {
       LoginForm
     },
-    computed:{
+    computed: {
       tagNavList() {
         return this.$store.state.app.tagNavList
       }
@@ -40,11 +41,7 @@
           this.getUserInfo().then(res => {
             let route = this.tagNavList.filter(item => item.name === this.$config.homeName)
             this.handleCloseTag(route, 'all')
-
-            /*   this.$router.push({
-                  name: this.$config.homeName
-                })
-              */
+            
           })
         })
       },

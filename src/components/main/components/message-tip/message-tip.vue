@@ -5,7 +5,6 @@
                 <Icon type="md-notifications" :size="22" />
             </Badge>
         </Tooltip>
-
     </div>
 </template>
 
@@ -42,8 +41,9 @@
         margin-top: -38px;
         vertical-align: middle;
     }
-      .message-con  .ivu-tooltip-inner{
-          position: relative;
-          top: -25px;
-      }
+    
+    .message-con .ivu-tooltip-inner {
+        position: relative;
+        top: -25px;
+    }
 </style>

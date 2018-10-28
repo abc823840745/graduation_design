@@ -2,20 +2,24 @@ import { login, logout, getUserInfo } from '@/api/user'
 import { setToken, getToken } from '@/libs/util'
 export default {
   state: {
+    msgCount: 0,
+    stu_nmuber: '',
     role: 'student',
     userName: '',
-    userId: '',
     avatorImgPath: '',
     token: getToken(),
     access: [],
     hasGetInfo: false
   },
   mutations: {
+    setMsgCount(state, count) {
+      state.msgCount = count
+    },
     setAvator(state, avatorPath) {
       state.avatorImgPath = avatorPath
     },
-    setUserId(state, id) {
-      state.userId = id
+    setStuNumber(state, stu_nmuber) {
+      state.stu_nmuber = stu_nmuber
     },
     setUserName(state, name) {
       state.userName = name
@@ -50,7 +54,7 @@ export default {
     },
     getAccess({ state, commit }) {
       return new Promise((resolve, reject) => {
-            resolve(state.access)
+        resolve(state.access)
       })
     },
     // 退出登录
@@ -74,13 +78,18 @@ export default {
       return new Promise((resolve, reject) => {
         try {
           getUserInfo(state.token).then(res => {
-            const data = res.data
-            commit('setAvator', data.avator)
-            commit('setUserName', data.name)
-            commit('setUserId', data.user_id)
-            commit('setAccess', [data.access])
-            commit('setHasGetInfo', true)
-            resolve(data)
+            if (res.data.message == 'ok') {
+              const data = res.data
+              commit('setAvator', data.avator)
+              commit('setUserName', data.name)
+              commit('setStuNumber', data.stu_number)
+              commit('setAccess', [data.access])
+              commit('setHasGetInfo', true)
+              resolve(data)
+            } else {
+              resolve('获取信息失败')
+            }
+
           }).catch(err => {
             reject(err)
           })

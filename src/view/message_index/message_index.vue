@@ -3,44 +3,77 @@
 </style>
 
 <template>
-  <div class="login">
-    <div class="login-con">
-      <Card icon="log-in" title="欢迎登录" :bordered="false">
-        <div class="form-con">
-          <login-form @on-success-valid="handleSubmit"></login-form>
-          <p class="login-tip">教学管理平台</p>
-        </div>
-      </Card>
-    </div>
+  <div class="message">
+    <Card class="card_container" v-for="(item,index) in messageList" :key="index" :bordered="false">
+      <div slot="title">
+        <img class="avatar" :src="item.avatar" />
+        <span class="user-name">发布人：{{item.username}}</span>
+      </div>
+      <p class="title">{{item.title}}</p>
+      <p >{{item.content}}</p>
+    </Card>
   </div>
 </template>
 
 <script>
-  import LoginForm from '_c/login-form'
-  import { mapActions } from 'vuex'
+  import { getMessage } from '@/api/message'
   export default {
+    data(){
+      return {
+        messageList:[],
+        start: 0
+      }
+    },
     components: {
-      LoginForm
+
+    },
+    mounted() {
+      let uid = this.$store.state.user.token
+      let start = this.start
+      getMessage({ uid,start }).then((res) => {
+        if (res.data.message == 'ok') {
+          this.messageList = res.data.list
+            this.$store.commit('setMsgCount',0) 
+        }
+      })
     },
     methods: {
-    ...mapActions([
-      'handleLogin',
-      'getUserInfo'
-    ]),
-      handleSubmit({ userName, password }) {
-        this.handleLogin({ userName, password }).then(res => {
-          this.getUserInfo().then(res => {
-              this.$router.push({
-            name: this.$config.homeName
-          })
-          })
-        })
-      }
     }
   }
 
 </script>
 
 <style>
-
+  .card_container {
+    margin-bottom: 20px;
+  }
+  
+  .info_container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .avatar {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+  }
+  
+  .user-name {
+    position: relative;
+    display: inline-block;
+    vertical-align: top;
+    margin-left: 8px;
+    height: 40px;
+    line-height: 40px;
+  }
+  .title{
+    position: relative;
+    margin-bottom: 6px;
+    color: gray;
+    font-weight: bold;
+  }
 </style>

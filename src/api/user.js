@@ -12,6 +12,20 @@ export const login = ({ userName, password }) => {
   })
 }
 
+export const unlock = ({ token, username, password }) => {
+  const data = {
+    token,
+    username,
+    password
+  }
+  return axios.request({
+    url: '/view/unlock',
+    data,
+    method: 'post'
+  })
+}
+
+
 export const getUserInfo = (token) => {
   return axios.request({
     url: '/user/info',
