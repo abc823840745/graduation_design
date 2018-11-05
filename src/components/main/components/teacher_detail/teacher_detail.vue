@@ -181,8 +181,9 @@
     
     .title-top {
         position: relative;
-        margin: 80px 0 30px 0;
-        font-size: 16px;
+        margin: 90px 0 30px 0;
+        font-size: 18px;
+        font-weight: bold;
         text-align: center;
     }
     

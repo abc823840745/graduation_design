@@ -1,4 +1,3 @@
-
 <template>
   <div class="goods-all">
     <Table border :columns="columns" :data="tableData" size="large" no-data-text="暂时未到开题时间"></Table>
@@ -34,6 +33,7 @@
     name: "choice-teacher",
     data() {
       return {
+        myChoice: [],
         userInfo: {},
         info: {},
         modal1: false,
@@ -88,7 +88,7 @@
           {
             title: "操作",
             key: "action",
-          
+
             align: "center",
             render: (h, params) => {
               return h("div", [
@@ -126,7 +126,7 @@
                       }
                     }
                   },
-                  "提交选择意向"
+                  this.myChoice.indexOf(this.tableData[params.index].id) != -1 ? "已选择" : '提交选择意向'
                 )
               ]);
             }
@@ -142,20 +142,19 @@
     created() {
 
       this.$nextTick(() => {
-        this.getTeacher()
-        this.$nextTick(() => {
-          this.userInfo = this.$store.state.user
-        
-          this.form.phone = this.userInfo.phone ? this.userInfo.phone : ''
-        
-        })
+        this.userInfo = this.$store.state.user
+        console.log(this.userInfo)
+        this.form.phone = this.userInfo.phone ? this.userInfo.phone : ''
+
       })
 
     },
     methods: {
       getTeacher() {
-        getTeacherList().then((res) => {
+        let {token, apartment} = this.userInfo
+        getTeacherList({ token, apartment }).then((res) => {
           var teachers = res.data.teachers
+          this.myChoice = res.data.myChoice
           teachers.forEach((item) => {
             item.leftPeople = item.people - item.haveChoice
           })
@@ -169,11 +168,10 @@
         this.$router.push({ path: `/detail?info=${info}` })
       },
       choiceThisTeacher() {
-        let uid = this.userInfo.id
+        let token = this.userInfo.token
         let sid = this.info.id
         let {phone, workType} = this.form
-
-        choiceTeacher(uid, sid, phone, workType).then((res) => {
+        choiceTeacher(token, sid, phone, workType).then((res) => {
           let message = res.message
           this.modal1 = false
           if (message == "ok") {

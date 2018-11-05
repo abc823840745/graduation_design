@@ -9,22 +9,22 @@ export const getTeacherList = (access) => {
 }
 
 
-export const haveChoiceStudent = (id) => {
+export const haveChoiceStudent = (token) => {
  return axios.request({
     url: '/have/choice/student',
     method: 'get',
     params:{
-      id
+      uid:token
     }
   })
 }
 
-export const choiceTeacher = (uid,sid,phone,workType) => {
+export const choiceTeacher = (token,sid,phone,workType) => {
  return axios.request({
     url: '/choice/teacher',
-    method: 'get',
-    params:{
-      uid,
+    method: 'post',
+    data:{
+      token,
       sid,
       phone,
       workType

@@ -9,18 +9,9 @@
           </infor-card>
         </i-col>
       </Row>
-      <Row :gutter="20" style="margin-top: 10px;">
-        <i-col :md="24" :lg="8" style="margin-bottom: 20px;">
-          <Card shadow>
-            <chart-pie style="height: 300px;" :value="pieData" text="用户访问来源"></chart-pie>
-          </Card>
-        </i-col>
-        <i-col :md="24" :lg="16" style="margin-bottom: 20px;">
-          <Card shadow>
-            <chart-bar style="height: 300px;" :value="barData" text="每周活跃量" />
-          </Card>
-        </i-col>
-      </Row>
+      <div class="lesson_container">
+       <Table border  :columns="columns" :data="lesson" size="large" no-data-text="暂时无法查询课表"></Table>
+      </div>
     </div>
     <div v-if="access=='teacher'">
       教师首页
@@ -35,7 +26,7 @@
   import { ChartPie, ChartBar } from '_c/charts'
   import Example from './example.vue'
   import { mapMutations, mapActions, mapGetters } from 'vuex'
- import { getNewMessage } from '@/api/message'
+  import { getNewMessage } from '@/api/message'
   export default {
     name: 'student-teacher-home',
     components: {
@@ -47,6 +38,45 @@
     },
     data() {
       return {
+          columns: [
+          {
+            title: '上课时间',
+            key: 'time',
+          
+            align: 'center'
+          },
+          {
+            title: '星期一',
+            key: 'monday',
+           
+            align: 'center'
+          },
+          {
+            title: '星期二',
+            key: 'tuesday',
+           
+            align: 'center'
+          },
+          {
+            title: '星期三',
+            key: 'wednesday',
+           
+            align: 'center'
+          },
+          {
+            title: '星期四',
+            key: 'thursday',
+           
+            align: 'center'
+          },
+          {
+            title: '星期五',
+          
+            key: 'friday',
+            align: 'center'
+          }
+        ],
+        lesson: [],
         access: '',
         inforCardData: [
           { title: '课程动态', icon: 'md-person-add', count: 803, color: '#2d8cf0' },
@@ -75,17 +105,50 @@
     },
     mounted() {
       this.getUserAccess()
-     this.getNewMessage()
+      this.getNewMessage()
+      let lesson = this.$store.state.user.lesson.split("&nbsp;")
+      this.formatLesson(lesson)
+
     },
     methods: {
     ...mapActions([
       'getAccess'
     ]),
-     getNewMessage() {
+      formatLesson(lesson) {
+        let lessonContainer = []
+        let flag = false
+        lesson.forEach((item => {
+
+          if (lessonContainer.length != 0 && item.indexOf('节') != -1) {
+
+            this.lesson.push({
+              time: lessonContainer[0],
+              monday: lessonContainer[1],
+              tuesday: lessonContainer[2],
+              wednesday: lessonContainer[3],
+              thursday: lessonContainer[4],
+              friday: lessonContainer[5]
+            })
+            lessonContainer = []
+          }
+          if (item != '' && item.indexOf('节') == -1) {
+            lessonContainer.push('')
+          }
+          if (item != '' && item.indexOf('节') != -1 && item.substr(item.indexOf('节') + 14) != '') {
+            lessonContainer.push(item.substr(0, item.indexOf('节') + 14))
+            lessonContainer.push(item.substr(item.indexOf('节') + 14))
+          } else {
+            lessonContainer.push(item)
+          }
+
+        }))
+        console.log(this.lesson)
+      },
+      getNewMessage() {
         let uid = this.$store.state.user.token
         getNewMessage({ uid }).then((res) => {
           if (res.data.message == 'ok') {
-           this.$store.commit('setMsgCount',res.data.count) 
+            this.$store.commit('setMsgCount', res.data.count)
           }
         })
       },
@@ -102,5 +165,9 @@
 <style lang="less">
   .count-style {
     font-size: 50px;
+  }
+  .lesson_container{
+    position: relative;
+    margin-top: 50px;
   }
 </style>
