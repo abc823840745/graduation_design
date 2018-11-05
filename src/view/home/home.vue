@@ -10,7 +10,7 @@
         </i-col>
       </Row>
       <div class="lesson_container">
-       <Table border  :columns="columns" :data="lesson" size="large" no-data-text="暂时无法查询课表"></Table>
+        <Table border :columns="columns" :data="lesson" size="large" no-data-text="暂时无法查询课表"></Table>
       </div>
     </div>
     <div v-if="access=='teacher'">
@@ -38,42 +38,131 @@
     },
     data() {
       return {
-          columns: [
+        columns: [
           {
             title: '上课时间',
             key: 'time',
-          
+
             align: 'center'
           },
           {
-            title: '星期一',
-            key: 'monday',
-           
-            align: 'center'
+            title: "星期一",
+            key: "monday",
+            align: "center",
+            render: (h, params) => {
+              return h("div", {
+                style: {
+                  cursor: "pointer"
+                },
+                on: {
+                  click: () => {
+                    let lessonItem = this.lesson[params.index].monday
+                    this.$router.push({
+                      path: "/student/homework/my-homework",
+                      query: {
+                        lessonItem
+                      }
+                    })
+                  }
+                }
+              },
+                this.lesson[params.index].monday);
+            }
           },
           {
-            title: '星期二',
-            key: 'tuesday',
-           
-            align: 'center'
-          },
+            title: "星期二",
+            key: "tuesday",
+            align: "center",
+            render: (h, params) => {
+              return h("div", {
+                style: {
+                  cursor: "pointer"
+                },
+                on: {
+                  click: () => {
+                   let lessonItem = this.lesson[params.index].tuesday
+                    this.$router.push({
+                      path: "/student/homework/my-homework",
+                      query: {
+                        lessonItem
+                      }
+                    })
+                  }
+                }
+              },
+                this.lesson[params.index].tuesday);
+            }
+          }, {
+            title: "星期三",
+            key: "wednesday",
+            align: "center",
+            render: (h, params) => {
+              return h("div", {
+                style: {
+                  cursor: "pointer"
+                },
+                on: {
+                  click: () => {
+                   let lessonItem = this.lesson[params.index].wednesday
+                    this.$router.push({
+                      path: "/student/homework/my-homework",
+                      query: {
+                        lessonItem
+                      }
+                    })
+                  }
+                }
+              },
+                this.lesson[params.index].wednesday);
+            }
+          }, {
+            title: "星期四",
+            key: "thursday",
+            align: "center",
+            render: (h, params) => {
+              return h("div", {
+                style: {
+                  cursor: "pointer"
+                },
+                on: {
+                  click: () => {
+                     let lessonItem = this.lesson[params.index].thursday
+                    this.$router.push({
+                      path: "/student/homework/my-homework",
+                      query: {
+                        lessonItem
+                      }
+                    })
+                  }
+                }
+              },
+                this.lesson[params.index].thursday);
+            }
+          }
+          ,
           {
-            title: '星期三',
-            key: 'wednesday',
-           
-            align: 'center'
-          },
-          {
-            title: '星期四',
-            key: 'thursday',
-           
-            align: 'center'
-          },
-          {
-            title: '星期五',
-          
-            key: 'friday',
-            align: 'center'
+            title: "星期五",
+            key: "friday",
+            align: "center",
+            render: (h, params) => {
+              return h("div", {
+                style: {
+                  cursor: "pointer"
+                },
+                on: {
+                  click: () => {
+                    let lessonItem = this.lesson[params.index].friday
+                    this.$router.push({
+                      path: "/student/homework/my-homework",
+                      query: {
+                        lessonItem
+                      }
+                    })
+                  }
+                }
+              },
+                this.lesson[params.index].friday);
+            }
           }
         ],
         lesson: [],
@@ -166,7 +255,8 @@
   .count-style {
     font-size: 50px;
   }
-  .lesson_container{
+  
+  .lesson_container {
     position: relative;
     margin-top: 50px;
   }
