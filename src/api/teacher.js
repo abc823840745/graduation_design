@@ -1,10 +1,13 @@
 import axios from '@/libs/api.request'
 
 
-export const getTeacherList = (access) => {
+export const getTeacherList = (token) => {
  return axios.request({
     url: '/get/teacher/list',
-    method: 'get'
+    method: 'post',
+    data:{
+      token
+    }
   })
 }
 

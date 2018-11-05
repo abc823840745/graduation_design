@@ -145,16 +145,16 @@
         this.userInfo = this.$store.state.user
         console.log(this.userInfo)
         this.form.phone = this.userInfo.phone ? this.userInfo.phone : ''
-
+        this.getTeacher()
       })
 
     },
     methods: {
       getTeacher() {
-        let {token, apartment} = this.userInfo
-        getTeacherList({ token, apartment }).then((res) => {
+        let {token} = this.userInfo
+        getTeacherList(token).then((res) => {
           var teachers = res.data.teachers
-          this.myChoice = res.data.myChoice
+          this.myChoice = res.data.myChoice.map((item)=>{return item.uid})
           teachers.forEach((item) => {
             item.leftPeople = item.people - item.haveChoice
           })

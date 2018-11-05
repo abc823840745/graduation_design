@@ -231,7 +231,7 @@
           }
 
         }))
-        console.log(this.lesson)
+       
       },
       getNewMessage() {
         let uid = this.$store.state.user.token

@@ -2,6 +2,7 @@ import { login, logout, getUserInfo } from '@/api/user'
 import { setToken, getToken } from '@/libs/util'
 export default {
   state: {
+    phone: '',
     lesson: '',
     team_id: 0,
     msgCount: 0,
@@ -14,6 +15,9 @@ export default {
     hasGetInfo: false
   },
   mutations: {
+    setPhone(state, phone) {
+      state.phone = phone
+    },
      setLesson(state, lesson) {
       state.lesson = lesson
     },
@@ -90,6 +94,7 @@ export default {
               const data = res.data
               commit('setTeamId', data.team_id)
               commit('setLesson', data.lesson)
+               commit('setPhone', data.phone)
               commit('setAvator', data.avator)
               commit('setUserName', data.name)
               commit('setStuNumber', data.stu_number)
