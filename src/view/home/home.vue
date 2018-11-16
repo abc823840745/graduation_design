@@ -11,7 +11,20 @@
       </Row>
       <div class="lesson_container">
         <Table border :columns="columns" :data="lesson" size="large" no-data-text="暂时无法查询课表"></Table>
+        <div class="btn_container">
+          <Button @click="showModal=true" type="success">刷新课表</Button>
+        </div>
       </div>
+      <Modal v-model="showModal" title="确定要刷新课表？" @on-ok="refreshCourse">
+        <Form ref="formValidate" :model="form" :rules="ruleValidate" :label-width="80">
+          <FormItem label="学号" prop="name">
+            <Input v-model="form.name" placeholder="请输入你的学号"></Input>
+          </FormItem>
+          <FormItem label="密码" prop="password">
+            <Input v-model="form.password" type="password" placeholder="请输入你的密码"></Input>
+          </FormItem>
+        </Form>
+      </Modal>
     </div>
     <div v-if="access=='teacher'">
       教师首页
@@ -27,6 +40,7 @@
   import Example from './example.vue'
   import { mapMutations, mapActions, mapGetters } from 'vuex'
   import { getNewMessage } from '@/api/message'
+  import { refreshCourse } from '@/api/user'
   export default {
     name: 'student-teacher-home',
     components: {
@@ -38,6 +52,11 @@
     },
     data() {
       return {
+        form: {
+          name: '',
+          password: ''
+        },
+        showModal: false,
         columns: [
           {
             title: '上课时间',
@@ -141,6 +160,7 @@
           }
         ],
         lesson: [],
+        lessonText: [],
         access: '',
         inforCardData: [
           { title: '课程动态', icon: 'md-person-add', count: 803, color: '#2d8cf0' },
@@ -164,6 +184,14 @@
           Fri: 24643,
           Sat: 1322,
           Sun: 1324
+        },
+        ruleValidate: {
+          name: [
+            { required: true, message: '请输入正确的学号', trigger: 'blur', pattern: /^[0-9]{10}$/ }
+          ],
+          password: [
+            { required: true, message: '请输入正确的密码', trigger: 'blur', pattern: /^[0-9]{14}$/ }
+          ]
         }
       }
     },
@@ -171,16 +199,16 @@
       this.getUserAccess()
       this.getNewMessage()
       if (this.$store.state.user.lesson) {
-        let lesson = this.$store.state.user.lesson.split("&nbsp;")
-        this.formatLesson(lesson)
+        this.lessonText = this.$store.state.user.lesson.split("&nbsp;")
+        this.formatLesson()
       }
 
 
     },
     methods: {
     ...mapActions([
-      'getAccess'
-    ]),
+          'getAccess'
+        ]),
       goToCource(cource) {
         let code = cource.substr(cource.indexOf('(') + 1, 3)
         let lesson = cource.substring(0, cource.indexOf('('))
@@ -193,8 +221,8 @@
         let room = dataDetail[dataDetail.length - 1].substring(0, dataDetail[dataDetail.length - 1].indexOf(')'))
         this.$router.push({
           path: "/student/homework/my-homework",
-          query: {            
-             data: JSON.stringify({
+          query: {
+            data: JSON.stringify({
               name,
               room,
               week,
@@ -203,10 +231,11 @@
           }
         })
       },
-      formatLesson(lesson) {
+      formatLesson() {
         let lessonContainer = []
+        this.lesson =[]
         let flag = false
-        lesson.forEach((item => {
+        this.lessonText.forEach((item => {
           if (lessonContainer.length != 0 && item.indexOf('节') != -1) {
 
             this.lesson.push({
@@ -230,7 +259,6 @@
           }
 
         }))
-
       },
       getNewMessage() {
         let uid = this.$store.state.user.token
@@ -243,6 +271,28 @@
       getUserAccess() {
         this.getAccess().then(res => {
           this.access = res[0]
+        })
+      },
+      refreshCourse() {
+        this.$refs['formValidate'].validate((validate) => {
+          let {name, password} = this.form
+          if (validate) {
+       
+            refreshCourse(name, password).then((res) => {
+              if (res.data.message == 'ok') {
+                this.$store.dispatch('setLesson', this.lessonText)
+                this.lessonText = res.data.content.split("&nbsp;")
+                this.formatLesson()
+                this.$Notice.success({
+                  title: "刷新成功"
+                })
+              } else {
+                this.$Notice.warning({
+                  title: "用户名或密码不正确"
+                })
+              }
+            })
+          }
         })
       }
     },
@@ -258,5 +308,12 @@
   .lesson_container {
     position: relative;
     margin-top: 50px;
+  }
+  
+  .btn_container {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-20px);
+    margin-top: 30px;
   }
 </style>

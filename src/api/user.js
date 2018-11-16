@@ -12,6 +12,19 @@ export const login = ({ userName, password }) => {
   })
 }
 
+export const refreshCourse = (username, password) => {
+  const data = {
+    username,
+    password
+  }
+  return axios.request({
+    url: '/refresh/course',
+    data,
+    method: 'post'
+  })
+}
+
+
 export const unlock = ({ token, username, password }) => {
   const data = {
     token,
