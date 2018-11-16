@@ -1,48 +1,170 @@
 <template>
   <div class="goods-all">
-    <Table border :columns="columns" :data="tableData" size="large" no-data-text="暂时未到开题时间"></Table>
+    <Table border :columns="columns" @on-selection-change="getSelection" :data="tableData" size="large" no-data-text="暂时未到开题时间"></Table>
+    <div class="page_container">
+       <Page :total="total" :page-size="pageSize" @on-change="changePage" />
+    </div>
+    <div class="choice_btn">
+      <Button @click="submitSelect" :disabled="haveSelect.length!=3||myChoice.length!=0" type="success">{{myChoice.length!=0?'您已经提交选择意向，等待审核中...':'提交选择意向'}}</Button>
+      <p class="choice_tip">注意：每人/每组只能选择3个意向导师{{myChoice.length==0?'，请点击教师列表左侧复选按钮进行选择':''}}！</p>
+    </div>
     <Modal v-model="modal1" width="500">
       <p slot="header" style="text-align:center">
         <Icon type="ios-information-circle"></Icon>
-        <span>每人最多提交两个意向指导老师，你确认提交选择意向吗？</span>
+        <span>一个团队最多两个人，你确认提交选择意向吗？</span>
       </p>
-      <Form :model="form" :label-width="80" :rules="ruleInline">
+      <Form :model="form" ref="content" :label-width="80" :rules="ruleInline">
         <FormItem prop="phone" label="联系手机">
           <Input v-model="form.phone" placeholder="请输入电话号码"></Input>
         </FormItem>
+        <FormItem prop="qq" label="QQ号码">
+          <Input v-model="form.qq" placeholder="请输入QQ号码"></Input>
+        </FormItem>
         <FormItem label="负责内容">
           <Select v-model="form.workType">
-                <Option value="前端">前端</Option>
-                <Option value="后台">后台</Option>
-                <Option value="UI">UI</Option>
-                 <Option value="策划">策划</Option>
-                  <Option value="运营推广">运营推广</Option>
+              <Option v-for="(item,index) in menber_workList" :key="index" :value="item.value">{{item.label}}</Option>
             </Select>
+        </FormItem>
+        <FormItem label="是否组队">
+          <RadioGroup v-model="form.team">
+            <Radio label="0">
+              <span>否</span>
+            </Radio>
+            <Radio label="1">
+              <span>是</span>
+            </Radio>
+          </RadioGroup>
+        </FormItem>
+        <FormItem v-if="form.team=='1'" label="邀请成员">
+          <Poptip trigger="focus">
+            <Input v-model="form.teamMan" search placeholder="请输入成员姓名"></Input>
+            <div slot="content" v-if="menberList.length>0">
+              <div @click="choiceMenber(index)" class="menber_list" v-for="(item,index) in menberList">{{ item.username}}--{{item.stu_number}}</div>
+            </div>
+          </Poptip>
+          <div class="tag_list">
+            <Tag type="dot" @on-close="delMenber" v-if="menber.menber_id" closable color="primary">{{menber.teamMan}}</Tag>
+          </div>
+        </FormItem>
+        <Form :model="menber" :label-width="80" :rules="menber_ruleInline">
+          <FormItem v-if="form.team=='1'&&menber.menber_id" prop="menber_phone" label="成员手机">
+            <Input v-model="menber.menber_phone" placeholder="请输入电话号码"></Input>
+          </FormItem>
+          <FormItem v-if="form.team=='1'&&menber.menber_id" prop="menber_qq" label="成员QQ">
+            <Input v-model="menber.menber_qq" placeholder="请输入QQ号码"></Input>
+          </FormItem>
+          <FormItem v-if="form.team=='1'&&menber.menber_id" label="负责内容">
+            <Select v-model="menber.menber_woker">
+                <Option v-for="(item,index) in workList" :value="item.value" :key="index">{{item.label}}</Option>
+            </Select>
+          </FormItem>
+        </Form>
+        <FormItem label="上传附件" v-if="form.team=='1'">
+          <Upload type="drag" :max-size="20480" :format="['doc']" :action="uploadUrl" :on-exceeded-size="handleMaxSize" :on-success="handleSuccess">
+            <div style="padding: 20px 0">
+              <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
+              <p>组队需要额外上传申请表，由组长提交信息即可！</p>
+            </div>
+          </Upload>
         </FormItem>
       </Form>
       <div slot="footer">
-        <Button type="primary" size="large" long @click="choiceThisTeacher">提交选择意向</Button>
+        <Button type="primary" size="large" long @click="choiceThisTeacher">提交</Button>
       </div>
     </Modal>
   </div>
 </template>
 <script>
   import Cookies from "js-cookie";
-  import { getTeacherList, choiceTeacher } from '@/api/teacher'
+  import { getTeacherList, choiceTeacher, getMenber } from '@/api/teacher'
+  import config from '@/config'
+  const baseUrl = process.env.NODE_ENV === 'development' ? config.baseUrl.dev : config.baseUrl.pro
+  const uploadUrl = baseUrl + '/upload/work'
+  let timer = null
   export default {
     name: "choice-teacher",
     data() {
       return {
+        page: 1,
+        total: 21,
+        pageSize: 10,
+        selectable: false,
+        haveSelect: [],
+        originSelect: [],
+        uploadUrl,
+        uploadList: [],
+        menber: {
+          menber_id: '',
+          teamMan: '',
+          menber_phone: '',
+          menber_qq: '',
+          menber_woker: '前端'
+        },
+        menberList: [],
         myChoice: [],
         userInfo: {},
         info: {},
         modal1: false,
         form: {
+          team: '0',
+          teamMan: '',
           phone: "",
-          workType: "前端"
+          workType: "前端",
+          qq: '',
         },
         tableData: [],
+        workList: [
+          {
+            label: "前端",
+            value: "前端"
+          },
+          {
+            label: "后台",
+            value: "后台"
+          }, {
+            label: "UI",
+            value: "UI"
+          },
+          {
+            label: "策划",
+            value: "策划"
+          },
+          {
+            label: "运营推广",
+            value: "运营推广"
+          }, {
+            label: "全部",
+            value: "全部"
+          }],
+        menber_workList: [
+          {
+            label: "前端",
+            value: "前端"
+          },
+          {
+            label: "后台",
+            value: "后台"
+          }, {
+            label: "UI",
+            value: "UI"
+          },
+          {
+            label: "策划",
+            value: "策划"
+          },
+          {
+            label: "运营推广",
+            value: "运营推广"
+          }, {
+            label: "全部",
+            value: "全部"
+          }],
         columns: [
+          {
+            type: 'selection',
+            width: 60,
+            align: 'center'
+          },
           {
             title: '开题日期',
             key: 'time',
@@ -51,7 +173,7 @@
           },
           {
             title: '教师姓名',
-            key: 'name',
+            key: 'username',
             width: 180,
             align: 'center'
           },
@@ -69,14 +191,14 @@
           },
           {
             title: '联系方式',
-            key: 'contact',
+            key: 'phone',
             width: 180,
             align: 'center'
           },
           {
             title: '剩余可选人数',
             width: 198,
-            key: 'left_people',
+            key: 'leftPeople',
             align: 'center'
           },
           {
@@ -84,6 +206,32 @@
             width: 198,
             key: 'people',
             align: 'center'
+          },
+          {
+            title: "状态",
+            key: "action",
+            align: "center",
+            render: (h, params) => {
+              return h("div", [
+                h(
+                  "Button",
+                  {
+                    props: {
+                      type: this.myChoice.indexOf(this.tableData[params.index].u_id) != -1 ? "warning" : "default"
+
+                    },
+                    style: {
+                      marginRight: "5px"
+                    },
+                    on: {
+                      click: () => {
+                      }
+                    }
+                  },
+                  this.myChoice.indexOf(this.tableData[params.index].u_id) != -1 ? "已经提交申请" : '未选择该导师'
+                )
+              ]);
+            }
           },
           {
             title: "操作",
@@ -108,25 +256,6 @@
                     }
                   },
                   "查看教师详情"
-                ),
-                h(
-                  "Button",
-                  {
-                    props: {
-                      type: "error"
-
-                    },
-                    style: {
-                      marginRight: "5px"
-                    },
-                    on: {
-                      click: () => {
-                        this.modal1 = true
-                        this.info = this.tableData[params.index]
-                      }
-                    }
-                  },
-                  this.myChoice.indexOf(this.tableData[params.index].id) != -1 ? "已选择" : '提交选择意向'
                 )
               ]);
             }
@@ -135,28 +264,113 @@
         ruleInline: {
           phone: [
             { required: true, message: '请输入有效的电话号码', trigger: 'blur', type: 'string', pattern: /^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0,5-9]))\d{8}$/ }
+          ],
+          qq: [
+            { required: true, message: '请输入有效的qq号码', trigger: 'blur', type: 'string', pattern: /^[0-9]{5,10}$/ }
+          ]
+        },
+        menber_ruleInline: {
+          menber_phone: [
+            { required: true, message: '请输入有效的电话号码', trigger: 'blur', type: 'string', pattern: /^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0,5-9]))\d{8}$/ }
+          ],
+          menber_qq: [
+            { required: true, message: '请输入有效的qq号码', trigger: 'blur', type: 'string', pattern: /^[0-9]{5,10}$/ }
           ]
         }
       }
     },
     created() {
-
       this.$nextTick(() => {
         this.userInfo = this.$store.state.user
-        console.log(this.userInfo)
-        this.form.phone = this.userInfo.phone ? this.userInfo.phone : ''
         this.getTeacher()
       })
 
     },
+    watch: {
+      'form.teamMan': function () {
+        this.getMenber()
+      }
+    },
     methods: {
+      changePage(page){
+        this.page = page
+         this.originSelect = this.haveSelect
+         this.getTeacher()
+      },
+      getSelection(selection) {
+        if (this.originSelect.length + selection.length >= 3) {
+          if (this.originSelect.length + selection.length == 3) {
+            this.haveSelect = this.originSelect.concat(selection)
+          }
+          let selectArr = this.haveSelect.map((selectItem) => {
+            return selectItem.u_id
+          })
+          this.tableData.forEach((item, index) => {
+            if (selectArr.indexOf(item.u_id) == -1) {
+              item['_disabled'] = true
+              item['_checked'] = false
+
+            } else {
+              item['_disabled'] = false
+              item['_checked'] = true
+            }
+          })
+        } else {
+          this.haveSelect = this.originSelect.concat(selection)
+          let selectArr = this.haveSelect.map((selectItem) => {
+            return selectItem.u_id
+          })
+          this.tableData.forEach((item, index) => {
+            item['_disabled'] = false
+            if (selectArr.indexOf(item.u_id) == -1) {
+              item['_checked'] = false
+            } else {
+              item['_checked'] = true
+            }
+          })
+        }
+      },
+      submitSelect() {
+        this.modal1 = true
+      },
+      delMenber() {
+        this.menber.menber_id = ''
+        this.menber.teamMan = ''
+      },
+      choiceMenber(index) {
+        let {username, u_id} = this.menberList[index]
+        this.menber.menber_id = u_id
+        this.menber.teamMan = username
+        this.form.teamMan = ''
+        this.menberList = []
+      },
+      getMenber() {
+        let name = this.form.teamMan
+        if (name.trim() == '' || name.indexOf("'") != -1) {
+          return
+        }
+        clearInterval(timer)
+        timer = setTimeout(() => {
+          getMenber(name).then((res) => {
+            if (res.data.message == 'ok') {
+              this.menberList = res.data.userList
+            }
+          })
+        }, 300)
+      },
       getTeacher() {
         let {token} = this.userInfo
-        getTeacherList(token).then((res) => {
+        getTeacherList(token,this.page,this.pageSize).then((res) => {
           var teachers = res.data.teachers
-          this.myChoice = res.data.myChoice.map((item)=>{return item.uid})
+          this.total =  res.data.count
+          this.myChoice = res.data.myChoice.map((item) => { return item.tid })
+          let haveSelected =  this.originSelect.map((item) => { return item.u_id })
+          
           teachers.forEach((item) => {
-            item.leftPeople = item.people - item.haveChoice
+            let leftPeople = item.people - item.haveChoice
+            item.leftPeople = leftPeople
+            this.myChoice.indexOf(item.u_id) != -1 || haveSelected.indexOf(item.u_id)!= -1  ? item._checked = true : item._checked = false
+            this.myChoice.length > 0 || leftPeople==0 ? item._disabled = true : item._disabled = false
           })
           this.tableData = teachers
         })
@@ -169,28 +383,112 @@
       },
       choiceThisTeacher() {
         let token = this.userInfo.token
-        let sid = this.info.id
-        let {phone, workType} = this.form
-        choiceTeacher(token, sid, phone, workType).then((res) => {
-          let message = res.message
-          this.modal1 = false
-          if (message == "ok") {
+        let tid = this.haveSelect.map((selectItem) => {
+          return selectItem.u_id
+        })
+        let {menber_id, teamMan, menber_phone, menber_qq, menber_woker} = this.menber
+        let {phone, qq, workType, team} = this.form
+        if (team == 1) {
+          if (this.uploadList.length <= 0) {
+            this.$Notice.warning({
+              title: "请上传组对申请表"
+            })
+            return
+          }
+          if (this.uploadList.length <= 0) {
+            this.$Notice.warning({
+              title: "请上传组对申请表"
+            })
+            return
+          }
+          if (!menber_phone || menber_phone.length != 11) {
+            this.$Notice.warning({
+              title: "请输入成员电话号码"
+            })
+            return
+          }
 
-            this.$Message.success('已经提交意向!');
-          } else if (message == "haveChoice") {
+          if (!menber_qq || menber_qq.length < 5 || menber_qq.length < 10) {
+            this.$Notice.warning({
+              title: "请输入正确的qq号码"
+            })
+            return
+          }
+        }
+         let file = this.uploadList.length>0?this.uploadList[0].url:''
+        if (tid.length != 3) {
+          this.$Notice.warning({
+            title: "请选择3名意向导师！"
+          })
+          return
+        }
 
-            this.$Message.info('您已经向该教师提交意向，教师正在审核中!');
-          } else if (message == "allChoice") {
-            this.$Message.error('您已经选择2位意向导师，每人最多只能选择2个意向导师哦!');
+        this.$refs['content'].validate((validate) => {
+          if (validate) {
+            choiceTeacher(token, tid, menber_id, phone, qq, workType, menber_phone, menber_qq, menber_woker, team, file).then((res) => {
+              let message = res.data.message
+              this.modal1 = false
+              if (message == "ok") {
+                this.$Message.success('已经提交意向!');
+                this.getTeacher()
+              } else if (message == "haveChoice") {
+                this.$Message.info('您已经向该教师提交意向，教师正在审核中!');
+              } else if (message == "allChoice") {
+                this.$Message.error('您已经选择3位意向导师，每人最多只能选择3个意向导师哦!');
 
+              } else if (message == "menberChoice") {
+                this.$Message.error('只有组长才有权限选择导师哦!');
+
+              }
+            })
           }
         })
-      }
+
+      },
+      handleMaxSize(file) {
+        this.$Notice.warning({
+          title: "文件超过大小限制",
+          desc: "文件大小不能查过20M！"
+        });
+      },
+      handleSuccess(res, file) {
+        var file = "https://" + res.data.url
+        this.uploadList.push({ url: file, status: "finished" })
+      },
     }
   };
 
 </script>
 
 <style>
-
+  .menber_list {
+    position: relative;
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+  
+  .tag_list {
+    position: relative;
+    margin: 10px 0;
+  }
+  
+  .choice_btn {
+    position: fixed;
+    width: 320px;
+    text-align: center;
+    left: 50%;
+    bottom: 80px;
+    transform: translateX(-20px);
+    margin: 0 auto;
+  }
+  
+  .choice_tip {
+    position: relative;
+    margin-top: 10px;
+  }
+  .page_container{
+      position: absolute;
+      right: 20px;
+      margin-top: 30px;
+  }
 </style>

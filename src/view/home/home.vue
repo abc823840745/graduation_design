@@ -57,12 +57,7 @@
                 on: {
                   click: () => {
                     let lessonItem = this.lesson[params.index].monday
-                    this.$router.push({
-                      path: "/student/homework/my-homework",
-                      query: {
-                        lessonItem
-                      }
-                    })
+                    this.goToCource(lessonItem)
                   }
                 }
               },
@@ -80,13 +75,8 @@
                 },
                 on: {
                   click: () => {
-                   let lessonItem = this.lesson[params.index].tuesday
-                    this.$router.push({
-                      path: "/student/homework/my-homework",
-                      query: {
-                        lessonItem
-                      }
-                    })
+                    let lessonItem = this.lesson[params.index].tuesday
+                    this.goToCource(lessonItem)
                   }
                 }
               },
@@ -103,13 +93,8 @@
                 },
                 on: {
                   click: () => {
-                   let lessonItem = this.lesson[params.index].wednesday
-                    this.$router.push({
-                      path: "/student/homework/my-homework",
-                      query: {
-                        lessonItem
-                      }
-                    })
+                    let lessonItem = this.lesson[params.index].wednesday
+                    this.goToCource(lessonItem)
                   }
                 }
               },
@@ -126,13 +111,8 @@
                 },
                 on: {
                   click: () => {
-                     let lessonItem = this.lesson[params.index].thursday
-                    this.$router.push({
-                      path: "/student/homework/my-homework",
-                      query: {
-                        lessonItem
-                      }
-                    })
+                    let lessonItem = this.lesson[params.index].thursday
+                    this.goToCource(lessonItem)
                   }
                 }
               },
@@ -152,12 +132,7 @@
                 on: {
                   click: () => {
                     let lessonItem = this.lesson[params.index].friday
-                    this.$router.push({
-                      path: "/student/homework/my-homework",
-                      query: {
-                        lessonItem
-                      }
-                    })
+                    this.goToCource(lessonItem)
                   }
                 }
               },
@@ -195,19 +170,43 @@
     mounted() {
       this.getUserAccess()
       this.getNewMessage()
-      let lesson = this.$store.state.user.lesson.split("&nbsp;")
-      this.formatLesson(lesson)
+      if (this.$store.state.user.lesson) {
+        let lesson = this.$store.state.user.lesson.split("&nbsp;")
+        this.formatLesson(lesson)
+      }
+
 
     },
     methods: {
     ...mapActions([
       'getAccess'
     ]),
+      goToCource(cource) {
+        let code = cource.substr(cource.indexOf('(') + 1, 3)
+        let lesson = cource.substring(0, cource.indexOf('('))
+        let dataDetail = cource.substr(cource.indexOf('(') + 4).split(' ')
+        let name = dataDetail[1]
+        let week = ''
+        for (let i = 2; i < dataDetail.length - 1; i++) {
+          week += dataDetail[i]
+        }
+        let room = dataDetail[dataDetail.length - 1].substring(0, dataDetail[dataDetail.length - 1].indexOf(')'))
+        this.$router.push({
+          path: "/student/homework/my-homework",
+          query: {            
+             data: JSON.stringify({
+              name,
+              room,
+              week,
+              lesson
+            })
+          }
+        })
+      },
       formatLesson(lesson) {
         let lessonContainer = []
         let flag = false
         lesson.forEach((item => {
-
           if (lessonContainer.length != 0 && item.indexOf('节') != -1) {
 
             this.lesson.push({
@@ -231,7 +230,7 @@
           }
 
         }))
-       
+
       },
       getNewMessage() {
         let uid = this.$store.state.user.token

@@ -10,7 +10,7 @@
                     </div>
                     <div class="overview">
                         <div class="desc">
-                            <span class="text">{{teacher.name}}</span>
+                            <span class="text">{{teacher.username}}</span>
                         </div>
                         <div class="remark">
                             <div class="block">
@@ -21,7 +21,7 @@
                             </div>
                             <div class="block">
                                 <div class="content">
-                                    <span class="stress">{{teacher.contact}}</span>
+                                    <span class="stress">{{teacher.phone}}</span>
                                 </div>
                                 <span>联系方式</span>
                             </div>
@@ -51,14 +51,14 @@
             </div>
         </div>
         <div class="title-top">以下学生已经选择该导师</div>
-        <Table border :columns="columns" :data="tableData" size="large" no-data-text="暂时未到开题时间"></Table>
+        <Table border :columns="columns" :data="tableData" size="large" no-data-text="暂时还没有学生选择该导师"></Table>
     </div>
 </template>
 
 <script>
-  import { getDate } from '@/libs/tools'
+    import { getDate } from '@/libs/tools'
     import { haveChoiceStudent } from '@/api/teacher'
-   
+
     export default {
         name: "teacher_detail",
         data() {
@@ -75,19 +75,19 @@
                     {
                         title: '学号',
                         key: 'stu_number',
-                        width: 200,
+                        width: 280,
                         align: 'center'
                     },
                     {
                         title: '姓名',
                         key: 'username',
-                        width: 200,
+                        width: 280,
                         align: 'center'
                     },
                     {
                         title: '年级',
                         key: 'class',
-                        width: 200,
+                        width: 280,
                         align: 'center'
                     },
                     {
@@ -97,15 +97,8 @@
                         align: 'center'
                     },
                     {
-                        title: '联系方式',
-                        key: 'phone',
-                        width: 243,
-                        align: 'center'
-                    },
-                    {
-                        title: "状态",
+                        title: "身份",
                         key: "action",
-                       
                         align: "center",
                         render: (h, params) => {
                             return h("div", [
@@ -116,6 +109,25 @@
                                             marginRight: "1px"
                                         }
                                     },
+                                    this.tableData[params.index].is_team == 0 ? '个人组队' : this.tableData[params.index].leader == this.tableData[params.index].u_id ? '组长' : '成员'
+                                )
+                            ]);
+                        }
+                    },
+                    {
+                        title: "状态",
+                        key: "action",
+                        align: "center",
+                        render: (h, params) => {
+                            return h("div", [
+                                h(
+                                    "span",
+                                    {
+                                        style: {
+                                            marginRight: "1px",
+
+                                        }
+                                    },
                                     this.tableData[params.index].status == 0 ? '审核中' : '已选择'
                                 )
                             ]);
@@ -124,20 +136,19 @@
                 ]
             };
         },
-        created() {
+        mounted() {
             var info = this.$route.query.info
             this.$nextTick(() => {
                 this.loading = false;
                 this.teacher = JSON.parse(info)
-                this.getChoiceStudent(this.teacher.id)
+                this.getChoiceStudent(this.teacher.u_id)
             })
 
         },
         methods: {
-
             getChoiceStudent(id) {
                 haveChoiceStudent(id).then((res) => {
-                    this.tableData = res.student
+                    this.tableData = res.data.student
                 })
             },
             handleClick() {
@@ -150,27 +161,28 @@
     };
 
 </script>
-<style  scoped>
+<style scoped>
     .el-row {
         margin-bottom: 20px;
-        
     }
+    
     .el-row:last-child {
-            margin-bottom: 0;
-        }
+        margin-bottom: 0;
+    }
+    
     .tab-container {
         position: relative;
         width: 70%;
         margin: 60px auto;
     }
-    .detail-container{
+    
+    .detail-container {
         position: relative;
-      
-         margin-bottom: 80px;
+        margin-bottom: 80px;
     }
+    
     .detail {
         position: relative;
-       
         min-height: 450px;
         left: 0;
         -webkit-transition: all 0.3s ease;
@@ -189,7 +201,6 @@
     
     .bg-img {
         position: absolute;
-       
         z-index: 0;
         width: 100%;
         height: 550px;

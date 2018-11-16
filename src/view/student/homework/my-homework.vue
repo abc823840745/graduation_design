@@ -1,26 +1,26 @@
 <style lang="less">
- 
+
 </style>
 <template>
   <div>
   </div>
 </template>
 <script>
+  export default {
+    name: 'my-homework',
+    data() {
+      return {
+      }
+    },
+    methods: {
 
-export default {
-  name: 'my-homework',
-  data () {
-    return {
+    },
+    created() {
+      console.log(JSON.parse(this.$route.query.data))
+    },
+    mounted() {
+
     }
-  },
-  methods: {
-
-  },
-  created () {
-
-  },
-  mounted () {
-
   }
-}
+
 </script>

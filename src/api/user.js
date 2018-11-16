@@ -26,13 +26,15 @@ export const unlock = ({ token, username, password }) => {
 }
 
 
-export const getUserInfo = (token) => {
+export const getUserInfo = (token,role) => {
+   const data =  {
+      token,
+      role
+    }
   return axios.request({
     url: '/user/info',
-    params: {
-      token
-    },
-    method: 'get'
+    data,
+    method: 'post'
   })
 }
 

@@ -15,10 +15,13 @@ export default {
     hasGetInfo: false
   },
   mutations: {
+    setRole(state, role) {
+      state.role = role
+    },
     setPhone(state, phone) {
       state.phone = phone
     },
-     setLesson(state, lesson) {
+    setLesson(state, lesson) {
       state.lesson = lesson
     },
     setTeamId(state, team_id) {
@@ -58,6 +61,7 @@ export default {
         }).then(res => {
           const data = res.data
           commit('setToken', data.token)
+          commit('setRole', data.role)
           resolve(data.token)
         }).catch(err => {
           reject(err)
@@ -75,6 +79,7 @@ export default {
         logout(state.token).then(() => {
           commit('setToken', '')
           commit('setAccess', [])
+          commit('setRole', '')
           resolve()
         }).catch(err => {
           reject(err)
@@ -89,12 +94,12 @@ export default {
     getUserInfo({ state, commit }) {
       return new Promise((resolve, reject) => {
         try {
-          getUserInfo(state.token).then(res => {
+          getUserInfo(state.token, state.role).then(res => {
             if (res.data.message == 'ok') {
               const data = res.data
               commit('setTeamId', data.team_id)
               commit('setLesson', data.lesson)
-               commit('setPhone', data.phone)
+              commit('setPhone', data.phone)
               commit('setAvator', data.avator)
               commit('setUserName', data.name)
               commit('setStuNumber', data.stu_number)
