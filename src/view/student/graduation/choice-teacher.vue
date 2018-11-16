@@ -408,7 +408,7 @@
             return
           }
 
-          if (!menber_qq || menber_qq.length < 5 || menber_qq.length < 10) {
+          if (!menber_qq || menber_qq.length < 5 || menber_qq.length > 10) {
             this.$Notice.warning({
               title: "请输入正确的qq号码"
             })
