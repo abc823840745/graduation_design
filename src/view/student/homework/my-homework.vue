@@ -16,7 +16,8 @@
 
     },
     created() {
-      console.log(JSON.parse(this.$route.query.data))
+      let data = JSON.parse(this.$route.query.data)
+      console.log(data.lesson)
     },
     mounted() {
 

@@ -210,30 +210,36 @@
           'getAccess'
         ]),
       goToCource(cource) {
-        let code = cource.substr(cource.indexOf('(') + 1, 3)
-        let lesson = cource.substring(0, cource.indexOf('('))
-        let dataDetail = cource.substr(cource.indexOf('(') + 4).split(' ')
-        let name = dataDetail[1]
-        let week = ''
-        for (let i = 2; i < dataDetail.length - 1; i++) {
-          week += dataDetail[i]
-        }
-        let room = dataDetail[dataDetail.length - 1].substring(0, dataDetail[dataDetail.length - 1].indexOf(')'))
+        let newCource = cource.split(",")
+        let courceArr = []
+        newCource.forEach((cource) => {
+          let code = cource.substr(cource.indexOf('(') + 1, 3)
+          let lesson = cource.substring(0, cource.indexOf('('))
+          let dataDetail = cource.substr(cource.indexOf('(') + 4).split(' ')
+          let name = dataDetail[1]
+          let week = ''
+          for (let i = 2; i < dataDetail.length - 1; i++) {
+            week += dataDetail[i]
+          }
+          let room = dataDetail[dataDetail.length - 1].substring(0, dataDetail[dataDetail.length - 1].indexOf(')'))
+          courceArr.push({
+            code,
+            name,
+            room,
+            week,
+            lesson
+          })
+        })
         this.$router.push({
           path: "/student/homework/my-homework",
           query: {
-            data: JSON.stringify({
-              name,
-              room,
-              week,
-              lesson
-            })
+            data: JSON.stringify({ lesson: courceArr })
           }
         })
       },
       formatLesson() {
         let lessonContainer = []
-        this.lesson =[]
+        this.lesson = []
         let flag = false
         this.lessonText.forEach((item => {
           if (lessonContainer.length != 0 && item.indexOf('节') != -1) {
@@ -277,7 +283,7 @@
         this.$refs['formValidate'].validate((validate) => {
           let {name, password} = this.form
           if (validate) {
-       
+
             refreshCourse(name, password).then((res) => {
               if (res.data.message == 'ok') {
                 this.$store.dispatch('setLesson', this.lessonText)
