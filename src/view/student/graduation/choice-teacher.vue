@@ -39,7 +39,7 @@
           <Poptip trigger="focus">
             <Input v-model="form.teamMan" search placeholder="请输入成员姓名"></Input>
             <div slot="content" v-if="menberList.length>0">
-              <div @click="choiceMenber(index)" class="menber_list" v-for="(item,index) in menberList">{{ item.username}}--{{item.stu_number}}</div>
+              <div @click="choiceMenber(index)" class="menber_list" v-for="(item,index) in menberList">{{ item.username}}--{{item.stu_number}}{{item.team_id?'--已组队':''}}</div>
             </div>
           </Poptip>
           <div class="tag_list">
@@ -52,6 +52,9 @@
           </FormItem>
           <FormItem v-if="form.team=='1'&&menber.menber_id" prop="menber_qq" label="成员QQ">
             <Input v-model="menber.menber_qq" placeholder="请输入QQ号码"></Input>
+          </FormItem>
+           <FormItem v-if="form.team=='1'&&menber.menber_id" prop="menber_ps" label="成员密码">
+            <Input v-model="menber.menber_ps" type="password" placeholder="请输入成员登陆密码"></Input>
           </FormItem>
           <FormItem v-if="form.team=='1'&&menber.menber_id" label="负责内容">
             <Select v-model="menber.menber_woker">
@@ -85,6 +88,7 @@
     name: "choice-teacher",
     data() {
       return {
+        guide_teacher: '',
         page: 1,
         total: 21,
         pageSize: 10,
@@ -98,7 +102,8 @@
           teamMan: '',
           menber_phone: '',
           menber_qq: '',
-          menber_woker: '前端'
+          menber_woker: '前端',
+          menber_ps: '',
         },
         menberList: [],
         myChoice: [],
@@ -217,7 +222,7 @@
                   "Button",
                   {
                     props: {
-                      type: this.myChoice.indexOf(this.tableData[params.index].u_id) != -1 ? "warning" : "default"
+                      type: this.myChoice.indexOf(this.tableData[params.index].u_id) == -1 ? "default" : !this.guide_teacher? 'warning': this.tableData[params.index].u_id == this.guide_teacher?'success':'error'
 
                     },
                     style: {
@@ -228,7 +233,7 @@
                       }
                     }
                   },
-                  this.myChoice.indexOf(this.tableData[params.index].u_id) != -1 ? "已经提交申请" : '未选择该导师'
+                  this.myChoice.indexOf(this.tableData[params.index].u_id) == -1 ? "未选择" : !this.guide_teacher? '审核中': this.tableData[params.index].u_id == this.guide_teacher?'审核已通过':'审核未通过'
                 )
               ]);
             }
@@ -275,6 +280,9 @@
           ],
           menber_qq: [
             { required: true, message: '请输入有效的qq号码', trigger: 'blur', type: 'string', pattern: /^[0-9]{5,10}$/ }
+          ],
+          menber_ps: [
+            { required: true, message: '请输入有效的登陆密码', trigger: 'blur', type: 'string', pattern: /^[0-9]{14}$/ }
           ]
         }
       }
@@ -283,6 +291,7 @@
       this.$nextTick(() => {
         this.userInfo = this.$store.state.user
         this.getTeacher()
+
       })
 
     },
@@ -338,6 +347,9 @@
         this.menber.teamMan = ''
       },
       choiceMenber(index) {
+        if(this.menberList[index].team_id){
+             return
+        }
         let {username, u_id} = this.menberList[index]
         this.menber.menber_id = u_id
         this.menber.teamMan = username
@@ -363,6 +375,7 @@
         getTeacherList(token,this.page,this.pageSize).then((res) => {
           var teachers = res.data.teachers
           this.total =  res.data.count
+          this.guide_teacher  =  res.data.guide_teacher 
           this.myChoice = res.data.myChoice.map((item) => { return item.tid })
           let haveSelected =  this.originSelect.map((item) => { return item.u_id })
           
@@ -386,7 +399,7 @@
         let tid = this.haveSelect.map((selectItem) => {
           return selectItem.u_id
         })
-        let {menber_id, teamMan, menber_phone, menber_qq, menber_woker} = this.menber
+        let {menber_id, teamMan, menber_phone, menber_qq, menber_woker,menber_ps} = this.menber
         let {phone, qq, workType, team} = this.form
         if (team == 1) {
           if (this.uploadList.length <= 0) {
@@ -401,16 +414,22 @@
             })
             return
           }
-          if (!menber_phone || menber_phone.length != 11) {
+          if (/^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0,5-9]))\d{8}$/.test(menber_phone)) {
             this.$Notice.warning({
               title: "请输入成员电话号码"
             })
             return
           }
 
-          if (!menber_qq || menber_qq.length < 5 || menber_qq.length > 10) {
+          if ( /^[0-9]{5,10}$/.test(menber_qq.length)) {
             this.$Notice.warning({
               title: "请输入正确的qq号码"
+            })
+            return
+          }
+           if (!/^[0-9]{14}$/.test(menber_ps)) {
+            this.$Notice.warning({
+              title: "请输入正确的成员登陆号码"
             })
             return
           }
@@ -425,7 +444,7 @@
 
         this.$refs['content'].validate((validate) => {
           if (validate) {
-            choiceTeacher(token, tid, menber_id, phone, qq, workType, menber_phone, menber_qq, menber_woker, team, file).then((res) => {
+            choiceTeacher(token, tid, menber_id, phone, qq, workType, menber_phone, menber_qq, menber_woker,menber_ps, team, file).then((res) => {
               let message = res.data.message
               this.modal1 = false
               if (message == "ok") {
@@ -433,8 +452,8 @@
                 this.getTeacher()
               } else if (message == "haveChoice") {
                 this.$Message.info('您已经向该教师提交意向，教师正在审核中!');
-              } else if (message == "allChoice") {
-                this.$Message.error('您已经选择3位意向导师，每人最多只能选择3个意向导师哦!');
+              } else if (message == "psError") {
+                this.$Message.error('成员登陆密码错误或成员不存在!');
 
               } else if (message == "menberChoice") {
                 this.$Message.error('只有组长才有权限选择导师哦!');
