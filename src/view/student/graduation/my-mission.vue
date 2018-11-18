@@ -8,16 +8,18 @@
       <p class="content_title">{{contentInfo.title}}</p>
       <div v-html="contentInfo.content"></div>
     </Modal>
-    <Modal v-model="ok_modal" title="确认已完成该任务">
-      <Upload type="drag" :max-size="20480" :format="['doc']" :action="uploadUrl" :on-exceeded-size="handleMaxSize" :on-success="handleSuccess">
+    <Modal v-model="ok_modal" title="确认已完成该任务？">
+      <Upload v-if=" this.mission.upload==1" type="drag" :max-size="20480" :format="['doc']" :action="uploadUrl" :on-exceeded-size="handleMaxSize"
+        :on-success="handleSuccess">
         <div style="padding: 20px 0">
           <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
           <p>按照该任务需求上传相应附件！</p>
         </div>
-      </Upload>
-      <div slot="footer">
-      <Button @click="completeMission" type="primary">确认</Button>
-      </div>
+        </Upload>
+       
+        <div slot="footer">
+          <Button @click="completeMission" type="primary">确认</Button>
+        </div>
     </Modal>
   </div>
 </template>
@@ -134,12 +136,13 @@
                       click: () => {
                         if (this.myChoice.indexOf(this.tableData[params.index].id) == -1) {
                           this.ok_modal = true
+
                           this.mission = this.tableData[params.index]
                         }
                       }
                     }
                   },
-                  this.tableData[params.index].upload == 1 && this.myChoice.indexOf(this.tableData[params.index].id) == -1 ? '上传附件' : this.myChoice.indexOf(this.tableData[params.index].id) != -1 ? '任务已完成' : '确认完成'
+                  this.tableData[params.index].upload == 1 && this.myChoice.indexOf(this.tableData[params.index].id) == -1 ? '上传附件' : this.myChoice.indexOf(this.tableData[params.index].id) != -1 ? '任务已完成' : '去完成'
                 )
               ]);
             }
@@ -164,6 +167,7 @@
           }
           file = this.uploadList[0].url
         }
+        console.log(upload, id, token, file)
         completeMission(id, token, file).then((res) => {
           if (res.data.message == 'ok') {
             this.$Notice.success({
