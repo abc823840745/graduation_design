@@ -15,7 +15,9 @@
           <p>按照该任务需求上传相应附件！</p>
         </div>
       </Upload>
+      <div slot="footer">
       <Button @click="completeMission" type="primary">确认</Button>
+      </div>
     </Modal>
   </div>
 </template>
@@ -59,7 +61,7 @@
             align: 'center'
           },
           {
-            title: "是否有附件",
+            title: "附件信息",
             key: "download",
             width: 200,
             align: "center",

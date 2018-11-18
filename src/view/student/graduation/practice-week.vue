@@ -226,7 +226,7 @@
                       }
                     }
                   },
-                  this.missionReport[params.index].status == 2 ? '查看详情' : '待完成'
+                  this.missionReport[params.index].status == 2||this.missionReport[params.index].status == 1 ? '查看详情' : '待完成'
                 )
               ]);
             }
