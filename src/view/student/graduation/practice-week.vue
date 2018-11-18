@@ -15,9 +15,9 @@
         </div>
       </TabPane>
     </Tabs>
-    <Modal v-model="content_modal" title="周报详情" @on-ok="ok">
+    <Modal v-model="content_modal"  width="1000px" title="周报详情" @on-ok="ok">
       <p class="content_title">{{contentInfo.title}}</p>
-      <div style="width:500px;" v-html="contentInfo.content"></div>
+      <div style="width:996px;" v-html="contentInfo.content"></div>
     </Modal>
   </div>
 </template>

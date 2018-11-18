@@ -4,9 +4,9 @@
     <div class="page_container">
       <Page :total="totalSize" :page-size="size" @on-change="changePage" />
     </div>
-    <Modal v-model="content_modal" title="任务详情">
+    <Modal v-model="content_modal" width="1000px" title="任务详情">
       <p class="content_title">{{contentInfo.title}}</p>
-      <div style="width:500px;" v-html="contentInfo.content"></div>
+      <div style="width:996px;" v-html="contentInfo.content"></div>
     </Modal>
     <Modal v-model="ok_modal" title="确认已完成该任务？">
       <Upload v-if=" this.mission.upload==1" type="drag" :max-size="20480" :format="['doc']" :action="uploadUrl" :on-exceeded-size="handleMaxSize"
