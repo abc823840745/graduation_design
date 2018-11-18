@@ -2,6 +2,7 @@ import { login, logout, getUserInfo } from '@/api/user'
 import { setToken, getToken } from '@/libs/util'
 export default {
   state: {
+    year: '',
     major: '',
     phone: '',
     lesson: '',
@@ -18,6 +19,9 @@ export default {
   mutations: {
     setTeamMajor(state, major) {
       state.major = major
+    },
+    setYear(state, year) {
+      state.year = year
     },
     setRole(state, role) {
       state.role = role
@@ -102,6 +106,7 @@ export default {
             if (res.data.message == 'ok') {
               const data = res.data
               commit('setTeamId', data.team_id)
+              commit('setYear', data.class)
               commit('setTeamMajor', data.major)
               commit('setLesson', data.lesson)
               commit('setPhone', data.phone)

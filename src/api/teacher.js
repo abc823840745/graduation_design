@@ -66,15 +66,64 @@ export const choiceGraduationWork = (u_id, cid) => {
 
 
 
-export const addGraduationWork = (uid,major, tid,username, title, description,time) => {
+export const addGraduationWork = (uid, major, tid, username, title, description, time) => {
   return axios.request({
     url: '/add/graduation/work',
     method: 'post',
     data: {
-     uid, major, tid,username, title, description,time
+      uid, major, tid, username, title, description, time
     }
   })
 }
 
 
+export const getStart = (type, year, token) => {
+  return axios.request({
+    url: '/get/mission/start',
+    method: 'post',
+    data: {
+      type, year, token
+    }
+  })
+}
 
+
+export const submitWeekReport = (token, time, week, status, content, save, more_time, type) => {
+  return axios.request({
+    url: '/submit/week/report',
+    method: 'post',
+    data: {
+      token, time, week, status, content, save, more_time, type
+    }
+  })
+}
+
+export const getOldReport = (token) => {
+  return axios.request({
+    url: '/get/old/report',
+    method: 'post',
+    data: {
+      token
+    }
+  })
+}
+
+export const getMyMission = (token, page, size) => {
+  return axios.request({
+    url: '/get/my/mission',
+    method: 'post',
+    data: {
+      token, page, size
+    }
+  })
+}
+
+export const completeMission = (id, token, file) => {
+  return axios.request({
+    url: '/complete/my/mission',
+    method: 'post',
+    data: {
+      id, token, file
+    }
+  })
+}
