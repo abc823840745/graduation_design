@@ -292,14 +292,14 @@
                   "Button",
                   {
                     props: {
-                      type: this.weekReport[params.index].status == 2||this.missionReport[params.index].status == 1  ? "primary" : 'warning'
+                      type: this.weekReport[params.index].status == 2||this.weekReport[params.index].status == 1  ? "primary" : 'warning'
                     },
                     style: {
                       marginRight: "10px"
                     },
                     on: {
                       click: () => {
-                        if (this.weekReport[params.index].status == 2 ||this.missionReport[params.index].status == 1) {
+                        if (this.weekReport[params.index].status == 2 ||this.weekReport[params.index].status == 1) {
                           let {week, content} = this.weekReport[params.index]
                           let title = '第' + week + '周'
                           this.seeDetail(title, content);
@@ -308,7 +308,7 @@
                       }
                     }
                   },
-                  this.missionReport[params.index].status == 2 ||this.missionReport[params.index].status == 1 ? '查看详情' : '待完成'
+                  this.weekReport[params.index].status == 2 ||this.weekReport[params.index].status == 1 ? '查看详情' : '待完成'
                 )
               ]);
             }
