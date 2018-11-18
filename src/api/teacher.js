@@ -63,12 +63,15 @@ export const choiceGraduationWork = (u_id, cid) => {
   })
 }
 
-export const addGraduationWork = (uid,major, tid, title, description,time) => {
+
+
+
+export const addGraduationWork = (uid,major, tid,username, title, description,time) => {
   return axios.request({
     url: '/add/graduation/work',
     method: 'post',
     data: {
-     uid, major, tid, title, description,time
+     uid, major, tid,username, title, description,time
     }
   })
 }
