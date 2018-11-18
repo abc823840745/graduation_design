@@ -17,7 +17,7 @@
     </Tabs>
     <Modal v-model="content_modal" title="周报详情" @on-ok="ok">
       <p class="content_title">{{contentInfo.title}}</p>
-      <div v-html="contentInfo.content"></div>
+      <div style="width:500px;" v-html="contentInfo.content"></div>
     </Modal>
   </div>
 </template>
