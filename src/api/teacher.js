@@ -127,3 +127,23 @@ export const completeMission = (id, token, file) => {
     }
   })
 }
+
+export const submitPapper = (tid, uid, time, file) => {
+  return axios.request({
+    url: '/submit/my/papper',
+    method: 'post',
+    data: {
+      tid, uid, time, file
+    }
+  })
+}
+
+export const getOldPapper = (uid, size, page, year) => {
+  return axios.request({
+    url: '/get/my/papper',
+    method: 'post',
+    data: {
+      uid, size, page, year
+    }
+  })
+}

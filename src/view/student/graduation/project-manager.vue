@@ -112,7 +112,7 @@
   .img-container {
     position: relative;
     width: 290px;
-    height: 200px;
+    height: 210px;
   }
   
   .title-wrapper {
