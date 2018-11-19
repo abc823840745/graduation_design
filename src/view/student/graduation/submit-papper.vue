@@ -3,7 +3,7 @@
 
     <Table border :columns="columns" :data="tableData" size="large" no-data-text="暂时还没有上传过论文"></Table>
     <div class="btn_container">
-      <Button disabled="!flag" type="success" @click="ok_modal=true">点击上传新论文</Button>
+      <Button :disabled="!flag" type="success" @click="ok_modal=true">点击上传新论文</Button>
     </div>
     <div class="page_container">
       <Page :total="totalSize" :page-size="size" @on-change="changePage" />
