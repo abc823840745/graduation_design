@@ -48,6 +48,8 @@
                 </div>
             </div>
         </div>
+        <div class="title-top">该导师的课题</div>
+        <Table border :columns="courseColumns" :data="courseData" size="large" no-data-text="该导师暂时还没有课题"></Table>
         <div class="title-top">以下学生已经选择该导师</div>
         <Table border :columns="columns" :data="tableData" size="large" no-data-text="暂时还没有学生选择该导师"></Table>
     </div>
@@ -67,8 +69,39 @@
                 pageSize: 1,
                 tableData: [],
                 loading: true,
-                multipleSelection: [],
+                courseData: [],
                 currentPage: 1,
+                courseColumns: [
+                    {
+                        title: '序号',
+                        key: 'index',
+                        align: 'center',
+                        width:100,
+                        render: (h, params) => {
+                            return h("div", [
+                                h(
+                                    "span",
+                                    ++params.index
+                                )
+                            ]);
+                        }
+                    },
+
+                    {
+                        title: '选题',
+                        key: 'title',
+                        align: 'center'
+                    },
+                    {
+                        title: '课题方向',
+                        key: 'major',
+                         width:200,
+                        align: 'center'
+                    }, {
+                        title: '描述',
+                        key: 'content',
+                        align: 'center'
+                    }],
                 columns: [
                     {
                         title: '学号',
@@ -147,6 +180,7 @@
             getChoiceStudent(id) {
                 haveChoiceStudent(id).then((res) => {
                     this.tableData = res.data.student
+                    this.courseData = res.data.myCourse
                 })
             },
             handleClick() {
@@ -273,7 +307,6 @@
         font-size: 30px;
         text-align: center;
     }
-    
     
     .detail .detail-wrapper .detail-main .title .text {
         padding: 0 12px;
