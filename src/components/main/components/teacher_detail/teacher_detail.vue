@@ -1,6 +1,6 @@
 <template>
     <div class="detail-container">
-        <img class="bg-img" src="https://media.kaolaplay.com/grabg1.png" />
+        <img class="bg-img" src="https://media.kaolaplay.com/ggggggd.png" />
         <div class="detail open">
             <div class="detail-wrapper">
                 <div class="detail-main">
@@ -40,9 +40,7 @@
                         </div>
                     </div>
                     <div class="title">
-                        <div class="line"></div>
                         <div class="text">教师简介</div>
-                        <div class="line"></div>
                     </div>
                     <div class="bulletin">
                         <span class="content">{{teacher.description}}</span>
@@ -193,17 +191,16 @@
     
     .title-top {
         position: relative;
-        margin: 90px 0 30px 0;
-        font-size: 18px;
+        margin: 15px 0 20px 0;
+        font-size: 16px;
         font-weight: bold;
-        text-align: center;
     }
     
     .bg-img {
         position: absolute;
         z-index: 0;
         width: 100%;
-        height: 550px;
+        height: 450px;
     }
     
     .detail.open {
@@ -241,8 +238,7 @@
     
     .detail .detail-wrapper {
         position: relative;
-        padding: 30px;
-        color: white;
+        padding: 30px 320px;
     }
     
     .detail .detail-wrapper .detail-main {
@@ -266,54 +262,40 @@
     }
     
     .detail .detail-wrapper .detail-main .title {
-        display: flex;
-        width: 80%;
-        margin: 14px auto;
+        position: relative;
+        width: 100%;
+        text-align: center;
+        margin-bottom: 10px;
     }
     
     .detail .detail-wrapper .detail-main .title2 {
         position: relative;
-        color: white;
         font-size: 30px;
         text-align: center;
     }
     
-    .detail .detail-wrapper .detail-main .title .line {
-        flex: 1;
-        position: relative;
-        top: -6px;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-    }
-    
-    .detail .detail-wrapper .detail-main .star-wrap {
-        text-align: center;
-        margin-top: 18px;
-        padding: 2px 0;
-    }
     
     .detail .detail-wrapper .detail-main .title .text {
-        color: rgb(200, 200, 200);
         padding: 0 12px;
-        font-size: 20px;
-        font-weight: 700;
+        font-size: 16px;
         text-align: center;
     }
     
     .detail-main .overview {
         position: relative;
-        padding: 10px;
+        top: -20px;
+        padding-bottom: 10px;
     }
     
     .detail-main .overview .title {
         display: block;
         margin-bottom: 20px;
         line-height: 14px;
-        color: white;
         font-size: 34px;
     }
     
     .detail-main .overview .desc {
-        padding-bottom: 20px;
+        padding-bottom: 6px;
         position: relative;
         font-size: 0;
         text-align: center;
@@ -331,19 +313,12 @@
         transform: scaleY(0.5);
     }
     
-    .detail-main .overview .desc .star {
-        display: inline-block;
-        margin-right: 8px;
-        vertical-align: top;
-    }
-    
     .detail-main .overview .desc .text {
         display: inline-block;
         margin-right: 12px;
         line-height: 36px;
         vertical-align: top;
-        font-size: 18px;
-        color: white;
+        font-size: 16px;
     }
     
     .detail-main .overview .remark {
@@ -354,7 +329,6 @@
     .detail-main .overview .remark .block {
         flex: auto;
         text-align: center;
-        border-right: 1px solid rgba(7, 17, 27, 0.1);
     }
     
     .detail-main .overview .remark .block:last-child {
@@ -366,8 +340,8 @@
     }
     
     .detail-main .overview .remark .block .content .stress {
-        color: white;
-        font-size: 20px;
+        font-size: 18px;
+        color: black;
     }
     
     .detail-main .overview .remark .block span {
@@ -397,7 +371,6 @@
     .detail-main .overview .favorites .text {
         line-height: 10px;
         font-size: 10px;
-        color: white;
     }
     
     .detail-main .bulletin {
@@ -409,7 +382,6 @@
         position: relative;
         line-height: 26px;
         font-size: 16px;
-        color: white;
     }
     
     .seller-avatar {

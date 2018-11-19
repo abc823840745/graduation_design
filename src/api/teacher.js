@@ -15,9 +15,9 @@ export const getTeacherList = (token, page, size) => {
 export const haveChoiceStudent = (id) => {
   return axios.request({
     url: '/have/choice/student',
-    method: 'get',
-    params: {
-      id
+    method: 'post',
+    data: {
+      tid:id
     }
   })
 }
