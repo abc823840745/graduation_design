@@ -261,7 +261,9 @@
     
     .number {
         position: relative;
-        margin-right: 20px;
+        display: inline-block;
+        margin-right: 30px;
+        margin-left: 6px;
     }
     
     .good_table {
