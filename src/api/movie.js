@@ -1,5 +1,4 @@
-import fetch from '@/utils/fetch'
-
+import axios from '@/libs/api.request'
 
 
 export function getMovieList(type, offset, keyword) {
@@ -37,7 +36,7 @@ export function addComment(mid, uid, name, avatar, content, rateTime, parent_id,
     url: '/add/movie/comment',
     method: 'post',
     data: {
-     mid, uid, name, avatar, content, rateTime, parent_id, to_user_name, to_user_id
+      mid, uid, name, avatar, content, rateTime, parent_id, to_user_name, to_user_id
     }
   })
 }

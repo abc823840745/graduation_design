@@ -31,6 +31,15 @@ export default [
     },
     component: () => import('@/components/main/components/lockscreen/components/lockingPage.vue')
   },
+  {
+    path: '/movie/detail',
+    name: 'movie_detail',
+    meta: {
+      title: '优秀毕设详情',
+      hideInMenu: true
+    },
+    component: () => import('@/components/main/components/movie_detail/movie_detail.vue')
+  },
   //学生端路由
   {
     path: '/',
@@ -231,16 +240,6 @@ export default [
           access: ['student']
         },
         component: () => import('@/view/student/graduation/choice-course.vue')
-      },
-      {
-        path: 'project-report',
-        name: 'student-project-report',
-        meta: {
-          icon: 'md-basket',
-          title: '开题报告',
-          access: ['student']
-        },
-        component: () => import('@/view/student/graduation/project-report.vue')
       },
       {
         path: 'my-mission',

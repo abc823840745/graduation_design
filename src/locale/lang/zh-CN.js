@@ -22,7 +22,7 @@ export default {
   'student-project-report': '开题报告',
   'student-my-mission': '我的任务',
   'student-submit-papper': '提交论文',
-  'student-project-manager': '项目管理',
+  'student-project-manager': '优秀毕设',
   'student-practice-week': '实习周报',
 
   //教师路由中文名
@@ -45,6 +45,6 @@ export default {
   'teacher-project-report': '开题报告',
   'teacher-my-mission': '发布任务',
   'teacher-submit-papper': '查看论文',
-  'teacher-project-manager': '项目管理',
+  'teacher-project-manager': '优秀毕设',
   'teacher-practice-week': '查看实习周报',
 }
