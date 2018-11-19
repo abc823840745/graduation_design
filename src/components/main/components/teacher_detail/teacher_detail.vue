@@ -95,7 +95,7 @@
                     {
                         title: '课题方向',
                         key: 'major',
-                         width:200,
+                         width:295,
                         align: 'center'
                     }, {
                         title: '描述',
@@ -118,7 +118,7 @@
                     {
                         title: '年级',
                         key: 'class',
-                        width: 250,
+                        width: 220,
                         align: 'center'
                     },
                     {
