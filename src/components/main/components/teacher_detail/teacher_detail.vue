@@ -118,7 +118,7 @@
                     {
                         title: '年级',
                         key: 'class',
-                        width: 280,
+                        width: 250,
                         align: 'center'
                     },
                     {
