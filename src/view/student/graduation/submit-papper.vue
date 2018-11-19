@@ -3,7 +3,7 @@
 
     <Table border :columns="columns" :data="tableData" size="large" no-data-text="暂时还没有上传过论文"></Table>
     <div class="btn_container">
-      <Button type="success" @click="ok_modal=true">点击上传新论文</Button>
+      <Button disabled="!flag" type="success" @click="ok_modal=true">点击上传新论文</Button>
     </div>
     <div class="page_container">
       <Page :total="totalSize" :page-size="size" @on-change="changePage" />
@@ -35,6 +35,7 @@
     name: "submit-papper",
     data() {
       return {
+        flag: true,
         description: '',
         uploadUrl,
         MyChoice: [],
@@ -198,6 +199,7 @@
             this.totalSize = res.data.count
 
           } else if (res.data.message == 'noStart') {
+            this.flag = false
             this.$Notice.warning({
               title: '请先选择课题'
             })
