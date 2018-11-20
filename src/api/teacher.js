@@ -168,3 +168,25 @@ export const updateScore = (uid, type, week, score) => {
   })
 }
 
+
+export const getStudentCourse = (uid) => {
+  return axios.request({
+    url: '/get/student/course',
+    method: 'post',
+    data: {
+      uid
+    }
+  })
+}
+
+export const confirmStudentCourse = (id,uid) => {
+  return axios.request({
+    url: '/confirm/student/course',
+    method: 'post',
+    data: {
+      id,uid
+    }
+  })
+}
+
+

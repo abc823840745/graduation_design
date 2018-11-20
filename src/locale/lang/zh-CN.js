@@ -24,6 +24,8 @@ export default {
   'student-submit-papper': '提交论文',
   'student-project-manager': '优秀毕设',
   'student-practice-week': '实习周报',
+   'week_report': '查看学生实习周报',
+   'course_detail':'查看学生课题',
 
   //教师路由中文名
    //学生个人中心
