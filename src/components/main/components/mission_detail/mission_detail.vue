@@ -129,7 +129,7 @@
                                             }
                                         }
                                     },
-                                    this.myChoice.indexOf(this.tableData[params.index].id) != -1 ? '任务验收' : '完成中'
+                                    this.myChoice.indexOf(this.tableData[params.index].id) != -1 ? '任务验收' : '执行中'
                                 )
                             ]);
                         }

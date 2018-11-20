@@ -97,7 +97,7 @@
                         render: (h, params) => {
                             return h(this.tableData[params.index].download == 1 ? 'a' : "div", {
                                 domProps: {
-                                    href: this.tableData[params.index].tip,
+                                    href: this.tableData[params.index].file,
                                     download: "w3logo"
                                 },
                             },
