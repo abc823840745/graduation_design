@@ -1,12 +1,12 @@
 export default {
   //学生路由中文名
   'student-teacher-home': '首页',
-  'message':'消息公告',
-  'teacher_detail':'教师详情',
+  'message': '消息公告',
+  'teacher_detail': '教师详情',
   //学生个人中心
-  'student-personal':'个人中心',
-  'student-my-info':'我的资料',
-  'student-my-message':'我的私信',
+  'student-personal': '个人中心',
+  'student-my-info': '我的资料',
+  'student-my-message': '我的私信',
   //学生课程管理
   'student-course': '课程设计',
   'student-my-course': '我的课程',
@@ -24,14 +24,15 @@ export default {
   'student-submit-papper': '提交论文',
   'student-project-manager': '优秀毕设',
   'student-practice-week': '实习周报',
-   'week_report': '查看学生实习周报',
-   'course_detail':'查看学生课题',
-
+  'week_report': '查看学生实习周报',
+  'course_detail': '查看学生课题',
+  'mission_detail': '查看学生任务',
+  'papper_detail': '查看学生论文',
   //教师路由中文名
-   //学生个人中心
-  'teacher-personal':'个人中心',
-  'teacher-my-info':'我的资料',
-  'teacher-my-message':'我的私信',
+  //学生个人中心
+  'teacher-personal': '个人中心',
+  'teacher-my-info': '我的资料',
+  'teacher-my-message': '我的私信',
   //教师课程管理
   'teacher-course': '课程管理',
   'teacher-my-course': '我的课程',

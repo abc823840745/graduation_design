@@ -189,4 +189,23 @@ export const confirmStudentCourse = (id,uid) => {
   })
 }
 
+export const getStudentMission = ((token,tid, page, size) => {
+  return axios.request({
+    url: '/get/student/mission',
+    method: 'post',
+    data: {
+     token,tid, page, size
+    }
+  })
+})
 
+
+export const updatePapper = ((papper_id,content,status, time) => {
+  return axios.request({
+    url: '/update/student/papper',
+    method: 'post',
+    data: {
+    papper_id,content,status, time
+    }
+  })
+})

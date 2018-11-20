@@ -5,47 +5,9 @@
     <div class="container">
         <Tabs>
             <TabPane style="height:700px;" label="该学生选择的课题意向" icon="ios-book">
-                <Table border :columns="columns" @on-selection-change="getSelection" :data="tableData" size="large" no-data-text="该学生暂时没有选择的课题意向"></Table>
+                <Table border :columns="columns" :data="tableData" size="large" no-data-text="该学生暂时没有选择的课题意向"></Table>
             </TabPane>
         </Tabs>
-        <Modal v-model="modal1" width="1100">
-            <p slot="header" style="text-align:center">
-                <Icon type="ios-information-circle"></Icon>
-                <span>每人一共选择三个课题，你确认提交选择意向吗？</span>
-            </p>
-            <Table border :columns="choiceColumns" :data="haveSelect" size="large" no-data-text="暂时还没有选择课题"></Table>
-            <div slot="footer">
-                <Button type="primary" size="large" long @click="choiceGraduationWork">提交</Button>
-            </div>
-        </Modal>
-        <Modal v-model="addModal">
-            <p slot="header" style="text-align:center">
-                <Icon type="ios-information-circle"></Icon>
-                <span>确定要自主申报课题吗？</span>
-            </p>
-
-            <Form :model="form" ref="content" :label-width="80" :rules="ruleInline">
-                <FormItem v-if="teacherInfo.username" label=导师>
-                    <Input width="100px" disabled v-model="teacherInfo.username"></Input>
-                </FormItem>
-                <FormItem prop="description" label="课题方向">
-                    <Input width="100px" disabled v-model="userInfo.major"></Input>
-                </FormItem>
-                <FormItem prop="title" label="课题名称">
-                    <Input width="100px" v-model="form.title" placeholder="请输入课题名称"></Input>
-                </FormItem>
-                <FormItem prop="description" label="描述">
-                    <Input v-model="form.description" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入申报课题描述"></Input>
-                </FormItem>
-            </Form>
-            <div slot="footer">
-                <Button type="primary" size="large" long @click="addGraduationWork">确定</Button>
-            </div>
-        </Modal>
-        <div class="choice_btn">
-            <Button @click="submitSelect" :disabled="myChoice.length==3 || this.myTeacher.length == 0 || haveSelect.length==0" type="success">{{myChoice.length==3?'您已经提交全部选择意向，等待审核中...':'提交课题选择意向'}}</Button>
-            <p class="choice_tip">注意：每人/每组只能选择3个课题,可以自己申报或者选择教师课题，只有选择导师后才可以选择课题，请在规定时间内完成申报{{myChoice.length!=3&&myTeacher.length!=0?'，请点击课题列表左侧复选按钮进行选择':''}}！</p>
-        </div>
         <Modal v-model="content_modal" title="课题详情" @on-ok="ok">
             <p class="content_title">{{content.title}}</p>
             <div>{{content.text}}</div>
@@ -200,7 +162,7 @@
                                     {
                                         props: {
                                             type: "primary",
-                                            disabled:this.tableData.length!=3 ||flag
+                                            disabled:this.tableData.length!=3 || this.flag
                                         },
                                         style: {
                                             marginRight: "10px"
@@ -211,20 +173,12 @@
                                             }
                                         }
                                     },
-                                    this.tableData.length!=3 ||flag?'课题已经确认':"通过该课题"
+                                    this.tableData.length!=3 ||this.flag?'课题已经确认':"通过该课题"
                                 )
                             ]);
                         }
                     }
-                ],
-                ruleInline: {
-                    title: [
-                        { required: true, message: '课题名称不能少于四个字多余20个字', trigger: 'blur', type: 'string' }
-                    ],
-                    description: [
-                        { required: true, message: '课题描述不能少于十个字多余五十个字', trigger: 'blur', type: 'string' }
-                    ]
-                }
+                ]
             }
         },
         created() {

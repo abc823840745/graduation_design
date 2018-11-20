@@ -167,7 +167,6 @@
           }
           file = this.uploadList[0].url
         }
-        console.log(upload, id, token, file)
         completeMission(id, token, file).then((res) => {
           if (res.data.message == 'ok') {
             this.$Notice.success({
