@@ -138,7 +138,8 @@
                                     "Button",
                                     {
                                         props: {
-                                            type: 'primary'
+                                            type: 'primary',
+                                            disabled:this.tableData[params.index].status != 0
                                         },
                                         style: {
                                             marginRight: "10px"
@@ -175,7 +176,7 @@
                                             }
                                         }
                                     },
-                                    this.tableData[params.index].status == -1?"查看修改意见":"暂无意见"
+                                    this.tableData[params.index].status == -1?"查看意见":"暂无意见"
                                 )
                             ]);
                         }
