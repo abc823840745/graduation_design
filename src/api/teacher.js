@@ -17,17 +17,17 @@ export const haveChoiceStudent = (id) => {
     url: '/have/choice/student',
     method: 'post',
     data: {
-      tid:id
+      tid: id
     }
   })
 }
 
-export const choiceTeacher = (token, tid, menber_id, phone, qq, workType, menber_phone, menber_qq, menber_woker, menber_ps, team, file) => {
+export const choiceTeacher = (token, tid, menber_id, year, phone, qq, workType, menber_phone, menber_qq, menber_woker, menber_ps, team, file) => {
   return axios.request({
     url: '/choice/teacher',
     method: 'post',
     data: {
-      token, tid, menber_id, phone, qq, workType, menber_phone, menber_qq, menber_woker, menber_ps, team, file
+      token, tid, menber_id, year, phone, qq, workType, menber_phone, menber_qq, menber_woker, menber_ps, team, file
     }
   })
 }
@@ -147,3 +147,24 @@ export const getOldPapper = (uid, size, page, year) => {
     }
   })
 }
+
+export const getStudentList = (tid, year) => {
+  return axios.request({
+    url: '/get/student/list',
+    method: 'post',
+    data: {
+      tid, year
+    }
+  })
+}
+
+export const updateScore = (uid, type, week, score) => {
+  return axios.request({
+    url: '/update/report/score',
+    method: 'post',
+    data: {
+      uid, type, week, score
+    }
+  })
+}
+

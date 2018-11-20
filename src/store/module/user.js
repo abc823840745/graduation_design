@@ -1,7 +1,8 @@
 import { login, logout, getUserInfo } from '@/api/user'
-import { setToken, getToken } from '@/libs/util'
+import { setToken, setRole, getRole, getToken } from '@/libs/util'
 export default {
   state: {
+    choiceBegin: '',
     year: '',
     major: '',
     phone: '',
@@ -9,7 +10,7 @@ export default {
     team_id: 0,
     msgCount: 0,
     stu_nmuber: '',
-    role: 'student',
+    role: getRole(),
     userName: '',
     avatorImgPath: '',
     token: getToken(),
@@ -23,8 +24,12 @@ export default {
     setYear(state, year) {
       state.year = year
     },
+    setChoiceBegin(state, choiceBegin) {
+      state.choiceBegin = choiceBegin
+    },
     setRole(state, role) {
       state.role = role
+      setRole(role)
     },
     setPhone(state, phone) {
       state.phone = phone
@@ -102,6 +107,7 @@ export default {
     getUserInfo({ state, commit }) {
       return new Promise((resolve, reject) => {
         try {
+          console.log(state)
           getUserInfo(state.token, state.role).then(res => {
             if (res.data.message == 'ok') {
               const data = res.data
@@ -115,6 +121,7 @@ export default {
               commit('setStuNumber', data.stu_number)
               commit('setAccess', [data.access])
               commit('setHasGetInfo', true)
+              commit('setChoiceBegin', data.choiceBegin)
               resolve(data)
             } else {
               resolve('获取信息失败')

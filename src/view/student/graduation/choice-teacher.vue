@@ -396,6 +396,7 @@
       },
       choiceThisTeacher() {
         let token = this.userInfo.token
+        let year = this.userInfo.year
         let tid = this.haveSelect.map((selectItem) => {
           return selectItem.u_id
         })
@@ -444,7 +445,7 @@
 
         this.$refs['content'].validate((validate) => {
           if (validate) {
-            choiceTeacher(token, tid, menber_id, phone, qq, workType, menber_phone, menber_qq, menber_woker,menber_ps, team, file).then((res) => {
+            choiceTeacher(token, tid, menber_id,year, phone, qq, workType, menber_phone, menber_qq, menber_woker,menber_ps, team, file).then((res) => {
               let message = res.data.message
               this.modal1 = false
               if (message == "ok") {

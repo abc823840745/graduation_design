@@ -115,6 +115,66 @@ export default [
       }
     ]
   },
+    //查看周报详情
+  {
+    path: '/student_detail',
+    name: 'student_detail',
+    component: Main,
+    meta: {
+      title: '详情',
+      hideInMenu: true
+    },
+    children: [
+      {
+        path: 'week_report',
+        name: 'week_report',
+        meta: {
+          hideInMenu: true,
+          title: '周报详情',
+          notCache: true,
+          icon: 'md-home',
+          access: ['teacher']
+        },
+        component: () => import('@/components/main/components/week_report_detail/week_report_detail.vue')
+      },
+        {
+        path: 'course_detail',
+        name: 'course_detail',
+        meta: {
+          hideInMenu: true,
+          title: '课题详情',
+          notCache: true,
+          icon: 'md-home',
+          access: ['teacher']
+        },
+        component: () => import('@/components/main/components/course_detail/course_detail.vue')
+      },
+        {
+        path: 'mission_detail',
+        name: 'mission_detail',
+        meta: {
+          hideInMenu: true,
+          title: '任务详情',
+          notCache: true,
+          icon: 'md-home',
+          access: ['teacher']
+        },
+        component: () => import('@/components/main/components/mission_detail/mission_detail.vue')
+      },
+        {
+        path: 'papper_detail',
+        name: 'papper_detail',
+        meta: {
+          hideInMenu: true,
+          title: '论文详情',
+          notCache: true,
+          icon: 'md-home',
+          access: ['teacher']
+        },
+        component: () => import('@/components/main/components/papper_detail/papper_detail.vue')
+      }
+    ]
+  },
   {
     path: '/student/personal',
     name: 'student-personal',
@@ -427,16 +487,6 @@ export default [
         component: () => import('@/view/teacher/graduation/choice-teacher.vue')
       },
       {
-        path: 'choice-course',
-        name: 'teacher-choice-course',
-        meta: {
-          icon: 'md-bookmark',
-          title: '选择课题',
-          access: ['teacher']
-        },
-        component: () => import('@/view/teacher/graduation/choice-course.vue')
-      },
-      {
         path: 'project-report',
         name: 'teacher-project-report',
         meta: {
@@ -455,36 +505,6 @@ export default [
           access: ['teacher']
         },
         component: () => import('@/view/teacher/graduation/my-mission.vue')
-      },
-      {
-        path: 'submit-papper',
-        name: 'teacher-submit-papper',
-        meta: {
-          icon: 'md-document',
-          title: '提交论文',
-          access: ['teacher']
-        },
-        component: () => import('@/view/teacher/graduation/submit-papper.vue')
-      },
-      {
-        path: 'project-manager',
-        name: 'teacher-project-manager',
-        meta: {
-          icon: 'md-folder',
-          title: '项目管理',
-          access: ['teacher']
-        },
-        component: () => import('@/view/teacher/graduation/project-manager.vue')
-      },
-      {
-        path: 'practice-week',
-        name: 'teacher-practice-week',
-        meta: {
-          icon: 'ios-clock',
-          title: '实习周报',
-          access: ['teacher']
-        },
-        component: () => import('@/view/teacher/graduation/practice-week.vue')
       }
     ]
   }

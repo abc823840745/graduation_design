@@ -5,8 +5,13 @@ import { forEach, hasOneOf, objEqual } from '@/libs/tools'
 
 export const TOKEN_KEY = 'token'
 
+export const ROLE_KEY = 'role'
 export const setToken = (token) => {
   Cookies.set(TOKEN_KEY, token, { expires: config.cookieExpires || 1 })
+}
+
+export const setRole = (role) => {
+  Cookies.set(ROLE_KEY, role, { expires: config.cookieExpires || 1 })
 }
 
 export const getToken = () => {
@@ -14,6 +19,13 @@ export const getToken = () => {
   if (token) return token
   else return false
 }
+
+export const getRole = () => {
+  const role = Cookies.get(ROLE_KEY)
+  if (role) return role
+  else return false
+}
+
 
 export const hasChild = (item) => {
   return item.children && item.children.length !== 0
@@ -176,7 +188,7 @@ export const getNewTagList = (list, newRoute) => {
  * @param {*} route 路由列表
  */
 const hasAccess = (access, route) => {
-  
+
   if (route.meta && route.meta.access) {
     if (Array.isArray(access)) {
       access = access[0]
