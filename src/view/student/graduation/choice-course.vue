@@ -68,6 +68,7 @@
     name: 'choice-course',
     data() {
       return {
+        choiced: 0,
         content_modal: false,
         content: {
           title: '',
@@ -152,7 +153,7 @@
                   "Button",
                   {
                     props: {
-                      type: this.myChoice.indexOf(this.tableData[params.index].id) != -1 ? "warning" : "default"
+                      type: this.tableData[params.index].status==1 ?'success':this.tableData[params.index].status==-1? "error" : "warning"
 
                     },
                     style: {
@@ -163,7 +164,7 @@
                       }
                     }
                   },
-                  this.myChoice.indexOf(this.tableData[params.index].id) != -1 ? "已经提交审核" : '未选择该课题'
+                this.tableData[params.index].status==1?'已通过' : this.tableData[params.index].status==0 ? "已经提交审核" : this.tableData[params.index].status==-1?'审核未通过':''
                 )
               ]);
             }
@@ -247,7 +248,7 @@
                       }
                     }
                   },
-                  this.myChoice.indexOf(this.tableData[params.index].id) != -1 ? "已经提交审核" : '未选择该课题'
+                 this.myChoice.indexOf(this.tableData[params.index].id) != -1&&this.choiced==this.tableData[params.index].id?'已通过' :this.myChoice.indexOf(this.tableData[params.index].id) != -1&&this.choiced==0 ? "已经提交审核" :this.myChoice.indexOf(this.tableData[params.index].id) != -1&&this.choiced!=0?'审核未通过': '未选择该课题'
                 )
               ]);
             }
@@ -341,8 +342,8 @@
       },
       getSelection(selection) {
 
-        if (this.originSelect.length + selection.length >= 3) {
-          if (this.originSelect.length + selection.length == 3) {
+        if (this.originSelect.length + selection.length + this.myAdd.length >= 3) {
+          if (this.originSelect.length + selection.length + this.myAdd.length == 3) {
             selection = selection.filter((item) => {
               if (this.myChoice.indexOf(item.id) == -1) {
                 return item
@@ -403,8 +404,14 @@
           var graduationWorkList = res.data.graduationWorkList
           this.total = res.data.count
           this.myAdd = res.data.myAdd
-          this.myChoice = res.data.myChoice.map((item) => { return item.cid })
+          this.myChoice = res.data.myChoice.map((item) => {
+            if(item.status==1){
+              this.choiced = item.cid
+            }
+             return item.cid
+             })
           res.data.myAdd.forEach((item) => {
+            this.choiced = item.id
             this.myChoice.push(item.cid)
           })
 
