@@ -1,0 +1,167 @@
+<template>
+    <div class="detail-container">
+        <Table border :columns="columns" :data="tableData" size="large" no-data-text="暂时还没有学生选择该导师"></Table>
+          <Modal v-model="confirm_modal" title="是否确定让该学生导师选择意向通过？" width="400px">
+            <div slot="footer">
+                <Button type="primary" size="large" long @click="updateTeacherStudent">确定</Button>
+            </div>
+        </Modal>
+    </div>
+    
+</template>
+
+<script>
+    import { getMyDate } from '@/libs/tools'
+    import { haveTeacherStudent,updateTeacherStudent } from '@/api/teacher'
+    export default {
+        name: "teacher_detail",
+        data() {
+            return {
+                cid:0,
+                confirm_modal: false,
+                total: 1,
+                page: 1,
+                size: 10,
+                tid: 0,
+                username: '',
+                showDel: false,
+                keyword: "",
+                teacher: {},
+                pageSize: 1,
+                tableData: [],
+                loading: true,
+                currentPage: 1,
+                columns: [
+                    {
+                        title: '学号',
+                        key: 'stu_number',
+                        width: 280,
+                        align: 'center'
+                    },
+                    {
+                        title: '姓名',
+                        key: 'username',
+                        width: 280,
+                        align: 'center'
+                    },
+                    {
+                        title: '年级',
+                        key: 'class',
+                        width: 220,
+                        align: 'center'
+                    },
+                    {
+                        title: '专业',
+                        key: 'major',
+                        width: 295,
+                        align: 'center'
+                    },
+                    {
+                        title: "身份",
+                        key: "action",
+                        align: "center",
+                        render: (h, params) => {
+                            return h("div", [
+                                h(
+                                    "span",
+                                    {
+                                        style: {
+                                            marginRight: "1px"
+                                        }
+                                    },
+                                    this.tableData[params.index].is_team == 0 ? '个人组队' : this.tableData[params.index].leader == this.tableData[params.index].u_id ? '组长' : '成员'
+                                )
+                            ]);
+                        }
+                    },
+                    {
+                        title: "状态",
+                        key: "action",
+                        align: "center",
+                        render: (h, params) => {
+                            return h("div", [
+                                h(
+                                    "span",
+                                    {
+                                        style: {
+                                            marginRight: "1px",
+
+                                        }
+                                    },
+                                    this.tableData[params.index].status == 0 ? '审核中' : '已选择'
+                                )
+                            ]);
+                        }
+                    },
+                    {
+                        title: "操作",
+                        key: "action",
+                        width: 258,
+                        align: "center",
+                        render: (h, params) => {
+                            return h("div", [
+                                h(
+                                    "Button",
+                                    {
+                                        props: {
+                                            type: "success",
+                                            disabled: this.tableData[params.index].status != 0
+                                        },
+                                        style: {
+                                            marginRight: "10px"
+                                        },
+                                        on: {
+                                            click: () => {
+                                                this.confirm_modal = true
+                                                this.cid = this.tableData[params.index].id
+                                            }
+                                        }
+                                    },
+                                    "通过意向"
+                                )
+                            ]);
+                        }
+                    }
+                ]
+            };
+        },
+        mounted() {
+            this.tid = this.$route.query.tid
+            this.username = this.$route.query.username
+            this.$nextTick(() => {
+                this.loading = false;
+                this.haveTeacherStudent()
+            })
+
+        },
+        methods: {
+            haveTeacherStudent() {
+                let id = this.tid
+                let size = this.size
+                let page = this.page
+                haveTeacherStudent(id, page, size).then((res) => {
+                    if (res.data.message == 'ok') {
+                        this.total = res.data.count
+                        this.tableData = res.data.students
+                    }
+
+                })
+            },
+            updateTeacherStudent(){
+                let cid = this.cid
+                updateTeacherStudent(cid).then((res)=>{
+                    if(res.data.message=='ok'){
+                        this.$Notice.success({
+                            title: '操作成功'
+                        })
+                        this.confirm_modal =false
+                    }
+                })
+            }
+        }
+    };
+
+</script>
+<style scoped>
+
+</style>

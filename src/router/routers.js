@@ -133,7 +133,7 @@ export default [
           title: '周报详情',
           notCache: true,
           icon: 'md-home',
-          access: ['teacher']
+          access: ['teacher','admin']
         },
         component: () => import('@/components/main/components/week_report_detail/week_report_detail.vue')
       },
@@ -145,7 +145,7 @@ export default [
           title: '课题详情',
           notCache: true,
           icon: 'md-home',
-          access: ['teacher']
+          access: ['teacher','admin']
         },
         component: () => import('@/components/main/components/course_detail/course_detail.vue')
       },
@@ -157,7 +157,7 @@ export default [
           title: '任务详情',
           notCache: true,
           icon: 'md-home',
-          access: ['teacher']
+          access: ['teacher','admin']
         },
         component: () => import('@/components/main/components/mission_detail/mission_detail.vue')
       },
@@ -169,9 +169,44 @@ export default [
           title: '论文详情',
           notCache: true,
           icon: 'md-home',
-          access: ['teacher']
+          access: ['teacher','admin']
         },
         component: () => import('@/components/main/components/papper_detail/papper_detail.vue')
+      }
+    ]
+  },
+  {
+    path: '/teacher_detail',
+    name: 'teacher_detail',
+    component: Main,
+    meta: {
+      title: '详情',
+      hideInMenu: true
+    },
+    children: [
+      {
+        path: 'course_admin',
+        name: 'course_admin',
+        meta: {
+          hideInMenu: true,
+          title: '论文详情',
+          notCache: true,
+          icon: 'md-home',
+          access: ['admin']
+        },
+        component: () => import('@/components/main/components/course_detail/course_admin.vue')
+      },
+       {
+        path: 'papper_admin',
+        name: 'papper_admin',
+        meta: {
+          hideInMenu: true,
+          title: '导师选择详情',
+          notCache: true,
+          icon: 'md-home',
+          access: ['admin']
+        },
+        component: () => import('@/components/main/components/papper_detail/papper_admin.vue')
       }
     ]
   },
@@ -420,17 +455,17 @@ export default [
           title: '我的信息',
           access: ['admin']
         },
-        component: () => import('@/view/teacher/personal/my-info.vue')
+        component: () => import('@/view/admin/graduation/teacher-manager.vue')
       },
       {
-        path: 'teacher-my-message',
-        name: 'teacher-my-message',
+        path: 'time-manager',
+        name: 'time-manager',
         meta: {
           icon: 'ios-create',
           title: '我的消息',
           access: ['teacher','admin']
         },
-        component: () => import('@/view/teacher/personal/my-message.vue')
+        component: () => import('@/view/admin/graduation/time-manager.vue')
       }
     ]
   },

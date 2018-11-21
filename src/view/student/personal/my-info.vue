@@ -232,6 +232,7 @@
     height: 80px;
     border: 50%;
     display: block;
+    border-radius: 50%;
   }
   
   .user_name {
