@@ -53,6 +53,16 @@ export const getGraduationList = (u_id, name, page, size) => {
   })
 }
 
+export const getMyGraduationList = (u_id, page, size) => {
+  return axios.request({
+    url: '/get/my/graduation',
+    method: 'post',
+    data: {
+      u_id, page, size
+    }
+  })
+}
+
 export const choiceGraduationWork = (u_id, cid) => {
   return axios.request({
     url: '/choice/graduation/work',
@@ -209,3 +219,15 @@ export const updatePapper = ((papper_id,content,status, time) => {
     }
   })
 })
+
+
+export const addMyGraduation = ((tid, classType, majorType, title, description, time) => {
+  return axios.request({
+    url: '/add/my/graduation',
+    method: 'post',
+    data: {
+    tid, classType, majorType, title, description, time
+    }
+  })
+})
+ 
