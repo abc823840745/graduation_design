@@ -251,3 +251,14 @@ export const addNewMission = ((title, description, upload, download, token, file
   })
 })
 
+
+export const confirmMission = ((id,uid,pass) => {
+  return axios.request({
+    url: '/confirm/teacher/mission',
+    method: 'post',
+    data: {
+    id,uid,pass
+    }
+  })
+})
+

@@ -16,7 +16,7 @@
           <p>按照该任务需求上传相应附件！</p>
         </div>
         </Upload>
-       
+
         <div slot="footer">
           <Button @click="completeMission" type="primary">确认</Button>
         </div>
@@ -34,7 +34,7 @@
     data() {
       return {
         uploadUrl,
-        MyChoice: [],
+        myChoice: {},
         mission: {},
         uploadList: [],
         ok_modal: false,
@@ -97,7 +97,7 @@
             render: (h, params) => {
               return h("span", {
               },
-                this.myChoice.indexOf(this.tableData[params.index].id) != -1 ? '已完成' : this.tableData[params.index].status == 0 ? '未完成' : '已超时')
+                this.myChoice[this.tableData[params.index].id].status == 1&&this.tableData[params.index].more_time==1 ? '超时完成': this.myChoice[this.tableData[params.index].id].status == 1 ? '已完成' : this.myChoice[this.tableData[params.index].id].status == -1 ? '未通过' : this.myChoice[this.tableData[params.index].id].status == 0&&this.tableData[params.index].more_time==1 ? '已超时' :this.myChoice[this.tableData[params.index].id].status == 0?'审核中': '未完成')
             }
           },
           {
@@ -134,7 +134,7 @@
                     },
                     on: {
                       click: () => {
-                        if (this.myChoice.indexOf(this.tableData[params.index].id) == -1) {
+                        if (this.myChoice[this.tableData[params.index].id].status == -1 || this.myChoice[this.tableData[params.index].id].status == -2) {
                           this.ok_modal = true
 
                           this.mission = this.tableData[params.index]
@@ -142,7 +142,7 @@
                       }
                     }
                   },
-                  this.tableData[params.index].upload == 1 && this.myChoice.indexOf(this.tableData[params.index].id) == -1 ? '上传附件' : this.myChoice.indexOf(this.tableData[params.index].id) != -1 ? '任务已完成' : '去完成'
+                  this.myChoice[this.tableData[params.index].id].status == -1 || this.myChoice[this.tableData[params.index].id].status == -2 ? '马上完成' : this.myChoice[this.tableData[params.index].id].status == 1 ? '任务已完成' : '未完成'
                 )
               ]);
             }
@@ -193,17 +193,26 @@
         getMyMission(token, page, size).then((res) => {
           let now = new Date().getTime()
           if (res.data.message == 'ok') {
-            this.tableData = res.data.missions
-            this.myChoice = res.data.myChoice.map((item) => item.mid)
+
+            res.data.myChoice.forEach((item) => {
+              this.$set(this.myChoice, item.mid, {
+                status: item.status
+              })
+            })
             this.totalSize = res.data.count
-            this.tableData.forEach((item) => {
+            res.data.missions.forEach((item) => {
               if (now > item.deadline) {
-                item.status = -1
+                item.more_time = 1
+              }
+              if (!this.myChoice[item.id]) {
+                this.$set(this.myChoice, item.id, {
+                  status: '-2'
+                })
               }
               item.time = getMyDate(item.time, "yyyy-MM-dd")
               item.deadline = getMyDate(item.deadline, "yyyy-MM-dd")
             })
-
+            this.tableData = res.data.missions
           } else if (res.data.message == 'noChoice') {
             this.$Notice.warning({
               title: '请先选择导师'

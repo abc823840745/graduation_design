@@ -212,7 +212,6 @@
           file = this.uploadList[0].url
         }
         let time = new Date().getTime()
-           console.log(title, description, upload, download, deadline,time)
         addNewMission(title, description, upload, download, token, file, time, deadline).then((res) => {
           if (res.data.message == 'ok') {
             this.$Notice.success({

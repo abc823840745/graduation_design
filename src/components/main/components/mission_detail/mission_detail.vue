@@ -8,10 +8,23 @@
             <p class="content_title">{{contentInfo.title}}</p>
             <div style="width:996px;" v-html="contentInfo.content"></div>
         </Modal>
+        <Modal v-model="ok_modal" width="700px" title="是否审核通过">
+            <RadioGroup v-model="pass">
+                <Radio label="-1">
+                    <span>否</span>
+                </Radio>
+                <Radio label="1">
+                    <span>是</span>
+                </Radio>
+            </RadioGroup>
+            <div slot="footer">
+                <Button type="primary" size="large" long @click="confirmMission">确认</Button>
+            </div>
+        </Modal>
     </div>
 </template>
 <script>
-    import { getMyMission, completeMission } from '@/api/teacher'
+    import { getMyMission, completeMission,confirmMission } from '@/api/teacher'
     import { getMyDate } from '@/libs/tools'
     import config from '@/config'
     const baseUrl = process.env.NODE_ENV === 'development' ? config.baseUrl.dev : config.baseUrl.pro
@@ -20,8 +33,9 @@
         name: "my-mission",
         data() {
             return {
+                pass: '1',
                 uploadUrl,
-                MyChoice: [],
+                myChoice: {},
                 mission: {},
                 uploadList: [],
                 ok_modal: false,
@@ -50,7 +64,22 @@
                         align: 'center'
                     },
                     {
-                        title: "附件信息",
+                        title: "学生上传附件",
+                        key: "download",
+                        width: 200,
+                        align: "center",
+                        render: (h, params) => {
+                            return h(this.tableData[params.index].upload == 1 && this.myChoice[this.tableData[params.index].id].status != -2 ? 'a' : "div", {
+                                domProps: {
+                                    href: this.tableData[params.index].file,
+                                    download: "w3logo"
+                                },
+                            },
+                                this.tableData[params.index].upload == 1 && this.myChoice[this.tableData[params.index].id].status != -2 ? '下载附件' : '无附件')
+                        }
+                    },
+                    {
+                        title: "任务附件",
                         key: "download",
                         width: 200,
                         align: "center",
@@ -61,7 +90,7 @@
                                     download: "w3logo"
                                 },
                             },
-                                this.tableData[params.index].upload == 1 ? '下载附件' : '无附件')
+                                this.tableData[params.index].download == 1 ? '下载附件' : '无附件')
                         }
                     },
                     {
@@ -84,7 +113,7 @@
                         render: (h, params) => {
                             return h("span", {
                             },
-                                this.myChoice.indexOf(this.tableData[params.index].id) != -1 && this.tableData[params.index].more_time != 1 ? '已完成' : this.myChoice.indexOf(this.tableData[params.index].id) != -1 ? '已超时' : '未完成')
+                                this.myChoice[this.tableData[params.index].id].status == 1 && this.tableData[params.index].more_time != 1 ? '已完成' : this.myChoice[this.tableData[params.index].id].status == 1 && this.tableData[params.index].more_time == 1 ? '超时完成' : this.myChoice[this.tableData[params.index].id].status == 0 ? '审核中' : this.myChoice[this.tableData[params.index].id].status == -1 ? '未通过' : '未完成')
                         }
                     },
                     {
@@ -121,15 +150,14 @@
                                         },
                                         on: {
                                             click: () => {
-                                                if (this.myChoice.indexOf(this.tableData[params.index].id) == -1) {
-                                                  /*  this.ok_modal = true
-
-                                                    this.mission = this.tableData[params.index]*/
+                                                if (this.myChoice[this.tableData[params.index].id].status == 0 || this.myChoice[this.tableData[params.index].id].status == -1) {
+                                                    this.ok_modal = true
+                                                    this.mission = this.tableData[params.index]
                                                 }
                                             }
                                         }
                                     },
-                                    this.myChoice.indexOf(this.tableData[params.index].id) != -1 ? '任务验收' : '执行中'
+                                    this.myChoice[this.tableData[params.index].id].status == 0 || this.myChoice[this.tableData[params.index].id].status == -1 ? '任务验收' : '执行中'
                                 )
                             ]);
                         }
@@ -144,20 +172,14 @@
             })
         },
         methods: {
-            completeMission() {
-                let {upload, id} = this.mission
-                let token = this.uid
-                let file = ''
-                if (upload == 1) {
-                    if (this.uploadList.length <= 0) {
-                        return
-                    }
-                    file = this.uploadList[0].url
-                }
-                completeMission(id, token, file).then((res) => {
+            confirmMission() {
+                let {id} = this.mission
+                let pass = this.pass
+                
+                confirmMission(id,this.uid,pass).then((res) => {
                     if (res.data.message == 'ok') {
                         this.$Notice.success({
-                            title: '提交成功'
+                            title: '审核完成'
                         })
                         this.ok_modal = false
                         this.getMyMission()
@@ -174,22 +196,36 @@
                 this.getMyMission()
             },
             getMyMission() {
-
                 let token = this.uid
                 let page = this.page
                 let size = this.size
                 getMyMission(token, page, size).then((res) => {
                     let now = new Date().getTime()
                     if (res.data.message == 'ok') {
-                        this.myChoice = res.data.myChoice.map((item) => item.mid)
+                        let name = this.$store.state.user.userName
+                        this.myChoice = {}
+                        res.data.myChoice.forEach((item) => {
+                            this.$set(this.myChoice, item.mid, {
+                                status: item.status,
+                                file: item.file
+                            })
+                        })
                         this.totalSize = res.data.count
                         res.data.missions.forEach((item) => {
                             if (now > item.deadline) {
                                 item.more_time = 1
                             }
+                            if (!this.myChoice[item.id]) {
+                                this.$set(this.myChoice, item.id, {
+                                    status: '-2',
+                                    file: ''
+                                })
+                            }
+                            item.name = name
                             item.time = getMyDate(item.time, "yyyy-MM-dd")
                             item.deadline = getMyDate(item.deadline, "yyyy-MM-dd")
                         })
+                        console.log( res.data.myChoice,this.myChoice)
                         this.tableData = res.data.missions
                     } else if (res.data.message == 'noChoice') {
                         this.$Notice.warning({
