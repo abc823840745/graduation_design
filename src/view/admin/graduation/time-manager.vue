@@ -10,31 +10,39 @@
                 </div>
             </TabPane>
         </Tabs>
-        <Modal v-model="scoreModal" width="400px" title="给该周报打分" @on-ok="ok">
+        <Modal v-model="timeModal" width="400px" title="确定设置该时间？" @on-ok="ok">
             <p class="content_title">{{title}}</p>
-            <Form :model="scoreForm" :label-width="50">
-                <Form-item label="分数" prop="score">
-                    <Input-number :max="100" :min="1" :value="score" @on-change="changeScore"></Input-number>
+            <Form :model="form" :label-width="50">
+                <Form-item label="面向对象">
+                    <Input :value="form.time" disabled></Input>
                 </Form-item>
+                <FormItem prop="deadline" label="截至/开始时间">
+                    <DatePicker v-model="form.deadline" type="datetime" placeholder="请选择截至时间" style="width: 200px"></DatePicker>
+                </FormItem>
             </Form>
             <div slot="footer">
-                <Button type="primary" size="large" long @click="updateScore">确定</Button>
+                <Button type="primary" size="large" long @click="updateTime">确定</Button>
             </div>
         </Modal>
     </div>
 </template>
 <script>
     import { getMyDate } from '@/libs/tools'
-    import { getSetTime, updateScore } from '@/api/teacher'
+    import { getSetTime, updateTime } from '@/api/teacher'
     export default {
         name: 'practice-week',
         data() {
             return {
+                choiceType: '',
+                form: {
+                    time: '',
+                    deadline: ''
+                },
                 times: [],
                 title: '',
                 score: 90,
                 scoreForm: {},
-                scoreModal: false,
+                timeModal: false,
                 week: 0,
                 uid: '',
                 content_modal: false,
@@ -102,6 +110,8 @@
                                         },
                                         on: {
                                             click: () => {
+                                                this.choiceType = this.missionReport[params.index].type
+                                                this.timeModal = true
                                             }
                                         }
                                     },
@@ -117,11 +127,9 @@
             this.getSetTime()
         },
         methods: {
-            changeScore(score) {
-                this.score = score
-            },
             getSetTime() {
                 let year = new Date().getFullYear() - 3
+                this.form.time = year
                 getSetTime(year).then((res) => {
                     if (res.data.message == 'ok') {
                         let times = {}
@@ -132,10 +140,17 @@
                     }
                 })
             },
-            setScore(type, week) {
-                this.type = type
-                this.week = week
-                this.scoreModal = true
+            updateTime() {
+                let {time, deadline} = this.form
+                let type = this.choiceType
+                let  post_time = new Date().getTime()
+                updateTime(time, deadline,type, post_time).then((res)=>{
+                    if(res.data.message=='ok'){
+                        this.$Notice.success({
+                            title:'更新成功！'
+                        })
+                    }
+                })
             }
         },
     }

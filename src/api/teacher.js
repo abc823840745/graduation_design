@@ -317,3 +317,13 @@ export const getSetTime = ((time) => {
   })
 })
 
+export const updateTime = ((time, deadline,type, post_time) => {
+  return axios.request({
+    url: '/update/time',
+    method: 'post',
+    data: {
+    time, deadline,type, post_time
+    }
+  })
+})
+
