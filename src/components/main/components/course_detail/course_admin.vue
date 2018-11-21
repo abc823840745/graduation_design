@@ -5,55 +5,12 @@
     <div class="container">
         <Tabs>
             <TabPane style="height:700px;" label="教师开题" icon="ios-book">
-                <Table border :columns="columns" :data="tableData" size="large" no-data-text="暂时未到开题时间"></Table>
+                <Table border :columns="columns" :data="tableData" size="large" no-data-text="暂时还没有信息"></Table>
                 <div class="page_container">
                     <Page :total="total" :page-size="pageSize" @on-change="changePage" />
                 </div>
             </TabPane>
         </Tabs>
-        <Modal v-model="modal1" width="1100">
-            <p slot="header" style="text-align:center">
-                <Icon type="ios-information-circle"></Icon>
-                <span>每人一共选择三个课题，你确认提交选择意向吗？</span>
-            </p>
-            <div slot="footer">
-                <Button type="primary" size="large" long @click="choiceGraduationWork">提交</Button>
-            </div>
-        </Modal>
-        <Modal v-model="addModal">
-            <p slot="header" style="text-align:center">
-                <Icon type="ios-information-circle"></Icon>
-                <span>确定添加新课题吗？</span>
-            </p>
-            <Form :model="form" ref="content" :label-width="80" :rules="ruleInline">
-                <FormItem label='教师姓名'>
-                    <Input width="100px" disabled v-model="username"></Input>
-                </FormItem>
-                <FormItem prop="majorType" label="课题方向">
-                    <Select v-model="form.majorType">
-              <Option v-for="(item,index) in major_type" :key="index" :value="item.value">{{item.label}}</Option>
-            </Select>
-                </FormItem>
-                <FormItem prop="classType" label="面向年级">
-                    <Select v-model="form.classType">
-              <Option v-for="(item,index) in class_type" :key="index" :value="item.value">{{item.label}}</Option>
-            </Select>
-                </FormItem>
-                <FormItem prop="title" label="课题名称">
-                    <Input width="100px" v-model="form.title" placeholder="请输入课题名称"></Input>
-                </FormItem>
-                <FormItem prop="description" label="描述">
-                    <Input v-model="form.description" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入申报课题描述"></Input>
-                </FormItem>
-            </Form>
-            <div slot="footer">
-                <Button type="primary" size="large" long @click="addMyGraduation">确定</Button>
-            </div>
-        </Modal>
-        <div class="choice_btn">
-            <Button @click="submitSelect" type="success">添加新课题</Button>
-            <p class="choice_tip">注意：课题需要管理员审核通过才可以在学生端展示</p>
-        </div>
         <Modal v-model="content_modal" title="课题详情" @on-ok="ok">
             <p class="content_title">{{content.title}}</p>
             <div>{{content.text}}</div>
@@ -75,7 +32,7 @@
     </div>
 </template>
 <script>
-    import { getMyGraduationList, updateCourseStatus, addMyGraduation } from '@/api/teacher'
+    import { getMyGraduationList, updateCourseStatus } from '@/api/teacher'
     import config from '@/config'
     import { getMyDate } from '@/libs/tools'
     let timer = null
@@ -122,7 +79,7 @@
                 myTeacher: [],
                 leftCount: 3,
                 page: 1,
-                total: 21,
+                total: 1,
                 pageSize: 10,
                 selectable: false,
                 name: '',
@@ -237,15 +194,7 @@
                             ]);
                         }
                     }
-                ],
-                ruleInline: {
-                    title: [
-                        { required: true, message: '课题名称不能少于四个字多余20个字', trigger: 'blur', type: 'string' }
-                    ],
-                    description: [
-                        { required: true, message: '课题描述不能少于十个字多余五十个字', trigger: 'blur', type: 'string' }
-                    ]
-                }
+                ]
             }
         },
         created() {
@@ -266,9 +215,6 @@
 
         },
         methods: {
-            ok() {
-
-            },
             updateCourseStatus() {
                 let status = this.throught
                 let cid = this.cid
@@ -284,7 +230,6 @@
             },
             changePage(page) {
                 this.page = page
-                this.originSelect = this.haveSelect
                 this.getMyGraduationList()
             },
             addMyGraduation() {
@@ -310,9 +255,6 @@
 
                 })
             },
-            submitSelect() {
-                this.addModal = true
-            },
             getMyGraduationList() {
                 let u_id = this.tid
                 getMyGraduationList(u_id, this.page, this.pageSize).then((res) => {
@@ -331,29 +273,6 @@
                 this.content.title = title
                 this.content.text = text
                 this.content_modal = true
-            },
-            choiceGraduationWork() {
-                let token = this.tid
-                let cid = this.haveSelect.map((selectItem) => {
-                    return selectItem.id
-                })
-                if (cid.length + this.myChoice.length > 3) {
-                    this.$Notice.warning({
-                        title: "一共只能选择3个课题！"
-                    })
-                    return
-                }
-
-                choiceGraduationWork(token, cid).then((res) => {
-                    let message = res.data.message
-                    this.modal1 = false
-                    if (message == "ok") {
-                        this.$Message.success('已经成功提交选择意向!');
-                        this.getMyGraduationList()
-                    } else if (message == "fail") {
-                        this.$Message.info('意向提交失败，请稍后再试!');
-                    }
-                })
             }
         }
     }

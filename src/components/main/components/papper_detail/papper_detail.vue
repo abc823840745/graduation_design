@@ -1,7 +1,7 @@
 <template>
     <div class="goods">
 
-        <Table border :columns="columns" :data="tableData" size="large" no-data-text="暂时还没有上传过论文"></Table>
+        <Table border :columns="columns" :data="tableData" size="large" no-data-text="暂时还没有信息"></Table>
         <div class="page_container">
             <Page :total="totalSize" :page-size="size" @on-change="changePage" />
         </div>

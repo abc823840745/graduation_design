@@ -1,6 +1,9 @@
 <template>
     <div class="detail-container">
         <Table border :columns="columns" :data="tableData" size="large" no-data-text="暂时还没有学生选择该导师"></Table>
+        <div class="page_container">
+            <Page :total="total" :page-size="pageSize" @on-change="changePage" />
+        </div>
         <Modal v-model="confirm_modal" title="是否确定让该学生导师选择意向通过？" width="400px">
             <div slot="footer">
                 <Button type="primary" size="large" long @click="updateTeacherStudent">确定</Button>
@@ -28,7 +31,7 @@
                 showDel: false,
                 keyword: "",
                 teacher: {},
-                pageSize: 1,
+                pageSize: 10,
                 tableData: [],
                 loading: true,
                 currentPage: 1,
@@ -149,6 +152,10 @@
 
                 })
             },
+            changePage(page) {
+                this.page = page
+                this.haveTeacherStudent()
+            },
             updateTeacherStudent() {
                 let cid = this.cid
                 let uid = this.uid
@@ -167,5 +174,10 @@
 
 </script>
 <style scoped>
-
+ .page_container {
+        position: absolute;
+        right: 20px;
+        margin-top: 30px;
+    }
+    
 </style>
