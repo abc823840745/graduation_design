@@ -296,12 +296,12 @@ export const haveTeacherStudent = ((id, page, size) => {
 })
 
 
-export const updateTeacherStudent = ((id) => {
+export const updateTeacherStudent = ((id,uid) => {
   return axios.request({
     url: '/update/teacher/student',
     method: 'post',
     data: {
-      id
+      id,uid
     }
   })
 })

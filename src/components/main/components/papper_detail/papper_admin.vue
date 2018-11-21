@@ -1,23 +1,24 @@
 <template>
     <div class="detail-container">
         <Table border :columns="columns" :data="tableData" size="large" no-data-text="暂时还没有学生选择该导师"></Table>
-          <Modal v-model="confirm_modal" title="是否确定让该学生导师选择意向通过？" width="400px">
+        <Modal v-model="confirm_modal" title="是否确定让该学生导师选择意向通过？" width="400px">
             <div slot="footer">
                 <Button type="primary" size="large" long @click="updateTeacherStudent">确定</Button>
             </div>
         </Modal>
     </div>
-    
+
 </template>
 
 <script>
     import { getMyDate } from '@/libs/tools'
-    import { haveTeacherStudent,updateTeacherStudent } from '@/api/teacher'
+    import { haveTeacherStudent, updateTeacherStudent } from '@/api/teacher'
     export default {
         name: "teacher_detail",
         data() {
             return {
-                cid:0,
+                uid: '',
+                cid: 0,
                 confirm_modal: false,
                 total: 1,
                 page: 1,
@@ -114,6 +115,7 @@
                                             click: () => {
                                                 this.confirm_modal = true
                                                 this.cid = this.tableData[params.index].id
+                                                this.uid = this.tableData[params.index].uid
                                             }
                                         }
                                     },
@@ -147,14 +149,16 @@
 
                 })
             },
-            updateTeacherStudent(){
+            updateTeacherStudent() {
                 let cid = this.cid
-                updateTeacherStudent(cid).then((res)=>{
-                    if(res.data.message=='ok'){
+                let uid = this.uid
+                updateTeacherStudent(cid, uid).then((res) => {
+                    if (res.data.message == 'ok') {
                         this.$Notice.success({
                             title: '操作成功'
                         })
-                        this.confirm_modal =false
+                        this.confirm_modal = false
+                        this.haveTeacherStudent()
                     }
                 })
             }
