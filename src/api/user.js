@@ -51,6 +51,19 @@ export const getUserInfo = (token,role) => {
   })
 }
 
+export const updateInfo = (token,content,type) => {
+   const data =  {
+     token,content,type
+    }
+  return axios.request({
+    url: '/update/user/info',
+    data,
+    method: 'post'
+  })
+}
+
+
+
 export const logout = (token) => {
   return axios.request({
     url: '/user/logout',

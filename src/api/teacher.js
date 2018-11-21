@@ -241,12 +241,12 @@ export const getTeacherMission = ((token, page, size) => {
   })
 })
 
-export const addNewMission = ((title, description, upload, download, token, file, time, deadline) => {
+export const addNewMission = ((title, description, upload, download, token, file, time, deadline,name) => {
   return axios.request({
     url: '/add/new/mission',
     method: 'post',
     data: {
-    title, description,upload,download, token, file,time,deadline
+    title, description,upload,download, token, file,time,deadline,name
     }
   })
 })

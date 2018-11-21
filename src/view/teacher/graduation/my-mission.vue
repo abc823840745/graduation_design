@@ -202,7 +202,7 @@
         }
 
         deadline = new Date(deadline).getTime()
-        let token = this.userInfo.token
+        let {token,userName} = this.userInfo
         let file = ''
      
         if (upload == 1) {
@@ -212,7 +212,7 @@
           file = this.uploadList[0].url
         }
         let time = new Date().getTime()
-        addNewMission(title, description, upload, download, token, file, time, deadline).then((res) => {
+        addNewMission(title, description, upload, download, token, file, time, deadline,userName).then((res) => {
           if (res.data.message == 'ok') {
             this.$Notice.success({
               title: '提交成功'
