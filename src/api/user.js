@@ -51,9 +51,9 @@ export const getUserInfo = (token,role) => {
   })
 }
 
-export const updateInfo = (token,content,type) => {
+export const updateInfo = (token,role,content,type) => {
    const data =  {
-     token,content,type
+     token,role,content,type
     }
   return axios.request({
     url: '/update/user/info',

@@ -22,11 +22,11 @@
         <Col span="19">
         <div class="info_detail">
           <div class="detail_item">
-            <div class="label">工号</div>
+            <div class="label">教师工号</div>
             <div class="value">{{userInfo.stu_number}}</div>
           </div>
           <div class="detail_item">
-            <div class="label">学历</div>
+            <div class="label">教师学历</div>
             <div class="value">{{userInfo.level}}</div>
           </div>
           <div class="detail_item" label="专业方向">
@@ -42,8 +42,8 @@
             <div class="value">{{userInfo.qq?userInfo.qq:'暂无'}} | <span class="change_avatar" @click="showModal('qqFlag')">修改</span></div>
           </div>
           <div class="detail_item">
-            <div class="label">经验</div>
-            <div class="value">{{userInfo.experient}}</div>
+            <div class="label">教学经验</div>
+            <div class="value">{{userInfo.experient}}年</div>
           </div>
           <div class="detail_item" label="我的导师">
             <div class="label">我的简介</div>
@@ -152,7 +152,7 @@
         if (!type || !content) {
           return;
         }
-        updateInfo(token, content, type).then((res) => {
+        updateInfo(token,role, content, type).then((res) => {
           if (res.data.message == 'ok') {
             this.$Notice.success({
               title: '更新成功'
