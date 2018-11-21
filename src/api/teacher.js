@@ -189,33 +189,33 @@ export const getStudentCourse = (uid) => {
   })
 }
 
-export const confirmStudentCourse = (id,uid) => {
+export const confirmStudentCourse = (id, uid) => {
   return axios.request({
     url: '/confirm/student/course',
     method: 'post',
     data: {
-      id,uid
+      id, uid
     }
   })
 }
 
-export const getStudentMission = ((token,tid, page, size) => {
+export const getStudentMission = ((token, tid, page, size) => {
   return axios.request({
     url: '/get/student/mission',
     method: 'post',
     data: {
-     token,tid, page, size
+      token, tid, page, size
     }
   })
 })
 
 
-export const updatePapper = ((papper_id,content,status, time) => {
+export const updatePapper = ((papper_id, content, status, time) => {
   return axios.request({
     url: '/update/student/papper',
     method: 'post',
     data: {
-    papper_id,content,status, time
+      papper_id, content, status, time
     }
   })
 })
@@ -226,8 +226,28 @@ export const addMyGraduation = ((tid, classType, majorType, title, description, 
     url: '/add/my/graduation',
     method: 'post',
     data: {
-    tid, classType, majorType, title, description, time
+      tid, classType, majorType, title, description, time
     }
   })
 })
- 
+
+export const getTeacherMission = ((token, page, size) => {
+  return axios.request({
+    url: '/get/teacher/mission',
+    method: 'post',
+    data: {
+      token, page, size
+    }
+  })
+})
+
+export const addNewMission = ((title, description, upload, download, token, file, time, deadline) => {
+  return axios.request({
+    url: '/add/new/mission',
+    method: 'post',
+    data: {
+    title, description,upload,download, token, file,time,deadline
+    }
+  })
+})
+
