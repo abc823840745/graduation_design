@@ -411,7 +411,7 @@ export default [
     meta: {
       icon: 'logo-buffer',
       title: '个人中心',
-      access: ['teacher']
+      access: ['teacher','admin']
     },
     component: Main,
     children: [
