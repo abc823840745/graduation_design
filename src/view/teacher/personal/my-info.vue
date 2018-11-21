@@ -12,8 +12,8 @@
             <div class="user_name"><span>{{userInfo.name}}</span> | <span @click="showModal('avatarFlag')" class="change_avatar">修改头像</span></div>
           </div>
           <div class="user_tip_container">
-            <div class="item" @click="goToPath('/teacher/graduation/choice-teacher')"> 查看毕设信息</div>
-            <div class="item" @click="goToPath('/teacher/graduation/project-report')"> 完成开题报告</div>
+            <div class="item" @click="goToPath('/teacher/graduation/choice-teacher')"> 毕设信息</div>
+            <div class="item" @click="goToPath('/teacher/graduation/project-report')"> 完成课题</div>
             <div class="item" @click="goToPath('/teacher/graduation/my-mission')"> 发布任务</div>
             <div class="item" @click="goToPath('/message')"> 消息通知</div>
           </div>
