@@ -306,3 +306,14 @@ export const updateTeacherStudent = ((id,uid) => {
   })
 })
 
+
+export const getSetTime = ((time) => {
+  return axios.request({
+    url: '/get/time',
+    method: 'post',
+    data: {
+     time
+    }
+  })
+})
+
