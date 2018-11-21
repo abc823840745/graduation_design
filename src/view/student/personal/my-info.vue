@@ -61,7 +61,7 @@
             <Input width="100px" v-model="form.phone"></Input>
           </FormItem>
         </Form>
-        <Upload v-if="avatarFlag" type="drag" :max-size="2048" :format="['doc']" :action="uploadUrl" :on-exceeded-size="handleMaxSize"
+        <Upload v-if="avatarFlag" type="drag" :max-size="2048" :format="['jpg','png','jpeg']" :action="uploadUrl" :on-exceeded-size="handleMaxSize"
           :on-success="handleSuccess">
           <div style="padding: 20px 0">
             <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
@@ -78,10 +78,14 @@
 </template>
 <script>
   import { getUserInfo, updateInfo } from '@/api/user'
+   import config from '@/config'
+   const baseUrl = process.env.NODE_ENV === 'development' ? config.baseUrl.dev : config.baseUrl.pro
+  const uploadUrl = baseUrl + '/upload/work'
   export default {
     name: 'student-my-info',
     data() {
       return {
+        uploadUrl,
         uploadList: [],
         qqFlag: false,
         phoneFlag: false,

@@ -50,4 +50,8 @@ export default {
   'teacher-submit-papper': '查看论文',
   'teacher-project-manager': '优秀毕设',
   'teacher-practice-week': '查看实习周报',
+
+  //管理员模块
+  'admin-content':'管理员模块',
+  'teacher-manager':'教师管理'
 }

@@ -60,7 +60,7 @@ export default [
           title: '首页',
           notCache: true,
           icon: 'md-home',
-          access: ['student', 'teacher']
+          access: ['student', 'teacher','admin']
         },
         component: () => import('@/view/home')
       }
@@ -386,7 +386,7 @@ export default [
         meta: {
           icon: 'logo-markdown',
           title: '我的信息',
-          access: ['teacher']
+          access: ['teacher','admin']
         },
         component: () => import('@/view/teacher/personal/my-info.vue')
       },
@@ -396,7 +396,39 @@ export default [
         meta: {
           icon: 'ios-create',
           title: '我的消息',
-          access: ['teacher']
+          access: ['teacher','admin']
+        },
+        component: () => import('@/view/teacher/personal/my-message.vue')
+      }
+    ]
+  },
+    {
+    path: '/admin',
+    name: 'admin-content',
+    meta: {
+      icon: 'logo-buffer',
+      title: '管理中心',
+      access: ['admin']
+    },
+    component: Main,
+    children: [
+      {
+        path: 'teacher-manager',
+        name: 'teacher-manager',
+        meta: {
+          icon: 'logo-markdown',
+          title: '我的信息',
+          access: ['admin']
+        },
+        component: () => import('@/view/teacher/personal/my-info.vue')
+      },
+      {
+        path: 'teacher-my-message',
+        name: 'teacher-my-message',
+        meta: {
+          icon: 'ios-create',
+          title: '我的消息',
+          access: ['teacher','admin']
         },
         component: () => import('@/view/teacher/personal/my-message.vue')
       }
@@ -408,7 +440,7 @@ export default [
     meta: {
       icon: 'logo-buffer',
       title: '课程设计',
-      access: ['teacher']
+      access: ['teacher','admin']
     },
     component: Main,
     children: [
@@ -418,7 +450,7 @@ export default [
         meta: {
           icon: 'logo-markdown',
           title: '我的课程',
-          access: ['teacher']
+          access: ['teacher','admin']
         },
         component: () => import('@/view/teacher/course/my-course.vue')
       },
@@ -428,7 +460,7 @@ export default [
         meta: {
           icon: 'ios-create',
           title: '其他',
-          access: ['teacher']
+          access: ['teacher','admin']
         },
         component: () => import('@/view/teacher/course/other.vue')
       }
@@ -440,7 +472,7 @@ export default [
     meta: {
       icon: 'md-cloud-upload',
       title: '作业管理',
-      access: ['teacher']
+      access: ['teacher','admin']
     },
     component: Main,
     children: [
@@ -450,7 +482,7 @@ export default [
         meta: {
           icon: 'ios-document',
           title: '我的作业',
-          access: ['teacher']
+          access: ['teacher','admin']
         },
         component: () => import('@/view/teacher/homework/my-homework.vue')
       },
@@ -460,7 +492,7 @@ export default [
         meta: {
           icon: 'md-clipboard',
           title: '其他',
-          access: ['teacher']
+          access: ['teacher','admin']
         },
         component: () => import('@/view/teacher/homework/other.vue')
       }
@@ -472,7 +504,7 @@ export default [
     meta: {
       icon: 'logo-buffer',
       title: '毕业设计',
-      access: ['teacher']
+      access: ['teacher','admin']
     },
     component: Main,
     children: [
@@ -482,7 +514,7 @@ export default [
         meta: {
           icon: 'md-contacts',
           title: '选择导师',
-          access: ['teacher']
+          access: ['teacher','admin']
         },
         component: () => import('@/view/teacher/graduation/choice-teacher.vue')
       },
@@ -492,7 +524,7 @@ export default [
         meta: {
           icon: 'md-basket',
           title: '开题报告',
-          access: ['teacher']
+          access: ['teacher','admin']
         },
         component: () => import('@/view/teacher/graduation/project-report.vue')
       },
@@ -502,7 +534,7 @@ export default [
         meta: {
           icon: 'ios-cube',
           title: '我的任务',
-          access: ['teacher']
+          access: ['teacher','admin']
         },
         component: () => import('@/view/teacher/graduation/my-mission.vue')
       }
