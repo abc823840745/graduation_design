@@ -56,5 +56,6 @@ export default {
   'teacher-manager':'教师管理',
   'time-manager':'时间管理',
   'course_admin':'课题分配',
-   'papper_admin': '导师选择详情'
+   'papper_admin': '导师选择详情',
+   'movie-manager': '优秀毕设管理'
 }

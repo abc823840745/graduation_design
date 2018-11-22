@@ -452,7 +452,7 @@ export default [
         name: 'teacher-manager',
         meta: {
           icon: 'logo-markdown',
-          title: '我的信息',
+          title: '教师管理',
           access: ['admin']
         },
         component: () => import('@/view/admin/graduation/teacher-manager.vue')
@@ -462,10 +462,20 @@ export default [
         name: 'time-manager',
         meta: {
           icon: 'ios-create',
-          title: '我的消息',
-          access: ['teacher','admin']
+          title: '时间管理',
+          access: ['admin']
         },
         component: () => import('@/view/admin/graduation/time-manager.vue')
+      },
+      {
+        path: 'movie-manager',
+        name: 'movie-manager',
+        meta: {
+          icon: 'ios-create',
+          title: '优秀毕设管理',
+          access: ['admin']
+        },
+        component: () => import('@/view/admin/graduation/movie-manager.vue')
       }
     ]
   },

@@ -41,11 +41,11 @@ export function addComment(mid, uid, name, avatar, content, rateTime, parent_id,
   })
 }
 
-export function deleteSport(id) {
+export function delMovie(id) {
   return axios.request({
-    url: '/delete/sport',
-    method: 'get',
-    params: {
+    url: '/delete/movie',
+    method: 'post',
+    data: {
       id
     }
   })
@@ -62,68 +62,15 @@ export function getMovieCommentList(id) {
   })
 }
 
-
-
-export function getSportById(id) {
-
+export function updateMovie(form) {
   return axios.request({
-    url: '/get/sport/by',
-    method: 'get',
-    params: {
-      id
-    }
-  })
-}
-
-export function addSportTag(sport_id, tag) {
-
-  return axios.request({
-    url: '/add/sport/tag',
-    method: 'get',
-    params: {
-      sport_id,
-      tag
-    }
-  })
-}
-
-
-export function delSportTag(id) {
-
-  return axios.request({
-    url: '/delete/sport/tag',
-    method: 'get',
-    params: {
-      id
-    }
-  })
-}
-
-export function addSport(content, addressInfo) {
-
-  return axios.request({
-    url: '/add/sport',
+    url: '/update/movie',
     method: 'post',
     data: {
-      content,
-      addressInfo
+      form
     }
   })
 }
-
-
-export function getSportJoiner(id) {
-
-  return axios.request({
-    url: '/get/sport/joiner',
-    method: 'get',
-    params: {
-      id
-    }
-  })
-}
-
-
 
 
 
