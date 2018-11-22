@@ -149,8 +149,7 @@
                 });
             },
             addMoviePraise() {
-
-                var uid = this.user.id
+                var uid = this.$store.state.user.token
                 var mid = this.movie.id
 
                 addPraise(uid, mid).then((res) => {
@@ -158,12 +157,12 @@
                         var praise = this.movie.praise
 
                         this.praise = this.praise + 1
-                        this.$Notice.waring({
+                        this.$Notice.success({
                             title: '点赞成功'
                         });
                     } else if (res.data.message == 2) {
 
-                        this.$Notice.waring({
+                        this.$Notice.warning({
                             title: '不能重复点赞'
                         });
                     }
@@ -230,7 +229,7 @@
     .app-container {
         position: relative;
         top: -22px;
-        padding: 0 400px;
+        padding: 0 300px;
         overflow: auto;
         height:1000px; 
     }
@@ -246,7 +245,7 @@
    }
     .btn {
         position: absolute;
-       right: 400px;
+       right: 300px;
         margin-top: 65px;
         margin-bottom: 20px;
     }

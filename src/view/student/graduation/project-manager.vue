@@ -78,7 +78,7 @@
       },
       goToDetail(item) {
         var movie = JSON.stringify(item)
-        this.$router.push({ path: `/movie/detail?movie=${movie}` })
+        this.$router.push({ path: `/movie_index?movie=${movie}` })
       },
       changePage(e) {
         this.start = e - 1
