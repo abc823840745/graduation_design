@@ -6,7 +6,7 @@
     </div>
     <div class="choice_btn">
       <Button type="primary" @click="new_modal=true">添加新老师</Button>
-      <p class="choice_tip">注意：请按照指定格式导入教师表！</p>
+      <p class="choice_tip">注意：请按照指定格式导入教师表！<a href="https://media.kaolaplay.com/%E6%95%99%E5%B8%88.xlsx" download="w3logo">查看上传模板</a></p>
     </div>
     <Modal v-model="content_modal" width="500">
       <p slot="header" style="text-align:center">
