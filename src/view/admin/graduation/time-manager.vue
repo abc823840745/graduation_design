@@ -10,14 +10,14 @@
                 </div>
             </TabPane>
         </Tabs>
-        <Modal v-model="timeModal" width="400px" title="确定设置该时间？" @on-ok="ok">
+        <Modal v-model="timeModal" width="400px" title="确定设置该时间？"  >
             <p class="content_title">{{title}}</p>
-            <Form :model="form" :label-width="50">
+            <Form :model="form" :label-width="100">
                 <Form-item label="面向对象">
                     <Input :value="form.time" disabled></Input>
                 </Form-item>
                 <FormItem prop="deadline" label="截至/开始时间">
-                    <DatePicker v-model="form.deadline" type="datetime" placeholder="请选择截至时间" style="width: 200px"></DatePicker>
+                    <DatePicker v-model="form.deadline" type="date" placeholder="请选择截至时间" style="width: 200px"></DatePicker>
                 </FormItem>
             </Form>
             <div slot="footer">
@@ -115,7 +115,7 @@
                                             }
                                         }
                                     },
-                                    this.times[this.missionReport[params.index].type] ? '已设置' : '马上设置'
+                                    this.times[this.missionReport[params.index].type] ? '重新设置' : '马上设置'
                                 )
                             ]);
                         }
@@ -143,12 +143,15 @@
             updateTime() {
                 let {time, deadline} = this.form
                 let type = this.choiceType
-                let  post_time = new Date().getTime()
-                updateTime(time, deadline,type, post_time).then((res)=>{
-                    if(res.data.message=='ok'){
+                let post_time = new Date().getTime()
+                deadline = new Date(deadline).getTime()
+                updateTime(time, deadline, type, post_time).then((res) => {
+                    if (res.data.message == 'ok') {
                         this.$Notice.success({
-                            title:'更新成功！'
+                            title: '更新成功！'
                         })
+                        this.timeModal = false
+                        this.getSetTime()
                     }
                 })
             }
@@ -159,5 +162,3 @@
 <style>
 
 </style>
-
-
