@@ -1,11 +1,11 @@
 <template>
   <div class="goods-all">
-    <Table border :columns="columns" @on-selection-change="getSelection" :data="tableData" size="large" no-data-text="暂时未到开题时间"></Table>
+    <Table border :columns="columns" :data="tableData" size="large" no-data-text="暂时未到开题时间"></Table>
     <div class="page_container">
       <Page :total="total" :page-size="pageSize" @on-change="changePage" />
     </div>
     <div class="choice_btn">
-      <Button @click="submitSelect" type="success">添加新老师</Button>
+      <Button type="primary" @click="new_modal=true">添加新老师</Button>
       <p class="choice_tip">注意：请按照指定格式导入教师表！</p>
     </div>
     <Modal v-model="content_modal" width="500">
@@ -15,11 +15,26 @@
       </p>
       <div>{{description}}</div>
     </Modal>
+    <Modal v-model="new_modal" width="1200">
+      <p slot="header" style="text-align:center">
+        <Icon type="ios-information-circle"></Icon>
+        <span>确定要添加教师信息？</span>
+      </p>
+      <Table :columns="tableTitle" :data="newData" :loading="tableLoading"></Table>
+      <div class="upload_container">
+        <Upload action="" :before-upload="handleBeforeUpload" accept=".xls, .xlsx">
+          <Button icon="ios-cloud-upload-outline" :loading="uploadLoading" @click="handleUploadFile">点击上传新老师信息表</Button>
+        </Upload>
+      </div>
+      <div slot="footer">
+        <Button type="primary" size="large" long @click="addNewTeacher">确定添加</Button>
+      </div>
+    </Modal>
   </div>
 </template>
 <script>
-  import Cookies from "js-cookie";
-  import { getAllTeacher, choiceTeacher, getMenber } from '@/api/teacher'
+  import excel from '@/libs/excel'
+  import { getAllTeacher, choiceTeacher, getMenber, addNewTeacher } from '@/api/teacher'
   import { getMyDate } from '@/libs/tools'
   import config from '@/config'
   const baseUrl = process.env.NODE_ENV === 'development' ? config.baseUrl.dev : config.baseUrl.pro
@@ -29,6 +44,15 @@
     name: "choice-teacher",
     data() {
       return {
+        uploadUrl,
+        tableLoading: false,
+        new_modal: false,
+        uploadLoading: false,
+        progressPercent: 0,
+        showProgress: false,
+        showRemoveFile: false,
+        tableTitle: [],
+        file: null,
         description: '',
         content_modal: false,
         guide_teacher: '',
@@ -44,6 +68,7 @@
         info: {},
         modal1: false,
         tableData: [],
+        newData: [],
         columns: [
           {
             title: '上传日期',
@@ -122,7 +147,7 @@
                     },
                     on: {
                       click: () => {
-                       this.$router.push({
+                        this.$router.push({
                           path: "/teacher_detail/papper_admin",
                           query: {
                             username: this.tableData[params.index].username,
@@ -177,6 +202,88 @@
       }
     },
     methods: {
+      initUpload() {
+        this.file = null
+        this.showProgress = false
+        this.loadingProgress = 0
+        this.newData = []
+        this.tableTitle = []
+      },
+      handleUploadFile() {
+        this.initUpload()
+      },
+      addNewTeacher() {
+        let teachers = []
+        this.newData.forEach((item) => {
+          teachers.push({
+            time:new Date().getTime(),
+            code: item['教师工号'],
+            username: item['教师姓名'],
+            major: item['负责方向'],
+            level: item['教师学历'],
+            experient: item["教学经验"],
+            phone: item['联系方式'],
+            qq: item['qq号码'],
+            role: item['教师身份'],
+            people: item['负责毕设学生人数'],
+            description: item['教师简介']
+          })
+        })
+        addNewTeacher(teachers).then((res) => {
+          if (res.data.message == 'ok') {
+            this.$Notice.success({
+              title: "上传成功"
+            })
+            this.getAllTeacher()
+            this.new_modal = false
+          } else {
+            this.$Notice.success({
+              title: "上传失败，请稍后重试！"
+            })
+          }
+        })
+      },
+      handleBeforeUpload(file) {
+        const fileExt = file.name.split('.').pop().toLocaleLowerCase()
+        if (fileExt === 'xlsx' || fileExt === 'xls') {
+          this.readFile(file)
+          this.file = file
+          this.new_modal = true
+          console.log()
+        } else {
+          this.$Notice.warning({
+            title: '文件类型错误',
+            desc: '文件：' + file.name + '不是EXCEL文件，请选择后缀为.xlsx或者.xls的EXCEL文件。'
+          })
+        }
+        return false
+      },
+      readFile(file) {
+        const reader = new FileReader()
+        reader.readAsArrayBuffer(file)
+        reader.onloadstart = e => {
+          this.uploadLoading = true
+          this.tableLoading = true
+          this.showProgress = true
+        }
+        reader.onprogress = e => {
+          this.progressPercent = Math.round(e.loaded / e.total * 100)
+        }
+        reader.onerror = e => {
+          this.$Message.error('文件读取出错')
+        }
+        reader.onload = e => {
+          this.$Message.info('文件读取成功')
+          const data = e.target.result
+          const { header, results } = excel.read(data, 'array')
+          const tableTitle = header.map(item => { return { title: item, key: item } })
+          this.newData = results
+          this.tableTitle = tableTitle
+          this.uploadLoading = false
+          this.tableLoading = false
+          this.showRemoveFile = true
+        }
+      },
       changePage(page) {
         this.page = page
         this.originSelect = this.haveSelect
@@ -371,6 +478,13 @@
   .choice_tip {
     position: relative;
     margin-top: 10px;
+  }
+  
+  .upload_container {
+    position: relative;
+    margin: 15px 0;
+    left: 50%;
+    transform: translateX(-80px);
   }
   
   .page_container {

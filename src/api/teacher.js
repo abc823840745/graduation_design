@@ -296,12 +296,12 @@ export const haveTeacherStudent = ((id, page, size) => {
 })
 
 
-export const updateTeacherStudent = ((id,uid) => {
+export const updateTeacherStudent = ((id, uid) => {
   return axios.request({
     url: '/update/teacher/student',
     method: 'post',
     data: {
-      id,uid
+      id, uid
     }
   })
 })
@@ -312,18 +312,27 @@ export const getSetTime = ((time) => {
     url: '/get/time',
     method: 'post',
     data: {
-     time
+      time
     }
   })
 })
 
-export const updateTime = ((time, deadline,type, post_time) => {
+export const updateTime = ((time, deadline, type, post_time) => {
   return axios.request({
     url: '/update/time',
     method: 'post',
     data: {
-    time, deadline,type, post_time
+      time, deadline, type, post_time
     }
   })
 })
 
+export const addNewTeacher = ((teacher) => {
+  return axios.request({
+    url: '/add/new/teacher',
+    method: 'post',
+    data: {
+      teacher
+    }
+  })
+})
