@@ -267,7 +267,6 @@
                     })
                     return
                 }
-                console.log(6666)
                 this.form.time = new Date().getTime()
                 updateMovie(this.form).then((res) => {
                     if (res.data.message == 'ok') {
@@ -282,6 +281,7 @@
             getName(name) {
                 this.type = this.workType[name].value
                 this.start = 0
+                this.movieList = []
                 this.getMovie()
             },
             handleMaxSize(file) {
@@ -292,7 +292,7 @@
             },
             handleSuccess(res, file) {
                 var file = "https://" + res.data.url
-                this.form.url = file
+                this.form.cover = file
                 this.uploadList.push({ url: file, status: "finished" })
             },
             goToDetail(item) {
@@ -333,16 +333,17 @@
         width: 290px;
         height: 210px;
     }
-      
-  .choice_btn {
-    position: fixed;
-    width: 320px;
-    text-align: center;
-    left: 50%;
-    bottom: 80px;
-    transform: translateX(-20px);
-    margin: 0 auto;
-  }
+    
+    .choice_btn {
+        position: fixed;
+        width: 320px;
+        text-align: center;
+        left: 50%;
+        bottom: 80px;
+        transform: translateX(-20px);
+        margin: 0 auto;
+    }
+    
     .title-wrapper {
         position: relative;
         overflow: hidden;
