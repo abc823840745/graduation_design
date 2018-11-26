@@ -1,5 +1,5 @@
-import Main from '@/components/main'
-import parentView from '@/components/parent-view'
+import Main from '@/components/main';
+import parentView from '@/components/parent-view';
 
 /**
  * iview-admin中meta除了原生参数外可配置的参数:
@@ -18,18 +18,18 @@ export default [
     name: 'login',
     meta: {
       title: 'Login - 登录',
-      hideInMenu: true
+      hideInMenu: true,
     },
-    component: () => import('@/view/login/login.vue')
+    component: () => import('@/view/login/login.vue'),
   },
   {
     path: '/locking',
     name: 'locking',
     meta: {
       title: '锁屏',
-      hideInMenu: true
+      hideInMenu: true,
     },
-    component: () => import('@/components/main/components/lockscreen/components/lockingPage.vue')
+    component: () => import('@/components/main/components/lockscreen/components/lockingPage.vue'),
   },
 
   //学生端路由
@@ -41,7 +41,7 @@ export default [
     meta: {
       hideInMenu: true,
       notCache: true,
-      access: ['student', 'teacher']
+      access: ['student', 'teacher'],
     },
     children: [
       {
@@ -52,11 +52,11 @@ export default [
           title: '首页',
           notCache: true,
           icon: 'md-home',
-          access: ['student', 'teacher', 'admin']
+          access: ['student', 'teacher', 'admin'],
         },
-        component: () => import('@/view/home')
-      }
-    ]
+        component: () => import('@/view/home'),
+      },
+    ],
   },
   {
     path: '/message_index',
@@ -65,7 +65,7 @@ export default [
     component: Main,
     meta: {
       title: '消息提醒',
-      hideInMenu: true
+      hideInMenu: true,
     },
     children: [
       {
@@ -76,11 +76,11 @@ export default [
           title: '消息',
           notCache: true,
           icon: 'md-home',
-          access: ['student', 'teacher']
+          access: ['student', 'teacher'],
         },
-        component: () => import('@/view/message_index/message_index.vue')
-      }
-    ]
+        component: () => import('@/view/message_index/message_index.vue'),
+      },
+    ],
   },
   {
     path: '/movie_index',
@@ -89,7 +89,7 @@ export default [
     component: Main,
     meta: {
       title: '优秀毕设详情',
-      hideInMenu: true
+      hideInMenu: true,
     },
     children: [
       {
@@ -100,12 +100,11 @@ export default [
           title: '优秀毕设详情',
           notCache: true,
           icon: 'md-home',
-          access: ['student', 'teacher']
+          access: ['student', 'teacher'],
         },
-        component: () => import('@/components/main/components/movie_detail/movie_detail.vue')
-      }
-    ]
-
+        component: () => import('@/components/main/components/movie_detail/movie_detail.vue'),
+      },
+    ],
   },
   //查看教师详情
   {
@@ -115,7 +114,7 @@ export default [
     component: Main,
     meta: {
       title: '详情',
-      hideInMenu: true
+      hideInMenu: true,
     },
     children: [
       {
@@ -126,11 +125,11 @@ export default [
           title: '教师详情',
           notCache: true,
           icon: 'md-home',
-          access: ['student']
+          access: ['student'],
         },
-        component: () => import('@/components/main/components/teacher_detail/teacher_detail.vue')
-      }
-    ]
+        component: () => import('@/components/main/components/teacher_detail/teacher_detail.vue'),
+      },
+    ],
   },
   //查看周报详情
   {
@@ -139,7 +138,7 @@ export default [
     component: Main,
     meta: {
       title: '详情',
-      hideInMenu: true
+      hideInMenu: true,
     },
     children: [
       {
@@ -150,9 +149,9 @@ export default [
           title: '周报详情',
           notCache: true,
           icon: 'md-home',
-          access: ['teacher', 'admin']
+          access: ['teacher', 'admin'],
         },
-        component: () => import('@/components/main/components/week_report_detail/week_report_detail.vue')
+        component: () => import('@/components/main/components/week_report_detail/week_report_detail.vue'),
       },
       {
         path: 'course_detail',
@@ -162,9 +161,9 @@ export default [
           title: '课题详情',
           notCache: true,
           icon: 'md-home',
-          access: ['teacher', 'admin']
+          access: ['teacher', 'admin'],
         },
-        component: () => import('@/components/main/components/course_detail/course_detail.vue')
+        component: () => import('@/components/main/components/course_detail/course_detail.vue'),
       },
       {
         path: 'mission_detail',
@@ -174,9 +173,9 @@ export default [
           title: '任务详情',
           notCache: true,
           icon: 'md-home',
-          access: ['teacher', 'admin']
+          access: ['teacher', 'admin'],
         },
-        component: () => import('@/components/main/components/mission_detail/mission_detail.vue')
+        component: () => import('@/components/main/components/mission_detail/mission_detail.vue'),
       },
       {
         path: 'papper_detail',
@@ -186,11 +185,11 @@ export default [
           title: '论文详情',
           notCache: true,
           icon: 'md-home',
-          access: ['teacher', 'admin']
+          access: ['teacher', 'admin'],
         },
-        component: () => import('@/components/main/components/papper_detail/papper_detail.vue')
-      }
-    ]
+        component: () => import('@/components/main/components/papper_detail/papper_detail.vue'),
+      },
+    ],
   },
   {
     path: '/teacher_detail',
@@ -198,7 +197,7 @@ export default [
     component: Main,
     meta: {
       title: '详情',
-      hideInMenu: true
+      hideInMenu: true,
     },
     children: [
       {
@@ -209,9 +208,9 @@ export default [
           title: '论文详情',
           notCache: true,
           icon: 'md-home',
-          access: ['admin']
+          access: ['admin'],
         },
-        component: () => import('@/components/main/components/course_detail/course_admin.vue')
+        component: () => import('@/components/main/components/course_detail/course_admin.vue'),
       },
       {
         path: 'papper_admin',
@@ -221,11 +220,11 @@ export default [
           title: '导师选择详情',
           notCache: true,
           icon: 'md-home',
-          access: ['admin']
+          access: ['admin'],
         },
-        component: () => import('@/components/main/components/papper_detail/papper_admin.vue')
-      }
-    ]
+        component: () => import('@/components/main/components/papper_detail/papper_admin.vue'),
+      },
+    ],
   },
   {
     path: '/student/personal',
@@ -233,7 +232,7 @@ export default [
     meta: {
       icon: 'logo-buffer',
       title: '个人中心',
-      access: ['student']
+      access: ['student'],
     },
     component: Main,
     children: [
@@ -243,9 +242,9 @@ export default [
         meta: {
           icon: 'logo-markdown',
           title: '我的课程',
-          access: ['student']
+          access: ['student'],
         },
-        component: () => import('@/view/student/personal/my-info.vue')
+        component: () => import('@/view/student/personal/my-info.vue'),
       },
       {
         path: 'student-my-message',
@@ -253,11 +252,11 @@ export default [
         meta: {
           icon: 'ios-create',
           title: '其他',
-          access: ['student']
+          access: ['student'],
         },
-        component: () => import('@/view/student/personal/my-message.vue')
-      }
-    ]
+        component: () => import('@/view/student/personal/my-message.vue'),
+      },
+    ],
   },
   {
     path: '/student/course',
@@ -265,7 +264,7 @@ export default [
     meta: {
       icon: 'logo-buffer',
       title: '课程设计',
-      access: ['student']
+      access: ['student'],
     },
     component: Main,
     children: [
@@ -275,9 +274,9 @@ export default [
         meta: {
           icon: 'logo-markdown',
           title: '我的课程',
-          access: ['student']
+          access: ['student'],
         },
-        component: () => import('@/view/student/course/my-course.vue')
+        component: () => import('@/view/student/course/my-course.vue'),
       },
       {
         path: 'other',
@@ -285,11 +284,11 @@ export default [
         meta: {
           icon: 'ios-create',
           title: '其他',
-          access: ['student']
+          access: ['student'],
         },
-        component: () => import('@/view/student/course/else.vue')
-      }
-    ]
+        component: () => import('@/view/student/course/else.vue'),
+      },
+    ],
   },
   {
     path: '/student/homework',
@@ -297,7 +296,7 @@ export default [
     meta: {
       icon: 'md-cloud-upload',
       title: '作业设计',
-      access: ['student']
+      access: ['student'],
     },
     component: Main,
     children: [
@@ -306,10 +305,31 @@ export default [
         name: 'student-my-homework',
         meta: {
           icon: 'ios-document',
-          title: '我的作业',
-          access: ['student']
+          title: '作业情况',
+          access: ['student'],
         },
-        component: () => import('@/view/student/homework/my-homework.vue')
+        component: () => import('@/view/student/homework/my-homework.vue'),
+      },
+      {
+        path: 'check-online-homework-detail',
+        name: 'student-online-homework-detail',
+        meta: {
+          hideInMenu: true,
+          icon: 'ios-document',
+          title: '查看在线作业详情',
+          access: ['student'],
+        },
+        component: () => import('@/view/student/homework/check-online-homework-detail.vue'),
+      },
+      {
+        path: 'write-online-homework',
+        name: 'student-online-homework',
+        meta: {
+          icon: 'ios-document',
+          title: '在线作业',
+          access: ['student'],
+        },
+        component: () => import('@/view/student/homework/write-online-homework.vue'),
       },
       {
         path: 'other',
@@ -317,11 +337,11 @@ export default [
         meta: {
           icon: 'md-clipboard',
           title: '其他',
-          access: ['student']
+          access: ['student'],
         },
-        component: () => import('@/view/student/homework/other.vue')
-      }
-    ]
+        component: () => import('@/view/student/homework/other.vue'),
+      },
+    ],
   },
   {
     path: '/student/graduation',
@@ -329,7 +349,7 @@ export default [
     meta: {
       icon: 'logo-buffer',
       title: '毕业设计',
-      access: ['student']
+      access: ['student'],
     },
     component: Main,
     children: [
@@ -339,9 +359,9 @@ export default [
         meta: {
           icon: 'md-contacts',
           title: '选择导师',
-          access: ['student']
+          access: ['student'],
         },
-        component: () => import('@/view/student/graduation/choice-teacher.vue')
+        component: () => import('@/view/student/graduation/choice-teacher.vue'),
       },
       {
         path: 'choice-course',
@@ -349,9 +369,9 @@ export default [
         meta: {
           icon: 'md-bookmark',
           title: '选择课题',
-          access: ['student']
+          access: ['student'],
         },
-        component: () => import('@/view/student/graduation/choice-course.vue')
+        component: () => import('@/view/student/graduation/choice-course.vue'),
       },
       {
         path: 'my-mission',
@@ -359,9 +379,9 @@ export default [
         meta: {
           icon: 'ios-cube',
           title: '我的任务',
-          access: ['student']
+          access: ['student'],
         },
-        component: () => import('@/view/student/graduation/my-mission.vue')
+        component: () => import('@/view/student/graduation/my-mission.vue'),
       },
       {
         path: 'submit-papper',
@@ -369,9 +389,9 @@ export default [
         meta: {
           icon: 'md-document',
           title: '提交论文',
-          access: ['student']
+          access: ['student'],
         },
-        component: () => import('@/view/student/graduation/submit-papper.vue')
+        component: () => import('@/view/student/graduation/submit-papper.vue'),
       },
       {
         path: 'project-manager',
@@ -379,9 +399,9 @@ export default [
         meta: {
           icon: 'md-folder',
           title: '项目管理',
-          access: ['student']
+          access: ['student'],
         },
-        component: () => import('@/view/student/graduation/project-manager.vue')
+        component: () => import('@/view/student/graduation/project-manager.vue'),
       },
       {
         path: 'practice-week',
@@ -389,37 +409,36 @@ export default [
         meta: {
           icon: 'ios-clock',
           title: '实习周报',
-          access: ['student']
+          access: ['student'],
         },
-        component: () => import('@/view/student/graduation/practice-week.vue')
-      }
-    ]
+        component: () => import('@/view/student/graduation/practice-week.vue'),
+      },
+    ],
   },
   {
     path: '/401',
     name: 'error_401',
     meta: {
-      hideInMenu: true
+      hideInMenu: true,
     },
-    component: () => import('@/view/error-page/401.vue')
+    component: () => import('@/view/error-page/401.vue'),
   },
   {
     path: '/500',
     name: 'error_500',
     meta: {
-      hideInMenu: true
+      hideInMenu: true,
     },
-    component: () => import('@/view/error-page/500.vue')
+    component: () => import('@/view/error-page/500.vue'),
   },
   {
     path: '*',
     name: 'error_404',
     meta: {
-      hideInMenu: true
+      hideInMenu: true,
     },
-    component: () => import('@/view/error-page/404.vue')
+    component: () => import('@/view/error-page/404.vue'),
   },
-
 
   //教师端路由
   {
@@ -428,7 +447,7 @@ export default [
     meta: {
       icon: 'logo-buffer',
       title: '个人中心',
-      access: ['teacher', 'admin']
+      access: ['teacher', 'admin'],
     },
     component: Main,
     children: [
@@ -438,9 +457,9 @@ export default [
         meta: {
           icon: 'logo-markdown',
           title: '我的信息',
-          access: ['teacher', 'admin']
+          access: ['teacher', 'admin'],
         },
-        component: () => import('@/view/teacher/personal/my-info.vue')
+        component: () => import('@/view/teacher/personal/my-info.vue'),
       },
       {
         path: 'teacher-my-message',
@@ -448,11 +467,11 @@ export default [
         meta: {
           icon: 'ios-create',
           title: '我的消息',
-          access: ['teacher', 'admin']
+          access: ['teacher', 'admin'],
         },
-        component: () => import('@/view/teacher/personal/my-message.vue')
-      }
-    ]
+        component: () => import('@/view/teacher/personal/my-message.vue'),
+      },
+    ],
   },
   {
     path: '/admin',
@@ -460,7 +479,7 @@ export default [
     meta: {
       icon: 'logo-buffer',
       title: '管理中心',
-      access: ['admin']
+      access: ['admin'],
     },
     component: Main,
     children: [
@@ -470,9 +489,9 @@ export default [
         meta: {
           icon: 'logo-markdown',
           title: '教师管理',
-          access: ['admin']
+          access: ['admin'],
         },
-        component: () => import('@/view/admin/graduation/teacher-manager.vue')
+        component: () => import('@/view/admin/graduation/teacher-manager.vue'),
       },
       {
         path: 'time-manager',
@@ -480,9 +499,9 @@ export default [
         meta: {
           icon: 'ios-create',
           title: '时间管理',
-          access: ['admin']
+          access: ['admin'],
         },
-        component: () => import('@/view/admin/graduation/time-manager.vue')
+        component: () => import('@/view/admin/graduation/time-manager.vue'),
       },
       {
         path: 'movie-manager',
@@ -490,11 +509,11 @@ export default [
         meta: {
           icon: 'ios-create',
           title: '优秀毕设管理',
-          access: ['admin']
+          access: ['admin'],
         },
-        component: () => import('@/view/admin/graduation/movie-manager.vue')
-      }
-    ]
+        component: () => import('@/view/admin/graduation/movie-manager.vue'),
+      },
+    ],
   },
   {
     path: '/teacher/course',
@@ -502,7 +521,7 @@ export default [
     meta: {
       icon: 'logo-buffer',
       title: '课程设计',
-      access: ['teacher', 'admin']
+      access: ['teacher', 'admin'],
     },
     component: Main,
     children: [
@@ -512,9 +531,9 @@ export default [
         meta: {
           icon: 'logo-markdown',
           title: '我的课程',
-          access: ['teacher', 'admin']
+          access: ['teacher', 'admin'],
         },
-        component: () => import('@/view/teacher/course/my-course.vue')
+        component: () => import('@/view/teacher/course/my-course.vue'),
       },
       {
         path: 'other',
@@ -522,19 +541,20 @@ export default [
         meta: {
           icon: 'ios-create',
           title: '其他',
-          access: ['teacher', 'admin']
+          access: ['teacher', 'admin'],
         },
-        component: () => import('@/view/teacher/course/other.vue')
-      }
-    ]
+        component: () => import('@/view/teacher/course/other.vue'),
+      },
+    ],
   },
+
   {
     path: '/teacher/homework',
     name: 'teacher-homework',
     meta: {
       icon: 'md-cloud-upload',
       title: '作业管理',
-      access: ['teacher', 'admin']
+      access: ['teacher', 'admin'],
     },
     component: Main,
     children: [
@@ -544,9 +564,40 @@ export default [
         meta: {
           icon: 'ios-document',
           title: '我的作业',
-          access: ['teacher', 'admin']
+          access: ['teacher', 'admin'],
         },
-        component: () => import('@/view/teacher/homework/my-homework.vue')
+        component: () => import('@/view/teacher/homework/createHomeWork/my-homework.vue'),
+      },
+      {
+        path: 'check-assign-homework',
+        name: 'teacher-check-assign-homework',
+        meta: {
+          icon: 'ios-document',
+          title: '查看课时作业',
+          access: ['teacher', 'admin'],
+        },
+        component: () => import('@/view/teacher/homework/checkHomeWork/check-assign-homework.vue'),
+      },
+      {
+        path: 'check-online-homework',
+        name: 'teacher-check-online-homework',
+        meta: {
+          icon: 'ios-document',
+          title: '查看在线作业',
+          access: ['teacher', 'admin'],
+        },
+        component: () => import('@/view/teacher/homework/checkHomeWork/check-online-homework.vue'),
+      },
+      {
+        path: 'check-online-homework-detail',
+        name: 'teacher-check-online-homework-detail',
+        meta: {
+          hideInMenu: true,
+          icon: 'ios-document',
+          title: '查看在线作业详情',
+          access: ['teacher', 'admin'],
+        },
+        component: () => import('@/view/teacher/homework/checkHomeWork/check-online-homework-detail.vue'),
       },
       {
         path: 'other',
@@ -554,19 +605,20 @@ export default [
         meta: {
           icon: 'md-clipboard',
           title: '其他',
-          access: ['teacher', 'admin']
+          access: ['teacher', 'admin'],
         },
-        component: () => import('@/view/teacher/homework/other.vue')
-      }
-    ]
+        component: () => import('@/view/teacher/homework/other.vue'),
+      },
+    ],
   },
+
   {
     path: '/teacher/graduation',
     name: 'teacher-graduation',
     meta: {
       icon: 'logo-buffer',
       title: '毕业设计',
-      access: ['teacher', 'admin']
+      access: ['teacher', 'admin'],
     },
     component: Main,
     children: [
@@ -576,9 +628,9 @@ export default [
         meta: {
           icon: 'md-contacts',
           title: '选择导师',
-          access: ['teacher', 'admin']
+          access: ['teacher', 'admin'],
         },
-        component: () => import('@/view/teacher/graduation/choice-teacher.vue')
+        component: () => import('@/view/teacher/graduation/choice-teacher.vue'),
       },
       {
         path: 'project-report',
@@ -586,9 +638,9 @@ export default [
         meta: {
           icon: 'md-basket',
           title: '开题报告',
-          access: ['teacher', 'admin']
+          access: ['teacher', 'admin'],
         },
-        component: () => import('@/view/teacher/graduation/project-report.vue')
+        component: () => import('@/view/teacher/graduation/project-report.vue'),
       },
       {
         path: 'my-mission',
@@ -596,10 +648,10 @@ export default [
         meta: {
           icon: 'ios-cube',
           title: '我的任务',
-          access: ['teacher', 'admin']
+          access: ['teacher', 'admin'],
         },
-        component: () => import('@/view/teacher/graduation/my-mission.vue')
-      }
-    ]
-  }
-]
+        component: () => import('@/view/teacher/graduation/my-mission.vue'),
+      },
+    ],
+  },
+];
