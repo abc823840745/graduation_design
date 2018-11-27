@@ -21,28 +21,28 @@
 <script>
 export default {
   props: {
-    title: String, //标题
+    title: String, // 标题
     // subject: String, //题目输入
-    placeholder: String, //输入框提示
+    placeholder: String, // 输入框提示
     ifEdit: { default: true, type: Boolean },
-    outputSubject: String, //外面传进来的题目
+    outputSubject: String // 外面传进来的题目
     // radioChoice: String, //选择的radio值
   },
-  data() {
+  data () {
     return {
       subject: '',
-      radioChoice: '',
-    };
+      radioChoice: ''
+    }
   },
   methods: {
-    onChangeSubject() {
-      this.$emit('onChangenSubject', { subject: this.subject });
+    onChangeSubject () {
+      this.$emit('onChangenSubject', { subject: this.subject })
     },
-    onChangeRadio() {
-      this.$emit('onChangeRadio', { radioChoice: this.radioChoice });
-    },
-  },
-};
+    onChangeRadio () {
+      this.$emit('onChangeRadio', { radioChoice: this.radioChoice })
+    }
+  }
+}
 </script>
 
 <style  lang="less" scoped>

@@ -55,6 +55,12 @@
     word-break: break-all;
     overflow: hidden;
   }
+  .btnGround {
+    width: 21%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 </style>
 <template>
@@ -65,8 +71,18 @@
       <P class="count-down-text primary-color">20min</P>
     </div>
 
-    <radio-item title="1、单选题" :outputSubject="firstSubject" @onChangeRadio="onChangeRadio" :ifEdit="false" />
-    <radio-item title="2、单选题" :outputSubject="secondSubject" @onChangeRadio="onChangeRadio2" :ifEdit="false" />
+    <radio-item
+      title="1、单选题"
+      :outputSubject="firstSubject"
+      @onChangeRadio="onChangeRadio"
+      :ifEdit="false"
+    />
+    <radio-item
+      title="2、单选题"
+      :outputSubject="secondSubject"
+      @onChangeRadio="onChangeRadio2"
+      :ifEdit="false"
+    />
 
     <div class="mar-bottom">
       <p class="input-title">3、多选题</p>
@@ -74,10 +90,22 @@
       <div class="radio-list">
         答案:
         <CheckboxGroup v-model="thirdChoice">
-          <Checkbox label="A" class="checkbox-item"></Checkbox>
-          <Checkbox label="B" class="checkbox-item"></Checkbox>
-          <Checkbox label="C" class="checkbox-item"></Checkbox>
-          <Checkbox label="D" class="checkbox-item"></Checkbox>
+          <Checkbox
+            label="A"
+            class="checkbox-item"
+          ></Checkbox>
+          <Checkbox
+            label="B"
+            class="checkbox-item"
+          ></Checkbox>
+          <Checkbox
+            label="C"
+            class="checkbox-item"
+          ></Checkbox>
+          <Checkbox
+            label="D"
+            class="checkbox-item"
+          ></Checkbox>
         </CheckboxGroup>
       </div>
 
@@ -86,34 +114,48 @@
     <div class="mar-bottom">
       <p class="input-title">4、主观题</p>
       <p class="subjectText">{{fourthSubject}}</p>
-      <Input v-model="fourthChoice" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入你的答案" class="text-input" />
+      <Input
+        v-model="fourthChoice"
+        type="textarea"
+        :autosize="{minRows: 2,maxRows: 5}"
+        placeholder="请输入你的答案"
+        class="text-input"
+      />
     </div>
 
-    <Button type="primary" @click="submit()" class="submitBtn">提交</Button>
+    <div class="btnGround">
+      <Button
+        type="primary"
+        @click="submit()"
+        class="submitBtn"
+        long
+      >提交</Button>
+    </div>
+
   </div>
 
 </template>
 <script>
-import RadioItem from '@/view/teacher/homework/smart/create-subject-radio-item';
+import RadioItem from "@/view/teacher/homework/smart/create-subject-radio-item";
 export default {
-  name: 'online-homework',
+  name: "online-homework",
   data() {
     return {
-      firstChoice: '',
-      firstSubject: '钢铁是怎么炼成的?',
-      secondChoice: '',
-      secondSubject: '钢铁是怎么炼成的?',
+      firstChoice: "",
+      firstSubject: "钢铁是怎么炼成的?",
+      secondChoice: "",
+      secondSubject: "钢铁是怎么炼成的?",
       thirdChoice: [],
-      thirdSubject: '钢铁是怎么炼成的?',
-      fourthChoice: '',
-      fourthSubject: '钢铁是怎么炼成的?',
+      thirdSubject: "钢铁是怎么炼成的?",
+      fourthChoice: "",
+      fourthSubject: "钢铁是怎么炼成的?"
     };
   },
   components: {
-    RadioItem,
+    RadioItem
   },
   methods: {
-    //监听子组件传过来的radio值
+    // 监听子组件传过来的radio值
     onChangeRadio(data) {
       this.firstChoice = data.radioChoice;
     },
@@ -122,9 +164,9 @@ export default {
     },
     submit() {
       console.log(this.firstChoice, this.secondChoice);
-    },
+    }
   },
   created() {},
-  mounted() {},
+  mounted() {}
 };
 </script>

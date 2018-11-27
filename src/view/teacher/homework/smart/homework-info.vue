@@ -51,40 +51,40 @@
 export default {
   name: 'homework-info',
   props: {
-    selTip:String,
-    completeProgress: Number,
+    selTip: String,
+    completeProgress: Number
   },
-  data() {
+  data () {
     return {
       selValue: '',
       selList: [
         {
           value: '已完成',
-          label: '已完成',
+          label: '已完成'
         },
         {
           value: '未完成',
-          label: '未完成',
-        },
+          label: '未完成'
+        }
       ],
       selList2: [
         {
           value: '2016-2017第一学期',
-          label: '2016-2017第一学期',
+          label: '2016-2017第一学期'
         },
         {
           value: '2016-2017第二学期',
-          label: '2016-2017第二学期',
-        },
-      ],
-    };
+          label: '2016-2017第二学期'
+        }
+      ]
+    }
   },
   methods: {
-    onChangeSelVal() {
-      this.$emit('onChangeSelVal', { selValue: this.selValue });
-    },
+    onChangeSelVal () {
+      this.$emit('onChangeSelVal', { selValue: this.selValue })
+    }
   },
-  created() {},
-  mounted() {},
-};
+  created () {},
+  mounted () {}
+}
 </script>

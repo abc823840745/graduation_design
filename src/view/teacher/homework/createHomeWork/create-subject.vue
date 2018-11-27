@@ -1,60 +1,100 @@
 <template>
   <div class="containter">
-    <radio-item title='1、单选题' @onChangeSubject="onChangeSubject" placeholder='第一题题目' @onChangeRadio="onChangeRadio" />
+    <radio-item
+      title='1、单选题'
+      @onChangeSubject="onChangeSubject"
+      placeholder='第一题题目'
+      @onChangeRadio="onChangeRadio"
+    />
 
-    <radio-item title='2、单选题' @onChangeSubject="onChangeSubject2" placeholder='第二题题目' @onChangeRadio="onChangeRadio2" />
+    <radio-item
+      title='2、单选题'
+      @onChangeSubject="onChangeSubject2"
+      placeholder='第二题题目'
+      @onChangeRadio="onChangeRadio2"
+    />
 
     <div class="mar-bottom">
       <p class="input-title">3、多选题</p>
-      <Input v-model="thirdSubject" placeholder="第三题题目" clearable style="width: 220px" />
+      <Input
+        v-model="thirdSubject"
+        placeholder="第三题题目"
+        clearable
+        style="width: 220px"
+      />
       <div class="radio-list">
         答案:
         <CheckboxGroup v-model="thirdChoice">
-          <Checkbox label="A" class="checkbox-item">A</Checkbox>
-          <Checkbox label="B" class="checkbox-item">B</Checkbox>
-          <Checkbox label="C" class="checkbox-item">C</Checkbox>
-          <Checkbox label="D" class="checkbox-item">D</Checkbox>
+          <Checkbox
+            label="A"
+            class="checkbox-item"
+          >A</Checkbox>
+          <Checkbox
+            label="B"
+            class="checkbox-item"
+          >B</Checkbox>
+          <Checkbox
+            label="C"
+            class="checkbox-item"
+          >C</Checkbox>
+          <Checkbox
+            label="D"
+            class="checkbox-item"
+          >D</Checkbox>
         </CheckboxGroup>
       </div>
     </div>
 
     <div class="mar-bottom">
       <p class="input-title">4、主观题</p>
-      <Input v-model="fourthSubject" placeholder="第四题题目" clearable style="width: 220px" />
+      <Input
+        v-model="fourthSubject"
+        placeholder="第四题题目"
+        clearable
+        style="width: 220px"
+      />
     </div>
 
     <div class="btnGround">
-      <Button type="primary" @click="goBack">上一步</Button>
-      <Button type="primary" @click="submit">提交</Button>
+      <Button
+        type="primary"
+        size='large'
+        @click="goBack"
+      >上一步</Button>
+      <Button
+        type="primary"
+        size='large'
+        @click="submit"
+      >提交</Button>
     </div>
 
   </div>
 </template>
 
 <script>
-import RadioItem from '../smart/create-subject-radio-item';
+import RadioItem from "../smart/create-subject-radio-item";
 
 export default {
-  name: 'create-subject',
+  name: "create-subject",
   data() {
     return {
-      firstSubject: '',
-      secondSubject: '',
-      thirdSubject: '',
-      fourthSubject: '',
-      firstChoice: '',
-      secondChoice: '',
-      thirdChoice: [],
+      firstSubject: "",
+      secondSubject: "",
+      thirdSubject: "",
+      fourthSubject: "",
+      firstChoice: "",
+      secondChoice: "",
+      thirdChoice: []
     };
   },
   props: {
     goBack: Function,
     homeworkName: String,
     homeworkClassify: String,
-    stopTimeList: Array,
+    stopTimeList: Array
   },
   components: {
-    RadioItem,
+    RadioItem
   },
   methods: {
     submit() {
@@ -66,9 +106,9 @@ export default {
         !this.thirdSubject ||
         this.thirdChoice.length === 0
       ) {
-        return this.$Message.error('缺少必填信息');
+        return this.$Message.error("缺少必填信息");
       }
-      this.$Message.success('成功');
+      this.$Message.success("成功");
     },
     onChangeSubject(data) {
       this.firstSubject = data.subject;
@@ -81,8 +121,8 @@ export default {
     },
     onChangeRadio2(data) {
       this.secondChoice = data.radioChoice;
-    },
-  },
+    }
+  }
 };
 </script>
 

@@ -104,10 +104,10 @@
 </template>
 
 <script>
-import RadioItem from '@/view/teacher/homework/smart/online-detail-radio-item';
+import RadioItem from '@/view/teacher/homework/smart/online-detail-radio-item'
 export default {
   name: 'check-online-homework-detail',
-  data() {
+  data () {
     return {
       firstSubject: '钢铁是怎么炼成的?',
       secondSubject: '钢铁是怎么炼成的?',
@@ -120,21 +120,21 @@ export default {
       score1: 20,
       score2: 20,
       score3: 0,
-      score4: 40,
-    };
+      score4: 40
+    }
   },
   components: {
-    RadioItem,
+    RadioItem
   },
   methods: {
-    onChangeScore(data) {
-      this.score1 = data.score;
+    onChangeScore (data) {
+      this.score1 = data.score
     },
-    onChangeScore2(data) {
-      this.score2 = data.score;
-    },
-  },
-};
+    onChangeScore2 (data) {
+      this.score2 = data.score
+    }
+  }
+}
 </script>
 
 <style lang="less" scoped>

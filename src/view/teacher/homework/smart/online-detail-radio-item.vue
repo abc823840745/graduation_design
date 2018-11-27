@@ -31,23 +31,23 @@
 <script>
 export default {
   props: {
-    title: String, //标题
-    subject: String, //题目输入
-    radioChoice: String, //单选项
-    outputScore: Number, //外部输入的分数值
-    ifEdit: { default: true, type: Boolean }, //评分栏是否可以编辑
+    title: String, // 标题
+    subject: String, // 题目输入
+    radioChoice: String, // 单选项
+    outputScore: Number, // 外部输入的分数值
+    ifEdit: { default: true, type: Boolean } // 评分栏是否可以编辑
   },
-  data() {
+  data () {
     return {
-      score: 60,
-    };
+      score: 60
+    }
   },
   methods: {
-    onChangeScore() {
-      this.$emit('onChangeInputNum', { score: this.score });
-    },
-  },
-};
+    onChangeScore () {
+      this.$emit('onChangeInputNum', { score: this.score })
+    }
+  }
+}
 </script>
 
 <style  lang="less" scoped>

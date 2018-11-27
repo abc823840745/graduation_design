@@ -2,9 +2,19 @@
   <div class="containter">
     <div>
 
-      <radio-item title="1、单选题" subject='钢铁是怎么炼成的?' :radioChoice="firstChoice" @onChangeScore="onChangeScore" />
+      <radio-item
+        title="1、单选题"
+        subject='钢铁是怎么炼成的?'
+        :radioChoice="firstChoice"
+        @onChangeScore="onChangeScore"
+      />
 
-      <radio-item title="2、单选题" subject='钢铁是怎么炼成的?' :radioChoice="secondChoice" @onChangeScore="onChangeScore2" />
+      <radio-item
+        title="2、单选题"
+        subject='钢铁是怎么炼成的?'
+        :radioChoice="secondChoice"
+        @onChangeScore="onChangeScore2"
+      />
 
       <div class="mar-bottom">
         <p class="input-title">3、多选题</p>
@@ -12,15 +22,36 @@
         <div class="radio-list">
           答案:
           <CheckboxGroup v-model="thirdChoice">
-            <Checkbox label="A" class="checkbox-item" disabled></Checkbox>
-            <Checkbox label="B" class="checkbox-item" disabled></Checkbox>
-            <Checkbox label="C" class="checkbox-item" disabled></Checkbox>
-            <Checkbox label="D" class="checkbox-item" disabled></Checkbox>
+            <Checkbox
+              label="A"
+              class="checkbox-item"
+              disabled
+            ></Checkbox>
+            <Checkbox
+              label="B"
+              class="checkbox-item"
+              disabled
+            ></Checkbox>
+            <Checkbox
+              label="C"
+              class="checkbox-item"
+              disabled
+            ></Checkbox>
+            <Checkbox
+              label="D"
+              class="checkbox-item"
+              disabled
+            ></Checkbox>
           </CheckboxGroup>
         </div>
         <div class="radio-list">
           评分：
-          <InputNumber :max="100" :min="0" :step="10" v-model="score3"></InputNumber>
+          <InputNumber
+            :max="100"
+            :min="0"
+            :step="10"
+            v-model="score3"
+          ></InputNumber>
         </div>
       </div>
 
@@ -30,13 +61,21 @@
         <p>答案: hahahahahah</p>
         <div class="radio-list">
           评分：
-          <InputNumber :max="100" :min="0" :step="10" v-model="score4"></InputNumber>
+          <InputNumber
+            :max="100"
+            :min="0"
+            :step="10"
+            v-model="score4"
+          ></InputNumber>
         </div>
       </div>
 
       <div class="btnGround">
-        <Button type="primary" @click="goBack">上一步</Button>
-        <Button type="primary" @click="submit" class="btn-mar">提交</Button>
+        <Button
+          type="primary"
+          @click="submit"
+          long
+        >提交</Button>
       </div>
     </div>
 
@@ -44,26 +83,26 @@
 </template>
 
 <script>
-import RadioItem from '../smart/online-detail-radio-item';
+import RadioItem from "../smart/online-detail-radio-item";
 export default {
-  name: 'check-online-homework-detail',
+  name: "check-online-homework-detail",
   data() {
     return {
-      firstSubject: '',
-      secondSubject: '',
-      thirdSubject: '',
-      fourthSubject: '',
-      firstChoice: 'A',
-      secondChoice: 'B',
-      thirdChoice: ['A', 'B'],
+      firstSubject: "",
+      secondSubject: "",
+      thirdSubject: "",
+      fourthSubject: "",
+      firstChoice: "A",
+      secondChoice: "B",
+      thirdChoice: ["A", "B"],
       score1: 60,
       score2: 60,
       score3: 60,
-      score4: 60,
+      score4: 60
     };
   },
   components: {
-    RadioItem,
+    RadioItem
   },
   methods: {
     submit() {
@@ -75,12 +114,12 @@ export default {
         !this.thirdSubject ||
         this.thirdChoice.length === 0
       ) {
-        return this.$Message.error('缺少必填信息');
+        return this.$Message.error("缺少必填信息");
       }
-      alert('提交表单');
+      alert("提交表单");
     },
     goBack() {
-      console.log('goback');
+      console.log("goback");
     },
 
     onChangeScore(data) {
@@ -88,8 +127,8 @@ export default {
     },
     onChangeScore2(data) {
       this.score2 = data.score;
-    },
-  },
+    }
+  }
 };
 </script>
 
@@ -129,9 +168,9 @@ export default {
     align-items: center;
     justify-content: center;
   }
-  .btn-mar {
-    margin-left: 40px;
-  }
+  // .btn-mar {
+  //   margin-left: 40px;
+  // }
   .subjectText {
     width: 220px;
     height: auto;

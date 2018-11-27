@@ -60,245 +60,245 @@
 
 </template>
 <script>
-import homeWork from '../smart/homework-info';
+import homeWork from "../smart/homework-info";
 export default {
-  name: 'check-assign-homework',
+  name: "check-assign-homework",
   components: {
-    homeWork,
+    homeWork
   },
   data() {
     return {
       currentLevel: 1,
-      selTip:'学期选择',
-      selValue: '',
+      selTip: "学期选择",
+      selValue: "",
       selList: [
         {
-          value: '已完成',
-          label: '已完成',
+          value: "已完成",
+          label: "已完成"
         },
         {
-          value: '未完成',
-          label: '未完成',
-        },
+          value: "未完成",
+          label: "未完成"
+        }
       ],
       columns1: [
         {
-          title: '课程',
-          key: 'courseName',
+          title: "课程",
+          key: "courseName"
         },
         {
-          title: '操作',
-          key: 'operation',
+          title: "操作",
+          key: "operation",
           render: (h, params) => {
-            return h('div', [
+            return h("div", [
               h(
-                'Button',
+                "Button",
                 {
                   props: {
-                    type: 'primary',
-                    size: 'small',
+                    type: "primary",
+                    size: "default"
                   },
                   style: {
-                    marginRight: '5px',
+                    marginRight: "5px"
                   },
                   on: {
                     click: () => {
                       //   this.show(params.index);
-                      //打开二级目录
-                      this.currentLevel = 3;
-                      this.selTip = '作业情况';
-                    },
-                  },
+                      // 打开二级目录
+                      this.currentLevel = 2;
+                      this.selTip = "作业情况";
+                    }
+                  }
                 },
-                '查看'
-              ),
+                "查看"
+              )
             ]);
-          },
-        },
+          }
+        }
       ],
       data1: [
         {
-          courseName:'新媒体实训',
-        },
+          courseName: "新媒体实训"
+        }
       ],
 
       columns2: [
         {
-          title: '班级',
-          key: 'className',
+          title: "班级",
+          key: "className"
         },
         {
-          title: '操作',
-          key: 'operation',
+          title: "操作",
+          key: "operation",
           render: (h, params) => {
-            return h('div', [
+            return h("div", [
               h(
-                'Button',
+                "Button",
                 {
                   props: {
-                    type: 'primary',
-                    size: 'small',
+                    type: "primary",
+                    size: "default"
                   },
                   style: {
-                    marginRight: '5px',
+                    marginRight: "5px"
                   },
                   on: {
                     click: () => {
                       //   this.show(params.index);
-                      //打开二级目录
-                      this.currentLevel = 2;
+                      // 打开三级目录
+                      this.currentLevel = 3;
                       // this.selTip = '作业情况';
-                    },
-                  },
+                    }
+                  }
                 },
-                '查看'
+                "查看"
               ),
               h(
-                'Button',
+                "Button",
                 {
                   props: {
-                    type: 'primary',
-                    size: 'small',
+                    type: "primary",
+                    size: "default"
                   },
                   style: {
-                    marginRight: '5px',
+                    marginRight: "5px"
                   },
                   on: {
                     click: () => {
                       //   this.show(params.index);
-                      //返回一级目录
+                      // 返回一级目录
                       this.currentLevel = 1;
-                      this.selTip = '学期选择';
-                    },
-                  },
+                      this.selTip = "学期选择";
+                    }
+                  }
                 },
-                '返回'
-              ),
+                "返回"
+              )
             ]);
-          },
-        },
+          }
+        }
       ],
       data2: [
         {
-          className:'ATM',
-        },
+          className: "ATM"
+        }
       ],
 
       columns3: [
         {
-          title: '学号',
-          key: 'studentId',
+          title: "学号",
+          key: "studentId"
         },
         {
-          title: '姓名',
-          key: 'name',
+          title: "姓名",
+          key: "name"
         },
         {
-          title: '提交情况',
-          key: 'submission',
+          title: "提交情况",
+          key: "submission"
         },
         {
-          title: '评分',
-          key: 'score',
+          title: "评分",
+          key: "score",
           render: (h, params) => {
-            return h('div', [
-              h('Rate', {
+            return h("div", [
+              h("Rate", {
                 props: {
-                  value: 3,
+                  value: 3
                 },
                 style: {
-                  marginRight: '5px',
+                  marginRight: "5px"
                 },
                 on: {
                   click: () => {
                     // 评分
-                  },
-                },
-              }),
+                  }
+                }
+              })
             ]);
-          },
+          }
         },
         {
-          title: '操作',
-          key: 'operation',
+          title: "操作",
+          key: "operation",
           render: (h, params) => {
-            return h('div', [
+            return h("div", [
               h(
-                'Button',
+                "Button",
                 {
                   props: {
-                    type: 'primary',
-                    size: 'small',
+                    type: "primary",
+                    size: "default"
                   },
                   style: {
-                    marginRight: '5px',
+                    marginRight: "5px"
                   },
                   on: {
                     click: () => {
-                      //TODO:打开实验报告
-                    },
-                  },
+                      // TODO:打开实验报告
+                    }
+                  }
                 },
-                '下载并打开'
+                "下载并打开"
               ),
               h(
-                'Button',
+                "Button",
                 {
                   props: {
-                    type: 'primary',
-                    size: 'small',
+                    type: "primary",
+                    size: "default"
                   },
                   style: {
-                    marginRight: '5px',
+                    marginRight: "5px"
                   },
                   on: {
                     click: () => {
-                      //返回上一步
-                    this.currentLevel = 2;
-                    // this.selTip = '学期选择';
-                    },
-                  },
+                      // 返回上一步
+                      this.currentLevel = 2;
+                      // this.selTip = '学期选择';
+                    }
+                  }
                 },
-                '返回'
-              ),
+                "返回"
+              )
             ]);
-          },
-        },
+          }
+        }
       ],
       data3: [
         {
-          studentId: '1540624158',
-          name: '吕嘉俊',
-          submission: '已完成',
-          score: '',
-          operation: '',
-        },
-      ],
+          studentId: "1540624158",
+          name: "吕嘉俊",
+          submission: "已完成",
+          score: "",
+          operation: ""
+        }
+      ]
     };
   },
   methods: {
     submit() {
-      console.log('submit');
+      console.log("submit");
     },
     onChangeSelVal(data) {
       this.selValue = data.selValue;
     },
-    showTable(condition , data){
-      console.warn(condition,data);
-      switch(condition){
+    showTable(condition, data) {
+      // console.warn(condition, data);
+      switch (condition) {
         case 1:
-          return data + '1'
+          return this[`${data}1`];
           break;
         case 2:
-          return data + '2'
+          return this[`${data}2`];
           break;
         case 3:
-          return data + '3'
+          return this[`${data}3`];
           break;
       }
     }
   },
   created() {},
-  mounted() {},
+  mounted() {}
 };
 </script>

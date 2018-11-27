@@ -99,186 +99,186 @@
 </template>
 <script>
 export default {
-  name: 'my-homework',
+  name: "my-homework",
   data() {
     return {
-      showTwoLevel:false,
+      showTwoLevel: false,
       columns1: [
         {
-          title: '课程名',
-          key: 'courseName',
+          title: "课程名",
+          key: "courseName"
         },
         {
-          title: '操作',
-          key: 'operation',
+          title: "操作",
+          key: "operation",
           render: (h, params) => {
-            return h('div', [
+            return h("div", [
               h(
-                'Button',
+                "Button",
                 {
                   props: {
-                    type: 'primary',
-                    size: 'small',
-                    disabled: false,
+                    type: "primary",
+                    size: "default",
+                    disabled: false
                   },
                   style: {
-                    marginRight: '5px',
+                    marginRight: "5px"
                   },
                   on: {
                     click: () => {
-                      //进入二级目录
-                      //TODO:跳转回一级目录第一页
+                      // 进入二级目录
+                      // TODO:跳转回一级目录第一页
                       this.showTwoLevel = true;
-                    },
-                  },
+                    }
+                  }
                 },
-                '查看'
-              ),
+                "查看"
+              )
             ]);
-          },
-        },
+          }
+        }
       ],
       data1: [
         {
-          courseName: '新媒体实训',
+          courseName: "新媒体实训"
         },
         {
-          courseName: '新媒体实训',
+          courseName: "新媒体实训"
         },
         {
-          courseName: '新媒体实训',
-        },
+          courseName: "新媒体实训"
+        }
       ],
 
       columns2: [
         {
-          title: '作业名',
-          key: 'homeworkName',
+          title: "作业名",
+          key: "homeworkName"
         },
         {
-          title: '作业类型',
-          key: 'homeworkClassify',
+          title: "作业类型",
+          key: "homeworkClassify"
         },
         {
-          title: '截止时间',
-          key: 'stopTime',
+          title: "截止时间",
+          key: "stopTime"
         },
         {
-          title: '提交情况',
-          key: 'submission',
+          title: "提交情况",
+          key: "submission"
         },
         {
-          title: '评分',
-          key: 'score',
+          title: "评分",
+          key: "score"
         },
         {
-          title: '操作',
-          key: 'operation',
+          title: "操作",
+          key: "operation",
           render: (h, params) => {
-            return h('div', [
+            return h("div", [
               h(
-                'Button',
+                "Button",
                 {
                   props: {
-                    type: 'primary',
-                    size: 'small',
-                    disabled: false,
+                    type: "primary",
+                    size: "default",
+                    disabled: false
                   },
                   style: {
-                    marginRight: '5px',
+                    marginRight: "5px"
                   },
                   on: {
                     click: () => {
                       // 打开在线作业详情
                       this.$router.push({
-                        name: 'student-online-homework-detail',
+                        name: "student-online-homework-detail"
                       });
-                    },
-                  },
+                    }
+                  }
                 },
-                '查看'
+                "查看"
               ),
               h(
-                'Button',
+                "Button",
                 {
                   props: {
-                    type: 'primary',
-                    size: 'small',
-                    disabled: false,
+                    type: "primary",
+                    size: "default",
+                    disabled: false
                   },
                   style: {
-                    marginRight: '5px',
+                    marginRight: "5px"
                   },
                   on: {
                     click: () => {
                       //   this.show(params.index);
-                      //返回上一步
-                      //TODO:跳转回一级目录第一页
+                      // 返回上一步
+                      // TODO:跳转回一级目录第一页
                       this.showTwoLevel = false;
-                    },
-                  },
+                    }
+                  }
                 },
-                '返回'
-              ),
+                "返回"
+              )
             ]);
-          },
-        },
+          }
+        }
       ],
       data2: [
         {
-          homeworkName: '实验1',
-          homeworkClassify: '在线作业',
-          stopTime: '2018-9-14',
-          submission: '已完成',
-          score: '100',
+          homeworkName: "实验1",
+          homeworkClassify: "在线作业",
+          stopTime: "2018-9-14",
+          submission: "已完成",
+          score: "100"
           // operation: '',
-        },
+        }
       ],
-      semester:'',
-      semesterList:[
+      semester: "",
+      semesterList: [
         {
-          value: '2016-2017第一学期',
-          label: '2016-2017第一学期',
+          value: "2016-2017第一学期",
+          label: "2016-2017第一学期"
         },
         {
-          value: '2016-2017第二学期',
-          label: '2016-2017第二学期',
+          value: "2016-2017第二学期",
+          label: "2016-2017第二学期"
         },
         {
-          value: '2017-2018第一学期',
-          label: '2017-2018第一学期',
+          value: "2017-2018第一学期",
+          label: "2017-2018第一学期"
         },
         {
-          value: '2017-2018第二学期',
-          label: '2017-2018第二学期',
-        },
+          value: "2017-2018第二学期",
+          label: "2017-2018第二学期"
+        }
       ],
-      finishCondition: '',
+      finishCondition: "",
       finishList: [
         {
-          value: '已完成',
-          label: '已完成',
+          value: "已完成",
+          label: "已完成"
         },
         {
-          value: '未完成',
-          label: '未完成',
-        },
+          value: "未完成",
+          label: "未完成"
+        }
       ],
-      hwClassify: '',
+      hwClassify: "",
       hwClassifyList: [
         {
-          value: '课时作业',
-          label: '课时作业',
+          value: "课时作业",
+          label: "课时作业"
         },
         {
-          value: '在线作业',
-          label: '在线作业',
-        },
-      ],
+          value: "在线作业",
+          label: "在线作业"
+        }
+      ]
     };
   },
   methods: {},
   created() {},
-  mounted() {},
+  mounted() {}
 };
 </script>
