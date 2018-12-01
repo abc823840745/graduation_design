@@ -163,12 +163,12 @@
         lessonText: [],
         access: '',
         inforCardData: [
-          { title: '课程动态', icon: 'md-person-add', count: 803, color: '#2d8cf0' },
-          { title: '毕设通知', icon: 'md-locate', count: 232, color: '#19be6b' },
-          { title: '在线问答', icon: 'md-help-circle', count: 142, color: '#ff9900' },
+          { title: '毕设动态', icon: 'md-person-add', count: 803, color: '#2d8cf0' },
+          { title: '课题通知', icon: 'md-locate', count: 232, color: '#19be6b' },
+          { title: '论文动态', icon: 'md-help-circle', count: 142, color: '#ff9900' },
           { title: '分享统计', icon: 'md-share', count: 657, color: '#ed3f14' },
           { title: '新增互动', icon: 'md-chatbubbles', count: 12, color: '#E46CBB' },
-          { title: '作业区', icon: 'md-map', count: 14, color: '#9A66E4' }
+          { title: '任务区', icon: 'md-map', count: 14, color: '#9A66E4' }
         ],
         pieData: [
           { value: 335, name: '作业' },

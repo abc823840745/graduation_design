@@ -54,7 +54,6 @@
           {
             title: '发布人',
             key: 'name',
-            width: 200,
             align: 'center'
           },
           {
@@ -65,7 +64,6 @@
           {
             title: "附件信息",
             key: "download",
-            width: 200,
             align: "center",
             render: (h, params) => {
               return h(this.tableData[params.index].download == 1 ? 'a' : "div", {
@@ -80,19 +78,16 @@
           {
             title: '发布时间',
             key: 'time',
-            width: 200,
             align: 'center'
           },
           {
             title: '截至时间',
             key: 'deadline',
-            width: 200,
             align: 'center'
           },
           {
             title: "状态",
             key: "status",
-            width: 200,
             align: "center",
             render: (h, params) => {
               return h("span", {

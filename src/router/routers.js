@@ -76,7 +76,7 @@ export default [
           title: '消息',
           notCache: true,
           icon: 'md-home',
-          access: ['student', 'teacher']
+          access: ['student', 'teacher','admin']
         },
         component: () => import('@/view/message_index/message_index.vue')
       }

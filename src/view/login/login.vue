@@ -43,6 +43,10 @@
             this.handleCloseTag(route, 'all')
             
           })
+        }).catch(()=>{
+          this.$Notice.error({
+            title:'用户名或密码不正确！'
+          })
         })
       },
       handleCloseTag(res, type, route) {

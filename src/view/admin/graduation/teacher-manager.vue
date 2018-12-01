@@ -6,7 +6,7 @@
     </div>
     <div class="choice_btn">
       <Button type="primary" @click="new_modal=true">添加新老师</Button>
-      <p class="choice_tip">注意：请按照指定格式导入教师表！<a href="https://media.kaolaplay.com/%E6%95%99%E5%B8%88.xlsx" download="w3logo">查看上传模板</a></p>
+      <p class="choice_tip">注意：请按照指定格式导入教师表，教师初始密码为teacher+工号！<a href="https://media.kaolaplay.com/%E6%95%99%E5%B8%88.xlsx" download="w3logo">查看上传模板</a></p>
     </div>
     <Modal v-model="content_modal" width="500">
       <p slot="header" style="text-align:center">
@@ -73,49 +73,42 @@
           {
             title: '上传日期',
             key: 'time',
-            width: 180,
             align: 'center'
           },
           {
             title: '教师工号',
             key: 'code',
-            width: 150,
             align: 'center'
           },
           {
             title: '教师姓名',
             key: 'username',
-            width: 180,
             align: 'center'
           },
           {
             title: '负责方向',
             key: 'major',
-            width: 300,
             align: 'center'
           },
           {
             title: '教学经验(年)',
             key: 'experient',
-            width: 150,
             align: 'center'
           },
           {
             title: '联系方式',
             key: 'phone',
-            width: 180,
             align: 'center'
           },
           {
             title: '毕设负责学生人数',
-            width: 198,
             key: 'people',
             align: 'center'
           },
           {
             title: "操作",
             key: "action",
-
+            width: 430,
             align: "center",
             render: (h, params) => {
               return h("div", [
@@ -214,9 +207,15 @@
       },
       addNewTeacher() {
         let teachers = []
+        if(!this.newData[0]['教师工号']||!this.newData[0]['教师姓名']||!this.newData[0]['负责方向']||!this.newData[0]['教师学历']||!this.newData[0]['教学经验']||!this.newData[0]['联系方式']||!this.newData[0]['qq号码']||!this.newData[0]['教师身份']||!this.newData[0]['负责毕设学生人数']||!this.newData[0]['教师简介']){
+           this.$Notice.warning({
+            title:'请按照模板填写信息！'
+          })
+          return
+        }
         this.newData.forEach((item) => {
           teachers.push({
-            time:new Date().getTime(),
+            time: new Date().getTime(),
             code: item['教师工号'],
             username: item['教师姓名'],
             major: item['负责方向'],
@@ -229,6 +228,12 @@
             description: item['教师简介']
           })
         })
+        if(teachers.length<1){
+          this.$Notice.warning({
+            title:'请先上传文件！'
+          })
+          return
+        }
         addNewTeacher(teachers).then((res) => {
           if (res.data.message == 'ok') {
             this.$Notice.success({
@@ -249,7 +254,6 @@
           this.readFile(file)
           this.file = file
           this.new_modal = true
-          console.log()
         } else {
           this.$Notice.warning({
             title: '文件类型错误',

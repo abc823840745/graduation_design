@@ -74,18 +74,42 @@
           </div>
       </Modal>
     </div>
+    <div class="choice_btn">
+      <Button type="primary" @click="changeModal=true">修改登陆密码</Button>
+      <p class="choice_tip">注意:为了您的信息安全，建议修改初始密码</p>
+    </div>
+    <Modal v-model="changeModal" title="确定要修改密码？" @on-ok="updatePs">
+      <Form ref="formValidate" :model="form" :rules="ruleValidate" :label-width="80">
+        <FormItem label="学号" prop="code">
+          <Input v-model="form.code" placeholder="请输入你的工号"></Input>
+        </FormItem>
+        <FormItem label="旧密码" prop="password">
+          <Input v-model="form.password" type="password" placeholder="请输入你的密码"></Input>
+        </FormItem>
+         <FormItem label="新密码" prop="newps">
+          <Input v-model="form.newps" type="password" placeholder="请输入你的密码9至14位数字或英文字符"></Input>
+        </FormItem>
+      </Form>
+    </Modal>
   </div>
 </template>
 <script>
-  import { getUserInfo, updateInfo } from '@/api/user'
-   import config from '@/config'
-   const baseUrl = process.env.NODE_ENV === 'development' ? config.baseUrl.dev : config.baseUrl.pro
+  import { getUserInfo } from '@/api/user'
+   import {updatePs } from '@/api/teacher'
+  import config from '@/config'
+  const baseUrl = process.env.NODE_ENV === 'development' ? config.baseUrl.dev : config.baseUrl.pro
   const uploadUrl = baseUrl + '/upload/work'
   export default {
-    name: 'student-my-info',
+    name: 'teacher-my-info',
     data() {
       return {
         uploadUrl,
+        form: {
+          code: '',
+          password: '',
+          newps:''
+        },
+        changeModal: false,
         uploadList: [],
         qqFlag: false,
         phoneFlag: false,
@@ -95,10 +119,38 @@
         },
         avatarFlag: false,
         ok_modal: false,
-        userInfo: {}
+        userInfo: {},
+        ruleValidate: {
+          code: [
+            { required: true, message: '请输入正确的学号', trigger: 'blur', pattern: /^[0-9]{4}$/ }
+          ],
+          password: [
+            { required: true, message: '请输入正确的密码', trigger: 'blur', pattern: /^[0-9a-zA-Z]{9,14}$/ }
+          ],
+          newps: [
+            { required: true, message: '请输入正确的新密码', trigger: 'blur', pattern: /^[0-9a-zA-Z]{9,14}$/ }
+          ]
+        }
       }
     },
     methods: {
+      updatePs() {
+        this.$refs['formValidate'].validate((validate) => {
+          let {code, password,newps} = this.form
+          if (validate) {
+            updatePs(code, password,newps).then((res) => {
+              if (res.data.message == 'ok') {
+                this.$store.dispatch('handleLogOut')
+                this.$router.go(0)
+              } else {
+                this.$Notice.warning({
+                  title: "用户名或密码不正确"
+                })
+              }
+            })
+          }
+        })
+      },
       goToPath(path) {
         this.$router.push({
           path
@@ -152,7 +204,7 @@
         if (!type || !content) {
           return;
         }
-        updateInfo(token,role, content, type).then((res) => {
+        updateInfo(token, role, content, type).then((res) => {
           if (res.data.message == 'ok') {
             this.$Notice.success({
               title: '更新成功'
@@ -224,8 +276,23 @@
     background: white;
     text-align: center;
   }
-
-  .description{
+  
+  .choice_btn {
+    position: fixed;
+    width: 430px;
+    text-align: center;
+    left: 50%;
+    bottom: 80px;
+    transform: translateX(-20px);
+    margin: 0 auto;
+  }
+  
+  .choice_tip {
+    position: relative;
+    margin-top: 10px;
+  }
+  
+  .description {
     line-height: 22px;
   }
   
@@ -268,8 +335,8 @@
     line-height: 60px;
     cursor: pointer;
   }
-
-   .user_tip_container .item:hover{
-     background: #eee;
-   }
+  
+  .user_tip_container .item:hover {
+    background: #eee;
+  }
 </style>

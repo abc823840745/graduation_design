@@ -42,6 +42,16 @@ export const getMenber = (name) => {
   })
 }
 
+export const updatePs = (code,password,newps) => {
+  return axios.request({
+    url: '/update/teacher/ps',
+    method: 'post',
+    data: {
+     code,password,newps
+    }
+  })
+}
+
 
 export const getGraduationList = (u_id, name, page, size) => {
   return axios.request({
@@ -296,12 +306,12 @@ export const haveTeacherStudent = ((id, page, size) => {
 })
 
 
-export const updateTeacherStudent = ((id, uid) => {
+export const updateTeacherStudent = ((id, uid,tid,teacher_name) => {
   return axios.request({
     url: '/update/teacher/student',
     method: 'post',
     data: {
-      id, uid
+      id, uid,tid,teacher_name
     }
   })
 })

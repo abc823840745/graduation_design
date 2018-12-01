@@ -21,8 +21,8 @@ export function getMovieList(type, offset, keyword) {
 export function addPraise(uid, id) {
   return axios.request({
     url: '/add/movie/praise',
-    method: 'get',
-    params: {
+    method: 'post',
+    data: {
       uid,
       id
     }

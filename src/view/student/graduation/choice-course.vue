@@ -102,13 +102,11 @@
           {
             title: '导师姓名',
             key: 'username',
-            width: 120,
             align: 'center'
           },
           {
             title: '课题方向',
             key: 'major',
-            width: 280,
             align: 'center'
           },
           {
@@ -122,19 +120,16 @@
           {
             title: '开题日期',
             key: 'time',
-            width: 180,
             align: 'center'
           },
           {
             title: '导师姓名',
             key: 'username',
-            width: 180,
             align: 'center'
           },
           {
             title: '课题方向',
             key: 'major',
-            width: 300,
             align: 'center'
           },
           {
@@ -200,25 +195,21 @@
         columns: [
           {
             type: 'selection',
-            width: 60,
             align: 'center'
           },
           {
             title: '开题日期',
             key: 'time',
-            width: 180,
             align: 'center'
           },
           {
             title: '导师姓名',
             key: 'username',
-            width: 180,
             align: 'center'
           },
           {
             title: '课题方向',
             key: 'major',
-            width: 300,
             align: 'center'
           },
           {
@@ -229,7 +220,6 @@
           {
             title: "状态",
             key: "action",
-            width: 198,
             align: "center",
             render: (h, params) => {
               return h("div", [

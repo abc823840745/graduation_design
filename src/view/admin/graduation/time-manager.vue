@@ -95,7 +95,6 @@
                     {
                         title: "操作",
                         key: "action",
-
                         align: "center",
                         render: (h, params) => {
                             return h("div", [

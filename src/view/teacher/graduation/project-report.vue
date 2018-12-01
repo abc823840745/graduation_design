@@ -120,25 +120,22 @@
           {
             title: '开题日期',
             key: 'time',
-            width: 180,
             align: 'center'
           },
           {
             title: '教师姓名',
             key: 'username',
-            width: 180,
             align: 'center'
           },
           {
             title: '课题方向',
             key: 'major',
-            width: 300,
             align: 'center'
           },
           {
             title: '面向年级',
             key: 'year',
-            width: 300,
+             width: 105,
             align: 'center'
           },
           {
@@ -149,7 +146,7 @@
           {
             title: "状态",
             key: "action",
-            width: 198,
+            width: 145,
             align: "center",
             render: (h, params) => {
               return h("div", [
@@ -157,7 +154,7 @@
                   "Button",
                   {
                     props: {
-                      type: this.tableData[params.index].status == 1 ? "success" : "warning"
+                      type: this.tableData[params.index].status == 1 ? "text" : "default"
 
                     },
                     style: {
