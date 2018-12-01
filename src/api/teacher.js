@@ -52,6 +52,26 @@ export const updatePs = (code,password,newps) => {
   })
 }
 
+export const updateTeacherInfo = (form) => {
+  return axios.request({
+    url: '/update/teacher/info',
+    method: 'post',
+    data: {
+     form
+    }
+  })
+}
+
+export const deleteTeacherInfo = (u_id) => {
+  return axios.request({
+    url: '/delete/teacher/info',
+    method: 'post',
+    data: {
+     u_id
+    }
+  })
+}
+
 
 export const getGraduationList = (u_id, name, page, size) => {
   return axios.request({
