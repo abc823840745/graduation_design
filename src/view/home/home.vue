@@ -267,10 +267,13 @@
         }))
       },
       getNewMessage() {
-        let uid = this.$store.state.user.token
+        let uid = this.$store.state.user.guideTeacher
         getNewMessage({ uid }).then((res) => {
           if (res.data.message == 'ok') {
-            this.$store.commit('setMsgCount', res.data.count)
+            let viewCount = localStorage.getItem("news") ? localStorage.getItem("news") : 0
+            localStorage.setItem('originCount',res.data.count)
+            let leftCount = res.data.count - viewCount
+            this.$store.commit('setMsgCount', leftCount)
           }
         })
       },
