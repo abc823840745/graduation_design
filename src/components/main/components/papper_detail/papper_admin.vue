@@ -20,6 +20,7 @@
         name: "teacher_detail",
         data() {
             return {
+                menber_id:'',
                 uid: '',
                 cid: 0,
                 confirm_modal: false,
@@ -123,6 +124,7 @@
                                                 this.confirm_modal = true
                                                 this.cid = this.tableData[params.index].id
                                                 this.uid = this.tableData[params.index].uid
+                                                this.menber_id = this.tableData[params.index].menber_id
                                             }
                                         }
                                     },
@@ -168,7 +170,8 @@
                 let uid = this.uid
                 let tid = this.tid
                 let teacher_name = this.teacher_name
-                updateTeacherStudent(cid, uid, tid, teacher_name).then((res) => {
+                let menber_id = this.menber_id
+                updateTeacherStudent(cid, uid,menber_id, tid, teacher_name).then((res) => {
                     if (res.data.message == 'ok') {
                         this.$Notice.success({
                             title: '操作成功'

@@ -71,13 +71,9 @@
       }
     },
     mounted() {
-      let {token, role,msgCount} = this.$store.state.user
+      let {token, role} = this.$store.state.user
       this.role = role
       this.uid = token
-      let originMsgCount = localStorage.getItem('originCount')
-      localStorage.setItem("news",originMsgCount)
-      this.$store.commit('setMsgCount',0)
-      this.$emit("changeMsg",0)
       this.getMessage()
     },
     methods: {
@@ -88,7 +84,6 @@
       getMessage() {
         let uid = this.uid
         let start = this.start
-
         if (this.role == 'student') {
           uid = this.$store.state.user.guideTeacher
         }
@@ -99,7 +94,10 @@
             })
             this.messageList = res.data.list
             this.total = res.data.count
+            let originMsgCount = localStorage.getItem('originCount')
+            localStorage.setItem("news", originMsgCount)
             this.$store.commit('setMsgCount', 0)
+            this.$emit("changeMsg", 0)
           }
         })
       },
@@ -119,6 +117,8 @@
                 this.$Notice.success({
                   title: '发布成功'
                 })
+                let originMsgCount = localStorage.getItem('originCount')
+                localStorage.setItem('originCount', originMsgCount + 1)
                 this.getMessage()
               } else {
                 this.$Notice.error({
