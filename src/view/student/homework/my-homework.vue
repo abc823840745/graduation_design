@@ -113,27 +113,11 @@ export default {
           key: "operation",
           render: (h, params) => {
             return h("div", [
-              h(
-                "Button",
-                {
-                  props: {
-                    type: "primary",
-                    size: "default",
-                    disabled: false
-                  },
-                  style: {
-                    marginRight: "5px"
-                  },
-                  on: {
-                    click: () => {
-                      // 进入二级目录
-                      // TODO:跳转回一级目录第一页
-                      this.showTwoLevel = true;
-                    }
-                  }
-                },
-                "查看"
-              )
+              this.btnStyle("查看", h, () => {
+                // 进入二级目录
+                // TODO:跳转回一级目录第一页
+                this.showTwoLevel = true;
+              })
             ]);
           }
         }
@@ -176,50 +160,17 @@ export default {
           key: "operation",
           render: (h, params) => {
             return h("div", [
-              h(
-                "Button",
-                {
-                  props: {
-                    type: "primary",
-                    size: "default",
-                    disabled: false
-                  },
-                  style: {
-                    marginRight: "5px"
-                  },
-                  on: {
-                    click: () => {
-                      // 打开在线作业详情
-                      this.$router.push({
-                        name: "student-online-homework-detail"
-                      });
-                    }
-                  }
-                },
-                "查看"
-              ),
-              h(
-                "Button",
-                {
-                  props: {
-                    type: "primary",
-                    size: "default",
-                    disabled: false
-                  },
-                  style: {
-                    marginRight: "5px"
-                  },
-                  on: {
-                    click: () => {
-                      //   this.show(params.index);
-                      // 返回上一步
-                      // TODO:跳转回一级目录第一页
-                      this.showTwoLevel = false;
-                    }
-                  }
-                },
-                "返回"
-              )
+              this.btnStyle("查看", h, () => {
+                // 打开在线作业详情
+                this.$router.push({
+                  name: "student-online-homework-detail"
+                });
+              }),
+              this.btnStyle("返回", h, () => {
+                // 返回上一步
+                // TODO:跳转回一级目录第一页
+                this.showTwoLevel = false;
+              })
             ]);
           }
         }
@@ -277,8 +228,25 @@ export default {
       ]
     };
   },
-  methods: {},
-  created() {},
-  mounted() {}
+  methods: {
+    btnStyle(btnTitle, h, onclick) {
+      return h(
+        "Button",
+        {
+          props: {
+            type: "primary",
+            size: "default"
+          },
+          style: {
+            marginRight: "5px"
+          },
+          on: {
+            click: onclick
+          }
+        },
+        btnTitle
+      );
+    }
+  }
 };
 </script>

@@ -202,7 +202,7 @@
           {
             title: "操作",
             key: "action",
-
+            width:200,
             align: "center",
             render: (h, params) => {
               return h("div", [
@@ -284,7 +284,7 @@
           {
             title: "操作",
             key: "action",
-
+           width:200,
             align: "center",
             render: (h, params) => {
               return h("div", [

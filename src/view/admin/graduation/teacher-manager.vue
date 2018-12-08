@@ -6,7 +6,7 @@
     </div>
     <div class="choice_btn">
       <Button type="primary" @click="new_modal=true">添加新老师</Button>
-      <p class="choice_tip">注意：请按照指定格式导入教师表！<a href="https://media.kaolaplay.com/%E6%95%99%E5%B8%88.xlsx" download="w3logo">查看上传模板</a></p>
+      <p class="choice_tip">注意：请按照指定格式导入教师表，教师初始密码为teacher+工号！<a href="https://media.kaolaplay.com/teachers_modal.xlsx" download="w3logo">查看上传模板</a></p>
     </div>
     <Modal v-model="content_modal" width="500">
       <p slot="header" style="text-align:center">
@@ -30,11 +30,66 @@
         <Button type="primary" size="large" long @click="addNewTeacher">确定添加</Button>
       </div>
     </Modal>
+    <Modal v-model="update_modal" width="500">
+      <p slot="header" style="text-align:center">
+        <Icon type="ios-information-circle"></Icon>
+        <span>教师信息管理</span>
+      </p>
+      <Form :model="form" ref="content" :label-width="80" :rules="ruleInline">
+        <FormItem prop="code" label="工号">
+          <Input v-model="form.code" placeholder="请输入教师工号"></Input>
+        </FormItem>
+        <FormItem prop="username" label="姓名">
+          <Input v-model="form.username" placeholder="请输入教师姓名"></Input>
+        </FormItem>
+        <FormItem prop="phone" label="联系手机">
+          <Input v-model="form.phone" placeholder="请输入电话号码"></Input>
+        </FormItem>
+        <FormItem prop="qq" label="QQ号码">
+          <Input v-model="form.qq" placeholder="请输入QQ号码"></Input>
+        </FormItem>
+        <FormItem label="负责内容">
+          <Select v-model="form.major">
+              <Option v-for="(item,index) in workType" :key="index" :value="item.value">{{item.name}}</Option>
+            </Select>
+        </FormItem>
+        <FormItem label="毕设指导">
+          <RadioGroup v-model="form.guide">
+            <Radio :label="0">
+              <span>否</span>
+            </Radio>
+            <Radio :label="1">
+              <span>是</span>
+            </Radio>
+          </RadioGroup>
+        </FormItem>
+        <FormItem v-if="form.guide==1" prop="people" label="指导学生数">
+          <InputNumber v-model="form.people" size="small"></InputNumber>
+        </FormItem>
+        <FormItem prop="experient" label="教学经验">
+          <InputNumber v-model="form.experient" size="small"></InputNumber>
+        </FormItem>
+        <FormItem label="职称">
+          <Select v-model="form.level">
+              <Option v-for="(item,index) in levelType" :key="index" :value="item.value">{{item.name}}</Option>
+            </Select>
+        </FormItem>
+        <FormItem prop="description" label="教师简介">
+          <Input v-model="form.description" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入教师简介"></Input>
+        </FormItem>
+      </Form>
+      <div slot="footer">
+        <Button type="primary" size="large" long @click="updateTeacherInfo">更新</Button>
+      </div>
+      <div slot="footer">
+        <Button type="error" style="margin-top: 10px" size="large" long @click="deleteTeacherInfo(form.u_id)">删除</Button>
+      </div>
+    </Modal>
   </div>
 </template>
 <script>
   import excel from '@/libs/excel'
-  import { getAllTeacher, choiceTeacher, getMenber, addNewTeacher } from '@/api/teacher'
+  import { getAllTeacher, choiceTeacher, getMenber, addNewTeacher, updateTeacherInfo, deleteTeacherInfo } from '@/api/teacher'
   import { getMyDate } from '@/libs/tools'
   import config from '@/config'
   const baseUrl = process.env.NODE_ENV === 'development' ? config.baseUrl.dev : config.baseUrl.pro
@@ -45,6 +100,21 @@
     data() {
       return {
         uploadUrl,
+        form: {
+          u_id: '',
+          description: '',
+          level: '',
+          code: 0,
+          experient: 1,
+          username: '',
+          major: '网络与新媒体',
+          phone: '',
+          qq: '',
+          people: 0,
+          guide: 1,
+
+        },
+        update_modal: false,
         tableLoading: false,
         new_modal: false,
         uploadLoading: false,
@@ -68,54 +138,87 @@
         info: {},
         modal1: false,
         tableData: [],
+        levelType: [{
+          name: '助教',
+          value: '助教'
+        }, {
+          name: '讲师',
+          value: '讲师'
+        }, {
+          name: '副教授',
+          value: '副教授'
+        }, {
+          name: '教授',
+          value: '教授'
+        }],
+        workType: [{
+          name: '网络与新媒体',
+          value: '网络与新媒体'
+        }, {
+          name: '数字媒体技术',
+          value: '数字媒体技术'
+        }, {
+          name: '动画',
+          value: '动画'
+        }],
         newData: [],
+        ruleInline: {
+          code: [
+            { required: true, message: '请输入有效的工号', trigger: 'blur', type: 'string', pattern: /^[0-9]{4}$/ }
+          ],
+          phone: [
+            { required: true, message: '请输入有效的电话号码', trigger: 'blur', type: 'string', pattern: /^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0,5-9]))\d{8}$/ }
+          ],
+          qq: [
+            { required: true, message: '请输入有效的qq号码', trigger: 'blur', type: 'string', pattern: /^[0-9]{5,10}$/ }
+          ],
+          description: [
+            { required: true, message: '请输入有效的描述', trigger: 'blur', type: 'string' }
+          ],
+          username: [
+            { required: true, message: '请输入教师姓名', trigger: 'blur', type: 'string' }
+          ]
+        },
         columns: [
           {
             title: '上传日期',
             key: 'time',
-            width: 180,
             align: 'center'
           },
           {
             title: '教师工号',
             key: 'code',
-            width: 150,
             align: 'center'
           },
           {
             title: '教师姓名',
             key: 'username',
-            width: 180,
             align: 'center'
           },
           {
             title: '负责方向',
             key: 'major',
-            width: 300,
             align: 'center'
           },
           {
             title: '教学经验(年)',
             key: 'experient',
-            width: 150,
             align: 'center'
           },
           {
             title: '联系方式',
             key: 'phone',
-            width: 180,
             align: 'center'
           },
           {
             title: '毕设负责学生人数',
-            width: 198,
             key: 'people',
             align: 'center'
           },
           {
             title: "操作",
             key: "action",
-
+            width: 480,
             align: "center",
             render: (h, params) => {
               return h("div", [
@@ -181,6 +284,24 @@
                     }
                   },
                   "教师课题审核"
+                ),
+                h(
+                  "Button",
+                  {
+                    props: {
+                      type: "error"
+                    },
+                    style: {
+                      marginRight: "10px"
+                    },
+                    on: {
+                      click: () => {
+                        this.update_modal = true
+                        this.form = this.tableData[params.index]
+                      }
+                    }
+                  },
+                  "编辑"
                 )
               ]);
             }
@@ -194,7 +315,6 @@
         this.getAllTeacher()
 
       })
-
     },
     watch: {
       'form.teamMan': function () {
@@ -202,6 +322,32 @@
       }
     },
     methods: {
+      updateTeacherInfo() {
+        this.$refs['content'].validate((validate) => {
+          if (validate) {
+            updateTeacherInfo(this.form).then((res) => {
+              if (res.data.message == 'ok') {
+                this.$Notice.success({
+                  title: '更新成功'
+                })
+                this.update_modal = false
+                this.getAllTeacher()
+              }
+            })
+          }
+        })
+      },
+      deleteTeacherInfo(u_id) {
+        deleteTeacherInfo(u_id).then((res) => {
+          if (res.data.message == 'ok') {
+            this.$Notice.success({
+              title: '删除成功!'
+            })
+            this.update_modal = false
+            this.getAllTeacher()
+          }
+        })
+      },
       initUpload() {
         this.file = null
         this.showProgress = false
@@ -214,21 +360,34 @@
       },
       addNewTeacher() {
         let teachers = []
+        if (!this.newData[0]['教师工号'] || !this.newData[0]['教师姓名'] || !this.newData[0]['负责方向'] || !this.newData[0]['教师职称'] || !this.newData[0]['教学经验'] || !this.newData[0]['联系方式'] || !this.newData[0]['qq号码'] || !this.newData[0]['教师身份'] || !this.newData[0]['负责毕设学生人数'] || !this.newData[0]['教师简介']||!this.newData[0]['毕设指导']) {
+          this.$Notice.warning({
+            title: '请按照模板填写信息！'
+          })
+          return
+        }
         this.newData.forEach((item) => {
           teachers.push({
-            time:new Date().getTime(),
+            time: new Date().getTime(),
             code: item['教师工号'],
             username: item['教师姓名'],
             major: item['负责方向'],
-            level: item['教师学历'],
+            level: item['教师职称'],
             experient: item["教学经验"],
             phone: item['联系方式'],
             qq: item['qq号码'],
             role: item['教师身份'],
             people: item['负责毕设学生人数'],
-            description: item['教师简介']
+            description: item['教师简介'],
+            guide: item['毕设指导']=='是'?1:0
           })
         })
+        if (teachers.length < 1) {
+          this.$Notice.warning({
+            title: '请先上传文件！'
+          })
+          return
+        }
         addNewTeacher(teachers).then((res) => {
           if (res.data.message == 'ok') {
             this.$Notice.success({
@@ -249,7 +408,6 @@
           this.readFile(file)
           this.file = file
           this.new_modal = true
-          console.log()
         } else {
           this.$Notice.warning({
             title: '文件类型错误',

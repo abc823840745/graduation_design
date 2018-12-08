@@ -76,7 +76,7 @@ export default [
           title: '消息',
           notCache: true,
           icon: 'md-home',
-          access: ['student', 'teacher'],
+          access: ['student', 'teacher', 'admin'],
         },
         component: () => import('@/view/message_index/message_index.vue'),
       },
@@ -569,25 +569,25 @@ export default [
         component: () => import('@/view/teacher/homework/createHomeWork/my-homework.vue'),
       },
       {
-        path: 'check-assign-homework',
-        name: 'teacher-check-assign-homework',
+        path: 'check-homework',
+        name: 'teacher-check-homework',
         meta: {
           icon: 'ios-document',
-          title: '查看课时作业',
+          title: '查看作业',
           access: ['teacher', 'admin'],
         },
-        component: () => import('@/view/teacher/homework/checkHomeWork/check-assign-homework.vue'),
+        component: () => import('@/view/teacher/homework/checkHomeWork/check-homework.vue'),
       },
-      {
-        path: 'check-online-homework',
-        name: 'teacher-check-online-homework',
-        meta: {
-          icon: 'ios-document',
-          title: '查看在线作业',
-          access: ['teacher', 'admin'],
-        },
-        component: () => import('@/view/teacher/homework/checkHomeWork/check-online-homework.vue'),
-      },
+      // {
+      //   path: 'check-online-homework',
+      //   name: 'teacher-check-online-homework',
+      //   meta: {
+      //     icon: 'ios-document',
+      //     title: '查看在线作业',
+      //     access: ['teacher', 'admin'],
+      //   },
+      //   component: () => import('@/view/teacher/homework/checkHomeWork/check-online-homework.vue'),
+      // },
       {
         path: 'check-online-homework-detail',
         name: 'teacher-check-online-homework-detail',

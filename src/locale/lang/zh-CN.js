@@ -42,8 +42,8 @@ export default {
   // 教师作业管理
   'teacher-homework': '作业管理',
   'teacher-my-homework': '布置作业',
-  'teacher-check-assign-homework': '查看课时作业',
-  'teacher-check-online-homework': '查看在线作业',
+  'teacher-check-homework': '查看作业',
+  // 'teacher-check-online-homework': '查看在线作业',
   'teacher-check-online-homework-detail': '查看作业详情',
   'teacher-homework-other': '其他',
   // 教师毕设管理
@@ -62,5 +62,5 @@ export default {
   'time-manager': '时间管理',
   course_admin: '课题分配',
   papper_admin: '导师选择详情',
-  'movie-manager': '优秀毕设管理'
-}
+  'movie-manager': '优秀毕设管理',
+};

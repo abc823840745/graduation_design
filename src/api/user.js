@@ -25,11 +25,12 @@ export const refreshCourse = (username, password) => {
 }
 
 
-export const unlock = ({ token, username, password }) => {
+export const unlock = ({ token, username, password,role }) => {
   const data = {
     token,
     username,
-    password
+    password,
+    role
   }
   return axios.request({
     url: '/view/unlock',

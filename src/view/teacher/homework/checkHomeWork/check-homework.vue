@@ -34,8 +34,8 @@
   <div class="containter">
     <home-work
       :selTip="selTip"
-      @onChangeSelVal="onChangeSelVal"
       :completeProgress="70"
+      @onChangeSelVal="onChangeSelVal"
     />
 
     <Table
@@ -50,7 +50,7 @@
     />
 
     <Button
-      v-if="currentLevel === 3"
+      v-if="currentLevel === 4"
       type="primary"
       @click="submit"
       class="mar-top"
@@ -62,7 +62,7 @@
 <script>
 import homeWork from "../smart/homework-info";
 export default {
-  name: "check-assign-homework",
+  name: "check-homework",
   components: {
     homeWork
   },
@@ -71,6 +71,7 @@ export default {
       currentLevel: 1,
       selTip: "学期选择",
       selValue: "",
+      hwType: "", //作业类型
       selList: [
         {
           value: "已完成",
@@ -91,27 +92,12 @@ export default {
           key: "operation",
           render: (h, params) => {
             return h("div", [
-              h(
-                "Button",
-                {
-                  props: {
-                    type: "primary",
-                    size: "default"
-                  },
-                  style: {
-                    marginRight: "5px"
-                  },
-                  on: {
-                    click: () => {
-                      //   this.show(params.index);
-                      // 打开二级目录
-                      this.currentLevel = 2;
-                      this.selTip = "作业情况";
-                    }
-                  }
-                },
-                "查看"
-              )
+              this.btnStyle("查看", h, () => {
+                //   this.show(params.index);
+                // 打开二级目录
+                this.currentLevel = 2;
+                // this.selTip = "";
+              })
             ]);
           }
         }
@@ -132,48 +118,15 @@ export default {
           key: "operation",
           render: (h, params) => {
             return h("div", [
-              h(
-                "Button",
-                {
-                  props: {
-                    type: "primary",
-                    size: "default"
-                  },
-                  style: {
-                    marginRight: "5px"
-                  },
-                  on: {
-                    click: () => {
-                      //   this.show(params.index);
-                      // 打开三级目录
-                      this.currentLevel = 3;
-                      // this.selTip = '作业情况';
-                    }
-                  }
-                },
-                "查看"
-              ),
-              h(
-                "Button",
-                {
-                  props: {
-                    type: "primary",
-                    size: "default"
-                  },
-                  style: {
-                    marginRight: "5px"
-                  },
-                  on: {
-                    click: () => {
-                      //   this.show(params.index);
-                      // 返回一级目录
-                      this.currentLevel = 1;
-                      this.selTip = "学期选择";
-                    }
-                  }
-                },
-                "返回"
-              )
+              this.btnStyle("查看", h, () => {
+                // 打开三级目录
+                this.currentLevel = 3;
+              }),
+              this.btnStyle("返回", h, () => {
+                // 返回一级目录
+                this.currentLevel = 1;
+                this.selTip = "学期选择";
+              })
             ]);
           }
         }
@@ -185,6 +138,44 @@ export default {
       ],
 
       columns3: [
+        {
+          title: "作业类型",
+          key: "hwType"
+        },
+        {
+          title: "操作",
+          key: "operation",
+          render: (h, params) => {
+            return h("div", [
+              this.btnStyle("查看", h, () => {
+                // TODO:打开实验报告
+                let { index } = params;
+                if (index === 0) {
+                  this.currentLevel = 4;
+                } else {
+                  this.currentLevel = 5;
+                }
+                this.selTip = "作业情况";
+              }),
+              this.btnStyle("返回", h, () => {
+                // 返回上一步
+                this.currentLevel = 2;
+                // this.selTip = '学期选择';
+              })
+            ]);
+          }
+        }
+      ],
+      data3: [
+        {
+          hwType: "课时作业"
+        },
+        {
+          hwType: "在线作业"
+        }
+      ],
+
+      columns4: [
         {
           title: "学号",
           key: "studentId"
@@ -223,54 +214,70 @@ export default {
           key: "operation",
           render: (h, params) => {
             return h("div", [
-              h(
-                "Button",
-                {
-                  props: {
-                    type: "primary",
-                    size: "default"
-                  },
-                  style: {
-                    marginRight: "5px"
-                  },
-                  on: {
-                    click: () => {
-                      // TODO:打开实验报告
-                    }
-                  }
-                },
-                "下载并打开"
-              ),
-              h(
-                "Button",
-                {
-                  props: {
-                    type: "primary",
-                    size: "default"
-                  },
-                  style: {
-                    marginRight: "5px"
-                  },
-                  on: {
-                    click: () => {
-                      // 返回上一步
-                      this.currentLevel = 2;
-                      // this.selTip = '学期选择';
-                    }
-                  }
-                },
-                "返回"
-              )
+              this.btnStyle("下载并打开", h, () => {
+                // TODO:打开实验报告
+              }),
+              this.btnStyle("返回", h, () => {
+                // 返回上一步
+                this.currentLevel = 3;
+                // this.selTip = '学期选择';
+              })
             ]);
           }
         }
       ],
-      data3: [
+      data4: [
         {
           studentId: "1540624158",
           name: "吕嘉俊",
           submission: "已完成",
           score: "",
+          operation: ""
+        }
+      ],
+
+      columns5: [
+        {
+          title: "学号",
+          key: "studentId"
+        },
+        {
+          title: "姓名",
+          key: "name"
+        },
+        {
+          title: "提交情况",
+          key: "submission"
+        },
+        {
+          title: "评分",
+          key: "score"
+        },
+        {
+          title: "操作",
+          key: "operation",
+          render: (h, params) => {
+            return h("div", [
+              this.btnStyle("查看", h, () => {
+                this.$router.push({
+                  name: "teacher-check-online-homework-detail"
+                });
+              }),
+              this.btnStyle("返回", h, () => {
+                // 返回上一步
+                this.currentLevel = 2;
+                // this.selTip = '学期选择';
+              })
+            ]);
+          }
+        }
+      ],
+      data5: [
+        {
+          studentId: "1540624158",
+          name: "吕嘉俊",
+          submission: "已完成",
+          score: "100",
           operation: ""
         }
       ]
@@ -282,6 +289,24 @@ export default {
     },
     onChangeSelVal(data) {
       this.selValue = data.selValue;
+    },
+    btnStyle(btnTitle, h, onclick) {
+      return h(
+        "Button",
+        {
+          props: {
+            type: "primary",
+            size: "default"
+          },
+          style: {
+            marginRight: "5px"
+          },
+          on: {
+            click: onclick
+          }
+        },
+        btnTitle
+      );
     },
     showTable(condition, data) {
       // console.warn(condition, data);
@@ -295,10 +320,14 @@ export default {
         case 3:
           return this[`${data}3`];
           break;
+        case 4:
+          return this[`${data}4`];
+          break;
+        default:
+          return this[`${data}5`];
+          break;
       }
     }
-  },
-  created() {},
-  mounted() {}
+  }
 };
 </script>

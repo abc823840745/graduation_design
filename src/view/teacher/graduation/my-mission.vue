@@ -126,19 +126,16 @@
           {
             title: '发布时间',
             key: 'time',
-            width: 200,
             align: 'center'
           },
           {
             title: '截至时间',
             key: 'deadline',
-            width: 200,
             align: 'center'
           },
           {
             title: "状态",
             key: "status",
-            width: 200,
             align: "center",
             render: (h, params) => {
               return h("span", {

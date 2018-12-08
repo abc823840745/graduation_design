@@ -57,9 +57,9 @@
         },
         methods: {
             validator() {
-                let {token, stu_nmuber} = this.$store.state.user
+                let {token, stu_nmuber,role} = this.$store.state.user
                 return new Promise((resolve) => {
-                    unlock({ token, username: stu_nmuber, password: this.password }).then((res) => {
+                    unlock({ token, username: stu_nmuber, password: this.password,role }).then((res) => {
                         if (res.data.message == 'ok') {
                             resolve(true)
                         } else {
@@ -75,7 +75,6 @@
             },
             handleUnlock() {
                 this.validator().then((res) => {
-                    console.log(8858888)
                     if (res) {
                         this.avatorLeft = '0px';
                         this.inputLeft = '400px';

@@ -2,7 +2,7 @@
   <div class="goods-all">
     <Table border :columns="columns" @on-selection-change="getSelection" :data="tableData" size="large" no-data-text="暂时未到开题时间"></Table>
     <div class="page_container">
-       <Page :total="total" :page-size="pageSize" @on-change="changePage" />
+      <Page :total="total" :page-size="pageSize" @on-change="changePage" />
     </div>
     <div class="choice_btn">
       <Button @click="submitSelect" :disabled="haveSelect.length!=3||myChoice.length!=0" type="success">{{myChoice.length!=0?'您已经提交选择意向，等待审核中...':'提交选择意向'}}</Button>
@@ -53,7 +53,7 @@
           <FormItem v-if="form.team=='1'&&menber.menber_id" prop="menber_qq" label="成员QQ">
             <Input v-model="menber.menber_qq" placeholder="请输入QQ号码"></Input>
           </FormItem>
-           <FormItem v-if="form.team=='1'&&menber.menber_id" prop="menber_ps" label="成员密码">
+          <FormItem v-if="form.team=='1'&&menber.menber_id" prop="menber_ps" label="成员密码">
             <Input v-model="menber.menber_ps" type="password" placeholder="请输入成员登陆密码"></Input>
           </FormItem>
           <FormItem v-if="form.team=='1'&&menber.menber_id" label="负责内容">
@@ -167,48 +167,40 @@
         columns: [
           {
             type: 'selection',
-            width: 60,
             align: 'center'
           },
           {
             title: '开题日期',
             key: 'time',
-            width: 180,
             align: 'center'
           },
           {
             title: '教师姓名',
             key: 'username',
-            width: 180,
             align: 'center'
           },
           {
             title: '负责方向',
             key: 'major',
-            width: 300,
             align: 'center'
           },
           {
             title: '教学经验(年)',
             key: 'experient',
-            width: 180,
             align: 'center'
           },
           {
             title: '联系方式',
             key: 'phone',
-            width: 180,
             align: 'center'
           },
           {
             title: '剩余可选人数',
-            width: 198,
             key: 'leftPeople',
             align: 'center'
           },
           {
             title: '总人数',
-            width: 198,
             key: 'people',
             align: 'center'
           },
@@ -222,7 +214,7 @@
                   "Button",
                   {
                     props: {
-                      type: this.myChoice.indexOf(this.tableData[params.index].u_id) == -1 ? "default" : !this.guide_teacher? 'warning': this.tableData[params.index].u_id == this.guide_teacher?'success':'error'
+                      type: this.myChoice.indexOf(this.tableData[params.index].u_id) == -1 ? "default" : !this.guide_teacher ? 'warning' : this.tableData[params.index].u_id == this.guide_teacher ? 'success' : 'error'
 
                     },
                     style: {
@@ -233,7 +225,7 @@
                       }
                     }
                   },
-                  this.myChoice.indexOf(this.tableData[params.index].u_id) == -1 ? "未选择" : !this.guide_teacher? '审核中': this.tableData[params.index].u_id == this.guide_teacher?'审核已通过':'审核未通过'
+                  this.myChoice.indexOf(this.tableData[params.index].u_id) == -1 ? "未选择" : !this.guide_teacher ? '审核中' : this.tableData[params.index].u_id == this.guide_teacher ? '审核已通过' : '审核未通过'
                 )
               ]);
             }
@@ -241,7 +233,7 @@
           {
             title: "操作",
             key: "action",
-
+            width: 158,
             align: "center",
             render: (h, params) => {
               return h("div", [
@@ -290,6 +282,8 @@
     created() {
       this.$nextTick(() => {
         this.userInfo = this.$store.state.user
+        this.form.phone = this.userInfo.phone
+        this.form.qq = this.userInfo.qq
         this.getTeacher()
 
       })
@@ -301,10 +295,10 @@
       }
     },
     methods: {
-      changePage(page){
+      changePage(page) {
         this.page = page
-         this.originSelect = this.haveSelect
-         this.getTeacher()
+        this.originSelect = this.haveSelect
+        this.getTeacher()
       },
       getSelection(selection) {
         if (this.originSelect.length + selection.length >= 3) {
@@ -347,8 +341,8 @@
         this.menber.teamMan = ''
       },
       choiceMenber(index) {
-        if(this.menberList[index].team_id){
-             return
+        if (this.menberList[index].team_id) {
+          return
         }
         let {username, u_id} = this.menberList[index]
         this.menber.menber_id = u_id
@@ -372,18 +366,18 @@
       },
       getTeacher() {
         let {token} = this.userInfo
-        getTeacherList(token,this.page,this.pageSize).then((res) => {
+        getTeacherList(token, this.page, this.pageSize).then((res) => {
           var teachers = res.data.teachers
-          this.total =  res.data.count
-          this.guide_teacher  =  res.data.guide_teacher 
+          this.total = res.data.count
+          this.guide_teacher = res.data.guide_teacher
           this.myChoice = res.data.myChoice.map((item) => { return item.tid })
-          let haveSelected =  this.originSelect.map((item) => { return item.u_id })
-          
+          let haveSelected = this.originSelect.map((item) => { return item.u_id })
+
           teachers.forEach((item) => {
             let leftPeople = item.people - item.haveChoice
             item.leftPeople = leftPeople
-            this.myChoice.indexOf(item.u_id) != -1 || haveSelected.indexOf(item.u_id)!= -1  ? item._checked = true : item._checked = false
-            this.myChoice.length > 0 || leftPeople==0 ? item._disabled = true : item._disabled = false
+            this.myChoice.indexOf(item.u_id) != -1 || haveSelected.indexOf(item.u_id) != -1 ? item._checked = true : item._checked = false
+            this.myChoice.length > 0 || leftPeople == 0 ? item._disabled = true : item._disabled = false
           })
           this.tableData = teachers
         })
@@ -400,7 +394,7 @@
         let tid = this.haveSelect.map((selectItem) => {
           return selectItem.u_id
         })
-        let {menber_id, teamMan, menber_phone, menber_qq, menber_woker,menber_ps} = this.menber
+        let {menber_id, teamMan, menber_phone, menber_qq, menber_woker, menber_ps} = this.menber
         let {phone, qq, workType, team} = this.form
         if (team == 1) {
           if (this.uploadList.length <= 0) {
@@ -422,20 +416,20 @@
             return
           }
 
-          if ( /^[0-9]{5,10}$/.test(menber_qq.length)) {
+          if (/^[0-9]{5,10}$/.test(menber_qq.length)) {
             this.$Notice.warning({
               title: "请输入正确的qq号码"
             })
             return
           }
-           if (!/^[0-9]{14}$/.test(menber_ps)) {
+          if (!/^[0-9]{14}$/.test(menber_ps)) {
             this.$Notice.warning({
               title: "请输入正确的成员登陆号码"
             })
             return
           }
         }
-         let file = this.uploadList.length>0?this.uploadList[0].url:''
+        let file = this.uploadList.length > 0 ? this.uploadList[0].url : ''
         if (tid.length != 3) {
           this.$Notice.warning({
             title: "请选择3名意向导师！"
@@ -445,7 +439,7 @@
 
         this.$refs['content'].validate((validate) => {
           if (validate) {
-            choiceTeacher(token, tid, menber_id,year, phone, qq, workType, menber_phone, menber_qq, menber_woker,menber_ps, team, file).then((res) => {
+            choiceTeacher(token, tid, menber_id, year, phone, qq, workType, menber_phone, menber_qq, menber_woker, menber_ps, team, file).then((res) => {
               let message = res.data.message
               this.modal1 = false
               if (message == "ok") {
@@ -506,9 +500,10 @@
     position: relative;
     margin-top: 10px;
   }
-  .page_container{
-      position: absolute;
-      right: 20px;
-      margin-top: 30px;
+  
+  .page_container {
+    position: absolute;
+    right: 20px;
+    margin-top: 30px;
   }
 </style>

@@ -111,31 +111,26 @@
                     {
                         title: '上传日期',
                         key: 'time',
-                        width: 180,
                         align: 'center'
                     },
                     {
                         title: '视频标题',
                         key: 'title',
-                        width: 420,
                         align: 'center'
                     },
                     {
                         title: '视频描述',
                         key: 'description',
-                        width: 580,
                         align: 'center'
                     },
                     {
                         title: '视频作者',
                         key: 'author',
-                        width: 180,
                         align: 'center'
                     },
                     {
                         title: "视频封面",
                         key: "cover",
-                        width: 200,
                         align: "center",
                         render: (h, params) => {
                             return h('img', {
@@ -152,7 +147,7 @@
                     {
                         title: "操作",
                         key: "action",
-
+                        width: 200,
                         align: "center",
                         render: (h, params) => {
                             return h("div", [

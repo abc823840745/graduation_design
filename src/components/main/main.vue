@@ -27,7 +27,7 @@
           </div>
           <Content class="content-wrapper">
             <keep-alive :include="cacheList">
-              <router-view/>
+              <router-view @changeMsg="updateNoticeCount"></router-view>
             </keep-alive>
           </Content>
         </Layout>
@@ -114,6 +114,9 @@
     ...mapActions([
       'handleLogin'
     ]),
+     updateNoticeCount(count){
+        this.mesCount = count
+    },
       turnToPage(route) {
         let { name, params, query } = {}
         if (typeof route === 'string') name = route
@@ -180,9 +183,7 @@
           name: this.$config.homeName
         })
       }
-      setTimeout(()=>{
         this.mesCount = this.$store.state.user.msgCount
-      },2000)
     }
   }
 

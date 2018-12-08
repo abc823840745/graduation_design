@@ -2,6 +2,7 @@ import { login, logout, getUserInfo } from '@/api/user'
 import { setToken, setRole, getRole, getToken } from '@/libs/util'
 export default {
   state: {
+    guideTeacher: '',
     choiceBegin: '',
     year: '',
     major: '',
@@ -15,11 +16,18 @@ export default {
     avatorImgPath: '',
     token: getToken(),
     access: [],
+    qq: '',
     hasGetInfo: false
   },
   mutations: {
     setTeamMajor(state, major) {
       state.major = major
+    },
+    setQQ(state, qq) {
+      state.qq = qq
+    },
+    setGuideTeacher(state, guideTeacher) {
+      state.guideTeacher = guideTeacher
     },
     setYear(state, year) {
       state.year = year
@@ -73,9 +81,14 @@ export default {
           password
         }).then(res => {
           const data = res.data
-          commit('setToken', data.token)
-          commit('setRole', data.role)
-          resolve(data.token)
+          if (data.message == 'err') {
+            reject(err)
+          } else {
+            commit('setToken', data.token)
+            commit('setRole', data.role)
+            resolve(data.token)
+          }
+
         }).catch(err => {
           reject(err)
         })
@@ -107,13 +120,14 @@ export default {
     getUserInfo({ state, commit }) {
       return new Promise((resolve, reject) => {
         try {
-          console.log(state)
           getUserInfo(state.token, state.role).then(res => {
             if (res.data.message == 'ok') {
               const data = res.data
               commit('setTeamId', data.team_id)
               commit('setYear', data.class)
               commit('setTeamMajor', data.major)
+              commit('setGuideTeacher', data.guide_teacher)
+              commit('setQQ', data.qq)
               commit('setLesson', data.lesson)
               commit('setPhone', data.phone)
               commit('setAvator', data.avator)
