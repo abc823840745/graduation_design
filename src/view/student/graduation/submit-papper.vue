@@ -118,11 +118,11 @@
                     },
                     on: {
                       click: () => {
-                        let {description} = this.tableData[params.index]
+                        let {tip} = this.tableData[params.index]
                         if (this.tableData[params.index].status == 0) {
                           return
                         }
-                        this.seeDetail(description);
+                        this.seeDetail(tip);
                       }
                     }
                   },
