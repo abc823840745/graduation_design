@@ -5,7 +5,7 @@
         <div class="page_container">
             <Page :total="totalSize" :page-size="size" @on-change="changePage" />
         </div>
-        <Modal v-model="modal1" width="900">
+        <Modal v-model="modal1" width="1000">
             <p slot="header" style="text-align:center">
                 <Icon type="ios-information-circle"></Icon>
                 <span>确定要修改论文状态？</span>
@@ -125,7 +125,7 @@
                         render: (h, params) => {
                             return h("span", {
                             },
-                                this.tableData[params.index].status == 0 ? '审核中' : this.tableData[params.index].status == -1 ? '未通过' : this.tableData[params.index].status == 1 ? '已完成' : '已超时')
+                                this.tableData[params.index].status == 0&&!this.tableData[params.index].dead_time ? '审核中' : this.tableData[params.index].status == -1 ? '未通过' : this.tableData[params.index].status == 1 ? '已完成' : '已超时')
                         }
                     },
                     {
@@ -237,7 +237,9 @@
                             item.name = name
                             item.title = title
                             if (item.time > deadline) {
-                                item.status = -2
+                                item.dead_time = true
+                            }else{
+                                 item.dead_time = false
                             }
                             item.time = getMyDate(item.time, "yyyy-MM-dd")
                             item.deadline = getMyDate(deadline, "yyyy-MM-dd")

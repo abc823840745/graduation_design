@@ -63,7 +63,7 @@
   </div>
 </template>
 <script>
-  import { getTeacherMission, addNewMission } from '@/api/teacher'
+  import { getTeacherMission, addNewMission,deleteMission } from '@/api/teacher'
   import { getMyDate } from '@/libs/tools'
   import config from '@/config'
   const baseUrl = process.env.NODE_ENV === 'development' ? config.baseUrl.dev : config.baseUrl.pro
@@ -167,6 +167,29 @@
                     }
                   },
                   '查看详情'
+                ),
+                h(
+                  "Button",
+                  {
+                    props: {
+                      type: 'error'
+                    },
+                    style: {
+                      marginRight: "10px"
+                    },
+                    on: {
+                      click: () => {
+                        this.$Modal.confirm({
+                          title: '确定要删除该任务？',
+                          onOk: () => {
+                            let {id} = this.tableData[params.index]
+                            this.deleteMission(id)
+                          }
+                        });
+                      }
+                    }
+                  },
+                  '删除任务'
                 )
               ]);
             }
@@ -189,19 +212,29 @@
       })
     },
     methods: {
+      deleteMission(id) {
+        deleteMission(id).then((res) => {
+          if (res.data.message == 'ok') {
+            this.$Notice.success({
+              title: '删除成功'
+            })
+            this.getTeacherMission()
+          }
+        })
+      },
       addNewMission() {
         let {title, description, upload, download, deadline} = this.form
-        if(deadline==''){
+        if (deadline == '') {
           this.$Notice.warning({
-            title:'请选择截至时间'
+            title: '请选择截至时间'
           })
           return
         }
 
         deadline = new Date(deadline).getTime()
-        let {token,userName} = this.userInfo
+        let {token, userName} = this.userInfo
         let file = ''
-     
+
         if (upload == 1) {
           if (this.uploadList.length <= 0) {
             return
@@ -209,7 +242,7 @@
           file = this.uploadList[0].url
         }
         let time = new Date().getTime()
-        addNewMission(title, description, upload, download, token, file, time, deadline,userName).then((res) => {
+        addNewMission(title, description, upload, download, token, file, time, deadline, userName).then((res) => {
           if (res.data.message == 'ok') {
             this.$Notice.success({
               title: '提交成功'
