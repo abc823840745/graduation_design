@@ -24,16 +24,6 @@
           <DatePicker v-model="form.deadline" type="datetime" placeholder="请选择截至时间" style="width: 200px"></DatePicker>
         </FormItem>
         <FormItem label="是否需要上传文件">
-          <RadioGroup v-model="form.upload">
-            <Radio label="0">
-              <span>否</span>
-            </Radio>
-            <Radio label="1">
-              <span>是</span>
-            </Radio>
-          </RadioGroup>
-        </FormItem>
-        <FormItem label="是否有任务附件">
           <RadioGroup v-model="form.download">
             <Radio label="0">
               <span>否</span>
@@ -43,7 +33,17 @@
             </Radio>
           </RadioGroup>
         </FormItem>
-        <FormItem label="上传附件" v-if="form.download=='1'">
+        <FormItem label="是否有任务附件">
+          <RadioGroup v-model="form.upload">
+            <Radio label="0">
+              <span>否</span>
+            </Radio>
+            <Radio label="1">
+              <span>是</span>
+            </Radio>
+          </RadioGroup>
+        </FormItem>
+        <FormItem label="上传附件" v-if="form.upload=='1'">
           <Upload type="drag" :max-size="20480" :format="['doc']" :action="uploadUrl" :on-exceeded-size="handleMaxSize" :on-success="handleSuccess">
             <div style="padding: 20px 0">
               <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
