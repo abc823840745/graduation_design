@@ -118,7 +118,7 @@
                   title: '发布成功'
                 })
                 let originMsgCount = localStorage.getItem('originCount')
-                localStorage.setItem('originCount', originMsgCount + 1)
+                localStorage.setItem('originCount', originMsgCount*1 + 1)
                 this.getMessage()
               } else {
                 this.$Notice.error({
