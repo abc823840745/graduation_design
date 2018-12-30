@@ -16,7 +16,7 @@
           <language v-if="$config.useI18n" @on-lang-change="setLocal" style="margin-right: 10px;" :lang="local" />
           <fullscreen v-model="isFullscreen" style="margin-right: 10px;" />
           <lock-screen></lock-screen>
-          <message-tip v-model="mesCount"></message-tip>
+          <message-tip :value="mesCount"></message-tip>
           <theme-switch></theme-switch>
         </header-bar>
       </Header>
@@ -103,7 +103,7 @@
         return this.$store.state.app.hasReadErrorPage
       }
     },
-   
+
     methods: {
     ...mapMutations([
       'setBreadCrumb',
@@ -114,9 +114,9 @@
     ...mapActions([
       'handleLogin'
     ]),
-     updateNoticeCount(count){
+      updateNoticeCount(count) {
         this.mesCount = count
-    },
+      },
       turnToPage(route) {
         let { name, params, query } = {}
         if (typeof route === 'string') name = route
@@ -183,7 +183,15 @@
           name: this.$config.homeName
         })
       }
-        this.mesCount = this.$store.state.user.msgCount
+      this.$nextTick(() => {
+        setTimeout(() => {
+       
+          this.mesCount = this.$store.state.user.msgCount
+             console.log(this.mesCount, this.$store.state.user.msgCount,222)
+        }, 2000)
+      })
+
+
     }
   }
 

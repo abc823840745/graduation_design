@@ -331,16 +331,16 @@ export default [
         },
         component: () => import('@/view/student/homework/write-online-homework.vue'),
       },
-      {
-        path: 'other',
-        name: 'student-other',
-        meta: {
-          icon: 'md-clipboard',
-          title: '其他',
-          access: ['student'],
-        },
-        component: () => import('@/view/student/homework/other.vue'),
-      },
+      // {
+      //   path: 'other',
+      //   name: 'student-other',
+      //   meta: {
+      //     icon: 'md-clipboard',
+      //     title: '其他',
+      //     access: ['student'],
+      //   },
+      //   component: () => import('@/view/student/homework/other.vue'),
+      // },
     ],
   },
   {
@@ -599,16 +599,16 @@ export default [
         },
         component: () => import('@/view/teacher/homework/checkHomeWork/check-online-homework-detail.vue'),
       },
-      {
-        path: 'other',
-        name: 'teacher-homework-other',
-        meta: {
-          icon: 'md-clipboard',
-          title: '其他',
-          access: ['teacher', 'admin'],
-        },
-        component: () => import('@/view/teacher/homework/other.vue'),
-      },
+      // {
+      //   path: 'other',
+      //   name: 'teacher-homework-other',
+      //   meta: {
+      //     icon: 'md-clipboard',
+      //     title: '其他',
+      //     access: ['teacher', 'admin'],
+      //   },
+      //   component: () => import('@/view/teacher/homework/other.vue'),
+      // },
     ],
   },
 
