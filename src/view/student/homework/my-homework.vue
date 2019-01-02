@@ -115,7 +115,7 @@ export default {
             return h("div", [
               this.btnStyle("查看", h, () => {
                 // 进入二级目录
-                // TODO:跳转回一级目录第一页
+                // TODO: 跳转回一级目录第一页
                 this.showTwoLevel = true;
               })
             ]);

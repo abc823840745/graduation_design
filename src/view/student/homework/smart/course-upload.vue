@@ -1,0 +1,158 @@
+<template>
+  <div class="containter">
+    <Table
+      stripe
+      class="table-con mar-top"
+      :columns="showTable('columns')"
+      :data="showTable('data')"
+    />
+    <Page
+      :total="30"
+      class="mar-top"
+    />
+  </div>
+</template>
+
+<script>
+export default {
+  name: "course-detail",
+  data() {
+    return {
+      curDirectory: 1, // 当前的目录
+      columns1: [
+        {
+          title: "目录",
+          key: "directory"
+        },
+        {
+          title: "文件数",
+          key: "fileCount"
+        },
+        {
+          title: "最迟上传时间",
+          key: "endTime"
+        },
+        {
+          title: "操作",
+          key: "operation",
+          render: (h, params) => {
+            return h("div", [
+              this.btnStyle("查看", h, () => (this.curDirectory = 2))
+            ]);
+          }
+        }
+      ],
+      data1: [
+        {
+          directory: "新媒体实训",
+          fileCount: 3,
+          endTime: "2018-9-18 11:00"
+        },
+        {
+          directory: "新媒体实训",
+          fileCount: 3,
+          endTime: "2018-9-18 11:00"
+        },
+        {
+          directory: "新媒体实训",
+          fileCount: 3,
+          endTime: "2018-9-18 11:00"
+        }
+      ],
+      columns2: [
+        {
+          title: "目录",
+          key: "directory"
+        },
+        {
+          title: "文件数",
+          key: "fileCount"
+        },
+        {
+          title: "最迟上传时间",
+          key: "endTime"
+        },
+        {
+          title: "操作",
+          key: "operation",
+          render: (h, params) => {
+            return h("div", [
+              this.btnStyle("上传", h, () => {
+                // TODO: 上传
+                alert("上传");
+              }),
+              this.btnStyle("返回", h, () => (this.curDirectory = 1))
+            ]);
+          }
+        }
+      ],
+      data2: [
+        {
+          directory: "第一周",
+          fileCount: 3,
+          endTime: "2018-9-18 11:00"
+        },
+        {
+          directory: "第二周",
+          fileCount: 3,
+          endTime: "2018-9-18 11:00"
+        },
+        {
+          directory: "第三周",
+          fileCount: 3,
+          endTime: "2018-9-18 11:00"
+        }
+      ]
+    };
+  },
+  methods: {
+    btnStyle(btnTitle, h, onclick) {
+      return h(
+        "Button",
+        {
+          props: {
+            type: "primary",
+            size: "default"
+          },
+          style: {
+            marginRight: "5px"
+          },
+          on: {
+            click: onclick
+          }
+        },
+        btnTitle
+      );
+    },
+    showTable(name) {
+      let val = null;
+      switch (this.curDirectory) {
+        case 1:
+          val = this[`${name}1`];
+          break;
+        case 2:
+          val = this[`${name}2`];
+          break;
+      }
+      return val;
+    }
+  }
+};
+</script>
+
+<style lang='less' scoped>
+.containter {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  .mar-top {
+    margin-top: 2.5%;
+  }
+  .table-con {
+    width: 100%;
+  }
+}
+</style>
