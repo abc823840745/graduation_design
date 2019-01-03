@@ -1,5 +1,51 @@
 <template>
   <div class="containter">
+    <Modal
+      v-model="showModal"
+      title="上传"
+      @on-ok="dialogOk"
+      @on-cancel="dialogCancel"
+    >
+      <Upload
+        ref="upload"
+        multiple
+        type="drag"
+        :on-remove="handleremove"
+        action="//jsonplaceholder.typicode.com/posts/"
+      >
+        <div style="padding: 20px 0">
+          <Icon
+            type="ios-cloud-upload"
+            size="52"
+            style="color: #3399ff"
+          ></Icon>
+          <p>点击或者把文件拖拽到这里</p>
+        </div>
+      </Upload>
+    </Modal>
+    <Modal
+      v-model="showDelmodal"
+      width="360"
+    >
+      <p
+        slot="header"
+        style="text-align:center"
+      >
+        <span>删除确认</span>
+      </p>
+      <div style="text-align:center">
+        <p>是否确认删除?</p>
+      </div>
+      <div slot="footer">
+        <Button
+          type="primary"
+          size="large"
+          long
+          :loading="modal_loading"
+          @click="del"
+        >删除</Button>
+      </div>
+    </Modal>
     <Table
       stripe
       class="table-con mar-top"
@@ -18,6 +64,9 @@ export default {
   name: "course-detail",
   data() {
     return {
+      showModal: false,
+      showDelmodal: false,
+      modal_loading: false,
       curDirectory: 1, // 当前的目录
       columns1: [
         {
@@ -79,7 +128,7 @@ export default {
             return h("div", [
               this.btnStyle("上传", h, () => {
                 // TODO: 上传
-                alert("上传");
+                this.showModal = true;
               }),
               this.btnStyle("返回", h, () => (this.curDirectory = 1))
             ]);
@@ -135,6 +184,23 @@ export default {
           break;
       }
       return val;
+    },
+    dialogOk() {
+      this.$Message.info("Clicked ok");
+    },
+    dialogCancel() {
+      this.$Message.info("Clicked cancel");
+    },
+    handleremove() {
+      this.showDelmodal = true;
+    },
+    del() {
+      this.modal_loading = true;
+      setTimeout(() => {
+        this.modal_loading = false;
+        this.showDelmodal = false;
+        this.$Message.success("Successfully delete");
+      }, 2000);
     }
   }
 };

@@ -65,7 +65,10 @@
 </style>
 <template>
   <div class="containter">
-
+    <count-down
+      :isStartTimer='true'
+      :initialTime='60'
+    />
     <div class="count-down-con">
       <P class="count-down-text">倒计时：</P>
       <P class="count-down-text primary-color">20min</P>
@@ -137,6 +140,7 @@
 </template>
 <script>
 import RadioItem from "@/view/teacher/homework/smart/create-subject-radio-item";
+import CountDown from "../smart/count-down";
 export default {
   name: "online-homework",
   data() {
@@ -152,7 +156,8 @@ export default {
     };
   },
   components: {
-    RadioItem
+    RadioItem,
+    CountDown
   },
   methods: {
     // 监听子组件传过来的radio值

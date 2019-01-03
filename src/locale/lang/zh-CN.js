@@ -45,7 +45,7 @@ export default {
   'teacher-course-other': '其他',
   // 教师作业管理
   'teacher-homework': '作业管理',
-  'teacher-my-homework': '布置作业',
+  'teacher-homework-assignment': '布置作业',
   'teacher-check-homework': '查看作业',
   // 'teacher-check-online-homework': '查看在线作业',
   'teacher-check-online-homework-detail': '查看作业详情',

@@ -208,7 +208,6 @@ const hasAccess = (access, route) => {
 export const canTurnTo = (name, access, routes) => {
   const routePermissionJudge = (list) => {
     return list.some(item => {
-
       if (item.children && item.children.length) {
         return routePermissionJudge(item.children)
       } else if (item.name === name) {
@@ -244,7 +243,6 @@ export const getNextRoute = (list, route) => {
     res = getHomeRoute(list)
   } else {
     const index = list.findIndex(item => routeEqual(item, route))
-    console.log(route, index, list.length)
     if (index === list.length - 1) res = list[list.length - 2]
     else res = list[index + 1]
   }

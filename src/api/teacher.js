@@ -229,6 +229,17 @@ export const confirmStudentCourse = (id, uid) => {
   })
 }
 
+export const deleteMission = (id) => {
+  return axios.request({
+    url: '/delete/mission',
+    method: 'post',
+    data: {
+      id
+    }
+  })
+}
+
+
 export const getStudentMission = ((token, tid, page, size) => {
   return axios.request({
     url: '/get/student/mission',

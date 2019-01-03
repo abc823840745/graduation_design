@@ -308,7 +308,7 @@ export default [
           title: '作业情况',
           access: ['student'],
         },
-        component: () => import('@/view/student/homework/my-homework.vue'),
+        component: () => import('@/view/student/homework/page/my-homework.vue'),
       },
       {
         path: 'check-online-homework-detail',
@@ -319,7 +319,7 @@ export default [
           title: '查看在线作业详情',
           access: ['student'],
         },
-        component: () => import('@/view/student/homework/check-online-homework-detail.vue'),
+        component: () => import('@/view/student/homework/page/check-online-homework-detail.vue'),
       },
       {
         path: 'online-homework',
@@ -581,14 +581,14 @@ export default [
     component: Main,
     children: [
       {
-        path: 'my-homework',
-        name: 'teacher-my-homework',
+        path: 'homework-assignment',
+        name: 'teacher-homework-assignment',
         meta: {
           icon: 'ios-document',
           title: '我的作业',
           access: ['teacher', 'admin'],
         },
-        component: () => import('@/view/teacher/homework/createHomeWork/my-homework.vue'),
+        component: () => import('@/view/teacher/homework/page/homework-assignment.vue'),
       },
       {
         path: 'check-homework',
@@ -598,7 +598,7 @@ export default [
           title: '查看作业',
           access: ['teacher', 'admin'],
         },
-        component: () => import('@/view/teacher/homework/checkHomeWork/check-homework.vue'),
+        component: () => import('@/view/teacher/homework/page/check-homework.vue'),
       },
       // {
       //   path: 'check-online-homework',
@@ -619,18 +619,18 @@ export default [
           title: '查看在线作业详情',
           access: ['teacher', 'admin'],
         },
-        component: () => import('@/view/teacher/homework/checkHomeWork/check-online-homework-detail.vue'),
+        component: () => import('@/view/teacher/homework/page/check-online-homework-detail.vue'),
       },
-      {
-        path: 'other',
-        name: 'teacher-homework-other',
-        meta: {
-          icon: 'md-clipboard',
-          title: '其他',
-          access: ['teacher', 'admin'],
-        },
-        component: () => import('@/view/teacher/homework/other.vue'),
-      },
+      // {
+      //   path: 'other',
+      //   name: 'teacher-homework-other',
+      //   meta: {
+      //     icon: 'md-clipboard',
+      //     title: '其他',
+      //     access: ['teacher', 'admin'],
+      //   },
+      //   component: () => import('@/view/teacher/homework/other.vue'),
+      // },
     ],
   },
 
