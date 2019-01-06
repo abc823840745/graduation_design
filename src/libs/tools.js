@@ -46,7 +46,7 @@ export const hasOneOf = (targetarr, arr) => {
  * @param {String|Number} value 要验证的字符串或数值
  * @param {*} validList 用来验证的列表
  */
-export function oneOf (value, validList) {
+export function oneOf(value, validList) {
   for (let i = 0; i < validList.length; i++) {
     if (value === validList[i]) {
       return true
@@ -100,30 +100,39 @@ const getDate = (timeStamp, startType) => {
   return resStr
 }
 
-export   const getMyDate = (date,fmt) => {
+export const getMyDate = (date, fmt) => {
   date = new Date(date * 1)
-   if(/(y+)/.test(fmt)){
-        fmt = fmt.replace(RegExp.$1,(date.getFullYear()+'').substr(4-RegExp.$1.length))
+  if (/(y+)/.test(fmt)) {
+    fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length))
+  }
+  let o = {
+    'M+': date.getMonth() + 1,
+    'd+': date.getDate(),
+    'h+': date.getHours(),
+    'm+': date.getMinutes(),
+    's+': date.getSeconds()
+  }
+  for (let k in o) {
+    if (new RegExp(`(${k})`).test(fmt)) {
+      let str = o[k] + ''
+      fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1 ? str : padLeftZero(str)))
     }
-    let o = {
-        'M+':date.getMonth()+1,
-        'd+':date.getDate(),
-        'h+':date.getHours(),
-        'm+':date.getMinutes(),
-        's+':date.getSeconds()
-    }
-    for(let k in o){
-        if(new RegExp(`(${k})`).test(fmt)){
-            let str =o[k]+''
-            fmt =fmt.replace(RegExp.$1,(RegExp.$1.length===1?str:padLeftZero(str)))
-        }
-    }
-    return fmt
+  }
+  return fmt
+}
+
+export const htmlParse = (content) => {
+  content = content.replace(/</g, "&lt;")
+  content = content.replace(/>/g, "&gt;")
+  content = content.replace(/:/g, "&quto;")
+  return content
 }
 
 
-function padLeftZero(str){
-       return ('00'+str).substr(str.length)
+
+
+function padLeftZero(str) {
+  return ('00' + str).substr(str.length)
 }
 
 /**

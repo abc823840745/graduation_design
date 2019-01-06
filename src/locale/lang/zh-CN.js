@@ -36,6 +36,9 @@ export default {
   //教师课程管理
   'teacher-course': '课程管理',
   'teacher-my-course': '我的课程',
+  'teacher-my-course-detail': '课程详情',
+  'teacher-my-course-class': '课时详情',
+  'teacher-question-detail': '问题详情',
   'teacher-course-other': '其他',
   //教师作业管理
   'teacher-homework': '作业管理',

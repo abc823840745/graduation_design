@@ -517,6 +517,39 @@ export default [
         component: () => import('@/view/teacher/course/my-course.vue')
       },
       {
+        path: 'my-course-detail/:id',
+        name: 'teacher-my-course-detail',
+        meta: {
+          icon: 'logo-markdown',
+          title: '课程详情',
+          access: ['teacher', 'admin'],
+          hideInMenu: true
+        },
+        component: () => import('@/view/teacher/course/my-course-detail.vue')
+      },
+      {
+        path: 'my-course-detail/:id/:class_id',
+        name: 'teacher-my-course-class',
+        meta: {
+          icon: 'logo-markdown',
+          title: '课时详情',
+          access: ['teacher', 'admin'],
+          hideInMenu: true
+        },
+        component: () => import('@/view/teacher/course/my-course-class.vue')
+      },
+      {
+        path: 'teacher-question-detail/:id',
+        name: 'teacher-question-detail',
+        meta: {
+          icon: 'logo-markdown',
+          title: '问题详情',
+          access: ['teacher', 'admin'],
+          hideInMenu: true
+        },
+        component: () => import('@/view/teacher/course/teacher-question-detail.vue')
+      },
+      {
         path: 'other',
         name: 'teacher-course-other',
         meta: {

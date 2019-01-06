@@ -5,7 +5,7 @@
         <div class="page_container">
             <Page :total="totalSize" :page-size="size" @on-change="changePage" />
         </div>
-        <Modal v-model="modal1" width="500">
+        <Modal v-model="modal1" width="1000">
             <p slot="header" style="text-align:center">
                 <Icon type="ios-information-circle"></Icon>
                 <span>确定要修改论文状态？</span>
@@ -23,7 +23,8 @@
                     </RadioGroup>
                 </FormItem>
                 <FormItem v-if="form.status==0" prop="content" label="修改意见">
-                    <Input v-model="form.content" type="textarea" :autosize="{minRows: 5,maxRows: 20}" placeholder="请输入修改意见"></Input>
+                    <!-- <Input v-model="form.content" type="textarea" :autosize="{minRows: 5,maxRows: 20}" placeholder="请输入修改意见"></Input>-->
+                    <expand-row @changeContent="changeContent"></expand-row>
                 </FormItem>
             </Form>
             <div slot="footer">
@@ -36,7 +37,7 @@
                 <Icon type="ios-information-circle"></Icon>
                 <span>论文修改意见</span>
             </p>
-          <div>{{description}}</div>
+            <div v-html="description"></div>
         </Modal>
     </div>
 </template>
@@ -46,7 +47,7 @@
     import config from '@/config'
     const baseUrl = process.env.NODE_ENV === 'development' ? config.baseUrl.dev : config.baseUrl.pro
     const uploadUrl = baseUrl + '/upload/work'
-
+    import expandRow from './component/papper_expand.vue';
     export default {
         name: "submit-papper",
         data() {
@@ -124,7 +125,7 @@
                         render: (h, params) => {
                             return h("span", {
                             },
-                                this.tableData[params.index].status == 0 ? '审核中' : this.tableData[params.index].status == -1 ? '未通过' : this.tableData[params.index].status == 1 ? '已完成' : '已超时')
+                                this.tableData[params.index].status == 0&&!this.tableData[params.index].dead_time ? '审核中' : this.tableData[params.index].status == -1 ? '未通过' : this.tableData[params.index].status == 1 ? '已完成' : '已超时')
                         }
                     },
                     {
@@ -139,7 +140,7 @@
                                     {
                                         props: {
                                             type: 'primary',
-                                            disabled:this.tableData[params.index].status != 0
+                                            disabled: this.tableData[params.index].status != 0
                                         },
                                         style: {
                                             marginRight: "10px"
@@ -176,7 +177,7 @@
                                             }
                                         }
                                     },
-                                    this.tableData[params.index].status == -1?"查看意见":"暂无意见"
+                                    this.tableData[params.index].status == -1 ? "查看意见" : "暂无意见"
                                 )
                             ]);
                         }
@@ -190,7 +191,13 @@
                 this.getOldPapper()
             })
         },
+        components: {
+            expandRow
+        },
         methods: {
+            changeContent(content){
+                this.form.content = content
+            },
             updatePapper() {
 
                 let {papper_id, content, status} = this.form
@@ -230,7 +237,9 @@
                             item.name = name
                             item.title = title
                             if (item.time > deadline) {
-                                item.status = -2
+                                item.dead_time = true
+                            }else{
+                                 item.dead_time = false
                             }
                             item.time = getMyDate(item.time, "yyyy-MM-dd")
                             item.deadline = getMyDate(deadline, "yyyy-MM-dd")

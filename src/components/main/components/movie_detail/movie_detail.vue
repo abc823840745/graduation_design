@@ -1,26 +1,27 @@
 <template>
     <div class="app-container">
-        <video-player class="video-player vjs-custom-skin" ref="videoPlayer" :playsinline="true" :options="playerOptions"></video-player>
-        <Card class="box-card">
-            <div class="text item">
-                {{movie.title}}
-            </div>
-            <div class="text item">
-                {{movie.description}}
-            </div>
-            <div class="text item">
-                <span @click="addMoviePraise">
+        <!-- <video-player class="video-player vjs-custom-skin" ref="videoPlayer" :playsinline="true" :options="playerOptions"></video-player>-->
+        <video id="video" :src="movie.url" width="100%" height="655"   :poster="movie.cover" controls></video>
+            <Card class="box-card">
+                <div class="text item">
+                    {{movie.title}}
+                </div>
+                <div class="text item">
+                    {{movie.description}}
+                </div>
+                <div class="text item">
+                    <span @click="addMoviePraise">
               <Icon type="ios-heart" />
                 
                 <i class="number">{{praise}}</i>
                 </span>
-                <Icon type="ios-paper" />
-                <i class="number">{{ratings}}</i>
-            </div>
-        </Card>
-        <div class="input-container">
-            <Input v-model="replyContent" type="textarea" placeholder="请输入评论内容"></Input>
-            <Button @click="movieComment" class="btn" type="primary">发布评论</Button >
+                    <Icon type="ios-paper" />
+                    <i class="number">{{ratings}}</i>
+                </div>
+            </Card>
+            <div class="input-container">
+                <Input v-model="replyContent" type="textarea" placeholder="请输入评论内容"></Input>
+                <Button @click="movieComment" class="btn" type="primary">发布评论</Button >
             <div class='detail_comment-container'>
                 <div class="detail_comment" v-for="(item,index) in detailCommentList" :key="index" hover-class="hover_comment">
                     <div v-if="item.val<=0">
@@ -64,7 +65,7 @@
 </template>
 
 <script>
-    import { getMyDate } from '@/libs/tools'
+    import { getMyDate,htmlParse } from '@/libs/tools'
     import { addPraise, addComment, getMovieCommentList } from '@/api/movie'
     export default {
         data() {
@@ -151,7 +152,6 @@
             addMoviePraise() {
                 var uid = this.$store.state.user.token
                 var mid = this.movie.id
-
                 addPraise(uid, mid).then((res) => {
                     if (res.data.message == 1) {
                         var praise = this.movie.praise
@@ -175,7 +175,7 @@
                 var to_user_id = this.to_user_id
                 var user = this.user
                 var uid = user.token
-                var name = user.username
+                var name = user.userName
                 var avatar = user.avatorImgPath
                 var rateTime = new Date().getTime()
                 var content = this.replyContent.trim()
@@ -186,7 +186,6 @@
                     return
                 }
                 var that = this
-                console.log(mid, uid, name, avatar, content, rateTime, parent_id, to_user_name, to_user_id)
                 addComment(mid, uid, name, avatar, content, rateTime, parent_id, to_user_name, to_user_id).then((res) => {
                     that.ratings = that.ratings + 1
                     if (to_user_name) {
