@@ -530,7 +530,7 @@ export default [
       {
         path: 'my-course-detail/:id/:class_id',
         name: 'teacher-my-course-class',
-        meta: { 
+        meta: {
           icon: 'logo-markdown',
           title: '课时详情',
           access: ['teacher', 'admin'],
