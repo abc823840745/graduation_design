@@ -550,14 +550,14 @@ export default [
         component: () => import('@/view/teacher/course/teacher-question-detail.vue')
       },
       {
-        path: 'other',
-        name: 'teacher-course-other',
+        path: 'my-course-questions',
+        name: 'teacher-my-course-questions',
         meta: {
           icon: 'ios-create',
-          title: '其他',
+          title: '课程答疑',
           access: ['teacher', 'admin']
         },
-        component: () => import('@/view/teacher/course/other.vue')
+        component: () => import('@/view/teacher/course/my-course-questions.vue')
       }
     ]
   },

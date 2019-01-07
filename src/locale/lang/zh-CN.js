@@ -39,7 +39,7 @@ export default {
   'teacher-my-course-detail': '课程详情',
   'teacher-my-course-class': '课时详情',
   'teacher-question-detail': '问题详情',
-  'teacher-course-other': '其他',
+  'teacher-my-course-questions': '课程答疑',
   //教师作业管理
   'teacher-homework': '作业管理',
   'teacher-my-homework': '布置作业',

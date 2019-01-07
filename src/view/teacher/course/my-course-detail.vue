@@ -134,7 +134,7 @@
 <script>
 import { getMyDate } from '@/libs/tools'
 export default {
-  name: "my-course-detail",
+  name: "teacher-my-course-detail",
   data() {
     return {
       total: 20,

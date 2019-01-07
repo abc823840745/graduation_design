@@ -3,6 +3,7 @@
     .teacher-question-detail-top {
       display: flex;
       justify-content: space-between;
+      flex-wrap: wrap;
       background-color: #fff;
       padding: 14px 20px;
       border-radius: 10px;
@@ -25,6 +26,14 @@
       .teacher-question-status-btn {
         font-size: 14px;
         line-height: 27px;
+      }
+      .answer-panel {
+        width: 100%;
+        padding: 10px 0;
+        .answer-panel-btn {
+          margin-top: 10px;
+          text-align: right;
+        }
       }
     }
     .questions-key-title {
@@ -113,7 +122,7 @@
       <div>
         <h2 class="teacher-question-title">{{question_title}} <span class="time"> {{question_time}}</span></h2>
         <p class="teacher-question-sub">提问者：{{questioner}}</p>
-        <Button style="margin-top:10px" icon="ios-create-outline" type="success">我来答</Button>
+        <Button style="margin-top:10px" icon="ios-create-outline" type="success" @click.native="showAnswerPanel">我来答</Button>
       </div>
       <p class="teacher-question-status-btn">
         <!-- <Button size="small" shape="circle" @click.native="checkStudentList" type="primary">状态设置</Button> -->
@@ -129,6 +138,10 @@
           </Option>
         </Select>
       </p>
+      <div class="answer-panel" v-if="show_answer_panel">
+        <Input v-model="answer_content" type="textarea" :autosize="{minRows: 5,maxRows: 10}" placeholder="写下您的答案吧～" style="width: 100%" />
+        <div class="answer-panel-btn"><Button type="primary">提交回答</Button></div>
+      </div>
     </div>
     <div class="questions-key-title">
       <p>{{key_number}}个回答</p>
@@ -146,9 +159,15 @@
           <Tag :color="item.status==1?'green':'cyan'" v-if="item.status!=0">{{item.status==1?'最佳答案':'有用'}}</Tag>
         </div>
         <div class="answer-content" v-html="item.content"></div>
-        <div class="answer-comment-top" @click="showComment(index)">
+        <div class="answer-comment-top">
           <Icon type="ios-chatbubbles" />
-          <span> 评论（10）</span>
+          <span @click="showComment(index)"> 评论（10）</span>
+          <span> 将该答案设为 </span>
+          <Select :value="item.status" size="small" @on-change="chanegAnswerStatus($event, index)" style="width:100px">
+              <Option :value="0" >普通答案</Option>
+              <Option :value="2" >有用答案</Option>
+              <Option :value="1" >最佳答案</Option>
+          </Select>
         </div>
         <div class="answer-comment" v-if="item.show_comment">
           <div class="write-comment">
@@ -172,7 +191,9 @@ export default {
       questioner: '骆镜濠',
       key_number: 4,
       answer_list: [],
-      my_comment_content: ''
+      my_comment_content: '',
+      answer_content: '',
+      show_answer_panel: false,
     }
   },
   methods: {
@@ -202,6 +223,12 @@ export default {
     },
     showComment (i) {
       this.answer_list[i].show_comment = !this.answer_list[i].show_comment
+    },
+    showAnswerPanel(){
+      this.show_answer_panel = true;
+    },
+    chanegAnswerStatus(v,i){
+      this.answer_list[i].status = v;
     }
   },
   created () {
