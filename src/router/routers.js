@@ -264,7 +264,7 @@ export default [
     name: 'student-course',
     meta: {
       icon: 'logo-buffer',
-      title: '课程设计',
+      title: '课程管理',
       access: ['student']
     },
     component: Main,
@@ -277,7 +277,27 @@ export default [
           title: '我的课程',
           access: ['student']
         },
-        component: () => import('@/view/student/course/my-course.vue')
+        component: () => import('@/view/student/course/my-course.vue'),
+      },
+      {
+        path: 'course-detail/:code',
+        name: 'student-my-course-detail',
+        meta: {
+          title: '课程详情',
+          access: ['student'],
+          hideInMenu: true
+        },
+        component: () => import('@/view/student/course/course-detail/index.vue')
+      },
+      {
+        path: 'course-detail/:code/:id',
+        name: 'student-my-course-class-detail',
+        meta: {
+          title: '课时详情',
+          access: ['student'],
+          hideInMenu: true
+        },
+        component: () => import('@/view/student/course/course-detail/class-detail.vue')
       },
       {
         path: 'other',

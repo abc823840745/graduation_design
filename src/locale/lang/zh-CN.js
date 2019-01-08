@@ -8,8 +8,10 @@ export default {
   'student-my-info': '我的资料',
   'student-my-message': '我的私信',
   //学生课程管理
-  'student-course': '课程设计',
+  'student-course': '课程管理',
   'student-my-course': '我的课程',
+  'student-my-course-detail': '课程详情',
+  'student-my-course-class-detail': '课时详情',
   'student-other': '其他',
   'student-else': '其他',
   //学生作业管理

@@ -23,7 +23,7 @@
         font-size: 12px;
        }
        .course-btn {
-         margin-top: 20px;
+         margin-top: 10px;
        }
      }
    }
@@ -49,6 +49,7 @@
       <div class="course-item" v-for="(item,index) in course_list" :key="index">
         <h3>{{item.name}}</h3>
         <p class="course-code">课程代码：{{item.code}}</p>
+        <p class="course-code">教学班：{{item.class_code}}</p>
         <ButtonGroup class="course-btn">
           <Button shape="circle" type="info" @click.native="goCourse(item.id)">进入课程</Button>
           <Button shape="circle" type="error" @click.native="deleteCourse(item.id)">删除课程</Button>
@@ -67,6 +68,8 @@
         <Input v-model="course_name" placeholder="请输入课程全称（请确保与Myscse统一）" style="width: 300px" />
         <p style="margin: 10px 0;font-size:16px;">课程代码：</p>
         <Input v-model="course_code" placeholder="请输入课程代码" style="width: 300px" />
+        <p style="margin: 10px 0;font-size:16px;">教学班：</p>
+        <Input v-model="course_class_code" placeholder="请输入本课程教学班代号" style="width: 300px" />
       </div>
       <div slot="footer">
           <Button type="primary" size="large" long :loading="create_loading" @click="sendCreateCourse">马上创建</Button>
@@ -89,33 +92,39 @@ export default {
         {
           id: 1,
           name: '新媒体实训',
-          code: 'GT2004'
+          code: 'GT2004',
+          class_code: 'ACM01'
         },
         {
           id: 2,
           name: '二维图像处理',
-          code: 'GT2005'
+          code: 'GT2005',
+          class_code: 'ATG02'
         },
         {
           id: 3,
           name: '中国近现代史',
-          code: 'GT2006'
+          code: 'GT2006',
+          class_code: 'ATH01'
         },
         {
           id: 4,
           name: '后期剪辑合成',
-          code: 'GT2007'
+          code: 'GT2007',
+          class_code: 'AfM03'
         },
         {
           id: 5,
           name: '外国文学赏析',
-          code: 'GT2008'
+          code: 'GT2008',
+          class_code: 'ALV01'
         }
       ],
       showCreateCourse: false,
       create_loading: false,
       course_name: '',
-      course_code: ''
+      course_code: '',
+      course_class_code: ''
     }
   },
   methods: {
@@ -135,6 +144,7 @@ export default {
       this.showCreateCourse = true;
       this.course_name = '';
       this.course_code = '';
+      this.course_class_code = '';
     },
     sendCreateCourse(){
       this.create_loading = true;
