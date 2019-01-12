@@ -58,6 +58,10 @@ class HttpRequest {
     const instance = axios.create()
     options = Object.assign(this.getInsideConfig(), options)
     this.interceptors(instance, options.url)
+    options.headers ={
+      token:store.state.user.token,
+      role:store.state.user.role
+    }
     return instance(options)
   }
 }

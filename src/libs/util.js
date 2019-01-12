@@ -197,7 +197,6 @@ const hasAccess = (access, route) => {
   }
   else return true
 }
-
 /**
  * 权鉴
  * @param {*} name 即将跳转的路由name

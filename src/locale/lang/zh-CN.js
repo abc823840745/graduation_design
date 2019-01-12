@@ -57,5 +57,8 @@ export default {
   'time-manager':'时间管理',
   'course_admin':'课题分配',
    'papper_admin': '导师选择详情',
-   'movie-manager': '优秀毕设管理'
+   'movie-manager': '优秀毕设管理',
+   "permission-manager":"权限控制",
+   "modules-manager":"模块控制",
+   "handle-manager":"操作控制"
 }

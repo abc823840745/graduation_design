@@ -185,13 +185,9 @@
       }
       this.$nextTick(() => {
         setTimeout(() => {
-       
           this.mesCount = this.$store.state.user.msgCount
-             console.log(this.mesCount, this.$store.state.user.msgCount,222)
         }, 2000)
       })
-
-
     }
   }
 
