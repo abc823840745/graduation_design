@@ -47,8 +47,12 @@ class HttpRequest {
         Notice.error({
           title:"您没有该操作权限！"
         })
+        return Promise.reject('error')
       }
-      if (res.data.status !== 1) {
+      if (res.data.message === 'fail'||res.data.message === 'err') {
+        Notice.error({
+          title:"服务器错误，请稍后重试！"
+        })
         return Promise.reject('error')
       }
       this.destroy(url)
