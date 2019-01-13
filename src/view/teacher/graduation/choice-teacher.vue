@@ -1,6 +1,6 @@
 <template>
   <div class="goods-all">
-    <Table border :columns="columns"  :data="tableData" size="large" no-data-text="暂时未到开题时间"></Table>
+    <Table border :columns="columns"  :data="tableData" size="large" no-data-text="我暂时还没有毕业设计相关信息"></Table>
     <div class="page_container">
       <Page :total="total" :page-size="pageSize" @on-change="changePage" />
     </div>
