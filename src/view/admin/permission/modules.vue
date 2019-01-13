@@ -1,14 +1,13 @@
 <template>
   <div class="goods-all">
-    <Table border :columns="columns" :data="tableData" size="large" no-data-text="该角色暂时没有负责的模块"></Table>
-    <div class="choice_btn">
-      <Button type="primary" @click="new_modal=true">添加新模块</Button>
-      <p class="choice_tip">注意：权限模块一定要填写英文，模块描述可以为中文！</p>
+     <div class="choice_btn">
+      <Button type="success" @click="new_modal=true">添加新模块</Button>
     </div>
-    <Modal v-model="new_modal" width="800">
+    <Table border :columns="columns" :data="tableData" size="large" no-data-text="该角色暂时没有负责的模块"></Table>
+    <Modal v-model="new_modal" width="600">
       <p slot="header" style="text-align:center">
         <Icon type="ios-information-circle"></Icon>
-        <span>确定要添加模块？</span>
+        <span>注意：权限模块一定要填写英文，模块描述可以为中文！</span>
       </p>
       <Form :model="form" ref="content" :label-width="80" :rules="ruleInline">
         <FormItem prop="name" label="模块名称">
@@ -69,12 +68,6 @@ import {
 } from "@/api/permission";
 import { getMyDate } from "@/libs/tools";
 import config from "@/config";
-const baseUrl =
-  process.env.NODE_ENV === "development"
-    ? config.baseUrl.dev
-    : config.baseUrl.pro;
-const uploadUrl = baseUrl + "/upload/work";
-let timer = null;
 export default {
   name: "choice-teacher",
   data() {
@@ -86,30 +79,16 @@ export default {
         module_desc: ""
       },
       update_modal: false,
-      tableLoading: false,
       new_modal: false,
-      uploadLoading: false,
-      progressPercent: 0,
-      showProgress: false,
-      showRemoveFile: false,
-      tableTitle: [],
-      file: null,
       modules: [],
       content_modal: false,
-      guide_teacher: "",
       page: 1,
       total: 21,
       pageSize: 10,
-      selectable: false,
       haveSelect: [],
-      originSelect: [],
-      uploadUrl,
-      uploadList: [],
       userInfo: {},
       info: {},
-      modal1: false,
       tableData: [],
-      newData: [],
       ruleInline: {
         module_desc: [
           {
@@ -290,13 +269,8 @@ export default {
 }
 
 .choice_btn {
-  position: fixed;
-  width: 320px;
-  text-align: center;
-  left: 50%;
-  bottom: 80px;
-  transform: translateX(-20px);
-  margin: 0 auto;
+  position: relative;
+  margin: 10px 15px;
 }
 
 .choice_tip {

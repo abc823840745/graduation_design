@@ -94,7 +94,7 @@
   </div>
 </template>
 <script>
-  import { getUserInfo } from '@/api/user'
+  import { getUserInfo,updateInfo } from '@/api/user'
    import {updatePs } from '@/api/teacher'
   import config from '@/config'
   const baseUrl = process.env.NODE_ENV === 'development' ? config.baseUrl.dev : config.baseUrl.pro
