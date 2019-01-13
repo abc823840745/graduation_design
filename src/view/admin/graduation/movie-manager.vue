@@ -3,9 +3,6 @@
 </style>
 <template>
     <div>
-         <div class="choice_btn">
-            <Button type="success" @click="update_modal=true">添加新视频</Button>
-        </div>
         <Tabs @on-click="getName">
             <TabPane style="position:relative;height:800px;" :label="workItem.name" v-for="(workItem,index) in workType" :key="index"
                 icon="logo-apple">
@@ -15,7 +12,9 @@
                 </div>
                 </TabPane>
         </Tabs>
-       
+        <div class="choice_btn">
+            <Button type="primary" @click="update_modal=true">添加新视频</Button>
+        </div>
         <Modal v-model="del_modal" width="400">
             <p slot="header" style="text-align:center">
                 <Icon type="ios-information-circle"></Icon>
@@ -331,8 +330,13 @@
     }
     
     .choice_btn {
-        position: relative;
-        margin: 0 10px 15px 10px;
+        position: fixed;
+        width: 320px;
+        text-align: center;
+        left: 50%;
+        bottom: 50px;
+        transform: translateX(-20px);
+        margin: 0 auto;
     }
     
     .title-wrapper {

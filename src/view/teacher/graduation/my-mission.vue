@@ -316,7 +316,7 @@
     width: 430px;
     text-align: center;
     left: 50%;
-    bottom: 80px;
+    bottom: 50px;
     transform: translateX(-20px);
     margin: 0 auto;
   }

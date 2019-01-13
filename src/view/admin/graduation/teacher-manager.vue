@@ -1,16 +1,15 @@
 <template>
   <div class="goods-all">
-      <div class="choice_btn">
-      <Button type="success" @click="new_modal=true">添加新老师</Button>
-      <p class="choice_tip">注意：请按照指定格式导入教师表，教师初始密码为teacher+工号！
-        <a href="https://media.kaolaplay.com/teachers_modal.xlsx" download="w3logo">查看上传模板</a>
-      </p>
-    </div>
     <Table border :columns="columns" :data="tableData" size="large" no-data-text="暂时未到开题时间"></Table>
     <div class="page_container">
       <Page :total="total" :page-size="pageSize" @on-change="changePage"/>
     </div>
-  
+    <div class="choice_btn">
+      <Button type="primary" @click="new_modal=true">添加新老师</Button>
+      <p class="choice_tip">注意：请按照指定格式导入教师表，教师初始密码为teacher+工号！
+        <a href="https://media.kaolaplay.com/teachers_modal.xlsx" download="w3logo">查看上传模板</a>
+      </p>
+    </div>
     <Modal v-model="content_modal" width="500">
       <p slot="header" style="text-align:center">
         <Icon type="ios-information-circle"></Icon>
@@ -727,8 +726,13 @@ export default {
 }
 
 .choice_btn {
-  position: relative;
-  margin: 10px ;
+  position: fixed;
+  width: 320px;
+  text-align: center;
+  left: 50%;
+  bottom: 50px;
+  transform: translateX(-20px);
+  margin: 0 auto;
 }
 
 .choice_tip {
