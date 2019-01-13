@@ -1,6 +1,6 @@
 <template>
   <div class="goods-all">
-    <Table border :columns="columns" :data="tableData" size="large" no-data-text="暂时未到开题时间"></Table>
+    <Table border :columns="columns" :data="tableData" size="large" no-data-text="该角色暂时没有负责的模块"></Table>
     <div class="choice_btn">
       <Button type="primary" @click="new_modal=true">添加新模块</Button>
       <p class="choice_tip">注意：权限模块一定要填写英文，模块描述可以为中文！</p>

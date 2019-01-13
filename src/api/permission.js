@@ -118,3 +118,16 @@ export function getRoles(token) {
       }
     })
   }
+
+     //改变权限操作
+     export function changeHandle(handles,mid) {
+      return axios.request({
+        url: '/change/handle',
+        method: 'post',
+        data:{
+          handles,
+          mid
+        }
+      })
+    }
+  

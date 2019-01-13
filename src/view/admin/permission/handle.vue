@@ -1,14 +1,21 @@
 <template>
   <div class="goods-all">
-    <Table border :columns="columns" :data="tableData" size="large" no-data-text="暂时未到开题时间"></Table>
-    <div class="choice_btn">
+    <div class="btn_con">
       <Button type="primary" @click="new_modal=true">添加新操作</Button>
-      <p class="choice_tip">注意：权限操作一定要填写英文，操作描述可以为中文！</p>
+      <Button class="update_btn" @click="changeHandle" type="warning">更新操作权限</Button>
     </div>
+    <Table
+      border
+      @on-selection-change="getSelection"
+      :columns="columns"
+      :data="tableData"
+      size="large"
+      no-data-text="暂时未到开题时间"
+    ></Table>
     <Modal v-model="new_modal" width="800">
       <p slot="header" style="text-align:center">
         <Icon type="ios-information-circle"></Icon>
-        <span>确定要添加操作？</span>
+        <span>注意：操作名称一定要填写英文，操作描述可以为中文！</span>
       </p>
       <Form :model="form" ref="content" :label-width="80" :rules="ruleInline">
         <FormItem prop="name" label="操作名称">
@@ -65,7 +72,8 @@ import {
   getHandle,
   addNewHandle,
   updateHandle,
-  deleteHandle
+  deleteHandle,
+  changeHandle
 } from "@/api/permission";
 import { getMyDate } from "@/libs/tools";
 import config from "@/config";
@@ -79,6 +87,7 @@ export default {
   name: "choice-teacher",
   data() {
     return {
+      haveSelect: [],
       mid: 0,
       form: {
         id: 0,
@@ -86,30 +95,13 @@ export default {
         handle_desc: ""
       },
       update_modal: false,
-      tableLoading: false,
       new_modal: false,
-      uploadLoading: false,
-      progressPercent: 0,
-      showProgress: false,
-      showRemoveFile: false,
-      tableTitle: [],
-      file: null,
       modules: [],
       content_modal: false,
-      guide_teacher: "",
       page: 1,
       total: 21,
       pageSize: 10,
-      selectable: false,
-      haveSelect: [],
-      originSelect: [],
-      uploadUrl,
-      uploadList: [],
-      userInfo: {},
-      info: {},
-      modal1: false,
       tableData: [],
-      newData: [],
       ruleInline: {
         handle_desc: [
           {
@@ -129,6 +121,11 @@ export default {
         ]
       },
       columns: [
+        {
+          type: "selection",
+          width: 60,
+          align: "center"
+        },
         {
           title: "添加日期",
           key: "time",
@@ -189,6 +186,10 @@ export default {
           this.tableData = res.data.handles;
           this.tableData.forEach(item => {
             item.time = getMyDate(item.time, "yyyy-MM-dd");
+            if (item.status == 1) {
+              this.haveSelect.push(item.id);
+              item["_checked"] = true;
+            }
           });
         } else {
           this.$Notice.error({
@@ -223,7 +224,7 @@ export default {
       this.$refs["content"].validate(validate => {
         if (validate) {
           let form = this.form;
-           form.m_id =this.mid
+          form.m_id = this.mid;
           form.time = new Date().getTime();
           updateHandle(form).then(res => {
             if (res.data.message == "ok") {
@@ -245,6 +246,30 @@ export default {
           });
           this.update_modal = false;
           this.getHandle();
+        }
+      });
+    },
+    getSelection(selection) {
+      selection = selection.map(item => {
+        return item.id;
+      });
+      console.log(selection)
+      this.haveSelect = selection;
+    },
+    changeHandle() {
+      this.$Modal.confirm({
+        title: "更新权限控制",
+        content: "<p>确定要更改该角色权限控制操作为复选框中的内容?</p>",
+        onOk: () => {
+          changeHandle(this.haveSelect,this.mid).then(res => {
+            if (res.data.message === "ok") {
+               this.getHandle();
+              this.$Message.success("更新成功");
+            }else{
+               this.$Message.error("更新失败，请稍后再试！");
+            }
+              this.$Modal.remove();
+          });
         }
       });
     }
@@ -279,13 +304,14 @@ export default {
   margin-top: 10px;
 }
 
-.upload_container {
+.btn_con {
   position: relative;
-  margin: 15px 0;
-  left: 50%;
-  transform: translateX(-80px);
+  margin: 5px 0 10px 0;
 }
-
+.update_btn {
+  position: relative;
+  margin-left: 15px;
+}
 .page_container {
   position: absolute;
   right: 20px;
