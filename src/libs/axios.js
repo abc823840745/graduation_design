@@ -1,5 +1,6 @@
 import axios from 'axios'
 import store from '@/store'
+import { Notice} from 'iview';
 const addErrorLog = errorInfo => {
   const { statusText, status, request: { responseURL } } = errorInfo
   let info = {
@@ -42,6 +43,11 @@ class HttpRequest {
     })
     // 响应拦截
     instance.interceptors.response.use(res => {
+      if(res.data.status==-1){
+        Notice.error({
+          title:"您没有该操作权限！"
+        })
+      }
       if (res.data.status !== 1) {
         return Promise.reject('error')
       }
