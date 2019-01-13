@@ -278,13 +278,10 @@
   }
   
   .choice_btn {
-    position: fixed;
-    width: 430px;
+    position: relative;
     text-align: center;
-    left: 50%;
-    bottom: 80px;
-    transform: translateX(-20px);
-    margin: 0 auto;
+   margin-top: 200px;
+  
   }
   
   .choice_tip {
