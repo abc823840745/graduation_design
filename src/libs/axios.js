@@ -1,5 +1,6 @@
 import axios from 'axios'
 import store from '@/store'
+import { Notice} from 'iview';
 const addErrorLog = errorInfo => {
   const { statusText, status, request: { responseURL } } = errorInfo
   let info = {
@@ -42,7 +43,16 @@ class HttpRequest {
     })
     // 响应拦截
     instance.interceptors.response.use(res => {
-      if (res.data.status !== 1) {
+      if(res.data.status==-1){
+        Notice.error({
+          title:"您没有该操作权限！"
+        })
+        return Promise.reject('error')
+      }
+      if (res.data.message === 'fail'||res.data.message === 'err') {
+        Notice.error({
+          title:"服务器错误，请稍后重试！"
+        })
         return Promise.reject('error')
       }
       this.destroy(url)
@@ -58,6 +68,10 @@ class HttpRequest {
     const instance = axios.create()
     options = Object.assign(this.getInsideConfig(), options)
     this.interceptors(instance, options.url)
+    options.headers ={
+      token:store.state.user.token,
+      role:store.state.user.role
+    }
     return instance(options)
   }
 }

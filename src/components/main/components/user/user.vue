@@ -5,7 +5,7 @@
       <Avatar :src="user.avatar" />
       <Icon :size="18" type="md-arrow-dropdown"></Icon>
       <DropdownMenu slot="list">
-        <DropdownItem name="logout">退出登录</DropdownItem>
+        <DropdownItem  name="logout">退出登录</DropdownItem>
       </DropdownMenu>
     </Dropdown>
   </div>

@@ -1,5 +1,9 @@
 <template>
   <div class="goods">
+     <div class="choice_btn">
+      <Button @click="modal1=true" type="success">添加新任务</Button>
+      <p class="choice_tip">注意：任务发布后无需审核即可在学生端展示</p>
+    </div>
     <Table border :columns="columns" :data="tableData" size="large" no-data-text="暂时没有任务相关信息"></Table>
     <div class="page_container">
       <Page :total="totalSize" :page-size="size" @on-change="changePage" />
@@ -56,10 +60,7 @@
         <Button type="primary" size="large" long @click="addNewMission">确认新建</Button>
       </div>
     </Modal>
-    <div class="choice_btn">
-      <Button @click="modal1=true" type="success">添加新任务</Button>
-      <p class="choice_tip">注意：任务发布后无需审核即可在学生端展示</p>
-    </div>
+   
   </div>
 </template>
 <script>
@@ -315,7 +316,7 @@
     width: 430px;
     text-align: center;
     left: 50%;
-    bottom: 80px;
+    bottom: 50px;
     transform: translateX(-20px);
     margin: 0 auto;
   }

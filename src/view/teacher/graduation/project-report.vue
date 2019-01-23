@@ -5,7 +5,7 @@
   <div class="container">
     <Tabs>
       <TabPane style="height:700px;" label="教师开题" icon="ios-book">
-        <Table border :columns="columns" :data="tableData" size="large" no-data-text="暂时未到开题时间"></Table>
+        <Table border :columns="columns" :data="tableData" size="large" no-data-text="暂时没有学生选择信息"></Table>
         <div class="page_container">
           <Page :total="total" :page-size="pageSize" @on-change="changePage" />
         </div>
@@ -326,7 +326,7 @@
     width: 430px;
     text-align: center;
     left: 50%;
-    bottom: 80px;
+    bottom: 50px;
     transform: translateX(-20px);
     margin: 0 auto;
   }

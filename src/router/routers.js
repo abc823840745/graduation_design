@@ -2,7 +2,7 @@ import Main from '@/components/main';
 import parentView from '@/components/parent-view';
 
 /**
- * iview-admin中meta除了原生参数外可配置的参数:
+ * 教学管理平台中meta除了原生参数外可配置的参数:
  * meta: {
  *  hideInMenu: (false) 设为true后在左侧菜单不会显示该页面选项
  *  notCache: (false) 设为true后页面不会缓存
@@ -483,6 +483,38 @@ export default [
     },
     component: Main,
     children: [
+      {
+        path: 'permission-manager',
+        name: 'permission-manager',
+        meta: {
+          icon: 'logo-markdown',
+          title: '权限控制',
+          access: ['admin']
+        },
+        component: () => import('@/view/admin/permission/manager.vue')
+      },
+      {
+        path: 'modules-manager',
+        name: 'modules-manager',
+        meta: {
+          icon: 'logo-markdown',
+          title: '模块权限控制',
+          hideInMenu: (true),
+          access: ['admin']
+        },
+        component: () => import('@/view/admin/permission/modules.vue')
+      },
+      {
+        path: 'handle-manager',
+        name: 'handle-manager',
+        meta: {
+          icon: 'logo-markdown',
+          title: '模块权限控制',
+          hideInMenu: (true),
+          access: ['admin']
+        },
+        component: () => import('@/view/admin/permission/handle.vue')
+      },
       {
         path: 'teacher-manager',
         name: 'teacher-manager',
