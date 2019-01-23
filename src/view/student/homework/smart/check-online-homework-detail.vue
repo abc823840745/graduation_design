@@ -1,7 +1,6 @@
 <template>
   <div class="containter">
     <div>
-
       <radio-item
         title="1、单选题"
         :subject='firstSubject'
@@ -86,17 +85,14 @@
         </div>
       </div>
 
-      <!-- <div class="btnGround">
+      <div class="bottomBar">
+        <p class="total-score">总评分:
+          <span class="total-score score">80</span>
+        </p>
         <Button
           type="primary"
           @click="goback"
         >上一步</Button>
-      </div> -->
-
-      <div>
-        <p class="total-score">总评分:
-          <span class="total-score score">80</span>
-        </p>
       </div>
     </div>
 
@@ -104,37 +100,46 @@
 </template>
 
 <script>
-import RadioItem from '@/view/teacher/homework/smart/online-detail-radio-item'
+import RadioItem from "@/view/teacher/homework/smart/online-detail-radio-item";
+
 export default {
-  name: 'check-online-homework-detail',
-  data () {
+  name: "check-online-homework-detail",
+  props: {
+    goback: {
+      type: Function,
+      default: function() {
+        console.log("返回上一页");
+      }
+    }
+  },
+  data() {
     return {
-      firstSubject: '钢铁是怎么炼成的?',
-      secondSubject: '钢铁是怎么炼成的?',
-      thirdSubject: '钢铁是怎么炼成的?',
-      fourthSubject: '钢铁是怎么炼成的?',
-      firstChoice: 'A',
-      secondChoice: 'B',
-      thirdChoice: ['A', 'B'],
-      fourthChoice: '飞龙在天双龙出海',
+      firstSubject: "钢铁是怎么炼成的?",
+      secondSubject: "钢铁是怎么炼成的?",
+      thirdSubject: "钢铁是怎么炼成的?",
+      fourthSubject: "钢铁是怎么炼成的?",
+      firstChoice: "A",
+      secondChoice: "B",
+      thirdChoice: ["A", "B"],
+      fourthChoice: "飞龙在天双龙出海",
       score1: 20,
       score2: 20,
       score3: 0,
       score4: 40
-    }
+    };
   },
   components: {
     RadioItem
   },
   methods: {
-    onChangeScore (data) {
-      this.score1 = data.score
+    onChangeScore(data) {
+      this.score1 = data.score;
     },
-    onChangeScore2 (data) {
-      this.score2 = data.score
+    onChangeScore2(data) {
+      this.score2 = data.score;
     }
   }
-}
+};
 </script>
 
 <style lang="less" scoped>
@@ -149,9 +154,9 @@ export default {
   span {
     font-size: 14px;
   }
-  .total-score{
+  .total-score {
     font-size: 18px;
-    .score{
+    .score {
       color: #2d8cf0;
     }
   }
@@ -192,6 +197,12 @@ export default {
     word-wrap: break-word;
     word-break: break-all;
     overflow: hidden;
+  }
+  .bottomBar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
   }
 }
 </style>

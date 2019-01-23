@@ -16,7 +16,11 @@ export default {
   'student-homework': '作业设计',
   'student-my-homework': '作业情况',
   'student-online-homework': '在线作业',
+  'student-write-online-homework': '完成在线作业',
   'student-online-homework-detail': '在线作业详情',
+  'student-upload-download': '上传/下载',
+  'student-upload-download-detail': '上传/下载详情',
+
   // 学生毕设管理
   'student-graduation': '毕业设计',
   'student-choice-teacher': '选择导师',
@@ -41,7 +45,7 @@ export default {
   'teacher-course-other': '其他',
   // 教师作业管理
   'teacher-homework': '作业管理',
-  'teacher-my-homework': '布置作业',
+  'teacher-homework-assignment': '布置作业',
   'teacher-check-homework': '查看作业',
   // 'teacher-check-online-homework': '查看在线作业',
   'teacher-check-online-homework-detail': '查看作业详情',

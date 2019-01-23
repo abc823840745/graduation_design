@@ -87,7 +87,7 @@
 
 </template>
 <script>
-import createSubject from "@/view/teacher/homework/createHomeWork/create-subject.vue";
+import createSubject from "@/view/teacher/homework/smart/create-subject.vue";
 export default {
   name: "my-homework",
   data() {
@@ -143,8 +143,9 @@ export default {
     // 新建在线作业题目
     createSubject() {
       let { homeworkName, homeworkClassify, stopTimeList } = this;
-      if (!homeworkName || !homeworkClassify || stopTimeList.length === 0)
+      if (!homeworkName || !homeworkClassify || stopTimeList.length === 0) {
         return this.$Message.error("缺少必填信息");
+      }
       this.showCreateSubject = true;
     },
     // 选择器监听事件

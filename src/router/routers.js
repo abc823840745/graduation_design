@@ -308,38 +308,49 @@ export default [
           title: '作业情况',
           access: ['student'],
         },
-        component: () => import('@/view/student/homework/my-homework.vue'),
+        component: () => import('@/view/student/homework/page/my-homework.vue'),
       },
       {
-        path: 'check-online-homework-detail',
-        name: 'student-online-homework-detail',
-        meta: {
-          hideInMenu: true,
-          icon: 'ios-document',
-          title: '查看在线作业详情',
-          access: ['student'],
-        },
-        component: () => import('@/view/student/homework/check-online-homework-detail.vue'),
-      },
-      {
-        path: 'write-online-homework',
+        path: 'online-homework',
         name: 'student-online-homework',
         meta: {
           icon: 'ios-document',
           title: '在线作业',
           access: ['student'],
         },
-        component: () => import('@/view/student/homework/write-online-homework.vue'),
+        component: () => import('@/view/student/homework/page/online-homework.vue'),
       },
       // {
-      //   path: 'other',
-      //   name: 'student-other',
+      //   path: 'write-online-homework',
+      //   name: 'student-write-online-homework',
       //   meta: {
-      //     icon: 'md-clipboard',
-      //     title: '其他',
+      //     hideInMenu: true,
+      //     icon: 'ios-document',
+      //     title: '完成在线作业',
       //     access: ['student'],
       //   },
-      //   component: () => import('@/view/student/homework/other.vue'),
+      //   component: () => import('@/view/student/homework/page/write-online-homework.vue'),
+      // },
+      {
+        path: 'course',
+        name: 'student-upload-download',
+        meta: {
+          icon: 'md-clipboard',
+          title: '上传/下载',
+          access: ['student'],
+        },
+        component: () => import('@/view/student/homework/page/upload-download.vue'),
+      },
+      // {
+      //   path: 'course-detail',
+      //   name: 'student-upload-download-detail',
+      //   meta: {
+      //     hideInMenu: true,
+      //     icon: 'md-clipboard',
+      //     title: '上传/下载详情',
+      //     access: ['student'],
+      //   },
+      //   component: () => import('@/view/student/homework/page/upload-download-detail.vue'),
       // },
     ],
   },
@@ -489,9 +500,9 @@ export default [
         meta: {
           icon: 'logo-markdown',
           title: '权限控制',
-          access: ['admin']
+          access: ['admin'],
         },
-        component: () => import('@/view/admin/permission/manager.vue')
+        component: () => import('@/view/admin/permission/manager.vue'),
       },
       {
         path: 'modules-manager',
@@ -499,10 +510,10 @@ export default [
         meta: {
           icon: 'logo-markdown',
           title: '模块权限控制',
-          hideInMenu: (true),
-          access: ['admin']
+          hideInMenu: true,
+          access: ['admin'],
         },
-        component: () => import('@/view/admin/permission/modules.vue')
+        component: () => import('@/view/admin/permission/modules.vue'),
       },
       {
         path: 'handle-manager',
@@ -510,10 +521,10 @@ export default [
         meta: {
           icon: 'logo-markdown',
           title: '模块权限控制',
-          hideInMenu: (true),
-          access: ['admin']
+          hideInMenu: true,
+          access: ['admin'],
         },
-        component: () => import('@/view/admin/permission/handle.vue')
+        component: () => import('@/view/admin/permission/handle.vue'),
       },
       {
         path: 'teacher-manager',
@@ -591,14 +602,14 @@ export default [
     component: Main,
     children: [
       {
-        path: 'my-homework',
-        name: 'teacher-my-homework',
+        path: 'homework-assignment',
+        name: 'teacher-homework-assignment',
         meta: {
           icon: 'ios-document',
           title: '我的作业',
           access: ['teacher', 'admin'],
         },
-        component: () => import('@/view/teacher/homework/createHomeWork/my-homework.vue'),
+        component: () => import('@/view/teacher/homework/page/homework-assignment.vue'),
       },
       {
         path: 'check-homework',
@@ -608,7 +619,7 @@ export default [
           title: '查看作业',
           access: ['teacher', 'admin'],
         },
-        component: () => import('@/view/teacher/homework/checkHomeWork/check-homework.vue'),
+        component: () => import('@/view/teacher/homework/page/check-homework.vue'),
       },
       // {
       //   path: 'check-online-homework',
@@ -620,17 +631,17 @@ export default [
       //   },
       //   component: () => import('@/view/teacher/homework/checkHomeWork/check-online-homework.vue'),
       // },
-      {
-        path: 'check-online-homework-detail',
-        name: 'teacher-check-online-homework-detail',
-        meta: {
-          hideInMenu: true,
-          icon: 'ios-document',
-          title: '查看在线作业详情',
-          access: ['teacher', 'admin'],
-        },
-        component: () => import('@/view/teacher/homework/checkHomeWork/check-online-homework-detail.vue'),
-      },
+      // {
+      //   path: 'check-online-homework-detail',
+      //   name: 'teacher-check-online-homework-detail',
+      //   meta: {
+      //     hideInMenu: true,
+      //     icon: 'ios-document',
+      //     title: '查看在线作业详情',
+      //     access: ['teacher', 'admin'],
+      //   },
+      //   component: () => import('@/view/teacher/homework/smart/check-online-homework-detail.vue'),
+      // },
       // {
       //   path: 'other',
       //   name: 'teacher-homework-other',
