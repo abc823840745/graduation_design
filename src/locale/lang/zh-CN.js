@@ -56,25 +56,14 @@ export default {
   'teacher-project-manager': '优秀毕设',
   'teacher-practice-week': '查看实习周报',
 
-<<<<<<< HEAD
-  // 管理员模块
+  //管理员模块
   'admin-content': '管理员模块',
   'teacher-manager': '教师管理',
   'time-manager': '时间管理',
   course_admin: '课题分配',
   papper_admin: '导师选择详情',
   'movie-manager': '优秀毕设管理',
+  'permission-manager': '权限控制',
+  'modules-manager': '模块控制',
+  'handle-manager': '操作控制',
 };
-=======
-  //管理员模块
-  'admin-content':'管理员模块',
-  'teacher-manager':'教师管理',
-  'time-manager':'时间管理',
-  'course_admin':'课题分配',
-   'papper_admin': '导师选择详情',
-   'movie-manager': '优秀毕设管理',
-   "permission-manager":"权限控制",
-   "modules-manager":"模块控制",
-   "handle-manager":"操作控制"
-}
->>>>>>> fd6a24676cd900d3dde205a1dc3b00229a7888b3
