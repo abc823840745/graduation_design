@@ -5,35 +5,15 @@
       v-if="curDirectory!==3"
     >
       <div class="select-con">
-        <div class="select-list-con">
-          <p class="select-title">学期选择:</p>
-          <Select
-            v-model="semester"
-            class="select-list"
-          >
-            <Option
-              v-for="item in semesterList"
-              :value="item.value"
-              :key="item.value"
-            >{{ item.label }}</Option>
-          </Select>
-        </div>
-
-        <div class="select-list-con">
-          <p class="select-title">课程:</p>
-          <Select
-            v-model="curCourse"
-            class="select-list"
-          >
-            <Option
-              v-for="item in curCourseList"
-              :value="item.value"
-              :key="item.value"
-            >{{ item.label }}</Option>
-          </Select>
-        </div>
-
+        <multiple-choice
+          v-for="(item,index) in selectList"
+          :key="index"
+          :defaultValue="item['defaultValue']"
+          :semesterTip="item['semesterTip']"
+          :semesterList="item['semesterList']"
+        />
       </div>
+
       <Table
         stripe
         class="table-con mar-top"
@@ -55,40 +35,49 @@
 
 <script>
 import writeOnlineHomework from "../smart/write-online-homework.vue";
+import multipleChoice from "@/view/teacher/homework/smart/multiple-choice";
 
 export default {
   name: "course-detail",
   data() {
     return {
       curDirectory: 1, // 当前的目录
-      semester: "2017-2018第二学期",
-      semesterList: [
+      selectList: [
         {
-          value: "2016-2017第一学期",
-          label: "2016-2017第一学期"
+          semesterTip: "学期选择",
+          defaultValue: "2017-2018第二学期",
+          semesterList: [
+            {
+              value: "2016-2017第一学期",
+              label: "2016-2017第一学期"
+            },
+            {
+              value: "2016-2017第二学期",
+              label: "2016-2017第二学期"
+            },
+            {
+              value: "2017-2018第一学期",
+              label: "2017-2018第一学期"
+            },
+            {
+              value: "2017-2018第二学期",
+              label: "2017-2018第二学期"
+            }
+          ]
         },
         {
-          value: "2016-2017第二学期",
-          label: "2016-2017第二学期"
-        },
-        {
-          value: "2017-2018第一学期",
-          label: "2017-2018第一学期"
-        },
-        {
-          value: "2017-2018第二学期",
-          label: "2017-2018第二学期"
-        }
-      ],
-      curCourse: "所有课程",
-      curCourseList: [
-        {
-          value: "所有课程",
-          label: "所有课程"
-        },
-        {
-          value: "新媒体实训",
-          label: "新媒体实训"
+          semesterTip: "所有课程",
+          defaultValue: "所有课程",
+          semesterList: [
+            {
+              value: "所有课程",
+              label: "所有课程"
+            },
+            {
+              value: "新媒体实训",
+              label: "新媒体实训"
+            }
+          ]
         }
       ],
       columns1: [
@@ -154,7 +143,8 @@ export default {
     };
   },
   components: {
-    writeOnlineHomework
+    writeOnlineHomework,
+    multipleChoice
   },
   methods: {
     btnStyle(btnTitle, h, onclick) {

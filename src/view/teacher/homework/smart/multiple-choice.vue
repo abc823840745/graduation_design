@@ -19,12 +19,12 @@ export default {
   name: "homework-info",
   props: {
     semesterTip: String,
-    propsSemester: String,
+    defaultValue: String,
     semesterList: Array
   },
   data() {
     return {
-      semester: this.propsSemester
+      semester: this.defaultValue
     };
   },
   created() {},

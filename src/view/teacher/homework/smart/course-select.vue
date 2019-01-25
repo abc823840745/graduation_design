@@ -1,18 +1,11 @@
 <template>
   <div class="containter">
-    <div class="select-list-con">
-      <p class="select-title">学期选择:</p>
-      <Select
-        v-model="semester"
-        class="select-list"
-      >
-        <Option
-          v-for="item in semesterList"
-          :value="item.value"
-          :key="item.value"
-        >{{ item.label }}</Option>
-      </Select>
-    </div>
+    <multiple-choice
+      semesterTip='学期选择'
+      :defaultValue='semester'
+      :semesterList='semesterList'
+    />
+
     <Table
       stripe
       class="table-con mar-top"
@@ -26,7 +19,10 @@
 
   </div>
 </template>
+
 <script>
+import multipleChoice from "../smart/multiple-choice";
+
 export default {
   name: "other",
   data() {
@@ -77,6 +73,9 @@ export default {
         }
       ]
     };
+  },
+  components: {
+    multipleChoice
   },
   methods: {
     btnStyle(btnTitle, h, onclick) {

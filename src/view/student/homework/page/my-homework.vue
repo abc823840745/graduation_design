@@ -5,56 +5,14 @@
       v-if="curDirectory!==3"
     >
       <div class="select-con">
-        <div
-          v-if="curDirectory===1"
-          class="select-list-con"
-        >
-          <p class="select-title">学期选择:</p>
-          <Select
-            v-model="semester"
-            class="select-list"
-          >
-            <Option
-              v-for="item in semesterList"
-              :value="item.value"
-              :key="item.value"
-            >{{ item.label }}</Option>
-          </Select>
-        </div>
-
-        <div
-          v-if="curDirectory===2"
-          class="select-list-con"
-        >
-          <p class="select-title">提交情况:</p>
-          <Select
-            v-model="finishCondition"
-            class="select-list"
-          >
-            <Option
-              v-for="item in finishList"
-              :value="item.value"
-              :key="item.value"
-            >{{ item.label }}</Option>
-          </Select>
-        </div>
-
-        <div
-          v-if="curDirectory===2"
-          class="select-list-con"
-        >
-          <p class="select-title">作业类型:</p>
-          <Select
-            v-model="hwClassify"
-            class="select-list"
-          >
-            <Option
-              v-for="item in hwClassifyList"
-              :value="item.value"
-              :key="item.value"
-            >{{ item.label }}</Option>
-          </Select>
-        </div>
+        <multiple-choice
+          v-for="(item,index) in selectList"
+          v-if="item['isShow']"
+          :key="index"
+          :defaultValue="item['defaultValue']"
+          :semesterTip="item['semesterTip']"
+          :semesterList="item['semesterList']"
+        />
       </div>
 
       <Table
@@ -78,6 +36,8 @@
 
 <script>
 import homeworkDetail from "../smart/check-online-homework-detail.vue";
+import multipleChoice from "@/view/teacher/homework/smart/multiple-choice";
+
 export default {
   name: "my-homework",
   data() {
@@ -92,9 +52,7 @@ export default {
           title: "操作",
           key: "operation",
           render: (h, params) => {
-            return h("div", [
-              this.btnStyle("查看", h, () => (this.curDirectory = 2))
-            ]);
+            return h("div", [this.btnStyle("查看", h, () => this.check())]);
           }
         }
       ],
@@ -127,14 +85,12 @@ export default {
             if (homeworkClassify === "在线作业") {
               return h("div", [
                 this.btnStyle("查看", h, () => (this.curDirectory = 3)),
-                this.btnStyle("返回", h, () => (this.curDirectory = 1))
+                this.btnStyle("返回", h, () => this.revert())
               ]);
             }
             return h("div", [
-              this.btnStyle("下载", h, () => {
-                this.$Message.info("下载中");
-              }),
-              this.btnStyle("返回", h, () => (this.curDirectory = 1))
+              this.btnStyle("下载", h, () => this.$Message.info("下载中")),
+              this.btnStyle("返回", h, () => this.revert())
             ]);
           }
         }
@@ -166,51 +122,66 @@ export default {
           score: "100"
         }
       ],
-      semester: "2017-2018第二学期",
-      semesterList: [
+      selectList: [
         {
-          value: "2016-2017第一学期",
-          label: "2016-2017第一学期"
+          semesterTip: "学期选择",
+          isShow: true,
+          defaultValue: "2017-2018第二学期",
+          semesterList: [
+            {
+              value: "2016-2017第一学期",
+              label: "2016-2017第一学期"
+            },
+            {
+              value: "2016-2017第二学期",
+              label: "2016-2017第二学期"
+            },
+            {
+              value: "2017-2018第一学期",
+              label: "2017-2018第一学期"
+            },
+            {
+              value: "2017-2018第二学期",
+              label: "2017-2018第二学期"
+            }
+          ]
         },
         {
-          value: "2016-2017第二学期",
-          label: "2016-2017第二学期"
+          semesterTip: "提交情况",
+          isShow: false,
+          defaultValue: "",
+          semesterList: [
+            {
+              value: "已完成",
+              label: "已完成"
+            },
+            {
+              value: "未完成",
+              label: "未完成"
+            }
+          ]
         },
         {
-          value: "2017-2018第一学期",
-          label: "2017-2018第一学期"
-        },
-        {
-          value: "2017-2018第二学期",
-          label: "2017-2018第二学期"
-        }
-      ],
-      finishCondition: "",
-      finishList: [
-        {
-          value: "已完成",
-          label: "已完成"
-        },
-        {
-          value: "未完成",
-          label: "未完成"
-        }
-      ],
-      hwClassify: "",
-      hwClassifyList: [
-        {
-          value: "课时作业",
-          label: "课时作业"
-        },
-        {
-          value: "在线作业",
-          label: "在线作业"
+          semesterTip: "作业类型",
+          isShow: false,
+          defaultValue: "",
+          semesterList: [
+            {
+              value: "课时作业",
+              label: "课时作业"
+            },
+            {
+              value: "在线作业",
+              label: "在线作业"
+            }
+          ]
         }
       ]
     };
   },
   components: {
-    homeworkDetail
+    homeworkDetail,
+    multipleChoice
   },
   methods: {
     btnStyle(btnTitle, h, onclick) {
@@ -242,6 +213,22 @@ export default {
           break;
       }
       return val;
+    },
+    check() {
+      this.curDirectory = 2;
+      let selectList = [...this.selectList];
+      selectList[0]["isShow"] = false;
+      selectList[1]["isShow"] = true;
+      selectList[2]["isShow"] = true;
+      this.selectList = selectList;
+    },
+    revert() {
+      this.curDirectory = 1;
+      let selectList = [...this.selectList];
+      selectList[0]["isShow"] = true;
+      selectList[1]["isShow"] = false;
+      selectList[2]["isShow"] = false;
+      this.selectList = selectList;
     },
     goBack() {
       this.curDirectory = 2;

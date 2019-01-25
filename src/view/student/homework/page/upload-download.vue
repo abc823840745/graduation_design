@@ -10,19 +10,12 @@
         <Radio label=upload>作业上传</Radio>
       </RadioGroup>
 
-      <div class="select-list-con">
-        <p class="select-title">学期选择:</p>
-        <Select
-          v-model="semester"
-          class="select-list"
-        >
-          <Option
-            v-for="item in semesterList"
-            :value="item.value"
-            :key="item.value"
-          >{{ item.label }}</Option>
-        </Select>
-      </div>
+      <multiple-choice
+        ref="haha"
+        semesterTip='学期选择'
+        :defaultValue='semester'
+        :semesterList='semesterList'
+      />
 
       <Input
         class="search-item"
@@ -39,6 +32,8 @@
 <script>
 import download from "../smart/course-download";
 import upload from "../smart/course-upload";
+import multipleChoice from "@/view/teacher/homework/smart/multiple-choice";
+
 export default {
   name: "course-detail",
   data() {
@@ -67,7 +62,8 @@ export default {
   },
   components: {
     download,
-    upload
+    upload,
+    multipleChoice
   },
   methods: {}
 };
