@@ -1,78 +1,91 @@
-<style lang="less" scoped>
-.containter {
-  width: 100%;
-  height: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-}
-.mar-top {
-  margin-top: 20px;
-}
-.table-con {
-  width: 100%;
-}
-
-.header-con {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 10px;
-  background: transparent;
-  .homework-progress {
-    display: flex;
-    align-items: center;
-    .homework-progress-text {
-      margin-right: 10px;
-    }
-  }
-}
-</style>
 <template>
   <div class="containter">
-    <home-work
-      :selTip="selTip"
-      :completeProgress="70"
-      @onChangeSelVal="onChangeSelVal"
+    <div
+      class="containter"
+      v-if="currentLevel!==6"
+    >
+
+      <div class="header-bar">
+        <multiple-choice
+          v-if="currentLevel===1||currentLevel===4||currentLevel===5"
+          :semesterTip='selTip'
+          :propsSemester='semester'
+          :semesterList='currentLevel===1?semesterList:semesterList2'
+          class="float-left"
+        />
+
+        <progress-bar
+          :completeProgress='90'
+          class="float-right"
+        />
+      </div>
+
+      <Table
+        stripe
+        :columns="showTable('columns')"
+        :data="showTable('data')"
+        class="table-con mar-top"
+      ></Table>
+      <Page
+        :total="30"
+        class="mar-top"
+      />
+
+      <Button
+        v-if="currentLevel === 4"
+        type="primary"
+        @click="submit"
+        class="mar-top"
+        size='large'
+      >全部下载</Button>
+    </div>
+
+    <check-online-h-w-detail
+      v-if="currentLevel===6"
+      @goBack='goBack'
     />
 
-    <Table
-      stripe
-      :columns="showTable(currentLevel , 'columns')"
-      :data="showTable(currentLevel , 'data')"
-      class="table-con mar-top"
-    ></Table>
-    <Page
-      :total="30"
-      class="mar-top"
-    />
-
-    <Button
-      v-if="currentLevel === 4"
-      type="primary"
-      @click="submit"
-      class="mar-top"
-      size='large'
-    >全部下载</Button>
   </div>
 
 </template>
+
 <script>
-import homeWork from "../smart/homework-info";
+import multipleChoice from "../smart/multiple-choice";
+import progressBar from "../smart/progress-bar";
+import checkOnlineHWDetail from "../smart/check-online-homework-detail.vue";
+
 export default {
   name: "check-homework",
   components: {
-    homeWork
+    multipleChoice,
+    checkOnlineHWDetail,
+    progressBar
   },
   data() {
     return {
       currentLevel: 1,
-      selTip: "学期选择",
-      selValue: "",
       hwType: "", //作业类型
-      selList: [
+      selTip: "学期选择",
+      semester: "2017-2018第二学期",
+      semesterList: [
+        {
+          value: "2016-2017第一学期",
+          label: "2016-2017第一学期"
+        },
+        {
+          value: "2016-2017第二学期",
+          label: "2016-2017第二学期"
+        },
+        {
+          value: "2017-2018第一学期",
+          label: "2017-2018第一学期"
+        },
+        {
+          value: "2017-2018第二学期",
+          label: "2017-2018第二学期"
+        }
+      ],
+      semesterList2: [
         {
           value: "已完成",
           label: "已完成"
@@ -92,22 +105,11 @@ export default {
           key: "operation",
           render: (h, params) => {
             return h("div", [
-              this.btnStyle("查看", h, () => {
-                //   this.show(params.index);
-                // 打开二级目录
-                this.currentLevel = 2;
-                // this.selTip = "";
-              })
+              this.btnStyle("查看", h, () => (this.currentLevel = 2))
             ]);
           }
         }
       ],
-      data1: [
-        {
-          courseName: "新媒体实训"
-        }
-      ],
-
       columns2: [
         {
           title: "班级",
@@ -118,10 +120,7 @@ export default {
           key: "operation",
           render: (h, params) => {
             return h("div", [
-              this.btnStyle("查看", h, () => {
-                // 打开三级目录
-                this.currentLevel = 3;
-              }),
+              this.btnStyle("查看", h, () => (this.currentLevel = 3)),
               this.btnStyle("返回", h, () => {
                 // 返回一级目录
                 this.currentLevel = 1;
@@ -131,12 +130,6 @@ export default {
           }
         }
       ],
-      data2: [
-        {
-          className: "ATM"
-        }
-      ],
-
       columns3: [
         {
           title: "作业类型",
@@ -148,7 +141,7 @@ export default {
           render: (h, params) => {
             return h("div", [
               this.btnStyle("查看", h, () => {
-                // TODO:打开实验报告
+                // TODO: 打开实验报告
                 let { index } = params;
                 if (index === 0) {
                   this.currentLevel = 4;
@@ -157,24 +150,11 @@ export default {
                 }
                 this.selTip = "作业情况";
               }),
-              this.btnStyle("返回", h, () => {
-                // 返回上一步
-                this.currentLevel = 2;
-                // this.selTip = '学期选择';
-              })
+              this.btnStyle("返回", h, () => (this.currentLevel = 2))
             ]);
           }
         }
       ],
-      data3: [
-        {
-          hwType: "课时作业"
-        },
-        {
-          hwType: "在线作业"
-        }
-      ],
-
       columns4: [
         {
           title: "学号",
@@ -217,25 +197,11 @@ export default {
               this.btnStyle("下载并打开", h, () => {
                 // TODO:打开实验报告
               }),
-              this.btnStyle("返回", h, () => {
-                // 返回上一步
-                this.currentLevel = 3;
-                // this.selTip = '学期选择';
-              })
+              this.btnStyle("返回", h, () => (this.currentLevel = 3))
             ]);
           }
         }
       ],
-      data4: [
-        {
-          studentId: "1540624158",
-          name: "吕嘉俊",
-          submission: "已完成",
-          score: "",
-          operation: ""
-        }
-      ],
-
       columns5: [
         {
           title: "学号",
@@ -258,11 +224,7 @@ export default {
           key: "operation",
           render: (h, params) => {
             return h("div", [
-              this.btnStyle("查看", h, () => {
-                this.$router.push({
-                  name: "teacher-check-online-homework-detail"
-                });
-              }),
+              this.btnStyle("查看", h, () => (this.currentLevel = 6)),
               this.btnStyle("返回", h, () => {
                 // 返回上一步
                 this.currentLevel = 2;
@@ -270,6 +232,33 @@ export default {
               })
             ]);
           }
+        }
+      ],
+      data1: [
+        {
+          courseName: "新媒体实训"
+        }
+      ],
+      data2: [
+        {
+          className: "ATM"
+        }
+      ],
+      data3: [
+        {
+          hwType: "课时作业"
+        },
+        {
+          hwType: "在线作业"
+        }
+      ],
+      data4: [
+        {
+          studentId: "1540624158",
+          name: "吕嘉俊",
+          submission: "已完成",
+          score: "",
+          operation: ""
         }
       ],
       data5: [
@@ -308,9 +297,8 @@ export default {
         btnTitle
       );
     },
-    showTable(condition, data) {
-      // console.warn(condition, data);
-      switch (condition) {
+    showTable(data) {
+      switch (this.currentLevel) {
         case 1:
           return this[`${data}1`];
           break;
@@ -323,11 +311,61 @@ export default {
         case 4:
           return this[`${data}4`];
           break;
-        default:
+        case 5:
           return this[`${data}5`];
           break;
       }
+    },
+    goBack() {
+      this.currentLevel = 5;
     }
   }
 };
 </script>
+
+<style lang="less" scoped>
+.containter {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+.mar-top {
+  margin-top: 20px;
+}
+.table-con {
+  width: 100%;
+}
+.select-con {
+  display: flex;
+  align-self: flex-start;
+  width: 100%;
+}
+.select-title {
+  margin-right: 10px;
+}
+.select-list {
+  width: 200px;
+}
+.select-list-con {
+  display: flex;
+  align-items: center;
+  margin-right: 30px;
+}
+.header-bar {
+  position: relative;
+  width: 100%;
+  .float-left {
+    position: absolute;
+    top: 50%;
+    z-index: 999;
+    transform: translateY(-50%);
+    float: left;
+  }
+  .float-right {
+    float: right;
+  }
+}
+</style>

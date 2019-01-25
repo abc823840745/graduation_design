@@ -91,7 +91,7 @@
         </p>
         <Button
           type="primary"
-          @click="goback"
+          @click="$emit('goBack')"
         >上一步</Button>
       </div>
     </div>
@@ -104,14 +104,6 @@ import RadioItem from "@/view/teacher/homework/smart/online-detail-radio-item";
 
 export default {
   name: "check-online-homework-detail",
-  props: {
-    goback: {
-      type: Function,
-      default: function() {
-        console.log("返回上一页");
-      }
-    }
-  },
   data() {
     return {
       firstSubject: "钢铁是怎么炼成的?",

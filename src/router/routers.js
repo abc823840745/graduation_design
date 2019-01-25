@@ -621,37 +621,16 @@ export default [
         },
         component: () => import('@/view/teacher/homework/page/check-homework.vue'),
       },
-      // {
-      //   path: 'check-online-homework',
-      //   name: 'teacher-check-online-homework',
-      //   meta: {
-      //     icon: 'ios-document',
-      //     title: '查看在线作业',
-      //     access: ['teacher', 'admin'],
-      //   },
-      //   component: () => import('@/view/teacher/homework/checkHomeWork/check-online-homework.vue'),
-      // },
-      // {
-      //   path: 'check-online-homework-detail',
-      //   name: 'teacher-check-online-homework-detail',
-      //   meta: {
-      //     hideInMenu: true,
-      //     icon: 'ios-document',
-      //     title: '查看在线作业详情',
-      //     access: ['teacher', 'admin'],
-      //   },
-      //   component: () => import('@/view/teacher/homework/smart/check-online-homework-detail.vue'),
-      // },
-      // {
-      //   path: 'other',
-      //   name: 'teacher-homework-other',
-      //   meta: {
-      //     icon: 'md-clipboard',
-      //     title: '其他',
-      //     access: ['teacher', 'admin'],
-      //   },
-      //   component: () => import('@/view/teacher/homework/other.vue'),
-      // },
+      {
+        path: 'upload-courseware',
+        name: 'teacher-upload-courseware',
+        meta: {
+          icon: 'ios-document',
+          title: '上传课件',
+          access: ['teacher', 'admin'],
+        },
+        component: () => import('@/view/teacher/homework/page/upload-courseware.vue'),
+      },
     ],
   },
 

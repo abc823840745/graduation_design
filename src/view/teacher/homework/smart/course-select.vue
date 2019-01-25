@@ -13,28 +13,25 @@
         >{{ item.label }}</Option>
       </Select>
     </div>
-    <div class="content">
-      <div
-        class="course-name"
-        v-for="(item,index) in 12"
-        :key="index"
-        @click="goCreSub"
-      >
-        课程名字
-      </div>
-    </div>
+    <Table
+      stripe
+      class="table-con mar-top"
+      :columns="columns1"
+      :data="data1"
+    />
+    <Page
+      :total="30"
+      class="mar-top"
+    />
 
   </div>
 </template>
 <script>
 export default {
   name: "other",
-  props: {
-    goCreSub: Function
-  },
   data() {
     return {
-      semester: "",
+      semester: "2017-2018第二学期",
       semesterList: [
         {
           value: "2016-2017第一学期",
@@ -52,10 +49,55 @@ export default {
           value: "2017-2018第二学期",
           label: "2017-2018第二学期"
         }
+      ],
+      columns1: [
+        {
+          title: "课程名",
+          key: "courseName"
+        },
+        {
+          title: "操作",
+          key: "operation",
+          render: (h, params) => {
+            return h("div", [
+              this.btnStyle("查看", h, () => this.$emit("goCreSub"))
+            ]);
+          }
+        }
+      ],
+      data1: [
+        {
+          courseName: "新媒体实训"
+        },
+        {
+          courseName: "新媒体实训"
+        },
+        {
+          courseName: "新媒体实训"
+        }
       ]
     };
   },
-  methods: {}
+  methods: {
+    btnStyle(btnTitle, h, onclick) {
+      return h(
+        "Button",
+        {
+          props: {
+            type: "primary",
+            size: "default"
+          },
+          style: {
+            marginRight: "5px"
+          },
+          on: {
+            click: onclick
+          }
+        },
+        btnTitle
+      );
+    }
+  }
 };
 </script>
 
@@ -63,6 +105,12 @@ export default {
 .containter {
   width: 100%;
   height: auto;
+  .mar-top {
+    margin-top: 20px;
+  }
+  .table-con {
+    width: 100%;
+  }
   .content {
     margin-top: 20px;
     display: flex;
@@ -98,7 +146,6 @@ export default {
     width: 200px;
   }
   .select-list-con {
-    margin-left: 2.5%;
     display: flex;
     align-items: center;
   }

@@ -2,9 +2,12 @@
   <div class="containter">
     <course-select
       v-if="!showCreSub"
-      :goCreSub='goCreSub'
+      @goCreSub='goCreSub'
     />
-    <my-homework v-else />
+    <my-homework
+      v-else
+      @goBack='goBack'
+    />
   </div>
 </template>
 
@@ -24,6 +27,9 @@ export default {
   methods: {
     goCreSub() {
       this.showCreSub = true;
+    },
+    goBack() {
+      this.showCreSub = false;
     }
   }
 };

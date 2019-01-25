@@ -13,10 +13,13 @@
     margin-top: 80px;
   }
   .btnGround {
-    width: 15%;
+    width: 30%;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+  }
+  .btnGround button:nth-of-type(1) {
+    margin-right: 5%;
   }
 }
 </style>
@@ -53,7 +56,6 @@
 
       <div class="mar-bottom">
         截止日期：
-
         <DatePicker
           :value="stopTimeList"
           type="datetimerange"
@@ -69,14 +71,20 @@
           type="primary"
           @click="homeworkClassify==='在线作业'?createSubject():sumbit()"
           long
-        >{{homeworkClassify==='在线作业'? '新建题目':'提交'}}</Button>
+        >{{homeworkClassify==='在线作业'? '新建题目':'新建作业任务'}}</Button>
+
+        <Button
+          type="primary"
+          @click="$emit('goBack')"
+          long
+        >返回</Button>
       </div>
 
     </div>
 
     <div v-if="showCreateSubject">
       <create-subject
-        :goBack="goBack"
+        @goBack="goBack"
         :homeworkName="homeworkName"
         :homeworkClassify="homeworkClassify"
         :stopTimeList="stopTimeList"
@@ -86,8 +94,10 @@
   </div>
 
 </template>
+
 <script>
 import createSubject from "@/view/teacher/homework/smart/create-subject.vue";
+
 export default {
   name: "my-homework",
   data() {
@@ -119,26 +129,9 @@ export default {
     // 提交表单
     sumbit() {
       let { homeworkName, homeworkClassify, stopTimeList } = this;
-      if (!homeworkName || !homeworkClassify || stopTimeList.length === 0)
+      if (!homeworkName || !homeworkClassify || stopTimeList.length === 0) {
         return this.$Message.error("缺少必填信息");
-      // console.log(this.homeworkName, this.homeworkClassify, this.stopTimeList);
-      // 提交表单...
-      // if (homeworkClassify === '在线作业') {
-      //   //选择了在线作业的表单提交事件
-      //   if (
-      //     !this.firstSubject ||
-      //     !this.firstChoice ||
-      //     !this.secondSubject ||
-      //     !this.secondChoice ||
-      //     !this.thirdSubject ||
-      //     this.thirdChoice.length === 0
-      //   ) {
-      //     return this.$Message.error('缺少必填信息');
-      //   }
-      //   this.$Message.success('成功');
-      // } else {
-      //   //直接提交表单
-      // }
+      }
     },
     // 新建在线作业题目
     createSubject() {

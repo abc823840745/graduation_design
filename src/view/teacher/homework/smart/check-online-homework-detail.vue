@@ -76,6 +76,12 @@
           @click="submit"
           long
         >提交</Button>
+
+        <Button
+          type="primary"
+          @click="$emit('goBack')"
+          long
+        >返回</Button>
       </div>
     </div>
 
@@ -166,11 +172,11 @@ export default {
     width: 100%;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
   }
-  // .btn-mar {
-  //   margin-left: 40px;
-  // }
+  .btnGround button:nth-of-type(1) {
+    margin-right: 5%;
+  }
   .subjectText {
     width: 220px;
     height: auto;

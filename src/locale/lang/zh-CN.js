@@ -34,22 +34,26 @@ export default {
   course_detail: '查看学生课题',
   mission_detail: '查看学生任务',
   papper_detail: '查看学生论文',
-  // 教师路由中文名
   // 学生个人中心
+
+  // 教师路由中文名
   'teacher-personal': '个人中心',
   'teacher-my-info': '我的资料',
   'teacher-my-message': '我的私信',
+
   // 教师课程管理
   'teacher-course': '课程管理',
   'teacher-my-course': '我的课程',
   'teacher-course-other': '其他',
+
   // 教师作业管理
   'teacher-homework': '作业管理',
   'teacher-homework-assignment': '布置作业',
   'teacher-check-homework': '查看作业',
-  // 'teacher-check-online-homework': '查看在线作业',
+  'teacher-upload-courseware': '上传课件',
   'teacher-check-online-homework-detail': '查看作业详情',
   'teacher-homework-other': '其他',
+
   // 教师毕设管理
   'teacher-graduation': '毕业管理',
   'teacher-choice-teacher': '我的毕设信息',

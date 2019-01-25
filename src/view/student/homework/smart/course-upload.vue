@@ -91,23 +91,6 @@ export default {
           }
         }
       ],
-      data1: [
-        {
-          directory: "新媒体实训",
-          fileCount: 3,
-          endTime: "2018-9-18 11:00"
-        },
-        {
-          directory: "JavaScript编程",
-          fileCount: 3,
-          endTime: "2018-9-18 11:00"
-        },
-        {
-          directory: "新媒体概论",
-          fileCount: 3,
-          endTime: "2018-9-18 11:00"
-        }
-      ],
       columns2: [
         {
           title: "目录",
@@ -133,6 +116,23 @@ export default {
               this.btnStyle("返回", h, () => (this.curDirectory = 1))
             ]);
           }
+        }
+      ],
+      data1: [
+        {
+          directory: "新媒体实训",
+          fileCount: 3,
+          endTime: "2018-9-18 11:00"
+        },
+        {
+          directory: "JavaScript编程",
+          fileCount: 3,
+          endTime: "2018-9-18 11:00"
+        },
+        {
+          directory: "新媒体概论",
+          fileCount: 3,
+          endTime: "2018-9-18 11:00"
         }
       ],
       data2: [

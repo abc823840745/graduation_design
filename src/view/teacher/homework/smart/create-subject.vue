@@ -59,7 +59,7 @@
       <Button
         type="primary"
         size='large'
-        @click="goBack"
+        @click="$emit('goBack')"
       >上一步</Button>
       <Button
         type="primary"
@@ -88,7 +88,6 @@ export default {
     };
   },
   props: {
-    goBack: Function,
     homeworkName: String,
     homeworkClassify: String,
     stopTimeList: Array

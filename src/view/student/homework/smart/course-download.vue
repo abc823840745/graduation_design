@@ -50,23 +50,6 @@ export default {
           }
         }
       ],
-      data1: [
-        {
-          directory: "新媒体实训",
-          fileCount: 3,
-          createTime: "2018-9-18"
-        },
-        {
-          directory: "JavaScript编程",
-          fileCount: 3,
-          createTime: "2018-9-18"
-        },
-        {
-          directory: "新媒体概论",
-          fileCount: 3,
-          createTime: "2018-9-18"
-        }
-      ],
       columns2: [
         {
           title: "目录",
@@ -91,23 +74,6 @@ export default {
           }
         }
       ],
-      data2: [
-        {
-          directory: "第一周",
-          fileCount: 3,
-          createTime: "2018-9-18"
-        },
-        {
-          directory: "第二周",
-          fileCount: 3,
-          createTime: "2018-9-18"
-        },
-        {
-          directory: "第三周",
-          fileCount: 3,
-          createTime: "2018-9-18"
-        }
-      ],
       columns3: [
         {
           title: "目录",
@@ -129,6 +95,40 @@ export default {
               this.btnStyle("返回", h, () => (this.curDirectory = 2))
             ]);
           }
+        }
+      ],
+      data1: [
+        {
+          directory: "新媒体实训",
+          fileCount: 3,
+          createTime: "2018-9-18"
+        },
+        {
+          directory: "JavaScript编程",
+          fileCount: 3,
+          createTime: "2018-9-18"
+        },
+        {
+          directory: "新媒体概论",
+          fileCount: 3,
+          createTime: "2018-9-18"
+        }
+      ],
+      data2: [
+        {
+          directory: "第一周",
+          fileCount: 3,
+          createTime: "2018-9-18"
+        },
+        {
+          directory: "第二周",
+          fileCount: 3,
+          createTime: "2018-9-18"
+        },
+        {
+          directory: "第三周",
+          fileCount: 3,
+          createTime: "2018-9-18"
         }
       ],
       data3: [

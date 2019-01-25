@@ -72,7 +72,7 @@
       >提交</Button>
       <Button
         type="primary"
-        @click="goBack"
+        @click="$emit('goBack')"
         class="submitBtn"
         long
       >上一步</Button>
@@ -86,12 +86,6 @@ import CountDown from "../smart/count-down";
 
 export default {
   name: "online-homework",
-  props: {
-    goBack: {
-      type: Function,
-      default: () => console.log("返回上一步")
-    }
-  },
   data() {
     return {
       firstChoice: "",

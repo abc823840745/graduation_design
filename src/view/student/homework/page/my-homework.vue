@@ -71,7 +71,7 @@
 
     <homework-detail
       v-if="curDirectory===3"
-      :goback='goback'
+      @goBack='goBack'
     />
   </div>
 </template>
@@ -150,7 +150,6 @@ export default {
           courseName: "新媒体实训"
         }
       ],
-
       data2: [
         {
           homeworkName: "实验1",
@@ -244,7 +243,7 @@ export default {
       }
       return val;
     },
-    goback() {
+    goBack() {
       this.curDirectory = 2;
     }
   }

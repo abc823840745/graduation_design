@@ -48,7 +48,7 @@
 
     <write-online-homework
       v-if="curDirectory===3"
-      :goBack="goBack"
+      @goBack="goBack"
     />
   </div>
 </template>
