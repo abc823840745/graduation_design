@@ -308,7 +308,7 @@ export default [
           title: '作业情况',
           access: ['student'],
         },
-        component: () => import('@/view/student/homework/page/my-homework.vue'),
+        component: () => import('@stuHomework/page/my-homework.vue'),
       },
       {
         path: 'online-homework',
@@ -318,19 +318,8 @@ export default [
           title: '在线作业',
           access: ['student'],
         },
-        component: () => import('@/view/student/homework/page/online-homework.vue'),
+        component: () => import('@stuHomework/page/online-homework.vue'),
       },
-      // {
-      //   path: 'write-online-homework',
-      //   name: 'student-write-online-homework',
-      //   meta: {
-      //     hideInMenu: true,
-      //     icon: 'ios-document',
-      //     title: '完成在线作业',
-      //     access: ['student'],
-      //   },
-      //   component: () => import('@/view/student/homework/page/write-online-homework.vue'),
-      // },
       {
         path: 'course',
         name: 'student-upload-download',
@@ -339,19 +328,8 @@ export default [
           title: '上传/下载',
           access: ['student'],
         },
-        component: () => import('@/view/student/homework/page/upload-download.vue'),
+        component: () => import('@stuHomework/page/upload-download.vue'),
       },
-      // {
-      //   path: 'course-detail',
-      //   name: 'student-upload-download-detail',
-      //   meta: {
-      //     hideInMenu: true,
-      //     icon: 'md-clipboard',
-      //     title: '上传/下载详情',
-      //     access: ['student'],
-      //   },
-      //   component: () => import('@/view/student/homework/page/upload-download-detail.vue'),
-      // },
     ],
   },
   {
@@ -609,7 +587,7 @@ export default [
           title: '我的作业',
           access: ['teacher', 'admin'],
         },
-        component: () => import('@/view/teacher/homework/page/homework-assignment.vue'),
+        component: () => import('@teaHomework/page/homework-assignment.vue'),
       },
       {
         path: 'check-homework',
@@ -619,7 +597,7 @@ export default [
           title: '查看作业',
           access: ['teacher', 'admin'],
         },
-        component: () => import('@/view/teacher/homework/page/check-homework.vue'),
+        component: () => import('@teaHomework/page/check-homework.vue'),
       },
       {
         path: 'upload-courseware',
@@ -629,11 +607,10 @@ export default [
           title: '上传课件',
           access: ['teacher', 'admin'],
         },
-        component: () => import('@/view/teacher/homework/page/upload-courseware.vue'),
+        component: () => import('@teaHomework/page/upload-courseware.vue'),
       },
     ],
   },
-
   {
     path: '/teacher/graduation',
     name: 'teacher-graduation',

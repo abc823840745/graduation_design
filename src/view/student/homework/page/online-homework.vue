@@ -34,8 +34,8 @@
 </template>
 
 <script>
-import writeOnlineHomework from "../smart/write-online-homework.vue";
-import multipleChoice from "@/view/teacher/homework/smart/multiple-choice";
+import writeOnlineHomework from "@stuHomework/smart/write-online-homework.vue";
+import multipleChoice from "@teaHomework/smart/multiple-choice";
 
 export default {
   name: "course-detail",

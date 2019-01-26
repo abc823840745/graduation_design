@@ -12,8 +12,9 @@
 </template>
 
 <script>
-import courseSelect from "../smart/course-select";
-import myHomework from "../smart/my-homework";
+import courseSelect from "@teaHomework/smart/course-select";
+import myHomework from "@teaHomework/smart/my-homework";
+
 export default {
   data() {
     return {

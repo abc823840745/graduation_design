@@ -1,6 +1,8 @@
 <template>
   <div>
-    <p>{{remainingTime}}</p>
+    <slot :remainingTime='remainingTime'>
+      {{remainingTime}}
+    </slot>
   </div>
 </template>
 
@@ -48,7 +50,8 @@ export default {
     },
     _countDown() {
       if (this.isStopTimer || this.remainingTime <= 0) {
-        return this.stopTimer();
+        this.stopTimer();
+        return this.$emit("callBack");
       }
       if (this.remainingTime - 1 <= 0) {
         this.isStopTimer = true;

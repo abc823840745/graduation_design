@@ -139,8 +139,9 @@
 
 </template>
 <script>
-import RadioItem from "@/view/teacher/homework/smart/create-subject-radio-item";
-import CountDown from "../smart/count-down";
+import RadioItem from "@teaHomework/smart/create-subject-radio-item";
+import CountDown from "@stuHomework/smart/count-down";
+
 export default {
   name: "online-homework",
   data() {

@@ -104,37 +104,38 @@
 </template>
 
 <script>
-import RadioItem from '@/view/teacher/homework/smart/online-detail-radio-item'
+import RadioItem from "@teaHomework/smart/online-detail-radio-item";
+
 export default {
-  name: 'check-online-homework-detail',
-  data () {
+  name: "check-online-homework-detail",
+  data() {
     return {
-      firstSubject: '钢铁是怎么炼成的?',
-      secondSubject: '钢铁是怎么炼成的?',
-      thirdSubject: '钢铁是怎么炼成的?',
-      fourthSubject: '钢铁是怎么炼成的?',
-      firstChoice: 'A',
-      secondChoice: 'B',
-      thirdChoice: ['A', 'B'],
-      fourthChoice: '飞龙在天双龙出海',
+      firstSubject: "钢铁是怎么炼成的?",
+      secondSubject: "钢铁是怎么炼成的?",
+      thirdSubject: "钢铁是怎么炼成的?",
+      fourthSubject: "钢铁是怎么炼成的?",
+      firstChoice: "A",
+      secondChoice: "B",
+      thirdChoice: ["A", "B"],
+      fourthChoice: "飞龙在天双龙出海",
       score1: 20,
       score2: 20,
       score3: 0,
       score4: 40
-    }
+    };
   },
   components: {
     RadioItem
   },
   methods: {
-    onChangeScore (data) {
-      this.score1 = data.score
+    onChangeScore(data) {
+      this.score1 = data.score;
     },
-    onChangeScore2 (data) {
-      this.score2 = data.score
+    onChangeScore2(data) {
+      this.score2 = data.score;
     }
   }
-}
+};
 </script>
 
 <style lang="less" scoped>
@@ -149,9 +150,9 @@ export default {
   span {
     font-size: 14px;
   }
-  .total-score{
+  .total-score {
     font-size: 18px;
-    .score{
+    .score {
       color: #2d8cf0;
     }
   }

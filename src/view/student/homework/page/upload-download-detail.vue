@@ -22,8 +22,8 @@
 </template>
 
 <script>
-import download from "../smart/course-download";
-import upload from "../smart/course-upload";
+import download from "@stuHomework/smart/course-download";
+import upload from "@stuHomework/smart/course-upload";
 export default {
   name: "course-detail",
   data() {

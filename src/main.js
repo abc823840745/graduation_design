@@ -1,41 +1,47 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
-import Vue from 'vue'
-import App from './App'
-import router from './router'
-import store from './store'
-import iView from 'iview'
-import i18n from '@/locale'
-import config from '@/config'
-import importDirective from '@/directive'
-import installPlugin from '@/plugin'
-import 'iview/dist/styles/iview.css'
-import './index.less'
-import '@/assets/icons/iconfont.css'
+import Vue from 'vue';
+import App from './App';
+import router from './router';
+import store from './store';
+import iView from 'iview';
+import i18n from '@/locale';
+import config from '@/config';
+import * as myUtils from '@util';
+import importDirective from '@/directive';
+import installPlugin from '@/plugin';
+import 'iview/dist/styles/iview.css';
+import './index.less';
+import '@/assets/icons/iconfont.css';
 /* eslint-disable */
-import VideoPlayer from 'vue-video-player'
-require('video.js/dist/video-js.css')
-require('vue-video-player/src/custom-theme.css')
-Vue.use(VideoPlayer)
+import VideoPlayer from 'vue-video-player';
+require('video.js/dist/video-js.css');
+require('vue-video-player/src/custom-theme.css');
+Vue.use(VideoPlayer);
 Vue.use(iView, {
-  i18n: (key, value) => i18n.t(key, value)
-})
+  i18n: (key, value) => i18n.t(key, value),
+});
+
 /**
  * @description 注册admin内置插件
  */
-installPlugin(Vue)
+installPlugin(Vue);
 /**
  * @description 生产环境关掉提示
  */
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 /**
  * @description 全局注册应用配置
  */
-Vue.prototype.$config = config
+Vue.prototype.$config = config;
+/**
+ * @description 全局注册工具函数
+ */
+Vue.prototype.$util = myUtils;
 /**
  * 注册指令
  */
-importDirective(Vue)
+importDirective(Vue);
 
 /* eslint-disable no-new */
 new Vue({
@@ -43,5 +49,5 @@ new Vue({
   router,
   i18n,
   store,
-  render: h => h(App)
-})
+  render: h => h(App),
+});

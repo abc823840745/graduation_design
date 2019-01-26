@@ -50,9 +50,9 @@
 </template>
 
 <script>
-import multipleChoice from "../smart/multiple-choice";
-import progressBar from "../smart/progress-bar";
-import checkOnlineHWDetail from "../smart/check-online-homework-detail.vue";
+import multipleChoice from "@teaHomework/smart/multiple-choice";
+import progressBar from "@teaHomework/smart/progress-bar";
+import checkOnlineHWDetail from "@teaHomework/smart/check-online-homework-detail.vue";
 
 export default {
   name: "check-homework",

@@ -5,9 +5,14 @@
       <P class="count-down-text">倒计时：</P>
       <P class="count-down-text primary-color">
         <count-down
-          :isStartTimer='true'
+          :isStartTimer='isStartTimer'
           :initialTime='1200'
-        />
+          @callBack='endTimeDoing'
+        >
+          <h2 slot-scope="{remainingTime}">
+            {{$util.formatSeconds(remainingTime)}}
+          </h2>
+        </count-down>
       </P>
     </div>
 
@@ -81,13 +86,14 @@
 </template>
 
 <script>
-import RadioItem from "@/view/teacher/homework/smart/create-subject-radio-item";
-import CountDown from "../smart/count-down";
+import RadioItem from "@teaHomework/smart/create-subject-radio-item";
+import CountDown from "@stuHomework/smart/count-down";
 
 export default {
   name: "online-homework",
   data() {
     return {
+      isStartTimer: true, // 是否开启定时器
       firstChoice: "",
       firstSubject: "钢铁是怎么炼成的?",
       secondChoice: "",
@@ -112,10 +118,12 @@ export default {
     },
     submit() {
       console.log(this.firstChoice, this.secondChoice);
+    },
+    endTimeDoing() {
+      this.isStartTimer = false;
+      console.log("结束后的回调");
     }
-  },
-  created() {},
-  mounted() {}
+  }
 };
 </script>
 
@@ -126,7 +134,6 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  //   padding-left: 10%;
   p {
     font-size: 14px;
   }
@@ -139,8 +146,6 @@ export default {
       width: 100%;
       margin-top: 10px;
       display: flex;
-      //   align-items: center;
-      //   justify-content: center;
       .radio-item {
         margin-left: 15px;
       }

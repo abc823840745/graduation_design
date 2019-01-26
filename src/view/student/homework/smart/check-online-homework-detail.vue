@@ -100,7 +100,7 @@
 </template>
 
 <script>
-import RadioItem from "@/view/teacher/homework/smart/online-detail-radio-item";
+import RadioItem from "@teaHomework/smart/online-detail-radio-item";
 
 export default {
   name: "check-online-homework-detail",

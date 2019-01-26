@@ -30,9 +30,9 @@
 </template>
 
 <script>
-import download from "../smart/course-download";
-import upload from "../smart/course-upload";
-import multipleChoice from "@/view/teacher/homework/smart/multiple-choice";
+import download from "@stuHomework/smart/course-download";
+import upload from "@stuHomework/smart/course-upload";
+import multipleChoice from "@teaHomework/smart/multiple-choice";
 
 export default {
   name: "course-detail",
