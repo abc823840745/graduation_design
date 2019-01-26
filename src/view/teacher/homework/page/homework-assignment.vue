@@ -1,12 +1,20 @@
 <template>
   <div class="containter">
+    <Modal
+      v-model="isShowModal"
+      title="返回"
+      @on-ok="goBack"
+    >
+      <p>返回上一步填写数据将丢失</p>
+    </Modal>
+
     <course-select
       v-if="!showCreSub"
       @goCreSub='goCreSub'
     />
     <my-homework
       v-else
-      @goBack='goBack'
+      @showModal='showModal'
     />
   </div>
 </template>
@@ -18,6 +26,7 @@ import myHomework from "@teaHomework/smart/my-homework";
 export default {
   data() {
     return {
+      isShowModal: false,
       showCreSub: false
     };
   },
@@ -31,6 +40,9 @@ export default {
     },
     goBack() {
       this.showCreSub = false;
+    },
+    showModal() {
+      this.isShowModal = true;
     }
   }
 };

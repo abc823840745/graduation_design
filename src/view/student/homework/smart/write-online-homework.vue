@@ -1,6 +1,5 @@
 <template>
   <div class="containter">
-
     <div class="count-down-con">
       <P class="count-down-text">倒计时：</P>
       <P class="count-down-text primary-color">

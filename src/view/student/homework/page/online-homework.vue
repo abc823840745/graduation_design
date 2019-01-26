@@ -30,6 +30,7 @@
       v-if="curDirectory===3"
       @goBack="goBack"
     />
+
   </div>
 </template>
 

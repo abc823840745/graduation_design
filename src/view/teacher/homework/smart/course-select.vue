@@ -4,6 +4,7 @@
       semesterTip='学期选择'
       :defaultValue='semester'
       :semesterList='semesterList'
+      class="flex-start"
     />
 
     <Table
@@ -21,7 +22,7 @@
 </template>
 
 <script>
-import multipleChoice from "../smart/multiple-choice";
+import multipleChoice from "@teaHomework/smart/multiple-choice";
 
 export default {
   name: "other",
@@ -104,6 +105,12 @@ export default {
 .containter {
   width: 100%;
   height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  .flex-start {
+    align-self: flex-start;
+  }
   .mar-top {
     margin-top: 20px;
   }

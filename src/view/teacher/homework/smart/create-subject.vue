@@ -72,7 +72,7 @@
 </template>
 
 <script>
-import RadioItem from "../smart/create-subject-radio-item";
+import RadioItem from "@teaHomework/smart/create-subject-radio-item";
 
 export default {
   name: "create-subject",

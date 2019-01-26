@@ -2,14 +2,14 @@
   <div class="containter">
     <div
       class="containter"
-      v-if="currentLevel!==6"
+      v-if="currentLevel!==7"
     >
 
       <div class="header-bar">
         <multiple-choice
-          v-if="currentLevel===1||currentLevel===4||currentLevel===5"
+          v-if="currentLevel===1||currentLevel===5||currentLevel===6"
           :semesterTip='selTip'
-          :propsSemester='semester'
+          :defaultValue='semester'
           :semesterList='currentLevel===1?semesterList:semesterList2'
           class="float-left"
         />
@@ -32,7 +32,7 @@
       />
 
       <Button
-        v-if="currentLevel === 4"
+        v-if="currentLevel === 5"
         type="primary"
         @click="submit"
         class="mar-top"
@@ -41,7 +41,7 @@
     </div>
 
     <check-online-h-w-detail
-      v-if="currentLevel===6"
+      v-if="currentLevel===7"
       @goBack='goBack'
     />
 
@@ -132,6 +132,22 @@ export default {
       ],
       columns3: [
         {
+          title: "周数",
+          key: "weeksNum"
+        },
+        {
+          title: "操作",
+          key: "operation",
+          render: (h, params) => {
+            return h("div", [
+              this.btnStyle("查看", h, () => (this.currentLevel = 4)),
+              this.btnStyle("返回", h, () => (this.currentLevel = 2))
+            ]);
+          }
+        }
+      ],
+      columns4: [
+        {
           title: "作业类型",
           key: "hwType"
         },
@@ -144,18 +160,19 @@ export default {
                 // TODO: 打开实验报告
                 let { index } = params;
                 if (index === 0) {
-                  this.currentLevel = 4;
-                } else {
+                  // index = 0时为课时作业
                   this.currentLevel = 5;
+                } else {
+                  this.currentLevel = 6;
                 }
-                this.selTip = "作业情况";
+                this.selTip = "提交情况";
               }),
-              this.btnStyle("返回", h, () => (this.currentLevel = 2))
+              this.btnStyle("返回", h, () => (this.currentLevel = 3))
             ]);
           }
         }
       ],
-      columns4: [
+      columns5: [
         {
           title: "学号",
           key: "studentId"
@@ -197,12 +214,12 @@ export default {
               this.btnStyle("下载并打开", h, () => {
                 // TODO:打开实验报告
               }),
-              this.btnStyle("返回", h, () => (this.currentLevel = 3))
+              this.btnStyle("返回", h, () => (this.currentLevel = 4))
             ]);
           }
         }
       ],
-      columns5: [
+      columns6: [
         {
           title: "学号",
           key: "studentId"
@@ -224,12 +241,8 @@ export default {
           key: "operation",
           render: (h, params) => {
             return h("div", [
-              this.btnStyle("查看", h, () => (this.currentLevel = 6)),
-              this.btnStyle("返回", h, () => {
-                // 返回上一步
-                this.currentLevel = 2;
-                // this.selTip = '学期选择';
-              })
+              this.btnStyle("查看", h, () => (this.currentLevel = 7)),
+              this.btnStyle("返回", h, () => (this.currentLevel = 4))
             ]);
           }
         }
@@ -246,13 +259,24 @@ export default {
       ],
       data3: [
         {
+          weeksNum: "第一周"
+        },
+        {
+          weeksNum: "第二周"
+        },
+        {
+          weeksNum: "第三周"
+        }
+      ],
+      data4: [
+        {
           hwType: "课时作业"
         },
         {
           hwType: "在线作业"
         }
       ],
-      data4: [
+      data5: [
         {
           studentId: "1540624158",
           name: "吕嘉俊",
@@ -261,7 +285,7 @@ export default {
           operation: ""
         }
       ],
-      data5: [
+      data6: [
         {
           studentId: "1540624158",
           name: "吕嘉俊",
@@ -301,23 +325,20 @@ export default {
       switch (this.currentLevel) {
         case 1:
           return this[`${data}1`];
-          break;
         case 2:
           return this[`${data}2`];
-          break;
         case 3:
           return this[`${data}3`];
-          break;
         case 4:
           return this[`${data}4`];
-          break;
         case 5:
           return this[`${data}5`];
-          break;
+        case 6:
+          return this[`${data}6`];
       }
     },
     goBack() {
-      this.currentLevel = 5;
+      this.currentLevel = 6;
     }
   }
 };

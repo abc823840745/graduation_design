@@ -26,7 +26,7 @@
 <template>
   <div class="containter">
     <div
-      v-if="!showCreateSubject"
+      v-show="!showCreateSubject"
       class="containter"
     >
       <div class="mar-bottom mar-top">
@@ -75,22 +75,20 @@
 
         <Button
           type="primary"
-          @click="$emit('goBack')"
+          @click="$emit('showModal')"
           long
         >返回</Button>
       </div>
 
     </div>
 
-    <div v-if="showCreateSubject">
-      <create-subject
-        @goBack="goBack"
-        :homeworkName="homeworkName"
-        :homeworkClassify="homeworkClassify"
-        :stopTimeList="stopTimeList"
-      />
-    </div>
-
+    <create-subject
+      v-show="showCreateSubject"
+      @goBack="goBack"
+      :homeworkName="homeworkName"
+      :homeworkClassify="homeworkClassify"
+      :stopTimeList="stopTimeList"
+    />
   </div>
 
 </template>
@@ -126,6 +124,7 @@ export default {
     timeOnChange(value) {
       this.stopTimeList = value;
     },
+
     // 提交表单
     sumbit() {
       let { homeworkName, homeworkClassify, stopTimeList } = this;
@@ -133,6 +132,7 @@ export default {
         return this.$Message.error("缺少必填信息");
       }
     },
+
     // 新建在线作业题目
     createSubject() {
       let { homeworkName, homeworkClassify, stopTimeList } = this;
@@ -141,10 +141,12 @@ export default {
       }
       this.showCreateSubject = true;
     },
+
     // 选择器监听事件
     selOnChange(value) {
       this.stopTimeList = [];
     },
+
     // 传递给子组件的上一步事件
     goBack() {
       this.showCreateSubject = false;
