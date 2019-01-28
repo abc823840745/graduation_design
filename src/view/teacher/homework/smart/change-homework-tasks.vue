@@ -45,18 +45,18 @@
           type="primary"
           @click="homeworkInfo['classify']==='在线作业'?createSubject():sumbit()"
           long
-        >{{homeworkInfo['classify']==='在线作业'? '新建题目':'新建作业任务'}}</Button>
+        >{{homeworkInfo['classify']==='在线作业'? '修改题目':'修改作业任务'}}</Button>
 
         <Button
           type="primary"
-          @click="$emit('showModal')"
+          @click="$emit('goBack')"
           long
         >返回</Button>
       </div>
 
     </div>
 
-    <create-subject
+    <change-homework-tasks-subject
       v-show="showCreateSubject"
       @goBack="goBack"
       :homeworkInfo='homeworkInfo'
@@ -66,7 +66,7 @@
 </template>
 
 <script>
-import createSubject from "@teaHomework/smart/create-subject.vue";
+import changeHomeworkTasksSubject from "@teaHomework/smart/change-homework-tasks-subject.vue";
 
 export default {
   name: "my-homework",
@@ -74,9 +74,9 @@ export default {
     return {
       showCreateSubject: false,
       homeworkInfo: {
-        name: "",
-        classify: "",
-        stopTimeList: []
+        name: "搭建服务器",
+        classify: "在线作业",
+        stopTimeList: ["2019-01-28 00:00", "2019-01-28 00:00"]
       },
       homeworkCategory: [
         {
@@ -91,7 +91,7 @@ export default {
     };
   },
   components: {
-    createSubject
+    changeHomeworkTasksSubject
   },
   methods: {
     // 监听选择时间日期函数

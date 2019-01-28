@@ -1,28 +1,23 @@
 <template>
   <div class="containter">
     <div>
+
       <radio-item
-        title="1、单选题"
-        :subject='firstSubject'
-        :radioChoice="firstChoice"
-        :outputScore="score1"
+        :inputInfo='inputInfo[0]'
         :ifEdit="false"
       />
 
       <radio-item
-        title="2、单选题"
-        :subject='secondSubject'
-        :radioChoice="secondChoice"
-        :outputScore="score2"
+        :inputInfo='inputInfo[1]'
         :ifEdit="false"
       />
 
       <div class="mar-bottom">
-        <p class="input-title">3、多选题</p>
-        <p class="subjectText">{{thirdSubject}}</p>
+        <p class="input-title">{{inputInfo[2]['title']}}</p>
+        <p class="subjectText">{{inputInfo[2]['subject']}}</p>
         <div class="radio-list">
           答案:
-          <CheckboxGroup v-model="thirdChoice">
+          <CheckboxGroup v-model="inputInfo[2]['choice']">
             <Checkbox
               label="A"
               class="checkbox-item"
@@ -45,7 +40,7 @@
             ></Checkbox>
           </CheckboxGroup>
           <Icon
-            v-if="score3!==0"
+            v-if="inputInfo[2]['score']!==0"
             type="md-checkmark"
             size='23'
             color='green'
@@ -58,16 +53,16 @@
           />
         </div>
         <div class="radio-list">
-          评分：<span class="scope">{{score3}}</span>
+          评分：<span class="scope">{{inputInfo[2]['score']}}</span>
         </div>
       </div>
 
       <div class="mar-bottom">
-        <p class="input-title">4、主观题</p>
-        <p class="input-title subjectText">{{fourthSubject}}</p>
-        <p>答案: {{fourthChoice}}&nbsp;&nbsp;&nbsp;
+        <p class="input-title">{{inputInfo[3]['title']}}</p>
+        <p class="input-title subjectText">{{inputInfo[3]['subject']}}</p>
+        <p>答案: {{inputInfo[3]['choice']}}&nbsp;&nbsp;&nbsp;
           <Icon
-            v-if="score4!==0"
+            v-if="inputInfo[3]['score']!==0"
             type="md-checkmark"
             size='23'
             color='green'
@@ -81,11 +76,11 @@
         </p>
 
         <div class="radio-list">
-          评分：<span class="scope">{{score4}}</span>
+          评分：<span class="scope">{{inputInfo[3]['score']}}</span>
         </div>
       </div>
 
-      <div class="bottomBar">
+      <div class="bottom-bar">
         <p class="total-score">总评分:
           <span class="total-score score">80</span>
         </p>
@@ -106,31 +101,42 @@ export default {
   name: "check-online-homework-detail",
   data() {
     return {
-      firstSubject: "钢铁是怎么炼成的?",
-      secondSubject: "钢铁是怎么炼成的?",
-      thirdSubject: "钢铁是怎么炼成的?",
-      fourthSubject: "钢铁是怎么炼成的?",
-      firstChoice: "A",
-      secondChoice: "B",
-      thirdChoice: ["A", "B"],
-      fourthChoice: "飞龙在天双龙出海",
-      score1: 20,
-      score2: 20,
-      score3: 0,
-      score4: 40
+      inputInfo: [
+        {
+          subject: "钢铁是怎么炼成的?",
+          title: "1、单选题",
+          placeholder: "第一题题目",
+          choice: "A",
+          score: 20
+        },
+        {
+          subject: "钢铁是怎么炼成的?",
+          title: "2、单选题",
+          placeholder: "第二题题目",
+          choice: "B",
+          score: 20
+        },
+        {
+          subject: "钢铁是怎么炼成的?",
+          title: "3、多选题",
+          placeholder: "第三题题目",
+          choice: ["A", "B"],
+          score: 0
+        },
+        {
+          subject: "钢铁是怎么炼成的?",
+          title: "4、主观题",
+          placeholder: "第四题题目",
+          choice: "飞龙在天双龙出海",
+          score: 40
+        }
+      ]
     };
   },
   components: {
     RadioItem
   },
-  methods: {
-    onChangeScore(data) {
-      this.score1 = data.score;
-    },
-    onChangeScore2(data) {
-      this.score2 = data.score;
-    }
-  }
+  methods: {}
 };
 </script>
 
@@ -142,6 +148,10 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
+  .bottom-bar {
+    display: flex;
+    justify-content: space-between;
+  }
   p,
   span {
     font-size: 14px;
@@ -189,12 +199,6 @@ export default {
     word-wrap: break-word;
     word-break: break-all;
     overflow: hidden;
-  }
-  .bottomBar {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
   }
 }
 </style>

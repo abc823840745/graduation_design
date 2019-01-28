@@ -48,11 +48,10 @@ export default {
 
   // 教师作业管理
   'teacher-homework': '作业管理',
-  'teacher-homework-assignment': '布置作业',
-  'teacher-check-homework': '查看作业',
+  'teacher-homework-assignment': '新建作业任务',
+  'teacher-check-homework': '查看/修改作业',
   'teacher-upload-courseware': '上传课件',
-  'teacher-check-online-homework-detail': '查看作业详情',
-  'teacher-homework-other': '其他',
+  'teacher-task-center': '任务中心',
 
   // 教师毕设管理
   'teacher-graduation': '毕业管理',

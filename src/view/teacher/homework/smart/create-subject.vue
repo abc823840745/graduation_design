@@ -1,30 +1,28 @@
 <template>
   <div class="containter">
     <radio-item
-      title='1、单选题'
+      :inputInfo='inputInfo[0]'
       @onChangeSubject="onChangeSubject"
-      placeholder='第一题题目'
       @onChangeRadio="onChangeRadio"
     />
 
     <radio-item
-      title='2、单选题'
+      :inputInfo='inputInfo[1]'
       @onChangeSubject="onChangeSubject2"
-      placeholder='第二题题目'
       @onChangeRadio="onChangeRadio2"
     />
 
     <div class="mar-bottom">
-      <p class="input-title">3、多选题</p>
+      <p class="input-title">{{inputInfo[2]['title']}}</p>
       <Input
-        v-model="thirdSubject"
-        placeholder="第三题题目"
+        v-model="inputInfo[2]['subject']"
+        :placeholder="inputInfo[2]['placeholder']"
         clearable
         style="width: 220px"
       />
       <div class="radio-list">
         答案:
-        <CheckboxGroup v-model="thirdChoice">
+        <CheckboxGroup v-model="inputInfo[2]['choice']">
           <Checkbox
             label="A"
             class="checkbox-item"
@@ -46,10 +44,10 @@
     </div>
 
     <div class="mar-bottom">
-      <p class="input-title">4、主观题</p>
+      <p class="input-title">{{inputInfo[3]['title']}}</p>
       <Input
-        v-model="fourthSubject"
-        placeholder="第四题题目"
+        v-model="inputInfo[3]['subject']"
+        :placeholder="inputInfo[3]['placeholder']"
         clearable
         style="width: 220px"
       />
@@ -78,19 +76,36 @@ export default {
   name: "create-subject",
   data() {
     return {
-      firstSubject: "",
-      secondSubject: "",
-      thirdSubject: "",
-      fourthSubject: "",
-      firstChoice: "",
-      secondChoice: "",
-      thirdChoice: []
+      inputInfo: [
+        {
+          subject: "",
+          title: "1、单选题",
+          placeholder: "第一题题目",
+          choice: ""
+        },
+        {
+          subject: "",
+          title: "2、单选题",
+          placeholder: "第二题题目",
+          choice: ""
+        },
+        {
+          subject: "",
+          title: "3、多选题",
+          placeholder: "第三题题目",
+          choice: []
+        },
+        {
+          subject: "",
+          title: "4、主观题",
+          placeholder: "第四题题目",
+          choice: ""
+        }
+      ]
     };
   },
   props: {
-    homeworkName: String,
-    homeworkClassify: String,
-    stopTimeList: Array
+    homeworkInfo: Object
   },
   components: {
     RadioItem

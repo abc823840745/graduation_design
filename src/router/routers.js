@@ -594,7 +594,7 @@ export default [
         name: 'teacher-check-homework',
         meta: {
           icon: 'ios-document',
-          title: '查看作业',
+          title: '查看/修改作业',
           access: ['teacher', 'admin'],
         },
         component: () => import('@teaHomework/page/check-homework.vue'),
@@ -608,6 +608,16 @@ export default [
           access: ['teacher', 'admin'],
         },
         component: () => import('@teaHomework/page/upload-courseware.vue'),
+      },
+      {
+        path: 'task-center',
+        name: 'teacher-task-center',
+        meta: {
+          icon: 'ios-document',
+          title: '任务中心',
+          access: ['teacher', 'admin'],
+        },
+        component: () => import('@teaHomework/page/task-center.vue'),
       },
     ],
   },

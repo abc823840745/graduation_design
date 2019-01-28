@@ -1,22 +1,61 @@
 <template>
   <div class="containter">
-    <multiple-choice
-      semesterTip='学期选择'
-      :defaultValue='semester'
-      :semesterList='semesterList'
-      class="flex-start"
-    />
+    <div class="containter">
+      <multiple-choice
+        semesterTip='学期选择'
+        :defaultValue='semester'
+        :semesterList='semesterList'
+        class="flex-start"
+      />
 
-    <Table
-      stripe
-      class="table-con mar-top"
-      :columns="columns1"
-      :data="data1"
-    />
-    <Page
-      :total="30"
-      class="mar-top"
-    />
+      <Table
+        stripe
+        class="table-con mar-top"
+        :columns="columns1"
+        :data="data1"
+      />
+      <Page
+        :total="30"
+        class="mar-top"
+      />
+    </div>
+
+    <Modal
+      v-model="showModal"
+      title="上传"
+      @on-ok="dialogOk"
+      @on-cancel="dialogCancel"
+    >
+      <Select
+        v-model="weeksNum"
+        placeholder='请选择周数'
+        style="width:200px;margin-bottom:10px;"
+      >
+        <Option
+          v-for="item in weeksList"
+          :value="item.value"
+          :key="item.value"
+        >{{ item.label }}</Option>
+      </Select>
+
+      <Upload
+        ref="upload"
+        multiple
+        type="drag"
+        :on-remove="handleremove"
+        action="//jsonplaceholder.typicode.com/posts/"
+      >
+
+        <div style="padding: 20px 0">
+          <Icon
+            type="ios-cloud-upload"
+            size="52"
+            style="color: #3399ff"
+          ></Icon>
+          <p>点击或者把文件拖拽到这里</p>
+        </div>
+      </Upload>
+    </Modal>
 
   </div>
 </template>
@@ -28,6 +67,34 @@ export default {
   name: "other",
   data() {
     return {
+      showModal: false,
+      weeksNum: "",
+      weeksList: [
+        {
+          value: "第一周",
+          label: "第一周"
+        },
+        {
+          value: "第二周",
+          label: "第二周"
+        },
+        {
+          value: "第三周",
+          label: "第三周"
+        },
+        {
+          value: "第四周",
+          label: "第四周"
+        },
+        {
+          value: "第五周",
+          label: "第五周"
+        },
+        {
+          value: "第六周",
+          label: "第六周"
+        }
+      ],
       semester: "2017-2018第二学期",
       semesterList: [
         {
@@ -57,7 +124,7 @@ export default {
           key: "operation",
           render: (h, params) => {
             return h("div", [
-              this.btnStyle("查看", h, () => this.$emit("goCreSub"))
+              this.btnStyle("上传", h, () => (this.showModal = true))
             ]);
           }
         }
@@ -96,6 +163,15 @@ export default {
         },
         btnTitle
       );
+    },
+    dialogOk() {
+      this.$Message.info("Clicked ok");
+    },
+    dialogCancel() {
+      this.$Message.info("Clicked cancel");
+    },
+    handleremove() {
+      this.showDelmodal = true;
     }
   }
 };

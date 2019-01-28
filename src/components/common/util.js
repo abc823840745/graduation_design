@@ -28,3 +28,21 @@ export function formatSeconds(value) {
   ${minuteTime < 10 ? '0' + minuteTime : minuteTime}:
   ${secondTime < 10 ? '0' + secondTime : secondTime}`;
 }
+
+/**
+ * 判断对象是否为空
+ * @param {object,null,array} obj typeof obj 得出'object'的对象
+ */
+export function isEmptyObject(obj) {
+  switch (Object.prototype.toString.call(obj)) {
+    case '[object Null]':
+      return true;
+    case '[object Undefined]':
+      return true;
+    case '[object Array]':
+      return obj.length === 0;
+    case '[object Object]':
+      return Object.keys(obj).length === 0;
+  }
+  return false;
+}

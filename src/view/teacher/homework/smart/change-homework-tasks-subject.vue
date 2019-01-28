@@ -1,142 +1,140 @@
 <template>
   <div class="containter">
-    <div class="count-down-con">
-      <P class="count-down-text">倒计时：</P>
-      <P class="count-down-text primary-color">
-        <count-down
-          :isStartTimer='isStartTimer'
-          :initialTime='1200'
-          @callBack='endTimeDoing'
-        >
-          <h2 slot-scope="{remainingTime}">
-            {{$util.formatSeconds(remainingTime)}}
-          </h2>
-        </count-down>
-      </P>
-    </div>
-
     <radio-item
       :inputInfo='inputInfo[0]'
-      :ifEdit="false"
+      @onChangeSubject="onChangeSubject"
       @onChangeRadio="onChangeRadio"
     />
+
     <radio-item
       :inputInfo='inputInfo[1]'
-      :ifEdit="false"
+      @onChangeSubject="onChangeSubject2"
       @onChangeRadio="onChangeRadio2"
     />
 
     <div class="mar-bottom">
       <p class="input-title">{{inputInfo[2]['title']}}</p>
-      <p class="subjectText">{{inputInfo[2]['subject']}}</p>
+      <Input
+        v-model="inputInfo[2]['subject']"
+        :placeholder="inputInfo[2]['placeholder']"
+        clearable
+        style="width: 220px"
+      />
       <div class="radio-list">
         答案:
         <CheckboxGroup v-model="inputInfo[2]['choice']">
           <Checkbox
             label="A"
             class="checkbox-item"
-          ></Checkbox>
+          >A</Checkbox>
           <Checkbox
             label="B"
             class="checkbox-item"
-          ></Checkbox>
+          >B</Checkbox>
           <Checkbox
             label="C"
             class="checkbox-item"
-          ></Checkbox>
+          >C</Checkbox>
           <Checkbox
             label="D"
             class="checkbox-item"
-          ></Checkbox>
+          >D</Checkbox>
         </CheckboxGroup>
       </div>
-
     </div>
 
     <div class="mar-bottom">
       <p class="input-title">{{inputInfo[3]['title']}}</p>
-      <p class="subjectText">{{inputInfo[3]['subject']}}</p>
       <Input
-        v-model="inputInfo[3]['choice']"
-        type="textarea"
-        :autosize="{minRows: 2,maxRows: 5}"
-        placeholder="请输入你的答案"
-        class="text-input"
+        v-model="inputInfo[3]['subject']"
+        :placeholder="inputInfo[3]['placeholder']"
+        clearable
+        style="width: 220px"
       />
     </div>
 
     <div class="btnGround">
       <Button
         type="primary"
-        @click="submit"
-        class="submitBtn"
-        long
-      >提交</Button>
+        size='large'
+        @click="$emit('goBack')"
+      >上一步</Button>
       <Button
         type="primary"
-        @click="$emit('goBack')"
-        class="submitBtn"
-        long
-      >上一步</Button>
+        size='large'
+        @click="submit"
+      >提交</Button>
     </div>
+
   </div>
 </template>
 
 <script>
 import RadioItem from "@teaHomework/smart/create-subject-radio-item";
-import CountDown from "@stuHomework/smart/count-down";
 
 export default {
-  name: "online-homework",
+  name: "create-subject",
   data() {
     return {
       inputInfo: [
         {
-          subject: "钢铁是怎么炼成的?",
+          subject: "haha",
           title: "1、单选题",
           placeholder: "第一题题目",
-          choice: ""
+          choice: "A"
         },
         {
-          subject: "钢铁是怎么炼成的?",
+          subject: "haha",
           title: "2、单选题",
           placeholder: "第二题题目",
-          choice: ""
+          choice: "B"
         },
         {
-          subject: "钢铁是怎么炼成的?",
+          subject: "haha",
           title: "3、多选题",
           placeholder: "第三题题目",
-          choice: []
+          choice: ["A", "B"]
         },
         {
-          subject: "钢铁是怎么炼成的?",
+          subject: "haha",
           title: "4、主观题",
           placeholder: "第四题题目",
           choice: ""
         }
-      ],
-      isStartTimer: true // 是否开启定时器
+      ]
     };
   },
+  props: {
+    homeworkInfo: Object
+  },
   components: {
-    RadioItem,
-    CountDown
+    RadioItem
   },
   methods: {
-    // 监听子组件传过来的radio值
+    submit() {
+      if (
+        !this.inputInfo[0]["subject"] ||
+        !this.inputInfo[0]["choice"] ||
+        !this.inputInfo[1]["subject"] ||
+        !this.inputInfo[1]["choice"] ||
+        !this.inputInfo[2]["subject"] ||
+        this.inputInfo[2]["choice"].length === 0
+      ) {
+        return this.$Message.error("缺少必填信息");
+      }
+      this.$Message.success("成功");
+    },
+    onChangeSubject(data) {
+      this.inputInfo[0]["subject"] = data.subject;
+    },
+    onChangeSubject2(data) {
+      this.inputInfo[1]["subject"] = data.subject;
+    },
     onChangeRadio(data) {
       this.inputInfo[0]["choice"] = data.radioChoice;
     },
     onChangeRadio2(data) {
       this.inputInfo[1]["choice"] = data.radioChoice;
-    },
-    submit() {
-      console.log(this.inputInfo[0]["choice"], this.inputInfo[1]["choice"]);
-    },
-    endTimeDoing() {
-      this.isStartTimer = false;
-      console.log("结束后的回调");
     }
   }
 };
@@ -149,6 +147,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
   p {
     font-size: 14px;
   }
@@ -161,49 +160,21 @@ export default {
       width: 100%;
       margin-top: 10px;
       display: flex;
+      align-items: center;
+      justify-content: center;
       .radio-item {
         margin-left: 15px;
       }
     }
     .checkbox-item {
-      margin-left: 10px;
+      margin-left: 15px;
     }
-    .text-input {
-      width: 220px;
-      margin-top: 10px;
-    }
-  }
-  .count-down-con {
-    position: absolute;
-    top: 17%;
-    right: 10%;
-    display: flex;
-    align-items: center;
-    .count-down-text {
-      font-size: 16px;
-    }
-  }
-  .primary-color {
-    color: #2d8cf0;
-  }
-  .submitBtn {
-    align-self: center;
-  }
-  .submitBtn:nth-of-type(1) {
-    margin-right: 10px;
-  }
-  .subjectText {
-    width: 220px;
-    height: auto;
-    word-wrap: break-word;
-    word-break: break-all;
-    overflow: hidden;
   }
   .btnGround {
-    width: 21%;
+    width: 150px;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
   }
 }
 </style>

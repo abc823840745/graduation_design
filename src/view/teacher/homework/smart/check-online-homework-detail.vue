@@ -1,27 +1,22 @@
 <template>
   <div class="containter">
     <div>
-
       <radio-item
-        title="1、单选题"
-        subject='钢铁是怎么炼成的?'
-        :radioChoice="firstChoice"
+        :inputInfo='inputInfo[0]'
         @onChangeScore="onChangeScore"
       />
 
       <radio-item
-        title="2、单选题"
-        subject='钢铁是怎么炼成的?'
-        :radioChoice="secondChoice"
+        :inputInfo='inputInfo[1]'
         @onChangeScore="onChangeScore2"
       />
 
       <div class="mar-bottom">
-        <p class="input-title">3、多选题</p>
-        <p class="subjectText">钢铁是怎么炼成的?</p>
+        <p class="input-title">{{inputInfo[2]['title']}}</p>
+        <p class="subjectText">{{inputInfo[2]['subject']}}</p>
         <div class="radio-list">
           答案:
-          <CheckboxGroup v-model="thirdChoice">
+          <CheckboxGroup v-model="inputInfo[2]['choice']">
             <Checkbox
               label="A"
               class="checkbox-item"
@@ -50,22 +45,22 @@
             :max="100"
             :min="0"
             :step="10"
-            v-model="score3"
+            v-model="inputInfo[2]['score']"
           ></InputNumber>
         </div>
       </div>
 
       <div class="mar-bottom">
-        <p class="input-title">4、主观题</p>
-        <p class="input-title subjectText">钢铁是怎么炼成的?</p>
-        <p>答案: hahahahahah</p>
+        <p class="input-title">{{inputInfo[3]['title']}}</p>
+        <p class="input-title subjectText">{{inputInfo[3]['subject']}}</p>
+        <p>答案: {{inputInfo[3]['choice']}}</p>
         <div class="radio-list">
           评分：
           <InputNumber
             :max="100"
             :min="0"
             :step="10"
-            v-model="score4"
+            v-model="inputInfo[3]['score']"
           ></InputNumber>
         </div>
       </div>
@@ -89,22 +84,42 @@
 </template>
 
 <script>
-import RadioItem from "../smart/online-detail-radio-item";
+import RadioItem from "@teaHomework/smart/online-detail-radio-item";
+
 export default {
   name: "check-online-homework-detail",
   data() {
     return {
-      firstSubject: "",
-      secondSubject: "",
-      thirdSubject: "",
-      fourthSubject: "",
-      firstChoice: "A",
-      secondChoice: "B",
-      thirdChoice: ["A", "B"],
-      score1: 60,
-      score2: 60,
-      score3: 60,
-      score4: 60
+      inputInfo: [
+        {
+          subject: "我们是机车吗？",
+          title: "1、单选题",
+          placeholder: "第一题题目",
+          choice: "A",
+          score: 60
+        },
+        {
+          subject: "我们是机车吗？",
+          title: "2、单选题",
+          placeholder: "第二题题目",
+          choice: "B",
+          score: 60
+        },
+        {
+          subject: "我们是机车吗？",
+          title: "3、多选题",
+          placeholder: "第三题题目",
+          choice: ["B", "C"],
+          score: 60
+        },
+        {
+          subject: "我们是机车吗？",
+          title: "4、主观题",
+          placeholder: "第四题题目",
+          choice: "hahahahahahah",
+          score: 60
+        }
+      ]
     };
   },
   components: {
@@ -113,12 +128,12 @@ export default {
   methods: {
     submit() {
       if (
-        !this.firstSubject ||
-        !this.firstChoice ||
-        !this.secondSubject ||
-        !this.secondChoice ||
-        !this.thirdSubject ||
-        this.thirdChoice.length === 0
+        !this.inputInfo[0]["subject"] ||
+        !this.inputInfo[0]["choice"] ||
+        !this.inputInfo[1]["subject"] ||
+        !this.inputInfo[1]["choice"] ||
+        !this.inputInfo[2]["subject"] ||
+        this.inputInfo[2]["choice"].length === 0
       ) {
         return this.$Message.error("缺少必填信息");
       }
@@ -129,10 +144,14 @@ export default {
     },
 
     onChangeScore(data) {
-      this.score1 = data.score;
+      let inputInfo = { ...inputInfo };
+      inputInfo[0]["score"] = data.score;
+      this.inputInfo = inputInfo;
     },
     onChangeScore2(data) {
-      this.score2 = data.score;
+      let inputInfo = { ...inputInfo };
+      inputInfo[1]["score"] = data.score;
+      this.inputInfo = inputInfo;
     }
   }
 };
