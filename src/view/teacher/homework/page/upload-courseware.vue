@@ -11,8 +11,8 @@
       <Table
         stripe
         class="table-con mar-top"
-        :columns="columns1"
-        :data="data1"
+        :columns="showTable('columns')"
+        :data="showTable('data')"
       />
       <Page
         :total="30"
@@ -26,6 +26,8 @@
       @on-ok="dialogOk"
       @on-cancel="dialogCancel"
     >
+      <Alert show-icon>可同时选择上传多个文件，上传有误，请到查看已上传文件中删除</Alert>
+
       <Select
         v-model="weeksNum"
         placeholder='请选择周数'
@@ -68,6 +70,7 @@ export default {
   data() {
     return {
       showModal: false,
+      isShowUploaded: false,
       weeksNum: "",
       weeksList: [
         {
@@ -124,7 +127,12 @@ export default {
           key: "operation",
           render: (h, params) => {
             return h("div", [
-              this.btnStyle("上传", h, () => (this.showModal = true))
+              this.btnStyle("上传", h, () => (this.showModal = true)),
+              this.btnStyle(
+                "查看已上传文件",
+                h,
+                () => (this.isShowUploaded = true)
+              )
             ]);
           }
         }
@@ -138,6 +146,42 @@ export default {
         },
         {
           courseName: "新媒体实训"
+        }
+      ],
+      columns2: [
+        {
+          title: "文件名",
+          key: "filesName"
+        },
+        {
+          title: "上传时间",
+          key: "uploadTime"
+        },
+        {
+          title: "操作",
+          key: "operation",
+          render: (h, params) => {
+            return h("div", [
+              this.btnStyle("删除", h, () => {
+                // TODO: 删除上传的文件
+              }),
+              this.btnStyle("返回", h, () => (this.isShowUploaded = false))
+            ]);
+          }
+        }
+      ],
+      data2: [
+        {
+          filesName: "实验指导书1",
+          uploadTime: "2019-01-21"
+        },
+        {
+          filesName: "实验指导书2",
+          uploadTime: "2019-01-21"
+        },
+        {
+          filesName: "实验指导书3",
+          uploadTime: "2019-01-21"
         }
       ]
     };
@@ -163,6 +207,10 @@ export default {
         },
         btnTitle
       );
+    },
+    showTable(data) {
+      if (!this.isShowUploaded) return this[`${data}1`];
+      return this[`${data}2`];
     },
     dialogOk() {
       this.$Message.info("Clicked ok");

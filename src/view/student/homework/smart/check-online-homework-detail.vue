@@ -151,16 +151,16 @@ export default {
   .bottom-bar {
     display: flex;
     justify-content: space-between;
+    .total-score {
+      font-size: 18px;
+      .score {
+        color: #2d8cf0;
+      }
+    }
   }
   p,
   span {
     font-size: 14px;
-  }
-  .total-score {
-    font-size: 18px;
-    .score {
-      color: #2d8cf0;
-    }
   }
   .mar-bottom {
     margin-bottom: 30px;

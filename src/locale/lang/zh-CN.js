@@ -14,12 +14,10 @@ export default {
   'student-else': '其他',
   // 学生作业管理
   'student-homework': '作业设计',
-  'student-my-homework': '作业情况',
-  'student-online-homework': '在线作业',
+  'student-my-homework': '查看作业评分',
+  'student-homework-tasks': '任务中心',
   'student-write-online-homework': '完成在线作业',
-  'student-online-homework-detail': '在线作业详情',
-  'student-upload-download': '上传/下载',
-  'student-upload-download-detail': '上传/下载详情',
+  'student-course-download': '课件下载',
 
   // 学生毕设管理
   'student-graduation': '毕业设计',

@@ -2,12 +2,12 @@
   <div class="containter">
     <div
       class="containter"
-      v-if="curDirectory!==3"
+      v-show="curDirectory!==3"
     >
       <div class="select-con">
         <multiple-choice
           v-for="(item,index) in selectList"
-          v-if="item['isShow']"
+          v-show="item['isShow']"
           :key="index"
           :defaultValue="item['defaultValue']"
           :semesterTip="item['semesterTip']"
@@ -28,7 +28,7 @@
     </div>
 
     <homework-detail
-      v-if="curDirectory===3"
+      v-show="curDirectory===3"
       @goBack='goBack'
     />
   </div>
@@ -70,10 +70,6 @@ export default {
           key: "stopTime"
         },
         {
-          title: "提交情况",
-          key: "submission"
-        },
-        {
           title: "评分",
           key: "score"
         },
@@ -111,14 +107,12 @@ export default {
           homeworkName: "实验1",
           homeworkClassify: "在线作业",
           stopTime: "2018-9-14",
-          submission: "已完成",
           score: "100"
         },
         {
           homeworkName: "实验2",
           homeworkClassify: "课时作业",
           stopTime: "2018-9-14",
-          submission: "已完成",
           score: "100"
         }
       ],

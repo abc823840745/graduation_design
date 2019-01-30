@@ -65,6 +65,12 @@
         </div>
       </div>
 
+      <div class="bottom-bar">
+        <p class="total-score">总评分:
+          <span class="total-score score">80</span>
+        </p>
+      </div>
+
       <div class="btnGround">
         <Button
           type="primary"
@@ -139,6 +145,7 @@ export default {
       }
       alert("提交表单");
     },
+
     goBack() {
       console.log("goback");
     },
@@ -148,6 +155,7 @@ export default {
       inputInfo[0]["score"] = data.score;
       this.inputInfo = inputInfo;
     },
+
     onChangeScore2(data) {
       let inputInfo = { ...inputInfo };
       inputInfo[1]["score"] = data.score;
@@ -165,6 +173,17 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
+  .bottom-bar {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5%;
+    .total-score {
+      font-size: 18px;
+      .score {
+        color: #2d8cf0;
+      }
+    }
+  }
   p {
     font-size: 14px;
   }

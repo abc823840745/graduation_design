@@ -2,14 +2,6 @@
   <div class="containter">
 
     <div class="select-con">
-      <RadioGroup
-        type="button"
-        v-model="buttonSize"
-      >
-        <Radio label="download">课件下载</Radio>
-        <Radio label=upload>作业上传</Radio>
-      </RadioGroup>
-
       <multiple-choice
         ref="haha"
         semesterTip='学期选择'
@@ -24,21 +16,19 @@
         placeholder="请输入课程名"
       />
     </div>
-    <download v-if="buttonSize === 'download'" />
-    <upload v-else />
+
+    <download />
   </div>
 </template>
 
 <script>
 import download from "@stuHomework/smart/course-download";
-import upload from "@stuHomework/smart/course-upload";
 import multipleChoice from "@teaHomework/smart/multiple-choice";
 
 export default {
   name: "course-detail",
   data() {
     return {
-      buttonSize: "download",
       semester: "2017-2018第二学期",
       semesterList: [
         {
@@ -62,7 +52,6 @@ export default {
   },
   components: {
     download,
-    upload,
     multipleChoice
   },
   methods: {}
@@ -88,7 +77,6 @@ export default {
     width: 200px;
   }
   .select-list-con {
-    margin-left: 2.5%;
     align-self: flex-start;
     display: flex;
     align-items: center;

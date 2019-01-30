@@ -2,8 +2,45 @@
   <div class="containter">
     <div
       class="containter"
-      v-if="curDirectory!==3"
+      v-show="curDirectory!==3"
     >
+      <Modal
+        v-model="showModal"
+        title="上传"
+        @on-ok="dialogOk"
+        @on-cancel="dialogCancel"
+      >
+        <Alert show-icon>只能上传单个文件或文件夹，如果上传有误，请重新上传即可</Alert>
+
+        <Select
+          v-model="weeksNum"
+          placeholder='请选择周数'
+          style="width:200px;margin-bottom:10px;"
+        >
+          <Option
+            v-for="item in weeksList"
+            :value="item.value"
+            :key="item.value"
+          >{{ item.label }}</Option>
+        </Select>
+
+        <Upload
+          ref="upload"
+          type="drag"
+          :on-remove="handleremove"
+          action="//jsonplaceholder.typicode.com/posts/"
+        >
+          <div style="padding: 20px 0">
+            <Icon
+              type="ios-cloud-upload"
+              size="52"
+              style="color: #3399ff"
+            ></Icon>
+            <p>点击或者把文件拖拽到这里</p>
+          </div>
+        </Upload>
+      </Modal>
+
       <div class="select-con">
         <multiple-choice
           v-for="(item,index) in selectList"
@@ -17,9 +54,10 @@
       <Table
         stripe
         class="table-con mar-top"
-        :columns="showTable('columns')"
-        :data="showTable('data')"
+        :columns="columns1"
+        :data="data1"
       />
+
       <Page
         :total="30"
         class="mar-top"
@@ -27,7 +65,7 @@
     </div>
 
     <write-online-homework
-      v-if="curDirectory===3"
+      v-show="curDirectory===3"
       @goBack="goBack"
     />
 
@@ -43,6 +81,34 @@ export default {
   data() {
     return {
       curDirectory: 1, // 当前的目录
+      showModal: false,
+      weeksNum: "",
+      weeksList: [
+        {
+          value: "第一周",
+          label: "第一周"
+        },
+        {
+          value: "第二周",
+          label: "第二周"
+        },
+        {
+          value: "第三周",
+          label: "第三周"
+        },
+        {
+          value: "第四周",
+          label: "第四周"
+        },
+        {
+          value: "第五周",
+          label: "第五周"
+        },
+        {
+          value: "第六周",
+          label: "第六周"
+        }
+      ],
       selectList: [
         {
           semesterTip: "学期选择",
@@ -79,16 +145,30 @@ export default {
               label: "新媒体实训"
             }
           ]
+        },
+        {
+          semesterTip: "作业类型",
+          defaultValue: "作业类型",
+          semesterList: [
+            {
+              value: "在线作业",
+              label: "在线作业"
+            },
+            {
+              value: "课时作业",
+              label: "课时作业"
+            }
+          ]
         }
       ],
       columns1: [
         {
-          title: "序号",
-          key: "serial"
-        },
-        {
           title: "所属课程",
           key: "interCourse"
+        },
+        {
+          title: "作业类型",
+          key: "homeworkClassify"
         },
         {
           title: "实验",
@@ -106,39 +186,38 @@ export default {
           title: "操作",
           key: "operation",
           render: (h, params) => {
+            const classify = params["row"]["homeworkClassify"];
+            if (classify === "在线作业") {
+              return h("div", [
+                this.btnStyle("完成作业", h, () => {
+                  const status = params["row"]["status"];
+                  if (status === "已完成") {
+                    return this.$Message.info("你已完成作业");
+                  }
+                  this.curDirectory = 3;
+                })
+              ]);
+            }
             return h("div", [
-              this.btnStyle("完成在线作业", h, () => {
-                const status = params.row.status;
-                if (status === "已完成") {
-                  return this.$Message.info("你已完成在线作业");
-                }
-                this.curDirectory = 3;
-              })
+              this.btnStyle("上传作业", h, () => (this.showModal = true))
             ]);
           }
         }
       ],
       data1: [
         {
-          serial: 1,
           interCourse: "新媒体实训",
-          experiment: "构建简单服务器",
-          finishTime: "10分钟",
-          status: "已完成"
-        },
-        {
-          serial: 2,
-          interCourse: "新媒体实训",
-          experiment: "构建简单服务器",
+          homeworkClassify: "在线作业",
+          experiment: "堂上构建简单服务器",
           finishTime: "10分钟",
           status: "未完成"
         },
         {
-          serial: 3,
           interCourse: "新媒体实训",
+          homeworkClassify: "课时作业",
           experiment: "构建简单服务器",
           finishTime: "10分钟",
-          status: "已完成"
+          status: "未完成"
         }
       ]
     };
@@ -166,17 +245,17 @@ export default {
         btnTitle
       );
     },
-    showTable(name) {
-      let val = null;
-      switch (this.curDirectory) {
-        case 1:
-          val = this[`${name}1`];
-          break;
-      }
-      return val;
-    },
     goBack() {
       this.curDirectory = 1;
+    },
+    dialogOk() {
+      this.$Message.info("Clicked ok");
+    },
+    dialogCancel() {
+      this.$Message.info("Clicked cancel");
+    },
+    handleremove() {
+      this.showDelmodal = true;
     }
   }
 };

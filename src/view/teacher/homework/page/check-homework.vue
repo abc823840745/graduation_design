@@ -211,7 +211,7 @@ export default {
           key: "operation",
           render: (h, params) => {
             return h("div", [
-              this.btnStyle("下载并打开", h, () => {
+              this.btnStyle("下载", h, () => {
                 // TODO:打开实验报告
               }),
               this.btnStyle("返回", h, () => (this.currentLevel = 4))
