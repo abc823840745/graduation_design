@@ -32,7 +32,10 @@ export default {
   course_detail: '查看学生课题',
   mission_detail: '查看学生任务',
   papper_detail: '查看学生论文',
-  // 学生个人中心
+
+  // 学生答疑模块
+  'student-answering': '答疑模块',
+  'student-answer-questions': '答疑模块',
 
   // 教师路由中文名
   'teacher-personal': '个人中心',

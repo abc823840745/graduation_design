@@ -405,6 +405,28 @@ export default [
     ],
   },
   {
+    path: '/student/answering',
+    name: 'student-answering',
+    meta: {
+      icon: 'logo-buffer',
+      title: '答疑管理',
+      access: ['student', 'admin'],
+    },
+    component: Main,
+    children: [
+      {
+        path: '',
+        name: 'student-answer-questions',
+        meta: {
+          icon: 'md-contacts',
+          title: '解答问题',
+          access: ['student', 'admin'],
+        },
+        component: () => import('@/view/student/answering/answer-questions.vue'),
+      },
+    ],
+  },
+  {
     path: '/401',
     name: 'error_401',
     meta: {
