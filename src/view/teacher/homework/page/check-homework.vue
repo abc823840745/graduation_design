@@ -33,10 +33,11 @@
 
       <Button
         v-if="currentLevel === 5"
-        type="primary"
         @click="submit"
+        type="primary"
         class="mar-top"
         size='large'
+        icon="ios-download-outline"
       >全部下载</Button>
     </div>
 

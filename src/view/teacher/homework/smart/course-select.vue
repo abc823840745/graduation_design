@@ -57,7 +57,7 @@ export default {
           key: "operation",
           render: (h, params) => {
             return h("div", [
-              this.btnStyle("查看", h, () => this.$emit("goCreSub"))
+              this.btnStyle("选择", h, () => this.$emit("goCreSub"))
             ]);
           }
         }

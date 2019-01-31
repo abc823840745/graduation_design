@@ -49,7 +49,7 @@
 
         <Button
           type="primary"
-          @click="$emit('showModal')"
+          @click="$emit('goBack')"
           long
         >返回</Button>
       </div>

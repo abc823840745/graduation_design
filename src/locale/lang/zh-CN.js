@@ -61,6 +61,10 @@ export default {
   'teacher-project-manager': '优秀毕设',
   'teacher-practice-week': '查看实习周报',
 
+  // 教师答疑模块
+  'teacher-answering': '答疑管理',
+  'teacher-answer-questions': '答疑管理',
+
   //管理员模块
   'admin-content': '管理员模块',
   'teacher-manager': '教师管理',

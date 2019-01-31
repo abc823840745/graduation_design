@@ -663,4 +663,26 @@ export default [
       },
     ],
   },
+  {
+    path: '/teacher/answering',
+    name: 'teacher-answering',
+    meta: {
+      icon: 'logo-buffer',
+      title: '答疑管理',
+      access: ['teacher', 'admin'],
+    },
+    component: Main,
+    children: [
+      {
+        path: '',
+        name: 'teacher-answer-questions',
+        meta: {
+          icon: 'md-contacts',
+          title: '解答问题',
+          access: ['teacher', 'admin'],
+        },
+        component: () => import('@/view/teacher/answering/answer-questions.vue'),
+      },
+    ],
+  },
 ];
