@@ -70,11 +70,13 @@ export default {
     inputInfo: Object,
     ifEdit: { default: true, type: Boolean } // 评分栏是否可以编辑
   },
+
   data() {
     return {
       score: this.inputInfo["score"]
     };
   },
+
   methods: {
     onChangeScore() {
       this.$emit("onChangeInputNum", { score: this.score });

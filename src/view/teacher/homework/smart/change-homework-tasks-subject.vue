@@ -1,12 +1,12 @@
 <template>
   <div class="containter">
-    <radio-item
+    <RadioItem
       :inputInfo='inputInfo[0]'
       @onChangeSubject="onChangeSubject"
       @onChangeRadio="onChangeRadio"
     />
 
-    <radio-item
+    <RadioItem
       :inputInfo='inputInfo[1]'
       @onChangeSubject="onChangeSubject2"
       @onChangeRadio="onChangeRadio2"
@@ -74,6 +74,15 @@ import RadioItem from "@teaHomework/smart/create-subject-radio-item";
 
 export default {
   name: "create-subject",
+
+  props: {
+    homeworkInfo: Object
+  },
+
+  components: {
+    RadioItem
+  },
+
   data() {
     return {
       inputInfo: [
@@ -104,12 +113,7 @@ export default {
       ]
     };
   },
-  props: {
-    homeworkInfo: Object
-  },
-  components: {
-    RadioItem
-  },
+
   methods: {
     submit() {
       if (
@@ -124,15 +128,19 @@ export default {
       }
       this.$Message.success("成功");
     },
+
     onChangeSubject(data) {
       this.inputInfo[0]["subject"] = data.subject;
     },
+
     onChangeSubject2(data) {
       this.inputInfo[1]["subject"] = data.subject;
     },
+
     onChangeRadio(data) {
       this.inputInfo[0]["choice"] = data.radioChoice;
     },
+
     onChangeRadio2(data) {
       this.inputInfo[1]["choice"] = data.radioChoice;
     }

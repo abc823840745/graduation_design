@@ -1,12 +1,12 @@
 <template>
   <div class="containter">
     <div>
-      <radio-item
+      <RadioItem
         :inputInfo='inputInfo[0]'
         @onChangeScore="onChangeScore"
       />
 
-      <radio-item
+      <RadioItem
         :inputInfo='inputInfo[1]'
         @onChangeScore="onChangeScore2"
       />
@@ -94,6 +94,11 @@ import RadioItem from "@teaHomework/smart/online-detail-radio-item";
 
 export default {
   name: "check-online-homework-detail",
+
+  components: {
+    RadioItem
+  },
+
   data() {
     return {
       inputInfo: [
@@ -128,9 +133,7 @@ export default {
       ]
     };
   },
-  components: {
-    RadioItem
-  },
+
   methods: {
     submit() {
       if (

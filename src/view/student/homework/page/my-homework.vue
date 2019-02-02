@@ -5,7 +5,7 @@
       v-show="curDirectory!==3"
     >
       <div class="select-con">
-        <multiple-choice
+        <MultipleChoice
           v-for="(item,index) in selectList"
           v-show="item['isShow']"
           :key="index"
@@ -18,8 +18,8 @@
       <Table
         stripe
         class="table-con mar-top"
-        :columns="showTable('columns')"
-        :data="showTable('data')"
+        :columns="showTable('columns',2)"
+        :data="showTable('data',2)"
       />
       <Page
         :total="30"
@@ -27,7 +27,7 @@
       />
     </div>
 
-    <homework-detail
+    <HomeworkDetail
       v-show="curDirectory===3"
       @goBack='goBack'
     />
@@ -35,11 +35,20 @@
 </template>
 
 <script>
-import homeworkDetail from "@stuHomework/smart/check-online-homework-detail";
-import multipleChoice from "@teaHomework/smart/multiple-choice";
+import HomeworkDetail from "@stuHomework/smart/check-online-homework-detail";
+import MultipleChoice from "@teaHomework/smart/multiple-choice";
+import myMixin from "@stuHomework/mixin";
 
 export default {
   name: "my-homework",
+
+  mixins: [myMixin],
+
+  components: {
+    HomeworkDetail,
+    MultipleChoice
+  },
+
   data() {
     return {
       curDirectory: 1, // 当前的目录
@@ -173,41 +182,8 @@ export default {
       ]
     };
   },
-  components: {
-    homeworkDetail,
-    multipleChoice
-  },
+
   methods: {
-    btnStyle(btnTitle, h, onclick) {
-      return h(
-        "Button",
-        {
-          props: {
-            type: "primary",
-            size: "default"
-          },
-          style: {
-            marginRight: "5px"
-          },
-          on: {
-            click: onclick
-          }
-        },
-        btnTitle
-      );
-    },
-    showTable(name) {
-      let val = null;
-      switch (this.curDirectory) {
-        case 1:
-          val = this[`${name}1`];
-          break;
-        case 2:
-          val = this[`${name}2`];
-          break;
-      }
-      return val;
-    },
     check() {
       this.curDirectory = 2;
       let selectList = [...this.selectList];
@@ -216,6 +192,7 @@ export default {
       selectList[2]["isShow"] = true;
       this.selectList = selectList;
     },
+
     revert() {
       this.curDirectory = 1;
       let selectList = [...this.selectList];
@@ -224,6 +201,7 @@ export default {
       selectList[2]["isShow"] = false;
       this.selectList = selectList;
     },
+
     goBack() {
       this.curDirectory = 2;
     }

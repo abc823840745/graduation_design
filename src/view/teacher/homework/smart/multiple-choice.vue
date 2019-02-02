@@ -17,19 +17,18 @@
 <script>
 export default {
   name: "homework-info",
+
   props: {
     semesterTip: String,
     defaultValue: String,
     semesterList: Array
   },
+
   data() {
     return {
       semester: this.defaultValue
     };
-  },
-  created() {},
-  mounted() {},
-  methods: {}
+  }
 };
 </script>
 

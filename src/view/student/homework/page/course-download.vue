@@ -2,7 +2,7 @@
   <div class="containter">
 
     <div class="select-con">
-      <multiple-choice
+      <MultipleChoice
         ref="haha"
         semesterTip='学期选择'
         :defaultValue='semester'
@@ -17,16 +17,22 @@
       />
     </div>
 
-    <download />
+    <Download />
   </div>
 </template>
 
 <script>
-import download from "@stuHomework/smart/course-download";
-import multipleChoice from "@teaHomework/smart/multiple-choice";
+import Download from "@stuHomework/smart/course-download";
+import MultipleChoice from "@teaHomework/smart/multiple-choice";
 
 export default {
   name: "course-detail",
+
+  components: {
+    Download,
+    MultipleChoice
+  },
+
   data() {
     return {
       semester: "2017-2018第二学期",
@@ -50,10 +56,7 @@ export default {
       ]
     };
   },
-  components: {
-    download,
-    multipleChoice
-  },
+
   methods: {}
 };
 </script>

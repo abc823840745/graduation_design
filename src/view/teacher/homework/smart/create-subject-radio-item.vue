@@ -1,7 +1,7 @@
 <template>
   <div
     class="containter"
-    v-if="!$util.isEmptyObject(inputInfo)"
+    v-if="!$tools.isEmptyObject(inputInfo)"
   >
     <div class="mar-bottom">
       <p class="input-title">{{inputInfo['title']}}</p>
@@ -51,16 +51,19 @@ export default {
     inputInfo: Object,
     ifEdit: { default: true, type: Boolean }
   },
+
   data() {
     return {
       subject: this.inputInfo["subject"],
       radioChoice: this.inputInfo["choice"]
     };
   },
+
   methods: {
     onChangeSubject() {
       this.$emit("onChangenSubject", { subject: this.subject });
     },
+
     onChangeRadio() {
       this.$emit("onChangeRadio", { radioChoice: this.radioChoice });
     }

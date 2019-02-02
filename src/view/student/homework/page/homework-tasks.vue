@@ -42,7 +42,7 @@
       </Modal>
 
       <div class="select-con">
-        <multiple-choice
+        <MultipleChoice
           v-for="(item,index) in selectList"
           :key="index"
           :defaultValue="item['defaultValue']"
@@ -64,7 +64,7 @@
       />
     </div>
 
-    <write-online-homework
+    <WriteOnlineHomework
       v-show="curDirectory===3"
       @goBack="goBack"
     />
@@ -73,11 +73,20 @@
 </template>
 
 <script>
-import writeOnlineHomework from "@stuHomework/smart/write-online-homework.vue";
-import multipleChoice from "@teaHomework/smart/multiple-choice";
+import WriteOnlineHomework from "@stuHomework/smart/write-online-homework.vue";
+import MultipleChoice from "@teaHomework/smart/multiple-choice";
+import myMixin from "@stuHomework/mixin";
 
 export default {
   name: "course-detail",
+
+  mixins: [myMixin],
+
+  components: {
+    WriteOnlineHomework,
+    MultipleChoice
+  },
+
   data() {
     return {
       curDirectory: 1, // 当前的目录
@@ -222,38 +231,20 @@ export default {
       ]
     };
   },
-  components: {
-    writeOnlineHomework,
-    multipleChoice
-  },
+
   methods: {
-    btnStyle(btnTitle, h, onclick) {
-      return h(
-        "Button",
-        {
-          props: {
-            type: "primary",
-            size: "default"
-          },
-          style: {
-            marginRight: "5px"
-          },
-          on: {
-            click: onclick
-          }
-        },
-        btnTitle
-      );
-    },
     goBack() {
       this.curDirectory = 1;
     },
+
     dialogOk() {
       this.$Message.info("Clicked ok");
     },
+
     dialogCancel() {
       this.$Message.info("Clicked cancel");
     },
+
     handleremove() {
       this.showDelmodal = true;
     }

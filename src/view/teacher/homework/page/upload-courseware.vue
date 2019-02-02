@@ -1,7 +1,7 @@
 <template>
   <div class="containter">
     <div class="containter">
-      <multiple-choice
+      <MultipleChoice
         semesterTip='学期选择'
         :defaultValue='semester'
         :semesterList='semesterList'
@@ -63,10 +63,16 @@
 </template>
 
 <script>
-import multipleChoice from "@teaHomework/smart/multiple-choice";
+import MultipleChoice from "@teaHomework/smart/multiple-choice";
+import myMixin from "@teaHomework/mixin";
 
 export default {
-  name: "other",
+  mixins: [myMixin],
+
+  components: {
+    MultipleChoice
+  },
+
   data() {
     return {
       showModal: false,
@@ -186,38 +192,21 @@ export default {
       ]
     };
   },
-  components: {
-    multipleChoice
-  },
+
   methods: {
-    btnStyle(btnTitle, h, onclick) {
-      return h(
-        "Button",
-        {
-          props: {
-            type: "primary",
-            size: "default"
-          },
-          style: {
-            marginRight: "5px"
-          },
-          on: {
-            click: onclick
-          }
-        },
-        btnTitle
-      );
-    },
     showTable(data) {
       if (!this.isShowUploaded) return this[`${data}1`];
       return this[`${data}2`];
     },
+
     dialogOk() {
       this.$Message.info("Clicked ok");
     },
+
     dialogCancel() {
       this.$Message.info("Clicked cancel");
     },
+
     handleremove() {
       this.showDelmodal = true;
     }

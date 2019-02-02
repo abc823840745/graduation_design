@@ -56,7 +56,7 @@
 
     </div>
 
-    <create-subject
+    <CreateSubject
       v-show="showCreateSubject"
       @goBack="goBack"
       :homeworkInfo='homeworkInfo'
@@ -66,10 +66,15 @@
 </template>
 
 <script>
-import createSubject from "@teaHomework/smart/create-subject.vue";
+import CreateSubject from "@teaHomework/smart/create-subject.vue";
 
 export default {
   name: "my-homework",
+
+  components: {
+    CreateSubject
+  },
+
   data() {
     return {
       showCreateSubject: false,
@@ -90,9 +95,7 @@ export default {
       ]
     };
   },
-  components: {
-    createSubject
-  },
+
   methods: {
     // 监听选择时间日期函数
     timeOnChange(value) {
@@ -122,9 +125,7 @@ export default {
     goBack() {
       this.showCreateSubject = false;
     }
-  },
-  created() {},
-  mounted() {}
+  }
 };
 </script>
 

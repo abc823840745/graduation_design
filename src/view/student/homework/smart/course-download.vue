@@ -3,8 +3,8 @@
     <Table
       stripe
       class="table-con mar-top"
-      :columns="showTable('columns')"
-      :data="showTable('data')"
+      :columns="showTable('columns',3)"
+      :data="showTable('data',3)"
     />
     <Page
       :total="30"
@@ -22,8 +22,13 @@
 </template>
 
 <script>
+import myMixin from "@stuHomework/mixin";
+
 export default {
   name: "course-detail",
+
+  mixins: [myMixin],
+
   data() {
     return {
       curDirectory: 1, // 当前的目录
@@ -147,41 +152,8 @@ export default {
       ]
     };
   },
-  methods: {
-    btnStyle(btnTitle, h, onclick) {
-      return h(
-        "Button",
-        {
-          props: {
-            type: "primary",
-            size: "default"
-          },
-          style: {
-            marginRight: "5px"
-          },
-          on: {
-            click: onclick
-          }
-        },
-        btnTitle
-      );
-    },
-    showTable(name) {
-      let val = null;
-      switch (this.curDirectory) {
-        case 1:
-          val = this[`${name}1`];
-          break;
-        case 2:
-          val = this[`${name}2`];
-          break;
-        case 3:
-          val = this[`${name}3`];
-          break;
-      }
-      return val;
-    }
-  }
+
+  methods: {}
 };
 </script>
 

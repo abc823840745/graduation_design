@@ -215,6 +215,7 @@ export default {
       ]
     };
   },
+
   methods: {
     toggleAnswerBar(index, contentIndex) {
       let messageList = [...this.messageList];
@@ -223,6 +224,7 @@ export default {
       ]["content"][contentIndex]["isAnswer"];
       this.messageList = messageList;
     },
+
     showModal() {
       this.isShowModal = true;
     }

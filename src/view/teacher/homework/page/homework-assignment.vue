@@ -1,11 +1,11 @@
 <template>
   <div class="containter">
-    <course-select
+    <CourseSelect
       v-show="!showCreSub"
       @goCreSub='goCreSub'
     />
 
-    <my-homework
+    <MyHomework
       v-show="showCreSub"
       @goBack='goBack'
     />
@@ -13,19 +13,21 @@
 </template>
 
 <script>
-import courseSelect from "@teaHomework/smart/course-select";
-import myHomework from "@teaHomework/smart/my-homework";
+import CourseSelect from "@teaHomework/smart/course-select";
+import MyHomework from "@teaHomework/smart/my-homework";
 
 export default {
+  components: {
+    CourseSelect,
+    MyHomework
+  },
+
   data() {
     return {
       showCreSub: false
     };
   },
-  components: {
-    courseSelect,
-    myHomework
-  },
+
   methods: {
     goCreSub() {
       this.showCreSub = true;

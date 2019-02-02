@@ -30,7 +30,7 @@ module.exports = {
     config.resolve.alias
       .set('@', resolve('src')) // key,value自行定义，比如.set('@@', resolve('src/components'))
       .set('_c', resolve('src/components'))
-      .set('@util', resolve('src/components/common/util'))
+      .set('@tools', resolve('src/libs/tools'))
       .set('@stuHomework', resolve('src/view/student/homework'))
       .set('@teaHomework', resolve('src/view/teacher/homework'));
   },

@@ -3,24 +3,24 @@
     <div class="count-down-con">
       <P class="count-down-text">倒计时：</P>
       <P class="count-down-text primary-color">
-        <count-down
+        <CountDown
           :isStartTimer='isStartTimer'
           :initialTime='1200'
           @callBack='endTimeDoing'
         >
           <h2 slot-scope="{remainingTime}">
-            {{$util.formatSeconds(remainingTime)}}
+            {{$tools.formatSeconds(remainingTime)}}
           </h2>
-        </count-down>
+        </CountDown>
       </P>
     </div>
 
-    <radio-item
+    <RadioItem
       :inputInfo='inputInfo[0]'
       :ifEdit="false"
       @onChangeRadio="onChangeRadio"
     />
-    <radio-item
+    <RadioItem
       :inputInfo='inputInfo[1]'
       :ifEdit="false"
       @onChangeRadio="onChangeRadio2"
@@ -88,6 +88,12 @@ import CountDown from "@stuHomework/smart/count-down";
 
 export default {
   name: "online-homework",
+
+  components: {
+    RadioItem,
+    CountDown
+  },
+
   data() {
     return {
       inputInfo: [
@@ -119,21 +125,21 @@ export default {
       isStartTimer: true // 是否开启定时器
     };
   },
-  components: {
-    RadioItem,
-    CountDown
-  },
+
   methods: {
     // 监听子组件传过来的radio值
     onChangeRadio(data) {
       this.inputInfo[0]["choice"] = data.radioChoice;
     },
+
     onChangeRadio2(data) {
       this.inputInfo[1]["choice"] = data.radioChoice;
     },
+
     submit() {
       console.log(this.inputInfo[0]["choice"], this.inputInfo[1]["choice"]);
     },
+
     endTimeDoing() {
       this.isStartTimer = false;
       console.log("结束后的回调");

@@ -4,7 +4,7 @@
       class="containter"
       v-if="!isChangeHWTasks"
     >
-      <multiple-choice
+      <MultipleChoice
         semesterTip='学期选择'
         :defaultValue='semester'
         :semesterList='semesterList'
@@ -23,7 +23,7 @@
       />
     </div>
 
-    <change-homework-tasks
+    <ChangeHomeworkTasks
       v-if="isChangeHWTasks"
       @goBack="goBack"
     />
@@ -32,10 +32,18 @@
 </template>
 
 <script>
-import multipleChoice from "@teaHomework/smart/multiple-choice";
-import changeHomeworkTasks from "@teaHomework/smart/change-homework-tasks";
+import MultipleChoice from "@teaHomework/smart/multiple-choice";
+import ChangeHomeworkTasks from "@teaHomework/smart/change-homework-tasks";
+import myMixin from "@teaHomework/mixin";
 
 export default {
+  mixins: [myMixin],
+
+  components: {
+    MultipleChoice,
+    ChangeHomeworkTasks
+  },
+
   data() {
     return {
       isChangeHWTasks: false,
@@ -105,29 +113,8 @@ export default {
       ]
     };
   },
-  components: {
-    multipleChoice,
-    changeHomeworkTasks
-  },
+
   methods: {
-    btnStyle(btnTitle, h, onclick) {
-      return h(
-        "Button",
-        {
-          props: {
-            type: "primary",
-            size: "default"
-          },
-          style: {
-            marginRight: "5px"
-          },
-          on: {
-            click: onclick
-          }
-        },
-        btnTitle
-      );
-    },
     goBack() {
       this.isChangeHWTasks = false;
     }

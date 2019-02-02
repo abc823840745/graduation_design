@@ -125,6 +125,7 @@ export default {
       ]
     };
   },
+
   methods: {
     toggleAnswerBar(index, contentIndex) {
       let messageList = [...this.messageList];

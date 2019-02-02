@@ -7,7 +7,7 @@ import store from './store';
 import iView from 'iview';
 import i18n from '@/locale';
 import config from '@/config';
-import * as myUtils from '@util';
+import * as myTools from '@tools';
 import importDirective from '@/directive';
 import installPlugin from '@/plugin';
 import 'iview/dist/styles/iview.css';
@@ -37,7 +37,7 @@ Vue.prototype.$config = config;
 /**
  * @description 全局注册工具函数
  */
-Vue.prototype.$util = myUtils;
+Vue.prototype.$tools = myTools;
 /**
  * 注册指令
  */

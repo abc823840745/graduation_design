@@ -2,19 +2,19 @@
   <div class="containter">
     <div
       class="containter"
-      v-if="currentLevel!==7"
+      v-if="curDirectory!==7"
     >
 
       <div class="header-bar">
-        <multiple-choice
-          v-if="currentLevel===1||currentLevel===5||currentLevel===6"
+        <MultipleChoice
+          v-if="curDirectory===1||curDirectory===5||curDirectory===6"
           :semesterTip='selTip'
           :defaultValue='semester'
-          :semesterList='currentLevel===1?semesterList:semesterList2'
+          :semesterList='curDirectory===1?semesterList:semesterList2'
           class="float-left"
         />
 
-        <progress-bar
+        <ProgressBar
           :completeProgress='90'
           class="float-right"
         />
@@ -22,8 +22,8 @@
 
       <Table
         stripe
-        :columns="showTable('columns')"
-        :data="showTable('data')"
+        :columns="showTable('columns',6)"
+        :data="showTable('data',6)"
         class="table-con mar-top"
       ></Table>
       <Page
@@ -32,7 +32,7 @@
       />
 
       <Button
-        v-if="currentLevel === 5"
+        v-if="curDirectory === 5"
         @click="submit"
         type="primary"
         class="mar-top"
@@ -41,8 +41,8 @@
       >全部下载</Button>
     </div>
 
-    <check-online-h-w-detail
-      v-if="currentLevel===7"
+    <CheckOnlineHWDetail
+      v-if="curDirectory===7"
       @goBack='goBack'
     />
 
@@ -51,20 +51,25 @@
 </template>
 
 <script>
-import multipleChoice from "@teaHomework/smart/multiple-choice";
-import progressBar from "@teaHomework/smart/progress-bar";
-import checkOnlineHWDetail from "@teaHomework/smart/check-online-homework-detail.vue";
+import MultipleChoice from "@teaHomework/smart/multiple-choice";
+import ProgressBar from "@teaHomework/smart/progress-bar";
+import CheckOnlineHWDetail from "@teaHomework/smart/check-online-homework-detail.vue";
+import myMixin from "@teaHomework/mixin";
 
 export default {
   name: "check-homework",
+
+  mixins: [myMixin],
+
   components: {
-    multipleChoice,
-    checkOnlineHWDetail,
-    progressBar
+    MultipleChoice,
+    CheckOnlineHWDetail,
+    ProgressBar
   },
+
   data() {
     return {
-      currentLevel: 1,
+      curDirectory: 1,
       hwType: "", //作业类型
       selTip: "学期选择",
       semester: "2017-2018第二学期",
@@ -106,7 +111,7 @@ export default {
           key: "operation",
           render: (h, params) => {
             return h("div", [
-              this.btnStyle("查看", h, () => (this.currentLevel = 2))
+              this.btnStyle("查看", h, () => (this.curDirectory = 2))
             ]);
           }
         }
@@ -121,10 +126,10 @@ export default {
           key: "operation",
           render: (h, params) => {
             return h("div", [
-              this.btnStyle("查看", h, () => (this.currentLevel = 3)),
+              this.btnStyle("查看", h, () => (this.curDirectory = 3)),
               this.btnStyle("返回", h, () => {
                 // 返回一级目录
-                this.currentLevel = 1;
+                this.curDirectory = 1;
                 this.selTip = "学期选择";
               })
             ]);
@@ -141,8 +146,8 @@ export default {
           key: "operation",
           render: (h, params) => {
             return h("div", [
-              this.btnStyle("查看", h, () => (this.currentLevel = 4)),
-              this.btnStyle("返回", h, () => (this.currentLevel = 2))
+              this.btnStyle("查看", h, () => (this.curDirectory = 4)),
+              this.btnStyle("返回", h, () => (this.curDirectory = 2))
             ]);
           }
         }
@@ -162,13 +167,13 @@ export default {
                 let { index } = params;
                 if (index === 0) {
                   // index = 0时为课时作业
-                  this.currentLevel = 5;
+                  this.curDirectory = 5;
                 } else {
-                  this.currentLevel = 6;
+                  this.curDirectory = 6;
                 }
                 this.selTip = "提交情况";
               }),
-              this.btnStyle("返回", h, () => (this.currentLevel = 3))
+              this.btnStyle("返回", h, () => (this.curDirectory = 3))
             ]);
           }
         }
@@ -215,7 +220,7 @@ export default {
               this.btnStyle("下载", h, () => {
                 // TODO:打开实验报告
               }),
-              this.btnStyle("返回", h, () => (this.currentLevel = 4))
+              this.btnStyle("返回", h, () => (this.curDirectory = 4))
             ]);
           }
         }
@@ -242,8 +247,8 @@ export default {
           key: "operation",
           render: (h, params) => {
             return h("div", [
-              this.btnStyle("查看", h, () => (this.currentLevel = 7)),
-              this.btnStyle("返回", h, () => (this.currentLevel = 4))
+              this.btnStyle("查看", h, () => (this.curDirectory = 7)),
+              this.btnStyle("返回", h, () => (this.curDirectory = 4))
             ]);
           }
         }
@@ -297,49 +302,18 @@ export default {
       ]
     };
   },
+
   methods: {
     submit() {
       console.log("submit");
     },
+
     onChangeSelVal(data) {
       this.selValue = data.selValue;
     },
-    btnStyle(btnTitle, h, onclick) {
-      return h(
-        "Button",
-        {
-          props: {
-            type: "primary",
-            size: "default"
-          },
-          style: {
-            marginRight: "5px"
-          },
-          on: {
-            click: onclick
-          }
-        },
-        btnTitle
-      );
-    },
-    showTable(data) {
-      switch (this.currentLevel) {
-        case 1:
-          return this[`${data}1`];
-        case 2:
-          return this[`${data}2`];
-        case 3:
-          return this[`${data}3`];
-        case 4:
-          return this[`${data}4`];
-        case 5:
-          return this[`${data}5`];
-        case 6:
-          return this[`${data}6`];
-      }
-    },
+
     goBack() {
-      this.currentLevel = 6;
+      this.curDirectory = 6;
     }
   }
 };

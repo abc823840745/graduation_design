@@ -1,6 +1,6 @@
 <template>
   <div class="containter">
-    <multiple-choice
+    <MultipleChoice
       semesterTip='学期选择'
       :defaultValue='semester'
       :semesterList='semesterList'
@@ -22,10 +22,16 @@
 </template>
 
 <script>
-import multipleChoice from "@teaHomework/smart/multiple-choice";
+import MultipleChoice from "@teaHomework/smart/multiple-choice";
+import myMixin from "@teaHomework/mixin";
 
 export default {
-  name: "other",
+  mixins: [myMixin],
+
+  components: {
+    MultipleChoice
+  },
+
   data() {
     return {
       semester: "2017-2018第二学期",
@@ -75,29 +81,8 @@ export default {
       ]
     };
   },
-  components: {
-    multipleChoice
-  },
-  methods: {
-    btnStyle(btnTitle, h, onclick) {
-      return h(
-        "Button",
-        {
-          props: {
-            type: "primary",
-            size: "default"
-          },
-          style: {
-            marginRight: "5px"
-          },
-          on: {
-            click: onclick
-          }
-        },
-        btnTitle
-      );
-    }
-  }
+
+  methods: {}
 };
 </script>
 

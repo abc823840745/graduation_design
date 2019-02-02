@@ -2,12 +2,12 @@
   <div class="containter">
     <div>
 
-      <radio-item
+      <RadioItem
         :inputInfo='inputInfo[0]'
         :ifEdit="false"
       />
 
-      <radio-item
+      <RadioItem
         :inputInfo='inputInfo[1]'
         :ifEdit="false"
       />
@@ -99,6 +99,11 @@ import RadioItem from "@teaHomework/smart/online-detail-radio-item";
 
 export default {
   name: "check-online-homework-detail",
+
+  components: {
+    RadioItem
+  },
+
   data() {
     return {
       inputInfo: [
@@ -133,9 +138,7 @@ export default {
       ]
     };
   },
-  components: {
-    RadioItem
-  },
+
   methods: {}
 };
 </script>

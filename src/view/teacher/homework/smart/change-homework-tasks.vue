@@ -56,7 +56,7 @@
 
     </div>
 
-    <change-homework-tasks-subject
+    <ChangeHomeworkTasksSubject
       v-show="showCreateSubject"
       @goBack="goBack"
       :homeworkInfo='homeworkInfo'
@@ -66,10 +66,15 @@
 </template>
 
 <script>
-import changeHomeworkTasksSubject from "@teaHomework/smart/change-homework-tasks-subject.vue";
+import ChangeHomeworkTasksSubject from "@teaHomework/smart/change-homework-tasks-subject.vue";
 
 export default {
   name: "my-homework",
+
+  components: {
+    ChangeHomeworkTasksSubject
+  },
+
   data() {
     return {
       showCreateSubject: false,
@@ -90,9 +95,7 @@ export default {
       ]
     };
   },
-  components: {
-    changeHomeworkTasksSubject
-  },
+
   methods: {
     // 监听选择时间日期函数
     timeOnChange(value) {
@@ -122,9 +125,7 @@ export default {
     goBack() {
       this.showCreateSubject = false;
     }
-  },
-  created() {},
-  mounted() {}
+  }
 };
 </script>
 
