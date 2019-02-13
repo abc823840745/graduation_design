@@ -1,16 +1,22 @@
 <template>
   <div class="containter">
+    <CourseSelect
+      v-show="isSelectCourse"
+      @goNext='goNext'
+    />
+
     <div
       class="containter"
-      v-if="curDirectory!==7"
+      v-show="!isSelectCourse && curDirectory !== 6"
     >
-
-      <div class="header-bar">
+      <div
+        class="header-bar"
+        v-show="curDirectory === 4 || curDirectory === 5"
+      >
         <MultipleChoice
-          v-if="curDirectory===1||curDirectory===5||curDirectory===6"
           :semesterTip='selTip'
           :defaultValue='semester'
-          :semesterList='curDirectory===1?semesterList:semesterList2'
+          :semesterList='semesterList'
           class="float-left"
         />
 
@@ -21,18 +27,19 @@
       </div>
 
       <Table
-        stripe
-        :columns="showTable('columns',6)"
-        :data="showTable('data',6)"
+        border
+        :columns="showTable('columns',5)"
+        :data="showTable('data',5)"
         class="table-con mar-top"
-      ></Table>
+      />
+
       <Page
         :total="30"
         class="mar-top"
       />
 
       <Button
-        v-if="curDirectory === 5"
+        v-if="curDirectory === 4"
         @click="submit"
         type="primary"
         class="mar-top"
@@ -42,7 +49,7 @@
     </div>
 
     <CheckOnlineHWDetail
-      v-if="curDirectory===7"
+      v-if="curDirectory === 6"
       @goBack='goBack'
     />
 
@@ -53,6 +60,7 @@
 <script>
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import ProgressBar from "@teaHomework/smart/progress-bar";
+import CourseSelect from "@teaHomework/smart/course-select";
 import CheckOnlineHWDetail from "@teaHomework/smart/check-online-homework-detail.vue";
 import myMixin from "@teaHomework/mixin";
 
@@ -64,34 +72,18 @@ export default {
   components: {
     MultipleChoice,
     CheckOnlineHWDetail,
-    ProgressBar
+    ProgressBar,
+    CourseSelect
   },
 
   data() {
     return {
+      isSelectCourse: true,
       curDirectory: 1,
       hwType: "", //作业类型
-      selTip: "学期选择",
-      semester: "2017-2018第二学期",
+      selTip: "提交情况",
+      semester: "",
       semesterList: [
-        {
-          value: "2016-2017第一学期",
-          label: "2016-2017第一学期"
-        },
-        {
-          value: "2016-2017第二学期",
-          label: "2016-2017第二学期"
-        },
-        {
-          value: "2017-2018第一学期",
-          label: "2017-2018第一学期"
-        },
-        {
-          value: "2017-2018第二学期",
-          label: "2017-2018第二学期"
-        }
-      ],
-      semesterList2: [
         {
           value: "已完成",
           label: "已完成"
@@ -103,21 +95,6 @@ export default {
       ],
       columns1: [
         {
-          title: "课程",
-          key: "courseName"
-        },
-        {
-          title: "操作",
-          key: "operation",
-          render: (h, params) => {
-            return h("div", [
-              this.btnStyle("查看", h, () => (this.curDirectory = 2))
-            ]);
-          }
-        }
-      ],
-      columns2: [
-        {
           title: "班级",
           key: "className"
         },
@@ -126,17 +103,16 @@ export default {
           key: "operation",
           render: (h, params) => {
             return h("div", [
-              this.btnStyle("查看", h, () => (this.curDirectory = 3)),
+              this.btnStyle("查看", h, () => (this.curDirectory = 2)),
               this.btnStyle("返回", h, () => {
-                // 返回一级目录
+                this.isSelectCourse = true;
                 this.curDirectory = 1;
-                this.selTip = "学期选择";
               })
             ]);
           }
         }
       ],
-      columns3: [
+      columns2: [
         {
           title: "周数",
           key: "weeksNum"
@@ -146,13 +122,13 @@ export default {
           key: "operation",
           render: (h, params) => {
             return h("div", [
-              this.btnStyle("查看", h, () => (this.curDirectory = 4)),
-              this.btnStyle("返回", h, () => (this.curDirectory = 2))
+              this.btnStyle("查看", h, () => (this.curDirectory = 3)),
+              this.btnStyle("返回", h, () => (this.curDirectory = 1))
             ]);
           }
         }
       ],
-      columns4: [
+      columns3: [
         {
           title: "作业类型",
           key: "hwType"
@@ -167,18 +143,16 @@ export default {
                 let { index } = params;
                 if (index === 0) {
                   // index = 0时为课时作业
-                  this.curDirectory = 5;
-                } else {
-                  this.curDirectory = 6;
+                  return (this.curDirectory = 4);
                 }
-                this.selTip = "提交情况";
+                this.curDirectory = 5;
               }),
-              this.btnStyle("返回", h, () => (this.curDirectory = 3))
+              this.btnStyle("返回", h, () => (this.curDirectory = 2))
             ]);
           }
         }
       ],
-      columns5: [
+      columns4: [
         {
           title: "学号",
           key: "studentId"
@@ -220,12 +194,12 @@ export default {
               this.btnStyle("下载", h, () => {
                 // TODO:打开实验报告
               }),
-              this.btnStyle("返回", h, () => (this.curDirectory = 4))
+              this.btnStyle("返回", h, () => (this.curDirectory = 3))
             ]);
           }
         }
       ],
-      columns6: [
+      columns5: [
         {
           title: "学号",
           key: "studentId"
@@ -247,23 +221,18 @@ export default {
           key: "operation",
           render: (h, params) => {
             return h("div", [
-              this.btnStyle("查看", h, () => (this.curDirectory = 7)),
-              this.btnStyle("返回", h, () => (this.curDirectory = 4))
+              this.btnStyle("查看", h, () => (this.curDirectory = 6)),
+              this.btnStyle("返回", h, () => (this.curDirectory = 3))
             ]);
           }
         }
       ],
       data1: [
         {
-          courseName: "新媒体实训"
-        }
-      ],
-      data2: [
-        {
           className: "ATM"
         }
       ],
-      data3: [
+      data2: [
         {
           weeksNum: "第一周"
         },
@@ -274,7 +243,7 @@ export default {
           weeksNum: "第三周"
         }
       ],
-      data4: [
+      data3: [
         {
           hwType: "课时作业"
         },
@@ -282,7 +251,7 @@ export default {
           hwType: "在线作业"
         }
       ],
-      data5: [
+      data4: [
         {
           studentId: "1540624158",
           name: "吕嘉俊",
@@ -291,7 +260,7 @@ export default {
           operation: ""
         }
       ],
-      data6: [
+      data5: [
         {
           studentId: "1540624158",
           name: "吕嘉俊",
@@ -313,7 +282,11 @@ export default {
     },
 
     goBack() {
-      this.curDirectory = 6;
+      this.curDirectory = 5;
+    },
+
+    goNext() {
+      this.isSelectCourse = false;
     }
   }
 };

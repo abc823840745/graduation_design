@@ -1,7 +1,7 @@
 <template>
   <div class="containter">
     <Table
-      stripe
+      border
       class="table-con mar-top"
       :columns="showTable('columns',3)"
       :data="showTable('data',3)"

@@ -1,19 +1,31 @@
 <template>
   <div class="containter">
-    <div class="count-down-con">
-      <P class="count-down-text">倒计时：</P>
-      <P class="count-down-text primary-color">
-        <CountDown
-          :isStartTimer='isStartTimer'
-          :initialTime='1200'
-          @callBack='endTimeDoing'
-        >
-          <h2 slot-scope="{remainingTime}">
-            {{$tools.formatSeconds(remainingTime)}}
-          </h2>
-        </CountDown>
-      </P>
+
+    <div class="header-bar">
+      <div class="homework-info">
+        <span>在线作业</span>
+        <span>课程：nodejs实验</span>
+        <span>实验：堂上构建简单服务器</span>
+        <span>时间：20分钟</span>
+      </div>
+
+      <div class="count-down-con">
+        <P class="count-down-text">倒计时：</P>
+        <P class="count-down-text primary-color">
+          <CountDown
+            :isStartTimer='isStartTimer'
+            :initialTime='1200'
+            @callBack='endTimeDoing'
+          >
+            <h2 slot-scope="{remainingTime}">
+              {{$tools.formatSeconds(remainingTime)}}
+            </h2>
+          </CountDown>
+        </P>
+      </div>
     </div>
+
+    <Divider />
 
     <RadioItem
       :inputInfo='inputInfo[0]'
@@ -30,7 +42,7 @@
       <p class="input-title">{{inputInfo[2]['title']}}</p>
       <p class="subjectText">{{inputInfo[2]['subject']}}</p>
       <div class="radio-list">
-        答案:
+        <span>答案:</span>
         <CheckboxGroup v-model="inputInfo[2]['choice']">
           <Checkbox
             label="A"
@@ -59,7 +71,7 @@
       <Input
         v-model="inputInfo[3]['choice']"
         type="textarea"
-        :autosize="{minRows: 2,maxRows: 5}"
+        :autosize="{minRows: 3,maxRows: 5}"
         placeholder="请输入你的答案"
         class="text-input"
       />
@@ -152,13 +164,22 @@ export default {
 .containter {
   width: 100%;
   height: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  p {
-    font-size: 14px;
+  padding-left: 5%;
+  .header-bar {
+    width: 100%;
+    .homework-info {
+      span {
+        font-size: 15px;
+        margin-right: 3%;
+      }
+    }
+  }
+  p,
+  span {
+    font-size: 15px;
   }
   .mar-bottom {
+    width: 100%;
     margin-bottom: 30px;
     .input-title {
       margin-bottom: 5px;
@@ -167,21 +188,18 @@ export default {
       width: 100%;
       margin-top: 10px;
       display: flex;
-      .radio-item {
-        margin-left: 15px;
+      .checkbox-item {
+        margin-left: 20px;
       }
     }
-    .checkbox-item {
-      margin-left: 10px;
-    }
     .text-input {
-      width: 220px;
+      width: 50%;
       margin-top: 10px;
     }
   }
   .count-down-con {
-    position: absolute;
-    top: 17%;
+    position: fixed;
+    top: 18%;
     right: 10%;
     display: flex;
     align-items: center;
@@ -193,23 +211,22 @@ export default {
     color: #2d8cf0;
   }
   .submitBtn {
-    align-self: center;
+    width: 10%;
   }
   .submitBtn:nth-of-type(1) {
     margin-right: 10px;
   }
   .subjectText {
-    width: 220px;
+    width: 50%;
     height: auto;
     word-wrap: break-word;
     word-break: break-all;
     overflow: hidden;
   }
   .btnGround {
-    width: 21%;
+    width: 100%;
     display: flex;
     align-items: center;
-    justify-content: center;
   }
 }
 </style>

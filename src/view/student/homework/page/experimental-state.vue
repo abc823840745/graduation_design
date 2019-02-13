@@ -1,8 +1,13 @@
 <template>
   <div class="containter">
+    <CourseSelect
+      v-show="isSelectCourse"
+      @goNext='goNext'
+    />
+
     <div
       class="containter"
-      v-show="curDirectory!==3"
+      v-show="!isSelectCourse && curDirectory !== 2"
     >
       <Modal
         v-model="showModal"
@@ -71,31 +76,31 @@
       />
     </div>
 
-    <WriteOnlineHomework
-      v-show="curDirectory===3"
-      @goBack="goBack"
+    <HomeworkDetail
+      v-show="curDirectory === 2"
+      @goBack='goBack'
     />
-
   </div>
 </template>
 
 <script>
-import WriteOnlineHomework from "@stuHomework/smart/write-online-homework.vue";
+import CourseSelect from "@teaHomework/smart/course-select";
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
+import HomeworkDetail from "@stuHomework/smart/check-online-homework-detail";
 import myMixin from "@stuHomework/mixin";
 
 export default {
-  name: "course-detail",
-
   mixins: [myMixin],
 
   components: {
-    WriteOnlineHomework,
-    MultipleChoice
+    CourseSelect,
+    MultipleChoice,
+    HomeworkDetail
   },
 
   data() {
     return {
+      isSelectCourse: true,
       curDirectory: 1, // 当前的目录
       showModal: false,
       weeksNum: "",
@@ -127,119 +132,108 @@ export default {
       ],
       selectList: [
         {
-          semesterTip: "学期选择",
-          defaultValue: "2017-2018第二学期",
+          semesterTip: "周数",
+          defaultValue: "",
           semesterList: [
             {
-              value: "2016-2017第一学期",
-              label: "2016-2017第一学期"
+              value: "第一周",
+              label: "第一周"
             },
             {
-              value: "2016-2017第二学期",
-              label: "2016-2017第二学期"
-            },
-            {
-              value: "2017-2018第一学期",
-              label: "2017-2018第一学期"
-            },
-            {
-              value: "2017-2018第二学期",
-              label: "2017-2018第二学期"
+              value: "第二周",
+              label: "第二周"
             }
           ]
         },
         {
-          semesterTip: "所有课程",
-          defaultValue: "所有课程",
+          semesterTip: "状态",
+          defaultValue: "",
           semesterList: [
             {
-              value: "所有课程",
-              label: "所有课程"
+              value: "未完成",
+              label: "未完成"
             },
             {
-              value: "新媒体实训",
-              label: "新媒体实训"
+              value: "已完成",
+              label: "已完成"
+            },
+            {
+              value: "已过期",
+              label: "已过期"
             }
           ]
         }
       ],
       columns1: [
         {
-          title: "所属课程",
-          key: "interCourse"
+          title: "实验",
+          key: "experiment"
+        },
+        {
+          title: "周数",
+          key: "weeksNum"
         },
         {
           title: "作业类型",
           key: "homeworkClassify"
         },
         {
-          title: "实验",
-          key: "experiment"
-        },
-        {
-          title: "完成时间",
-          key: "finishTime"
-        },
-        {
           title: "状态",
           key: "status"
+        },
+        {
+          title: "评分",
+          key: "grading"
         },
         {
           title: "操作",
           key: "operation",
           render: (h, params) => {
-            const classify = params["row"]["homeworkClassify"];
-            if (classify === "在线作业") {
+            const homeworkClassify = params["row"]["homeworkClassify"];
+            if (homeworkClassify === "在线作业") {
               return h("div", [
-                this.btnStyle("完成作业", h, () => {
-                  const status = params["row"]["status"];
-                  if (status === "已完成") {
-                    return this.$Message.info("你已完成作业");
-                  }
-                  this.curDirectory = 3;
-                })
+                this.btnStyle("查看", h, () => (this.curDirectory = 2)),
+                this.btnStyle("返回", h, () => this.revert())
               ]);
             }
             return h("div", [
-              this.btnStyle("上传作业", h, () => (this.showModal = true))
+              this.btnStyle("下载", h, () => this.$Message.info("下载中")),
+              this.btnStyle("返回", h, () => this.revert())
             ]);
           }
         }
       ],
       data1: [
         {
-          interCourse: "新媒体实训",
-          homeworkClassify: "在线作业",
+          weeksNum: "第一周",
           experiment: "堂上构建简单服务器",
-          finishTime: "10分钟",
-          status: "未完成"
+          grading: 100,
+          status: "已完成",
+          homeworkClassify: "在线作业"
         },
         {
-          interCourse: "新媒体实训",
-          homeworkClassify: "课时作业",
+          weeksNum: "第二周",
           experiment: "构建简单服务器",
-          finishTime: "10分钟",
-          status: "未完成"
+          grading: 0,
+          status: "未完成",
+          homeworkClassify: "课时作业"
         }
       ]
     };
   },
 
   methods: {
+    goNext() {
+      this.isSelectCourse = false;
+    },
+
     goBack() {
       this.curDirectory = 1;
     },
 
-    dialogOk() {
-      this.$Message.info("Clicked ok");
-    },
-
-    dialogCancel() {
-      this.$Message.info("Clicked cancel");
-    },
-
-    handleremove() {
-      this.showDelmodal = true;
+    revert() {
+      this.curDirectory = 1;
+      this.isSelectCourse = true;
     }
   }
 };
@@ -271,20 +265,6 @@ export default {
       margin-left: 4%;
       width: 20%;
     }
-  }
-
-  .select-title {
-    margin-right: 10px;
-  }
-
-  .select-list {
-    width: 200px;
-  }
-
-  .select-list-con {
-    display: flex;
-    align-items: center;
-    margin-right: 30px;
   }
 }
 </style>

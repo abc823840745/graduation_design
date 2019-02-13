@@ -90,7 +90,7 @@ export default {
   width: 100%;
   p,
   span {
-    font-size: 14px;
+    font-size: 15px;
   }
   .mar-bottom {
     margin-bottom: 30px;

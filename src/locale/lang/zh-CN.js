@@ -18,6 +18,9 @@ export default {
   'student-homework-tasks': '任务中心',
   'student-write-online-homework': '完成在线作业',
   'student-course-download': '课件下载',
+  'student-experiment-management': '实验管理',
+  'student-online-homework': '在线作业',
+  'student-experimental-state': '实验状态',
 
   // 学生毕设管理
   'student-graduation': '毕业设计',
@@ -34,8 +37,8 @@ export default {
   papper_detail: '查看学生论文',
 
   // 学生答疑模块
-  'student-answering': '答疑模块',
-  'student-answer-questions': '答疑模块',
+  'student-answering': '答疑管理',
+  'student-answer-questions': '答疑管理',
 
   // 教师路由中文名
   'teacher-personal': '个人中心',

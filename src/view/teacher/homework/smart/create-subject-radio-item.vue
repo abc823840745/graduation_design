@@ -1,6 +1,6 @@
 <template>
   <div
-    class="containter"
+    class="containters"
     v-if="!$tools.isEmptyObject(inputInfo)"
   >
     <div class="mar-bottom">
@@ -17,7 +17,7 @@
         style="width: 220px"
       />
       <div class="radio-list">
-        答案:
+        <span>答案:</span>
         <RadioGroup
           v-model="radioChoice"
           @on-change="onChangeRadio"
@@ -72,10 +72,11 @@ export default {
 </script>
 
 <style  lang="less" scoped>
-.containter {
+.containters {
   width: 100%;
-  p {
-    font-size: 14px;
+  p,
+  span {
+    font-size: 15px;
   }
   .mar-bottom {
     margin-bottom: 30px;
@@ -87,9 +88,8 @@ export default {
       margin-top: 10px;
       display: flex;
       align-items: center;
-      justify-content: center;
       .radio-item {
-        margin-left: 15px;
+        margin-left: 20px;
       }
     }
   }

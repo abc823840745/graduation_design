@@ -9,7 +9,7 @@
       />
 
       <Table
-        stripe
+        border
         class="table-con mar-top"
         :columns="showTable('columns')"
         :data="showTable('data')"
@@ -168,9 +168,21 @@ export default {
           key: "operation",
           render: (h, params) => {
             return h("div", [
-              this.btnStyle("删除", h, () => {
-                // TODO: 删除上传的文件
-              }),
+              this.btnStyle(
+                "删除",
+                h,
+                () => {
+                  // TODO: 删除上传的文件
+                  this.$Modal.confirm({
+                    title: "确定要删除该任务？",
+                    onOk: () => {
+                      let { id } = this.tableData[params.index];
+                      this.deleteMission(id);
+                    }
+                  });
+                },
+                "error"
+              ),
               this.btnStyle("返回", h, () => (this.isShowUploaded = false))
             ]);
           }

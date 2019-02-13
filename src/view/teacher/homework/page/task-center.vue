@@ -4,15 +4,26 @@
       class="containter"
       v-if="!isChangeHWTasks"
     >
-      <MultipleChoice
-        semesterTip='学期选择'
-        :defaultValue='semester'
-        :semesterList='semesterList'
-        class="flex-start"
-      />
+      <div class="select-list">
+        <MultipleChoice
+          v-for="item in selectList"
+          :key="item['semesterTip']"
+          :semesterTip="item['semesterTip']"
+          :defaultValue="item['semester']"
+          :semesterList="item['semesterList']"
+          class="flex-start"
+        />
+
+        <Input
+          class="search-item"
+          search
+          enter-button
+          placeholder="请输入关键词"
+        />
+      </div>
 
       <Table
-        stripe
+        border
         class="table-con mar-top"
         :columns="columns1"
         :data="data1"
@@ -47,23 +58,54 @@ export default {
   data() {
     return {
       isChangeHWTasks: false,
-      semester: "2017-2018第二学期",
-      semesterList: [
+      selectList: [
         {
-          value: "2016-2017第一学期",
-          label: "2016-2017第一学期"
+          semesterTip: "学期选择",
+          semester: "2017-2018第二学期",
+          semesterList: [
+            {
+              value: "2016-2017第一学期",
+              label: "2016-2017第一学期"
+            },
+            {
+              value: "2016-2017第二学期",
+              label: "2016-2017第二学期"
+            },
+            {
+              value: "2017-2018第一学期",
+              label: "2017-2018第一学期"
+            },
+            {
+              value: "2017-2018第二学期",
+              label: "2017-2018第二学期"
+            }
+          ]
         },
         {
-          value: "2016-2017第二学期",
-          label: "2016-2017第二学期"
-        },
-        {
-          value: "2017-2018第一学期",
-          label: "2017-2018第一学期"
-        },
-        {
-          value: "2017-2018第二学期",
-          label: "2017-2018第二学期"
+          semesterTip: "课程选择",
+          semester: "所有课程",
+          semesterList: [
+            {
+              value: "所有课程",
+              label: "所有课程"
+            },
+            {
+              value: "新媒体实训",
+              label: "新媒体实训"
+            },
+            {
+              value: "JavaScript编程",
+              label: "JavaScript编程"
+            },
+            {
+              value: "vue应用程序开发",
+              label: "vue应用程序开发"
+            },
+            {
+              value: "mysql数据库",
+              label: "mysql数据库"
+            }
+          ]
         }
       ],
       columns1: [
@@ -92,6 +134,18 @@ export default {
                 "修改任务信息",
                 h,
                 () => (this.isChangeHWTasks = true)
+              ),
+              this.btnStyle(
+                "删除",
+                h,
+                () =>
+                  this.$Modal.confirm({
+                    title: "确定要删除该任务？",
+                    onOk: () => {
+                      // TODO: 删除任务信息
+                    }
+                  }),
+                "error"
               )
             ]);
           }
@@ -129,12 +183,25 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  .select-list {
+    width: 100%;
+    display: flex;
+    align-self: flex-start;
+    .search-item {
+      margin-left: 4%;
+      width: 20%;
+    }
+  }
+
   .flex-start {
     align-self: flex-start;
   }
+
   .mar-top {
     margin-top: 20px;
   }
+
   .table-con {
     width: 100%;
   }

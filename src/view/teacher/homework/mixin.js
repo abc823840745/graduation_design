@@ -1,12 +1,12 @@
 const myMixin = {
   methods: {
-    btnStyle(btnTitle, h, onclick) {
+    btnStyle(btnTitle, h, onclick, color = 'primary') {
       return h(
         'Button',
         {
           props: {
-            type: 'primary',
-            size: 'default',
+            type: color,
+            size: 'small',
           },
           style: {
             marginRight: '5px',

@@ -1,25 +1,36 @@
 <template>
   <div class="containter">
+    <CourseSelect
+      v-show="isSelectCourse"
+      @goNext='goNext'
+    />
+
     <div
       class="containter"
-      v-show="curDirectory!==3"
+      v-show="!isSelectCourse && curDirectory !== 2"
     >
       <div class="select-con">
         <MultipleChoice
           v-for="(item,index) in selectList"
-          v-show="item['isShow']"
           :key="index"
           :defaultValue="item['defaultValue']"
           :semesterTip="item['semesterTip']"
           :semesterList="item['semesterList']"
         />
+
+        <Input
+          class="search-item"
+          search
+          enter-button
+          placeholder="请输入关键词"
+        />
       </div>
 
       <Table
-        stripe
+        border
         class="table-con mar-top"
-        :columns="showTable('columns',2)"
-        :data="showTable('data',2)"
+        :columns="columns1"
+        :data="data1"
       />
       <Page
         :total="30"
@@ -28,7 +39,7 @@
     </div>
 
     <HomeworkDetail
-      v-show="curDirectory===3"
+      v-show="curDirectory === 2"
       @goBack='goBack'
     />
   </div>
@@ -37,6 +48,7 @@
 <script>
 import HomeworkDetail from "@stuHomework/smart/check-online-homework-detail";
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
+import CourseSelect from "@teaHomework/smart/course-select";
 import myMixin from "@stuHomework/mixin";
 
 export default {
@@ -46,26 +58,15 @@ export default {
 
   components: {
     HomeworkDetail,
-    MultipleChoice
+    MultipleChoice,
+    CourseSelect
   },
 
   data() {
     return {
+      isSelectCourse: true,
       curDirectory: 1, // 当前的目录
       columns1: [
-        {
-          title: "课程名",
-          key: "courseName"
-        },
-        {
-          title: "操作",
-          key: "operation",
-          render: (h, params) => {
-            return h("div", [this.btnStyle("查看", h, () => this.check())]);
-          }
-        }
-      ],
-      columns2: [
         {
           title: "作业名",
           key: "homeworkName"
@@ -89,7 +90,7 @@ export default {
             const homeworkClassify = params["row"]["homeworkClassify"];
             if (homeworkClassify === "在线作业") {
               return h("div", [
-                this.btnStyle("查看", h, () => (this.curDirectory = 3)),
+                this.btnStyle("查看", h, () => (this.curDirectory = 2)),
                 this.btnStyle("返回", h, () => this.revert())
               ]);
             }
@@ -101,17 +102,6 @@ export default {
         }
       ],
       data1: [
-        {
-          courseName: "新媒体实训"
-        },
-        {
-          courseName: "新媒体实训"
-        },
-        {
-          courseName: "新媒体实训"
-        }
-      ],
-      data2: [
         {
           homeworkName: "实验1",
           homeworkClassify: "在线作业",
@@ -127,46 +117,7 @@ export default {
       ],
       selectList: [
         {
-          semesterTip: "学期选择",
-          isShow: true,
-          defaultValue: "2017-2018第二学期",
-          semesterList: [
-            {
-              value: "2016-2017第一学期",
-              label: "2016-2017第一学期"
-            },
-            {
-              value: "2016-2017第二学期",
-              label: "2016-2017第二学期"
-            },
-            {
-              value: "2017-2018第一学期",
-              label: "2017-2018第一学期"
-            },
-            {
-              value: "2017-2018第二学期",
-              label: "2017-2018第二学期"
-            }
-          ]
-        },
-        {
-          semesterTip: "提交情况",
-          isShow: false,
-          defaultValue: "",
-          semesterList: [
-            {
-              value: "已完成",
-              label: "已完成"
-            },
-            {
-              value: "未完成",
-              label: "未完成"
-            }
-          ]
-        },
-        {
           semesterTip: "作业类型",
-          isShow: false,
           defaultValue: "",
           semesterList: [
             {
@@ -184,26 +135,17 @@ export default {
   },
 
   methods: {
-    check() {
-      this.curDirectory = 2;
-      let selectList = [...this.selectList];
-      selectList[0]["isShow"] = false;
-      selectList[1]["isShow"] = true;
-      selectList[2]["isShow"] = true;
-      this.selectList = selectList;
+    goNext() {
+      this.isSelectCourse = false;
+    },
+
+    goBack() {
+      this.curDirectory = 1;
     },
 
     revert() {
       this.curDirectory = 1;
-      let selectList = [...this.selectList];
-      selectList[0]["isShow"] = true;
-      selectList[1]["isShow"] = false;
-      selectList[2]["isShow"] = false;
-      this.selectList = selectList;
-    },
-
-    goBack() {
-      this.curDirectory = 2;
+      this.isSelectCourse = true;
     }
   }
 };
@@ -217,23 +159,34 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
+
   .mar-top {
     margin-top: 20px;
   }
+
   .table-con {
     width: 100%;
   }
+
   .select-con {
     display: flex;
     align-self: flex-start;
     width: 100%;
+
+    .search-item {
+      margin-left: 4%;
+      width: 20%;
+    }
   }
+
   .select-title {
     margin-right: 10px;
   }
+
   .select-list {
     width: 200px;
   }
+
   .select-list-con {
     display: flex;
     align-items: center;

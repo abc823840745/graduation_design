@@ -1,63 +1,144 @@
 <template>
   <div class="containter">
+    <CourseSelect
+      v-show="isSelectCourse"
+      @goNext='goNext'
+    />
 
-    <div class="select-con">
-      <MultipleChoice
-        ref="haha"
-        semesterTip='学期选择'
-        :defaultValue='semester'
-        :semesterList='semesterList'
+    <div
+      class="containter"
+      v-show="!isSelectCourse"
+    >
+      <Table
+        border
+        class="table-con mar-top"
+        :columns="showTable('columns',2)"
+        :data="showTable('data',2)"
       />
 
-      <Input
-        class="search-item"
-        search
-        enter-button
-        placeholder="请输入课程名"
+      <Page
+        :total="30"
+        class="mar-top"
       />
+
+      <Button
+        class="all-download-btn"
+        v-if="curDirectory === 3"
+        icon="ios-download-outline"
+        type="primary"
+      >
+        全部下载
+      </Button>
     </div>
-
-    <Download />
   </div>
 </template>
 
 <script>
-import Download from "@stuHomework/smart/course-download";
-import MultipleChoice from "@teaHomework/smart/multiple-choice";
+import CourseSelect from "@teaHomework/smart/course-select";
+import myMixin from "@stuHomework/mixin";
 
 export default {
   name: "course-detail",
 
+  mixins: [myMixin],
+
   components: {
-    Download,
-    MultipleChoice
+    CourseSelect
   },
 
   data() {
     return {
-      semester: "2017-2018第二学期",
-      semesterList: [
+      isSelectCourse: true,
+      curDirectory: 1, // 当前的目录
+      columns1: [
         {
-          value: "2016-2017第一学期",
-          label: "2016-2017第一学期"
+          title: "目录",
+          key: "directory"
         },
         {
-          value: "2016-2017第二学期",
-          label: "2016-2017第二学期"
+          title: "文件数",
+          key: "fileCount"
         },
         {
-          value: "2017-2018第一学期",
-          label: "2017-2018第一学期"
+          title: "创建时间",
+          key: "createTime"
         },
         {
-          value: "2017-2018第二学期",
-          label: "2017-2018第二学期"
+          title: "操作",
+          key: "operation",
+          render: (h, params) => {
+            return h("div", [
+              this.btnStyle("查看", h, () => (this.curDirectory = 2)),
+              this.btnStyle("返回", h, () => {
+                this.curDirectory = 1;
+                this.isSelectCourse = true;
+              })
+            ]);
+          }
+        }
+      ],
+      columns2: [
+        {
+          title: "目录",
+          key: "directory"
+        },
+        {
+          title: "创建时间",
+          key: "createTime"
+        },
+        {
+          title: "操作",
+          key: "operation",
+          render: (h, params) => {
+            return h("div", [
+              this.btnStyle("下载", h, () => {
+                // TODO: 下载
+                alert("下载");
+              }),
+              this.btnStyle("返回", h, () => (this.curDirectory = 1))
+            ]);
+          }
+        }
+      ],
+      data1: [
+        {
+          directory: "第一周",
+          fileCount: 3,
+          createTime: "2018-9-18"
+        },
+        {
+          directory: "第二周",
+          fileCount: 3,
+          createTime: "2018-9-18"
+        },
+        {
+          directory: "第三周",
+          fileCount: 3,
+          createTime: "2018-9-18"
+        }
+      ],
+      data2: [
+        {
+          directory: "实验指导书1",
+          createTime: "2018-9-18"
+        },
+        {
+          directory: "实验指导书2",
+          createTime: "2018-9-18"
+        },
+        {
+          directory: "实验指导书3",
+          createTime: "2018-9-18"
         }
       ]
     };
   },
 
-  methods: {}
+  methods: {
+    goNext() {
+      this.isSelectCourse = false;
+    }
+  }
 };
 </script>
 
@@ -65,24 +146,21 @@ export default {
 .containter {
   width: 100%;
   height: auto;
-  .select-con {
-    display: flex;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
+  .mar-top {
+    margin-top: 2.5%;
+  }
+
+  .table-con {
     width: 100%;
   }
-  .search-item {
-    margin-left: 4%;
-    width: 20%;
-  }
-  .select-title {
-    margin-right: 10px;
-  }
-  .select-list {
-    width: 200px;
-  }
-  .select-list-con {
-    align-self: flex-start;
-    display: flex;
-    align-items: center;
+
+  .all-download-btn {
+    margin-top: 1.5%;
   }
 }
 </style>

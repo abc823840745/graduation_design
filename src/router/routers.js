@@ -300,35 +300,65 @@ export default [
     },
     component: Main,
     children: [
+      // {
+      //   path: 'my-homework',
+      //   name: 'student-my-homework',
+      //   meta: {
+      //     icon: 'ios-document',
+      //     title: '查看作业评分',
+      //     access: ['student'],
+      //   },
+      //   component: () => import('@stuHomework/page/my-homework.vue'),
+      // },
+      // {
+      //   path: 'homework-tasks',
+      //   name: 'student-homework-tasks',
+      //   meta: {
+      //     icon: 'ios-document',
+      //     title: '任务中心',
+      //     access: ['student'],
+      //   },
+      //   component: () => import('@stuHomework/page/homework-tasks.vue'),
+      // },
+      // {
+      //   path: 'course-download',
+      //   name: 'student-course-download',
+      //   meta: {
+      //     icon: 'md-clipboard',
+      //     title: '课件下载',
+      //     access: ['student'],
+      //   },
+      //   component: () => import('@stuHomework/page/course-download.vue'),
+      // },
       {
-        path: 'my-homework',
-        name: 'student-my-homework',
+        path: 'experimental-state',
+        name: 'student-experimental-state',
         meta: {
-          icon: 'ios-document',
-          title: '作业情况',
+          icon: 'md-clipboard',
+          title: '实验状态',
           access: ['student'],
         },
-        component: () => import('@stuHomework/page/my-homework.vue'),
+        component: () => import('@stuHomework/page/experimental-state.vue'),
       },
       {
-        path: 'homework-tasks',
-        name: 'student-homework-tasks',
+        path: 'experiment-management',
+        name: 'student-experiment-management',
         meta: {
-          icon: 'ios-document',
+          icon: 'md-clipboard',
+          title: '实验管理',
+          access: ['student'],
+        },
+        component: () => import('@stuHomework/page/experiment-management.vue'),
+      },
+      {
+        path: 'online-homework',
+        name: 'student-online-homework',
+        meta: {
+          icon: 'md-clipboard',
           title: '在线作业',
           access: ['student'],
         },
-        component: () => import('@stuHomework/page/homework-tasks.vue'),
-      },
-      {
-        path: 'course-download',
-        name: 'student-course-download',
-        meta: {
-          icon: 'md-clipboard',
-          title: '课件下载',
-          access: ['student'],
-        },
-        component: () => import('@stuHomework/page/course-download.vue'),
+        component: () => import('@stuHomework/page/online-homework.vue'),
       },
     ],
   },
@@ -410,7 +440,7 @@ export default [
     meta: {
       icon: 'logo-buffer',
       title: '答疑管理',
-      access: ['student', 'admin'],
+      access: ['student'],
     },
     component: Main,
     children: [
@@ -420,7 +450,7 @@ export default [
         meta: {
           icon: 'md-contacts',
           title: '解答问题',
-          access: ['student', 'admin'],
+          access: ['student'],
         },
         component: () => import('@/view/student/answering/answer-questions.vue'),
       },

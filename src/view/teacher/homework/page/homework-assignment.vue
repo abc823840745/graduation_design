@@ -2,7 +2,7 @@
   <div class="containter">
     <CourseSelect
       v-show="!showCreSub"
-      @goCreSub='goCreSub'
+      @goNext='goNext'
     />
 
     <MyHomework
@@ -29,7 +29,7 @@ export default {
   },
 
   methods: {
-    goCreSub() {
+    goNext() {
       this.showCreSub = true;
     },
     goBack() {
