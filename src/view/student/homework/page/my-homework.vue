@@ -13,7 +13,7 @@
         <MultipleChoice
           v-for="(item,index) in selectList"
           :key="index"
-          :defaultValue="item['defaultValue']"
+          :defaultValue.sync="item['defaultValue']"
           :semesterTip="item['semesterTip']"
           :semesterList="item['semesterList']"
         />

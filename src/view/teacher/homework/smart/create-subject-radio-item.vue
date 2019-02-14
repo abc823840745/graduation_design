@@ -1,6 +1,6 @@
 <template>
   <div
-    class="containters"
+    class="radio-containter"
     v-if="!$tools.isEmptyObject(inputInfo)"
   >
     <div class="mar-bottom">
@@ -14,7 +14,9 @@
         v-model="subject"
         :placeholder="inputInfo['placeholder']"
         clearable
-        style="width: 220px"
+        type="textarea"
+        :autosize="{minRows: 2,maxRows: 5}"
+        style="width: 250px"
       />
       <div class="radio-list">
         <span>答案:</span>
@@ -72,17 +74,21 @@ export default {
 </script>
 
 <style  lang="less" scoped>
-.containters {
+.radio-containter {
   width: 100%;
+
   p,
   span {
     font-size: 15px;
   }
+
   .mar-bottom {
     margin-bottom: 30px;
+
     .input-title {
       margin-bottom: 5px;
     }
+
     .radio-list {
       width: 100%;
       margin-top: 10px;
@@ -93,6 +99,7 @@ export default {
       }
     }
   }
+
   .subjectText {
     width: 220px;
     height: auto;

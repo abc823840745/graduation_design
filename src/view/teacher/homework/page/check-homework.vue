@@ -15,7 +15,7 @@
       >
         <MultipleChoice
           :semesterTip='selTip'
-          :defaultValue='semester'
+          :defaultValue.sync='semester'
           :semesterList='semesterList'
           class="float-left"
         />

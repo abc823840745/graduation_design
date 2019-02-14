@@ -15,17 +15,21 @@
       </div>
 
       <div class="mar-bottom">
-        作业类型：
-        <Select
-          v-model="homeworkInfo['classify']"
-          style="width:250px"
-        >
-          <Option
-            v-for="item in homeworkCategory"
-            :value="item.value"
-            :key="item.value"
-          >{{ item.label }}</Option>
-        </Select>
+        <MultipleChoice
+          semesterTip='作业类型'
+          :defaultValue.sync="homeworkInfo['classify']"
+          :semesterList='homeworkCategory'
+          class="multiple-choice"
+        />
+      </div>
+
+      <div class="mar-bottom">
+        <MultipleChoice
+          semesterTip='周数选择'
+          :defaultValue.sync="homeworkInfo['weekNum']"
+          :semesterList='weekList'
+          class="multiple-choice"
+        />
       </div>
 
       <div class="mar-bottom">
@@ -66,13 +70,15 @@
 </template>
 
 <script>
-import ChangeHomeworkTasksSubject from "@teaHomework/smart/change-homework-tasks-subject.vue";
+import ChangeHomeworkTasksSubject from "@teaHomework/smart/change-homework-tasks-subject";
+import MultipleChoice from "@teaHomework/smart/multiple-choice";
 
 export default {
   name: "my-homework",
 
   components: {
-    ChangeHomeworkTasksSubject
+    ChangeHomeworkTasksSubject,
+    MultipleChoice
   },
 
   data() {
@@ -81,8 +87,27 @@ export default {
       homeworkInfo: {
         name: "搭建服务器",
         classify: "在线作业",
+        weekNum: "第一周",
         stopTimeList: ["2019-01-28 00:00", "2019-01-28 00:00"]
       },
+      weekList: [
+        {
+          value: "第一周",
+          label: "第一周"
+        },
+        {
+          value: "第二周",
+          label: "第二周"
+        },
+        {
+          value: "第三周",
+          label: "第三周"
+        },
+        {
+          value: "第四周",
+          label: "第四周"
+        }
+      ],
       homeworkCategory: [
         {
           value: "课时作业",
@@ -137,18 +162,26 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
+
+  .multiple-choice /deep/ .select-list {
+    width: 250px;
+  }
+
   .mar-bottom {
     margin-bottom: 30px;
   }
+
   .mar-top {
     margin-top: 80px;
   }
+
   .btnGround {
     width: 30%;
     display: flex;
     align-items: center;
     justify-content: space-between;
   }
+
   .btnGround button:nth-of-type(1) {
     margin-right: 5%;
   }

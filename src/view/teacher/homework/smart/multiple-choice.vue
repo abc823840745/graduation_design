@@ -24,6 +24,16 @@ export default {
     semesterList: Array
   },
 
+  watch: {
+    defaultValue(newVal, oldVal) {
+      this.semester = newVal;
+    },
+
+    semester(newVal, oldVal) {
+      this.$emit("update:defaultValue", newVal);
+    }
+  },
+
   data() {
     return {
       semester: this.defaultValue
@@ -36,12 +46,13 @@ export default {
 .select-title {
   margin-right: 10px;
 }
+
 .select-list {
   width: 200px;
 }
+
 .select-list-con {
   display: flex;
   align-items: center;
-  margin-right: 30px;
 }
 </style>

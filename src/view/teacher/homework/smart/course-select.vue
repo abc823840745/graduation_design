@@ -2,7 +2,7 @@
   <div class="containter">
     <MultipleChoice
       semesterTip='学期选择'
-      :defaultValue='semester'
+      :defaultValue.sync='semester'
       :semesterList='semesterList'
       class="flex-start"
     />

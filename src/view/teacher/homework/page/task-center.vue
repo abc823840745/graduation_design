@@ -9,9 +9,9 @@
           v-for="item in selectList"
           :key="item['semesterTip']"
           :semesterTip="item['semesterTip']"
-          :defaultValue="item['semester']"
+          :defaultValue.sync="item['semester']"
           :semesterList="item['semesterList']"
-          class="flex-start"
+          class="multiple-choice"
         />
 
         <Input
@@ -184,13 +184,17 @@ export default {
   flex-direction: column;
   align-items: center;
 
+  .multiple-choice /deep/ .select-list {
+    margin-right: 30px;
+  }
+
   .select-list {
     width: 100%;
     display: flex;
     align-self: flex-start;
+
     .search-item {
-      margin-left: 4%;
-      width: 20%;
+      width: 220px;
     }
   }
 

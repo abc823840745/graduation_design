@@ -1,5 +1,5 @@
 <template>
-  <div class="containter">
+  <div class="containters">
     <RadioItem
       :inputInfo='inputInfo[0]'
       @onChangeSubject="onChangeSubject"
@@ -15,13 +15,15 @@
     <div class="mar-bottom">
       <p class="input-title">{{inputInfo[2]['title']}}</p>
       <Input
+        type="textarea"
+        :autosize="{minRows: 2,maxRows: 5}"
         v-model="inputInfo[2]['subject']"
         :placeholder="inputInfo[2]['placeholder']"
         clearable
-        style="width: 220px"
+        style="width: 250px"
       />
       <div class="radio-list">
-        答案:
+        <p>答案:</p>
         <CheckboxGroup v-model="inputInfo[2]['choice']">
           <Checkbox
             label="A"
@@ -46,10 +48,12 @@
     <div class="mar-bottom">
       <p class="input-title">{{inputInfo[3]['title']}}</p>
       <Input
+        type="textarea"
+        :autosize="{minRows: 2,maxRows: 5}"
         v-model="inputInfo[3]['subject']"
         :placeholder="inputInfo[3]['placeholder']"
         clearable
-        style="width: 220px"
+        style="width: 250px"
       />
     </div>
 
@@ -59,6 +63,7 @@
         size='large'
         @click="$emit('goBack')"
       >上一步</Button>
+
       <Button
         type="primary"
         size='large'
@@ -149,35 +154,40 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.containter {
+.containters {
   width: 100%;
   height: auto;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
+  padding-left: 3%;
+
   p {
-    font-size: 14px;
+    font-size: 15px;
   }
+
   .mar-bottom {
     margin-bottom: 30px;
+
     .input-title {
       margin-bottom: 5px;
     }
+
     .radio-list {
       width: 100%;
       margin-top: 10px;
       display: flex;
       align-items: center;
-      justify-content: center;
+
       .radio-item {
         margin-left: 15px;
       }
     }
+
     .checkbox-item {
-      margin-left: 15px;
+      margin-left: 21px;
     }
   }
+
   .btnGround {
     width: 150px;
     display: flex;

@@ -50,9 +50,10 @@
         <MultipleChoice
           v-for="(item,index) in selectList"
           :key="index"
-          :defaultValue="item['defaultValue']"
+          :defaultValue.sync="item['defaultValue']"
           :semesterTip="item['semesterTip']"
           :semesterList="item['semesterList']"
+          class="multiple-choice"
         />
 
         <Input
@@ -224,6 +225,10 @@ export default {
   align-items: center;
   justify-content: flex-start;
 
+  .multiple-choice /deep/ .select-list {
+    margin-right: 30px;
+  }
+
   .mar-top {
     margin-top: 2.5%;
   }
@@ -238,8 +243,7 @@ export default {
     width: 100%;
 
     .search-item {
-      margin-left: 4%;
-      width: 20%;
+      width: 220px;
     }
   }
 }

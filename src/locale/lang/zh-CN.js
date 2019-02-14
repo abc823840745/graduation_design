@@ -52,7 +52,7 @@ export default {
 
   // 教师作业管理
   'teacher-homework': '作业管理',
-  'teacher-homework-assignment': '新建作业任务',
+  'teacher-homework-assignment': '新建作业',
   'teacher-check-homework': '查看/修改作业',
   'teacher-upload-courseware': '上传课件',
   'teacher-task-center': '任务中心',
