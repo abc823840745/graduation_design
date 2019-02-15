@@ -1,13 +1,9 @@
 <template>
   <div class="containter">
-    <CourseSelect
-      v-show="isSelectCourse"
-      @goNext='goNext'
-    />
 
     <div
       class="containter"
-      v-if="!isSelectCourse && curDirectory !== 3"
+      v-if="curDirectory !== 3"
     >
 
       <Modal
@@ -51,7 +47,7 @@
         <MultipleChoice
           v-for="(item,index) in selectList"
           :key="index"
-          :defaultValue.sync="item['defaultValue']"
+          :defaultValue.sync="item['semester']"
           :semesterTip="item['semesterTip']"
           :semesterList="item['semesterList']"
           class="multiple-choice"
@@ -81,7 +77,6 @@
 </template>
 
 <script>
-import CourseSelect from "@teaHomework/smart/course-select";
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import myMixin from "@stuHomework/mixin";
 
@@ -89,13 +84,11 @@ export default {
   mixins: [myMixin],
 
   components: {
-    CourseSelect,
     MultipleChoice
   },
 
   data() {
     return {
-      isSelectCourse: true,
       curDirectory: 1, // 当前的目录
       showModal: false,
       weeksNum: "",
@@ -126,6 +119,54 @@ export default {
         }
       ],
       selectList: [
+        {
+          semesterTip: "学期",
+          semester: "2017-2018第二学期",
+          semesterList: [
+            {
+              value: "2016-2017第一学期",
+              label: "2016-2017第一学期"
+            },
+            {
+              value: "2016-2017第二学期",
+              label: "2016-2017第二学期"
+            },
+            {
+              value: "2017-2018第一学期",
+              label: "2017-2018第一学期"
+            },
+            {
+              value: "2017-2018第二学期",
+              label: "2017-2018第二学期"
+            }
+          ]
+        },
+        {
+          semesterTip: "课程",
+          semester: "所有课程",
+          semesterList: [
+            {
+              value: "所有课程",
+              label: "所有课程"
+            },
+            {
+              value: "新媒体实训",
+              label: "新媒体实训"
+            },
+            {
+              value: "JavaScript编程",
+              label: "JavaScript编程"
+            },
+            {
+              value: "vue应用程序开发",
+              label: "vue应用程序开发"
+            },
+            {
+              value: "mysql数据库",
+              label: "mysql数据库"
+            }
+          ]
+        },
         {
           semesterTip: "周数",
           defaultValue: "",
@@ -233,11 +274,7 @@ export default {
     };
   },
 
-  methods: {
-    goNext() {
-      this.isSelectCourse = false;
-    }
-  }
+  methods: {}
 };
 </script>
 
@@ -251,7 +288,8 @@ export default {
   justify-content: flex-start;
 
   .multiple-choice /deep/ .select-list {
-    margin-right: 30px;
+    margin-right: 16px;
+    width: 160px;
   }
 
   .mar-top {

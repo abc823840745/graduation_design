@@ -300,36 +300,6 @@ export default [
     },
     component: Main,
     children: [
-      // {
-      //   path: 'my-homework',
-      //   name: 'student-my-homework',
-      //   meta: {
-      //     icon: 'ios-document',
-      //     title: '查看作业评分',
-      //     access: ['student'],
-      //   },
-      //   component: () => import('@stuHomework/page/my-homework.vue'),
-      // },
-      // {
-      //   path: 'homework-tasks',
-      //   name: 'student-homework-tasks',
-      //   meta: {
-      //     icon: 'ios-document',
-      //     title: '任务中心',
-      //     access: ['student'],
-      //   },
-      //   component: () => import('@stuHomework/page/homework-tasks.vue'),
-      // },
-      // {
-      //   path: 'course-download',
-      //   name: 'student-course-download',
-      //   meta: {
-      //     icon: 'md-clipboard',
-      //     title: '课件下载',
-      //     access: ['student'],
-      //   },
-      //   component: () => import('@stuHomework/page/course-download.vue'),
-      // },
       {
         path: 'homework-main',
         name: 'student-homework-main',
