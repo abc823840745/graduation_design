@@ -3,16 +3,20 @@ export default {
   'student-teacher-home': '首页',
   message: '消息公告',
   teacher_detail: '教师详情',
+
   // 学生个人中心
   'student-personal': '个人中心',
   'student-my-info': '我的资料',
   'student-my-message': '我的私信',
+
   // 学生课程管理
   'student-course': '课程设计',
   'student-my-course': '我的课程',
   'student-other': '其他',
   'student-else': '其他',
+
   // 学生作业管理
+  'student-homework-main': '首页',
   'student-homework': '作业设计',
   'student-my-homework': '查看作业评分',
   'student-homework-tasks': '任务中心',
@@ -51,8 +55,9 @@ export default {
   'teacher-course-other': '其他',
 
   // 教师作业管理
+  'teacher-homework-main': '主页',
   'teacher-homework': '作业管理',
-  'teacher-homework-assignment': '新建作业',
+  'teacher-homework-create': '新建作业',
   'teacher-check-homework': '查看/修改作业',
   'teacher-upload-courseware': '上传课件',
   'teacher-task-center': '任务中心',

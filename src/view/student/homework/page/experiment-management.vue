@@ -7,8 +7,9 @@
 
     <div
       class="containter"
-      v-show="!isSelectCourse && curDirectory !== 3"
+      v-if="!isSelectCourse && curDirectory !== 3"
     >
+
       <Modal
         v-model="showModal"
         title="上传"
@@ -73,7 +74,7 @@
 
       <Page
         :total="30"
-        class="mar-top"
+        class="mar-top page"
       />
     </div>
   </div>
@@ -203,6 +204,30 @@ export default {
           experiment: "构建简单服务器",
           finishTime: "2019-02-13",
           status: "未完成"
+        },
+        {
+          weeksNum: "第三周",
+          experiment: "堂上构建简单服务器",
+          finishTime: "2019-02-13",
+          status: "未完成"
+        },
+        {
+          weeksNum: "第四周",
+          experiment: "构建简单服务器",
+          finishTime: "2019-02-13",
+          status: "未完成"
+        },
+        {
+          weeksNum: "第五周",
+          experiment: "堂上构建简单服务器",
+          finishTime: "2019-02-13",
+          status: "未完成"
+        },
+        {
+          weeksNum: "第六周",
+          experiment: "构建简单服务器",
+          finishTime: "2019-02-13",
+          status: "未完成"
         }
       ]
     };
@@ -237,12 +262,17 @@ export default {
     width: 100%;
   }
 
+  .page {
+    align-self: flex-end;
+  }
+
   .select-con {
     display: flex;
     align-self: flex-start;
     width: 100%;
 
     .search-item {
+      margin-top: -1px;
       width: 220px;
     }
   }

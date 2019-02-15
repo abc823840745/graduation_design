@@ -1,13 +1,9 @@
 <template>
   <div class="containter">
-    <CourseSelect
-      v-show="isSelectCourse"
-      @goNext='goNext'
-    />
 
     <div
       class="containter"
-      v-show="!isSelectCourse && curDirectory !== 2"
+      v-show="curDirectory !== 2"
     >
       <Modal
         v-model="showModal"
@@ -73,7 +69,7 @@
 
       <Page
         :total="30"
-        class="mar-top"
+        class="mar-top page"
       />
     </div>
 
@@ -85,7 +81,6 @@
 </template>
 
 <script>
-import CourseSelect from "@teaHomework/smart/course-select";
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import HomeworkDetail from "@stuHomework/smart/check-online-homework-detail";
 import myMixin from "@stuHomework/mixin";
@@ -94,14 +89,12 @@ export default {
   mixins: [myMixin],
 
   components: {
-    CourseSelect,
     MultipleChoice,
     HomeworkDetail
   },
 
   data() {
     return {
-      isSelectCourse: true,
       curDirectory: 1, // 当前的目录
       showModal: false,
       weeksNum: "",
@@ -132,6 +125,50 @@ export default {
         }
       ],
       selectList: [
+        {
+          semesterTip: "学期",
+          defaultValue: "2018-2019上学期",
+          semesterList: [
+            {
+              value: "2015-2016上学期",
+              label: "2015-2016上学期"
+            },
+            {
+              value: "2016-2017上学期",
+              label: "2016-2017上学期"
+            },
+            {
+              value: "2017-2018上学期",
+              label: "2017-2018上学期"
+            },
+            {
+              value: "2018-2019上学期",
+              label: "2018-2019上学期"
+            }
+          ]
+        },
+        {
+          semesterTip: "课程",
+          defaultValue: "所有课程",
+          semesterList: [
+            {
+              value: "所有课程",
+              label: "所有课程"
+            },
+            {
+              value: "新媒体实训",
+              label: "新媒体实训"
+            },
+            {
+              value: "JavaScript编程",
+              label: "JavaScript编程"
+            },
+            {
+              value: "Vue应用开发",
+              label: "Vue应用开发"
+            }
+          ]
+        },
         {
           semesterTip: "周数",
           defaultValue: "",
@@ -167,6 +204,10 @@ export default {
       ],
       columns1: [
         {
+          title: "课程名称",
+          key: "courseName"
+        },
+        {
           title: "实验",
           key: "experiment"
         },
@@ -193,19 +234,18 @@ export default {
             const homeworkClassify = params["row"]["homeworkClassify"];
             if (homeworkClassify === "在线作业") {
               return h("div", [
-                this.btnStyle("查看", h, () => (this.curDirectory = 2)),
-                this.btnStyle("返回", h, () => this.revert())
+                this.btnStyle("查看", h, () => (this.curDirectory = 2))
               ]);
             }
             return h("div", [
-              this.btnStyle("下载", h, () => this.$Message.info("下载中")),
-              this.btnStyle("返回", h, () => this.revert())
+              this.btnStyle("下载", h, () => this.$Message.info("下载中"))
             ]);
           }
         }
       ],
       data1: [
         {
+          courseName: "新媒体实训",
           weeksNum: "第一周",
           experiment: "堂上构建简单服务器",
           grading: 100,
@@ -213,6 +253,39 @@ export default {
           homeworkClassify: "在线作业"
         },
         {
+          courseName: "新媒体实训",
+          weeksNum: "第二周",
+          experiment: "构建简单服务器",
+          grading: 0,
+          status: "未完成",
+          homeworkClassify: "课时作业"
+        },
+        {
+          courseName: "JavaScript编程",
+          weeksNum: "第一周",
+          experiment: "堂上构建简单服务器",
+          grading: 100,
+          status: "已完成",
+          homeworkClassify: "在线作业"
+        },
+        {
+          courseName: "JavaScript编程",
+          weeksNum: "第二周",
+          experiment: "构建简单服务器",
+          grading: 0,
+          status: "未完成",
+          homeworkClassify: "课时作业"
+        },
+        {
+          courseName: "Vue应用开发",
+          weeksNum: "第一周",
+          experiment: "堂上构建简单服务器",
+          grading: 100,
+          status: "已完成",
+          homeworkClassify: "在线作业"
+        },
+        {
+          courseName: "Vue应用开发",
           weeksNum: "第二周",
           experiment: "构建简单服务器",
           grading: 0,
@@ -224,17 +297,8 @@ export default {
   },
 
   methods: {
-    goNext() {
-      this.isSelectCourse = false;
-    },
-
     goBack() {
       this.curDirectory = 1;
-    },
-
-    revert() {
-      this.curDirectory = 1;
-      this.isSelectCourse = true;
     }
   }
 };
@@ -250,7 +314,8 @@ export default {
   justify-content: flex-start;
 
   .multiple-choice /deep/ .select-list {
-    margin-right: 30px;
+    margin-right: 16px;
+    width: 160px;
   }
 
   .mar-top {
@@ -261,12 +326,17 @@ export default {
     width: 100%;
   }
 
+  .page {
+    align-self: flex-end;
+  }
+
   .select-con {
     display: flex;
     align-self: flex-start;
     width: 100%;
 
     .search-item {
+      margin-top: -1px;
       width: 220px;
     }
   }

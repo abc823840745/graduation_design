@@ -30,7 +30,7 @@
       />
       <Page
         :total="30"
-        class="mar-top"
+        class="mar-top page"
       />
     </div>
 
@@ -194,6 +194,7 @@ export default {
     align-self: flex-start;
 
     .search-item {
+      margin-top: -1px;
       width: 220px;
     }
   }
@@ -208,6 +209,10 @@ export default {
 
   .table-con {
     width: 100%;
+  }
+
+  .page {
+    align-self: flex-end;
   }
 }
 </style>

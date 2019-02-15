@@ -268,6 +268,7 @@ export default {
     width: 100%;
 
     .search-item {
+      margin-top: -1px;
       margin-left: 4%;
       width: 20%;
     }

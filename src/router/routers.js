@@ -331,6 +331,16 @@ export default [
       //   component: () => import('@stuHomework/page/course-download.vue'),
       // },
       {
+        path: 'homework-main',
+        name: 'student-homework-main',
+        meta: {
+          icon: 'ios-document',
+          title: '首页',
+          access: ['student'],
+        },
+        component: () => import('@stuHomework/page/homework-main.vue'),
+      },
+      {
         path: 'experimental-state',
         name: 'student-experimental-state',
         meta: {
@@ -632,14 +642,24 @@ export default [
     component: Main,
     children: [
       {
-        path: 'homework-assignment',
-        name: 'teacher-homework-assignment',
+        path: 'homework-main',
+        name: 'teacher-homework-main',
+        meta: {
+          icon: 'ios-document',
+          title: '首页',
+          access: ['teacher', 'admin'],
+        },
+        component: () => import('@teaHomework/page/homework-main.vue'),
+      },
+      {
+        path: 'homework-create',
+        name: 'teacher-homework-create',
         meta: {
           icon: 'ios-document',
           title: '我的作业',
           access: ['teacher', 'admin'],
         },
-        component: () => import('@teaHomework/page/homework-assignment.vue'),
+        component: () => import('@teaHomework/page/homework-create.vue'),
       },
       {
         path: 'check-homework',

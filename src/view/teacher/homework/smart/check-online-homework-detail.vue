@@ -1,5 +1,5 @@
 <template>
-  <div class="containter">
+  <div class="homework-detail-con">
     <div>
       <RadioItem
         :inputInfo='inputInfo[0]'
@@ -40,7 +40,7 @@
           </CheckboxGroup>
         </div>
         <div class="radio-list">
-          评分：
+          <p>评分：</p>
           <InputNumber
             :max="100"
             :min="0"
@@ -55,7 +55,7 @@
         <p class="input-title subjectText">{{inputInfo[3]['subject']}}</p>
         <p>答案: {{inputInfo[3]['choice']}}</p>
         <div class="radio-list">
-          评分：
+          <p>评分：</p>
           <InputNumber
             :max="100"
             :min="0"
@@ -169,55 +169,65 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.containter {
+.homework-detail-con {
   width: 100%;
   height: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
+  padding-top: 2%;
+  padding-left: 3%;
+
   .bottom-bar {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 5%;
+    margin-bottom: 4%;
+
     .total-score {
       font-size: 18px;
+
       .score {
         color: #2d8cf0;
       }
     }
   }
+
   p {
-    font-size: 14px;
+    font-size: 15px;
   }
+
   .mar-bottom {
     margin-bottom: 30px;
+
     .input-title {
       margin-bottom: 5px;
     }
+
     .radio-list {
       width: 100%;
       margin-top: 10px;
       display: flex;
       align-items: center;
       justify-content: flex-start;
+
       .radio-item {
         margin-left: 10px;
       }
     }
+
     .checkbox-item {
       margin-left: 10px;
     }
   }
+
   .btnGround {
-    width: 100%;
+    width: 20%;
     display: flex;
     align-items: center;
     justify-content: space-between;
   }
+
   .btnGround button:nth-of-type(1) {
     margin-right: 5%;
   }
+
   .subjectText {
     width: 220px;
     height: auto;

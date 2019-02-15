@@ -44,7 +44,7 @@
 
     <Page
       :total="30"
-      class="mar-top"
+      class="mar-top page"
     />
 
   </div>
@@ -143,6 +143,11 @@ export default {
   flex-direction: column;
   align-items: center;
 
+  .page {
+    align-self: flex-end;
+    padding-right: 0.5%;
+  }
+
   .course-containter {
     width: 100%;
     display: flex;
@@ -151,9 +156,9 @@ export default {
     padding-top: 3%;
 
     .card {
-      width: 197px;
+      width: 18.5%;
       height: 97px;
-      margin-bottom: 2%;
+      margin-bottom: 20px;
       display: flex;
       align-items: center;
       justify-content: flex-start;

@@ -14,9 +14,10 @@
         :columns="showTable('columns')"
         :data="showTable('data')"
       />
+
       <Page
         :total="30"
-        class="mar-top"
+        class="mar-top page"
       />
     </div>
 
@@ -233,15 +234,23 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+
   .flex-start {
     align-self: flex-start;
   }
+
   .mar-top {
     margin-top: 20px;
   }
+
   .table-con {
     width: 100%;
   }
+
+  .page {
+    align-self: flex-end;
+  }
+
   .content {
     margin-top: 20px;
     display: flex;
@@ -249,6 +258,7 @@ export default {
     flex-wrap: wrap;
     justify-content: center;
   }
+
   .course-name {
     width: 20%;
     height: 120px;
@@ -262,20 +272,25 @@ export default {
     margin-right: 50px;
     margin-bottom: 20px;
   }
+
   .course-name:nth-child(4n) {
     margin-right: 0;
   }
+
   .select-con {
     display: flex;
     align-self: flex-start;
     width: 100%;
   }
+
   .select-title {
     margin-right: 10px;
   }
+
   .select-list {
     width: 200px;
   }
+
   .select-list-con {
     display: flex;
     align-items: center;

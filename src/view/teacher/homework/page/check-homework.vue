@@ -35,11 +35,11 @@
 
       <Page
         :total="30"
-        class="mar-top"
+        class="mar-top page"
       />
 
       <Button
-        v-if="curDirectory === 4"
+        v-show="curDirectory === 4"
         @click="submit"
         type="primary"
         class="mar-top"
@@ -49,7 +49,7 @@
     </div>
 
     <CheckOnlineHWDetail
-      v-if="curDirectory === 6"
+      v-show="curDirectory === 6"
       @goBack='goBack'
     />
 
@@ -230,6 +230,21 @@ export default {
       data1: [
         {
           className: "ATM"
+        },
+        {
+          className: "AAA"
+        },
+        {
+          className: "BBB"
+        },
+        {
+          className: "CCC"
+        },
+        {
+          className: "DDD"
+        },
+        {
+          className: "EEE"
         }
       ],
       data2: [
@@ -252,6 +267,27 @@ export default {
         }
       ],
       data4: [
+        {
+          studentId: "1540624158",
+          name: "吕嘉俊",
+          submission: "已完成",
+          score: "",
+          operation: ""
+        },
+        {
+          studentId: "1540624158",
+          name: "吕嘉俊",
+          submission: "已完成",
+          score: "",
+          operation: ""
+        },
+        {
+          studentId: "1540624158",
+          name: "吕嘉俊",
+          submission: "已完成",
+          score: "",
+          operation: ""
+        },
         {
           studentId: "1540624158",
           name: "吕嘉俊",
@@ -299,33 +335,44 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
 }
+
 .mar-top {
   margin-top: 20px;
 }
+
 .table-con {
   width: 100%;
 }
+
+.page {
+  align-self: flex-end;
+}
+
 .select-con {
   display: flex;
   align-self: flex-start;
   width: 100%;
 }
+
 .select-title {
   margin-right: 10px;
 }
+
 .select-list {
   width: 200px;
 }
+
 .select-list-con {
   display: flex;
   align-items: center;
   margin-right: 30px;
 }
+
 .header-bar {
   position: relative;
   width: 100%;
+
   .float-left {
     position: absolute;
     top: 50%;
@@ -333,6 +380,7 @@ export default {
     transform: translateY(-50%);
     float: left;
   }
+
   .float-right {
     float: right;
   }
