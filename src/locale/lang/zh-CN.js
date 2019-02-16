@@ -1,9 +1,10 @@
 export default {
-  //学生路由中文名
+  // 学生路由中文名
   'student-teacher-home': '首页',
-  'message': '消息公告',
-  'teacher_detail': '教师详情',
-  //学生个人中心
+  message: '消息公告',
+  teacher_detail: '教师详情',
+
+  // 学生个人中心
   'student-personal': '个人中心',
   'student-my-info': '我的资料',
   'student-my-message': '我的私信',
@@ -14,10 +15,19 @@ export default {
   'student-my-course-class-detail': '课时详情',
   'student-other': '其他',
   'student-else': '其他',
-  //学生作业管理
+
+  // 学生作业管理
+  'student-homework-main': '首页',
   'student-homework': '作业设计',
-  'student-my-homework': '我的作业',
-  //学生毕设管理
+  'student-my-homework': '查看作业评分',
+  'student-homework-tasks': '任务中心',
+  'student-write-online-homework': '完成在线作业',
+  'student-course-download': '课件下载',
+  'student-experiment-management': '实验管理',
+  'student-online-homework': '在线作业',
+  'student-experimental-state': '实验状态',
+
+  // 学生毕设管理
   'student-graduation': '毕业设计',
   'student-choice-teacher': '选择导师',
   'student-choice-course': '选择课题',
@@ -26,27 +36,36 @@ export default {
   'student-submit-papper': '提交论文',
   'student-project-manager': '优秀毕设',
   'student-practice-week': '实习周报',
-  'week_report': '查看学生实习周报',
-  'course_detail': '查看学生课题',
-  'mission_detail': '查看学生任务',
-  'papper_detail': '查看学生论文',
-  //教师路由中文名
-  //学生个人中心
+  week_report: '查看学生实习周报',
+  course_detail: '查看学生课题',
+  mission_detail: '查看学生任务',
+  papper_detail: '查看学生论文',
+
+  // 学生答疑模块
+  'student-answering': '答疑管理',
+  'student-answer-questions': '答疑管理',
+
+  // 教师路由中文名
   'teacher-personal': '个人中心',
   'teacher-my-info': '我的资料',
   'teacher-my-message': '我的私信',
-  //教师课程管理
+
+  // 教师课程管理
   'teacher-course': '课程管理',
   'teacher-my-course': '我的课程',
   'teacher-my-course-detail': '课程详情',
   'teacher-my-course-class': '课时详情',
   'teacher-question-detail': '问题详情',
   'teacher-my-course-questions': '课程答疑',
-  //教师作业管理
+
+  // 教师作业管理
   'teacher-homework': '作业管理',
-  'teacher-my-homework': '布置作业',
-  'teacher-homework-other': '其他',
-  //教师毕设管理
+  'teacher-homework-create': '新建作业',
+  'teacher-check-homework': '查看/修改作业',
+  'teacher-upload-courseware': '上传课件',
+  'teacher-task-center': '任务中心',
+
+  // 教师毕设管理
   'teacher-graduation': '毕业管理',
   'teacher-choice-teacher': '我的毕设信息',
   'teacher-choice-course': '开发课题',
@@ -56,11 +75,18 @@ export default {
   'teacher-project-manager': '优秀毕设',
   'teacher-practice-week': '查看实习周报',
 
-  //管理员模块
-  'admin-content':'管理员模块',
-  'teacher-manager':'教师管理',
-  'time-manager':'时间管理',
-  'course_admin':'课题分配',
-   'papper_admin': '导师选择详情',
-   'movie-manager': '优秀毕设管理'
-}
+  // 教师答疑模块
+  'teacher-answering': '答疑管理',
+  'teacher-answer-questions': '答疑管理',
+
+  // 管理员模块
+  'admin-content': '管理员模块',
+  'teacher-manager': '教师管理',
+  'time-manager': '时间管理',
+  course_admin: '课题分配',
+  papper_admin: '导师选择详情',
+  'movie-manager': '优秀毕设管理',
+  'permission-manager': '权限控制',
+  'modules-manager': '模块控制',
+  'handle-manager': '操作控制',
+};
