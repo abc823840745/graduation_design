@@ -38,14 +38,26 @@
         class="mar-top page"
       />
 
-      <Button
-        v-show="curDirectory === 4"
-        @click="submit"
-        type="primary"
-        class="mar-top"
-        size='large'
-        icon="ios-download-outline"
-      >全部下载</Button>
+      <div class="btn-ground">
+        <Button
+          v-show="curDirectory === 4"
+          @click="submit"
+          type="primary"
+          class="mar-top"
+          size='large'
+          icon="ios-download-outline"
+        >全部下载</Button>
+
+        <Button
+          v-show="curDirectory === 4"
+          @click="submit"
+          type="primary"
+          class="mar-top"
+          size='large'
+          icon="ios-download-outline"
+        >提交评分</Button>
+      </div>
+
     </div>
 
     <CheckOnlineHWDetail
@@ -347,6 +359,13 @@ export default {
 
 .page {
   align-self: flex-end;
+}
+
+.btn-ground {
+  width: 22%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .select-con {

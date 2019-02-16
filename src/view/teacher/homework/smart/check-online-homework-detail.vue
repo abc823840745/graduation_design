@@ -76,7 +76,7 @@
           type="primary"
           @click="submit"
           long
-        >提交</Button>
+        >提交评分</Button>
 
         <Button
           type="primary"

@@ -106,6 +106,20 @@ export default {
               label: "mysql数据库"
             }
           ]
+        },
+        {
+          semesterTip: "作业类型",
+          defaultValue: "",
+          semesterList: [
+            {
+              value: "课时作业",
+              label: "课时作业"
+            },
+            {
+              value: "在线作业",
+              label: "在线作业"
+            }
+          ]
         }
       ],
       columns1: [
@@ -123,7 +137,8 @@ export default {
         },
         {
           title: "截止时间",
-          key: "stopTime"
+          key: "stopTime",
+          sortable: true
         },
         {
           title: "操作",
@@ -184,18 +199,23 @@ export default {
   flex-direction: column;
   align-items: center;
 
-  .multiple-choice /deep/ .select-list {
-    margin-right: 30px;
-  }
-
   .select-list {
-    width: 100%;
     display: flex;
     align-self: flex-start;
+    flex-wrap: wrap;
+    width: 100%;
+
+    .multiple-choice {
+      margin-bottom: 10px;
+    }
+
+    .multiple-choice /deep/ .select-list {
+      margin-right: 30px;
+    }
 
     .search-item {
       margin-top: -1px;
-      width: 220px;
+      width: 262px;
     }
   }
 

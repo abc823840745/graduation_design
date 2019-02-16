@@ -162,7 +162,8 @@ export default {
         },
         {
           title: "上传时间",
-          key: "uploadTime"
+          key: "uploadTime",
+          sortable: true
         },
         {
           title: "操作",

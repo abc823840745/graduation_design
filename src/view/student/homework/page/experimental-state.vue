@@ -126,7 +126,7 @@ export default {
       ],
       selectList: [
         {
-          semesterTip: "学期",
+          semesterTip: "学期选择",
           defaultValue: "2018-2019上学期",
           semesterList: [
             {
@@ -148,7 +148,7 @@ export default {
           ]
         },
         {
-          semesterTip: "课程",
+          semesterTip: "课程选择",
           defaultValue: "所有课程",
           semesterList: [
             {
@@ -170,7 +170,7 @@ export default {
           ]
         },
         {
-          semesterTip: "周数",
+          semesterTip: "周数选择",
           defaultValue: "",
           semesterList: [
             {
@@ -184,7 +184,21 @@ export default {
           ]
         },
         {
-          semesterTip: "状态",
+          semesterTip: "作业类型",
+          defaultValue: "",
+          semesterList: [
+            {
+              value: "课时作业",
+              label: "课时作业"
+            },
+            {
+              value: "在线作业",
+              label: "在线作业"
+            }
+          ]
+        },
+        {
+          semesterTip: "完成状态",
           defaultValue: "",
           semesterList: [
             {
@@ -313,13 +327,8 @@ export default {
   align-items: center;
   justify-content: flex-start;
 
-  .multiple-choice /deep/ .select-list {
-    margin-right: 16px;
-    width: 160px;
-  }
-
   .mar-top {
-    margin-top: 2.5%;
+    margin-top: 1.5%;
   }
 
   .table-con {
@@ -333,11 +342,20 @@ export default {
   .select-con {
     display: flex;
     align-self: flex-start;
+    flex-wrap: wrap;
     width: 100%;
+
+    .multiple-choice {
+      margin-bottom: 10px;
+    }
+
+    .multiple-choice /deep/ .select-list {
+      margin-right: 30px;
+    }
 
     .search-item {
       margin-top: -1px;
-      width: 220px;
+      width: 262px;
     }
   }
 }
