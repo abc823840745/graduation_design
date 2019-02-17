@@ -2,8 +2,13 @@
   <div class="containter">
     <div
       v-show="!showCreateSubject"
-      class="containter"
+      class="create-subject-con"
     >
+
+      <h2>新建作业</h2>
+
+      <Divider />
+
       <div class="mar-bottom mar-top">
         作业名称：
         <Input
@@ -70,7 +75,7 @@
 </template>
 
 <script>
-import CreateSubject from "@teaHomework/smart/create-subject.vue";
+import CreateSubject from "@teaHomework/smart/create-subject";
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
 
 export default {
@@ -155,13 +160,22 @@ export default {
 </script>
 
 <style lang="less" scoped>
+@import "../../../../public.less";
+
 .containter {
-  width: 100%;
-  height: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
+  width: 100%;
+  height: auto;
+  padding: 0 1%;
+
+  .create-subject-con {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
 
   .multiple-choice /deep/ .select-list {
     width: 250px;
@@ -172,7 +186,7 @@ export default {
   }
 
   .mar-top {
-    margin-top: 80px;
+    margin-top: 20px;
   }
 
   .btnGround {

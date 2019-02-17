@@ -28,8 +28,8 @@
 
       <Table
         border
-        :columns="showTable('columns',5)"
-        :data="showTable('data',5)"
+        :columns="showTable('columns',6)"
+        :data="showTable('data',6)"
         class="table-con mar-top"
       />
 
@@ -73,7 +73,7 @@
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import ProgressBar from "@teaHomework/smart/progress-bar";
 import CourseSelect from "@teaHomework/smart/course-select";
-import CheckOnlineHWDetail from "@teaHomework/smart/check-online-homework-detail.vue";
+import CheckOnlineHWDetail from "@teaHomework/smart/check-online-homework-detail";
 import myMixin from "@teaHomework/mixin";
 
 export default {

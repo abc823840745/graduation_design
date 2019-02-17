@@ -27,7 +27,6 @@
         <Upload
           ref="upload"
           type="drag"
-          :on-remove="handleremove"
           action="//jsonplaceholder.typicode.com/posts/"
         >
           <div style="padding: 20px 0">

@@ -58,7 +58,7 @@ export default {
   'teacher-homework-main': '主页',
   'teacher-homework': '作业管理',
   'teacher-homework-create': '新建作业',
-  'teacher-check-homework': '查看/修改作业',
+  'teacher-check-homework': '作业评分',
   'teacher-upload-courseware': '上传课件',
   'teacher-task-center': '任务中心',
 

@@ -1,69 +1,18 @@
 <template>
   <div class="homework-detail-con">
     <div>
-      <RadioItem
-        :inputInfo='inputInfo[0]'
-        @onChangeScore="onChangeScore"
+
+      <h2>作业评分</h2>
+
+      <Divider />
+
+      <SubjectType
+        class="mb-30"
+        v-for="(item,index) in inputInfo"
+        type='score'
+        :key="index"
+        :inputInfo='item'
       />
-
-      <RadioItem
-        :inputInfo='inputInfo[1]'
-        @onChangeScore="onChangeScore2"
-      />
-
-      <div class="mar-bottom">
-        <p class="input-title">{{inputInfo[2]['title']}}</p>
-        <p class="subjectText">{{inputInfo[2]['subject']}}</p>
-        <div class="radio-list">
-          答案:
-          <CheckboxGroup v-model="inputInfo[2]['choice']">
-            <Checkbox
-              label="A"
-              class="checkbox-item"
-              disabled
-            ></Checkbox>
-            <Checkbox
-              label="B"
-              class="checkbox-item"
-              disabled
-            ></Checkbox>
-            <Checkbox
-              label="C"
-              class="checkbox-item"
-              disabled
-            ></Checkbox>
-            <Checkbox
-              label="D"
-              class="checkbox-item"
-              disabled
-            ></Checkbox>
-          </CheckboxGroup>
-        </div>
-        <div class="radio-list">
-          <p>评分：</p>
-          <InputNumber
-            :max="100"
-            :min="0"
-            :step="10"
-            v-model="inputInfo[2]['score']"
-          ></InputNumber>
-        </div>
-      </div>
-
-      <div class="mar-bottom">
-        <p class="input-title">{{inputInfo[3]['title']}}</p>
-        <p class="input-title subjectText">{{inputInfo[3]['subject']}}</p>
-        <p>答案: {{inputInfo[3]['choice']}}</p>
-        <div class="radio-list">
-          <p>评分：</p>
-          <InputNumber
-            :max="100"
-            :min="0"
-            :step="10"
-            v-model="inputInfo[3]['score']"
-          ></InputNumber>
-        </div>
-      </div>
 
       <div class="bottom-bar">
         <p class="total-score">总评分:
@@ -90,44 +39,69 @@
 </template>
 
 <script>
-import RadioItem from "@teaHomework/smart/online-detail-radio-item";
+import SubjectType from "@/view/global/show-subject-different-types";
 
 export default {
   name: "check-online-homework-detail",
 
   components: {
-    RadioItem
+    SubjectType
   },
 
   data() {
     return {
       inputInfo: [
         {
-          subject: "我们是机车吗？",
+          subjectType: "单选题",
+          subject:
+            "我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？",
           title: "1、单选题",
-          placeholder: "第一题题目",
           choice: "A",
+          referenceAnswer: "A",
           score: 60
         },
         {
-          subject: "我们是机车吗？",
-          title: "2、单选题",
-          placeholder: "第二题题目",
-          choice: "B",
+          subjectType: "多选题",
+          subject:
+            "我们是机车吗？我们是机车吗我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？",
+          title: "2、多选题",
+          choice: ["B"],
+          referenceAnswer: ["A"],
           score: 60
         },
         {
-          subject: "我们是机车吗？",
-          title: "3、多选题",
-          placeholder: "第三题题目",
-          choice: ["B", "C"],
+          subjectType: "填空题",
+          subject: [
+            {
+              subject:
+                "《红楼梦》又名_________ ，是中国古典现实主义小说发展的顶峰。全书共置120回，前80回为曹雪芹所作，后40回一般认为是_________ 续写。《红楼梦》又名_________ ，是中国古典现实主义小说发展的顶峰。全书共置120回，前80回为曹雪芹所作，后40回一般认为是_________ 续写。",
+              answer:
+                "石头记 高鹗我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？",
+              showCreSubjectBtn: false
+            },
+            {
+              subject:
+                "《红楼梦》又名_________ ，是中国古典现实主义小说发展的顶峰。全书共置120回，前80回为曹雪芹所作，后40回一般认为是_________ 续写。",
+              answer:
+                "石头记 高鹗我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？",
+              showCreSubjectBtn: false
+            }
+          ],
+          title: "3、填空题",
+          choice: "填空题的回答",
+          referenceAnswer:
+            "填空题的参考答案我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？",
           score: 60
         },
         {
-          subject: "我们是机车吗？",
-          title: "4、主观题",
-          placeholder: "第四题题目",
-          choice: "hahahahahahah",
+          subjectType: "问答题",
+          subject:
+            "我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？",
+          title: "4、问答题",
+          choice:
+            "我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？",
+          referenceAnswer:
+            "我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？",
           score: 60
         }
       ]
@@ -169,11 +143,12 @@ export default {
 </script>
 
 <style lang="less" scoped>
+@import "../../../../public.less";
+
 .homework-detail-con {
   width: 100%;
   height: auto;
-  padding-top: 2%;
-  padding-left: 3%;
+  padding: 1%;
 
   .bottom-bar {
     display: flex;

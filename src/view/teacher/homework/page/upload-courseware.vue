@@ -45,7 +45,6 @@
         ref="upload"
         multiple
         type="drag"
-        :on-remove="handleremove"
         action="//jsonplaceholder.typicode.com/posts/"
       >
 

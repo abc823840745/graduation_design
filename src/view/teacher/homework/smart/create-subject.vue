@@ -1,80 +1,65 @@
 <template>
   <div class="containters">
-    <RadioItem
-      :inputInfo='inputInfo[0]'
-      @onChangeSubject="onChangeSubject"
-      @onChangeRadio="onChangeRadio"
+
+    <h2>新建作业</h2>
+
+    <Divider />
+
+    <Alert
+      show-icon
+      v-if="inputInfo.length === 0"
+    >请点击新建作业按钮快点新建作业吧！</Alert>
+
+    <Modal
+      v-model="isShowModal"
+      title="新建作业"
+      @on-ok="dialogOk"
+    >
+      <MultipleChoice
+        semesterTip="题目类型"
+        placeholder='请选择题目类型'
+        :defaultValue.sync="subjectClassify"
+        :semesterList="subjectClassifyList"
+        class="multiple-choice"
+      />
+    </Modal>
+
+    <SubjectType
+      class="mb-30"
+      v-for="(item,index) in inputInfo"
+      type='create'
+      :key="index"
+      :inputInfo='item'
     />
 
-    <RadioItem
-      :inputInfo='inputInfo[1]'
-      @onChangeSubject="onChangeSubject2"
-      @onChangeRadio="onChangeRadio2"
-    />
-
-    <div class="mar-bottom">
-      <p class="input-title">{{inputInfo[2]['title']}}</p>
-      <Input
-        type="textarea"
-        :autosize="{minRows: 2,maxRows: 5}"
-        v-model="inputInfo[2]['subject']"
-        :placeholder="inputInfo[2]['placeholder']"
-        clearable
-        style="width: 250px"
-      />
-      <div class="radio-list">
-        <p>答案:</p>
-        <CheckboxGroup v-model="inputInfo[2]['choice']">
-          <Checkbox
-            label="A"
-            class="checkbox-item"
-          >A</Checkbox>
-          <Checkbox
-            label="B"
-            class="checkbox-item"
-          >B</Checkbox>
-          <Checkbox
-            label="C"
-            class="checkbox-item"
-          >C</Checkbox>
-          <Checkbox
-            label="D"
-            class="checkbox-item"
-          >D</Checkbox>
-        </CheckboxGroup>
-      </div>
-    </div>
-
-    <div class="mar-bottom">
-      <p class="input-title">{{inputInfo[3]['title']}}</p>
-      <Input
-        type="textarea"
-        :autosize="{minRows: 2,maxRows: 5}"
-        v-model="inputInfo[3]['subject']"
-        :placeholder="inputInfo[3]['placeholder']"
-        clearable
-        style="width: 250px"
-      />
-    </div>
-
-    <div class="btnGround">
+    <div class="btn-ground">
       <Button
+        class="bottom-btn"
         type="primary"
-        size='large'
+        long
+        @click="createSubject"
+      >新建题目</Button>
+      <Button
+        class="bottom-btn"
+        type="primary"
+        long
         @click="$emit('goBack')"
       >上一步</Button>
       <Button
+        v-show="inputInfo.length > 0"
+        class="bottom-btn"
         type="primary"
-        size='large'
+        long
         @click="submit"
       >提交</Button>
     </div>
-
   </div>
 </template>
 
 <script>
-import RadioItem from "@teaHomework/smart/create-subject-radio-item";
+import MultipleChoice from "@teaHomework/smart/multiple-choice";
+import SubjectType from "@/view/global/show-subject-different-types";
+import RadioItem from "@/view/global/radio-item";
 
 export default {
   name: "create-subject",
@@ -84,35 +69,32 @@ export default {
   },
 
   components: {
-    RadioItem
+    RadioItem,
+    MultipleChoice,
+    SubjectType
   },
 
   data() {
     return {
-      inputInfo: [
+      isShowModal: false,
+      inputInfo: [],
+      subjectClassify: "单选题",
+      subjectClassifyList: [
         {
-          subject: "",
-          title: "1、单选题",
-          placeholder: "第一题题目",
-          choice: ""
+          value: "单选题",
+          label: "单选题"
         },
         {
-          subject: "",
-          title: "2、单选题",
-          placeholder: "第二题题目",
-          choice: ""
+          value: "多选题",
+          label: "多选题"
         },
         {
-          subject: "",
-          title: "3、多选题",
-          placeholder: "第三题题目",
-          choice: []
+          value: "填空题",
+          label: "填空题"
         },
         {
-          subject: "",
-          title: "4、主观题",
-          placeholder: "第四题题目",
-          choice: ""
+          value: "问答题",
+          label: "问答题"
         }
       ]
     };
@@ -133,30 +115,49 @@ export default {
       this.$Message.success("成功");
     },
 
-    onChangeSubject(data) {
-      this.firstSubject = data.subject;
+    createSubject() {
+      this.isShowModal = true;
     },
 
-    onChangeSubject2(data) {
-      this.secondSubject = data.subject;
-    },
+    dialogOk() {
+      let inputInfo = this.inputInfo;
 
-    onChangeRadio(data) {
-      this.firstChoice = data.radioChoice;
-    },
-
-    onChangeRadio2(data) {
-      this.secondChoice = data.radioChoice;
+      /**
+       * @subjectType 标题类型
+       * @subject 作业题目
+       * @title 标题
+       * @placeholder 输入框提示
+       * @choice 选择的答案
+       */
+      let subject =
+        this.subjectClassify !== "填空题"
+          ? ""
+          : [
+              {
+                subject: "",
+                answer: "",
+                showCreSubjectBtn: true
+              }
+            ];
+      inputInfo.push({
+        subject,
+        subjectType: this.subjectClassify,
+        title: `${inputInfo.length + 1}、${this.subjectClassify}`,
+        choice: this.subjectClassify === "多选题" ? [] : ""
+      });
+      this.inputInfo = inputInfo;
     }
   }
 };
 </script>
 
 <style lang="less" scoped>
+@import "../../../../public.less";
+
 .containters {
   width: 100%;
   height: auto;
-  padding-left: 3%;
+  padding: 0 1%;
 
   p {
     font-size: 15px;
@@ -185,11 +186,15 @@ export default {
     }
   }
 
-  .btnGround {
-    width: 15%;
+  .btn-ground {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    margin-top: 30px;
+
+    .bottom-btn {
+      width: 100px;
+      margin-right: 10px;
+    }
   }
 }
 </style>

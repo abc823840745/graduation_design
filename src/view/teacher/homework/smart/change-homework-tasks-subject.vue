@@ -1,5 +1,10 @@
 <template>
   <div class="containters">
+
+    <h2>修改任务信息</h2>
+
+    <Divider />
+
     <RadioItem
       :inputInfo='inputInfo[0]'
       @onChangeSubject="onChangeSubject"
@@ -75,7 +80,7 @@
 </template>
 
 <script>
-import RadioItem from "@teaHomework/smart/create-subject-radio-item";
+import RadioItem from "@/view/global/radio-item";
 
 export default {
   name: "create-subject",
@@ -94,25 +99,21 @@ export default {
         {
           subject: "haha",
           title: "1、单选题",
-          placeholder: "第一题题目",
           choice: "A"
         },
         {
           subject: "haha",
           title: "2、单选题",
-          placeholder: "第二题题目",
           choice: "B"
         },
         {
           subject: "haha",
           title: "3、多选题",
-          placeholder: "第三题题目",
           choice: ["A", "B"]
         },
         {
           subject: "haha",
           title: "4、主观题",
-          placeholder: "第四题题目",
           choice: ""
         }
       ]
@@ -159,7 +160,7 @@ export default {
   height: auto;
   display: flex;
   flex-direction: column;
-  padding-left: 3%;
+  padding: 0 1%;
 
   p {
     font-size: 15px;

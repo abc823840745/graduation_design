@@ -294,7 +294,7 @@ export default [
     path: '/student/homework',
     name: 'student-homework',
     meta: {
-      icon: 'md-cloud-upload',
+      icon: 'logo-buffer',
       title: '作业设计',
       access: ['student'],
     },
@@ -304,7 +304,7 @@ export default [
         path: 'homework-main',
         name: 'student-homework-main',
         meta: {
-          icon: 'ios-document',
+          icon: 'ios-home',
           title: '首页',
           access: ['student'],
         },
@@ -314,7 +314,7 @@ export default [
         path: 'experimental-state',
         name: 'student-experimental-state',
         meta: {
-          icon: 'md-clipboard',
+          icon: 'ios-list-box',
           title: '实验状态',
           access: ['student'],
         },
@@ -324,7 +324,7 @@ export default [
         path: 'experiment-management',
         name: 'student-experiment-management',
         meta: {
-          icon: 'md-clipboard',
+          icon: 'ios-keypad',
           title: '实验管理',
           access: ['student'],
         },
@@ -334,7 +334,7 @@ export default [
         path: 'online-homework',
         name: 'student-online-homework',
         meta: {
-          icon: 'md-clipboard',
+          icon: 'ios-globe',
           title: '在线作业',
           access: ['student'],
         },
@@ -605,7 +605,7 @@ export default [
     path: '/teacher/homework',
     name: 'teacher-homework',
     meta: {
-      icon: 'md-cloud-upload',
+      icon: 'logo-buffer',
       title: '作业管理',
       access: ['teacher', 'admin'],
     },
@@ -615,7 +615,7 @@ export default [
         path: 'homework-main',
         name: 'teacher-homework-main',
         meta: {
-          icon: 'ios-document',
+          icon: 'ios-home',
           title: '首页',
           access: ['teacher', 'admin'],
         },
@@ -625,8 +625,8 @@ export default [
         path: 'homework-create',
         name: 'teacher-homework-create',
         meta: {
-          icon: 'ios-document',
-          title: '我的作业',
+          icon: 'ios-add-circle',
+          title: '新建作业',
           access: ['teacher', 'admin'],
         },
         component: () => import('@teaHomework/page/homework-create.vue'),
@@ -635,8 +635,8 @@ export default [
         path: 'check-homework',
         name: 'teacher-check-homework',
         meta: {
-          icon: 'ios-document',
-          title: '查看/修改作业',
+          icon: 'ios-brush',
+          title: '作业评分',
           access: ['teacher', 'admin'],
         },
         component: () => import('@teaHomework/page/check-homework.vue'),
@@ -645,7 +645,7 @@ export default [
         path: 'upload-courseware',
         name: 'teacher-upload-courseware',
         meta: {
-          icon: 'ios-document',
+          icon: 'ios-cloud-upload',
           title: '上传课件',
           access: ['teacher', 'admin'],
         },
@@ -655,7 +655,7 @@ export default [
         path: 'task-center',
         name: 'teacher-task-center',
         meta: {
-          icon: 'ios-document',
+          icon: 'ios-list-box',
           title: '任务中心',
           access: ['teacher', 'admin'],
         },

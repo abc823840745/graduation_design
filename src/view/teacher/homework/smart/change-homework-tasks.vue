@@ -2,8 +2,13 @@
   <div class="containter">
     <div
       v-show="!showCreateSubject"
-      class="containter"
+      class="change-homework-tasks-con"
     >
+
+      <h2>修改任务信息</h2>
+
+      <Divider />
+
       <div class="mar-bottom mar-top">
         作业名称：
         <Input
@@ -163,6 +168,11 @@ export default {
   align-items: center;
   justify-content: flex-start;
 
+  .change-homework-tasks-con {
+    width: 100%;
+    padding: 0 1%;
+  }
+
   .multiple-choice /deep/ .select-list {
     width: 250px;
   }
@@ -172,7 +182,7 @@ export default {
   }
 
   .mar-top {
-    margin-top: 80px;
+    margin-top: 20px;
   }
 
   .btnGround {

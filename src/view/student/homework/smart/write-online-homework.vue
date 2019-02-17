@@ -27,7 +27,15 @@
 
     <Divider />
 
-    <RadioItem
+    <SubjectType
+      class="mb-30"
+      v-for="(item,index) in inputInfo"
+      type='testing'
+      :key="index"
+      :inputInfo='item'
+    />
+
+    <!-- <RadioItem
       :inputInfo='inputInfo[0]'
       :ifEdit="false"
       @onChangeRadio="onChangeRadio"
@@ -75,7 +83,7 @@
         placeholder="请输入你的答案"
         class="text-input"
       />
-    </div>
+    </div> -->
 
     <div class="btnGround">
       <Button
@@ -95,14 +103,14 @@
 </template>
 
 <script>
-import RadioItem from "@teaHomework/smart/create-subject-radio-item";
+import SubjectType from "@/view/global/show-subject-different-types";
 import CountDown from "@stuHomework/smart/count-down";
 
 export default {
   name: "online-homework",
 
   components: {
-    RadioItem,
+    SubjectType,
     CountDown
   },
 
@@ -110,28 +118,45 @@ export default {
     return {
       inputInfo: [
         {
+          subjectType: "单选题",
           subject: "钢铁是怎么炼成的?",
           title: "1、单选题",
-          placeholder: "第一题题目",
-          choice: ""
+          choice: "",
+          referenceAnswer: ""
         },
         {
+          subjectType: "多选题",
           subject: "钢铁是怎么炼成的?",
-          title: "2、单选题",
-          placeholder: "第二题题目",
-          choice: ""
+          title: "2、多选题",
+          choice: [],
+          referenceAnswer: ""
         },
         {
-          subject: "钢铁是怎么炼成的?",
-          title: "3、多选题",
-          placeholder: "第三题题目",
-          choice: []
+          subjectType: "填空题",
+          subject: [
+            {
+              subject:
+                "《红楼梦》又名_________ ，是中国古典现实主义小说发展的顶峰。全书共置120回，前80回为曹雪芹所作，后40回一般认为是_________ 续写。",
+              answer: "",
+              showCreSubjectBtn: false
+            },
+            {
+              subject:
+                "《红楼梦》又名_________ ，是中国古典现实主义小说发展的顶峰。全书共置120回，前80回为曹雪芹所作，后40回一般认为是_________ 续写。",
+              answer: "",
+              showCreSubjectBtn: false
+            }
+          ],
+          title: "3、填空题",
+          choice: "",
+          referenceAnswer: ""
         },
         {
+          subjectType: "问答题",
           subject: "钢铁是怎么炼成的?",
           title: "4、主观题",
-          placeholder: "第四题题目",
-          choice: ""
+          choice: "",
+          referenceAnswer: ""
         }
       ],
       isStartTimer: true // 是否开启定时器
@@ -161,6 +186,8 @@ export default {
 </script>
 
 <style lang="less" scoped>
+@import "../../../../public.less";
+
 .containter {
   width: 100%;
   height: auto;

@@ -4,6 +4,7 @@
       class="containter"
       v-if="!isChangeHWTasks"
     >
+
       <div class="select-list">
         <MultipleChoice
           v-for="item in selectList"
@@ -38,7 +39,6 @@
       v-if="isChangeHWTasks"
       @goBack="goBack"
     />
-
   </div>
 </template>
 

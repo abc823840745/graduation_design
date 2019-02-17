@@ -5,42 +5,6 @@
       class="containter"
       v-show="curDirectory !== 2"
     >
-      <Modal
-        v-model="showModal"
-        title="上传"
-        @on-ok="dialogOk"
-        @on-cancel="dialogCancel"
-      >
-        <Alert show-icon>只能上传单个文件或文件夹，如果上传有误，请重新上传即可</Alert>
-
-        <Select
-          v-model="weeksNum"
-          placeholder='请选择周数'
-          style="width:200px;margin-bottom:10px;"
-        >
-          <Option
-            v-for="item in weeksList"
-            :value="item.value"
-            :key="item.value"
-          >{{ item.label }}</Option>
-        </Select>
-
-        <Upload
-          ref="upload"
-          type="drag"
-          :on-remove="handleremove"
-          action="//jsonplaceholder.typicode.com/posts/"
-        >
-          <div style="padding: 20px 0">
-            <Icon
-              type="ios-cloud-upload"
-              size="52"
-              style="color: #3399ff"
-            ></Icon>
-            <p>点击或者把文件拖拽到这里</p>
-          </div>
-        </Upload>
-      </Modal>
 
       <div class="select-con">
         <MultipleChoice

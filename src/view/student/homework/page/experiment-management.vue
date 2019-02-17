@@ -10,7 +10,6 @@
         v-model="showModal"
         title="上传"
         @on-ok="dialogOk"
-        @on-cancel="dialogCancel"
       >
         <Alert show-icon>只能上传单个文件或文件夹，如果上传有误，请重新上传即可</Alert>
 
@@ -29,7 +28,6 @@
         <Upload
           ref="upload"
           type="drag"
-          :on-remove="handleremove"
           action="//jsonplaceholder.typicode.com/posts/"
         >
           <div style="padding: 20px 0">
@@ -275,7 +273,11 @@ export default {
     };
   },
 
-  methods: {}
+  methods: {
+    dialogOk() {
+      console.log("上传");
+    }
+  }
 };
 </script>
 
