@@ -5,62 +5,13 @@
 
     <Divider />
 
-    <RadioItem
-      :inputInfo='inputInfo[0]'
-      @onChangeSubject="onChangeSubject"
-      @onChangeRadio="onChangeRadio"
+    <SubjectType
+      class="mar-bottom"
+      v-for="(item,index) in inputInfo"
+      type='create'
+      :key="index"
+      :inputInfo='item'
     />
-
-    <RadioItem
-      :inputInfo='inputInfo[1]'
-      @onChangeSubject="onChangeSubject2"
-      @onChangeRadio="onChangeRadio2"
-    />
-
-    <div class="mar-bottom">
-      <p class="input-title">{{inputInfo[2]['title']}}</p>
-      <Input
-        type="textarea"
-        :autosize="{minRows: 2,maxRows: 5}"
-        v-model="inputInfo[2]['subject']"
-        :placeholder="inputInfo[2]['placeholder']"
-        clearable
-        style="width: 250px"
-      />
-      <div class="radio-list">
-        <p>答案:</p>
-        <CheckboxGroup v-model="inputInfo[2]['choice']">
-          <Checkbox
-            label="A"
-            class="checkbox-item"
-          >A</Checkbox>
-          <Checkbox
-            label="B"
-            class="checkbox-item"
-          >B</Checkbox>
-          <Checkbox
-            label="C"
-            class="checkbox-item"
-          >C</Checkbox>
-          <Checkbox
-            label="D"
-            class="checkbox-item"
-          >D</Checkbox>
-        </CheckboxGroup>
-      </div>
-    </div>
-
-    <div class="mar-bottom">
-      <p class="input-title">{{inputInfo[3]['title']}}</p>
-      <Input
-        type="textarea"
-        :autosize="{minRows: 2,maxRows: 5}"
-        v-model="inputInfo[3]['subject']"
-        :placeholder="inputInfo[3]['placeholder']"
-        clearable
-        style="width: 250px"
-      />
-    </div>
 
     <div class="btnGround">
       <Button
@@ -80,7 +31,7 @@
 </template>
 
 <script>
-import RadioItem from "@/view/global/radio-item";
+import SubjectType from "@/view/global/show-subject-different-types";
 
 export default {
   name: "create-subject",
@@ -90,31 +41,58 @@ export default {
   },
 
   components: {
-    RadioItem
+    SubjectType
   },
 
   data() {
     return {
       inputInfo: [
         {
-          subject: "haha",
+          subjectType: "单选题",
+          subject: "钢铁是怎么炼成的?",
           title: "1、单选题",
-          choice: "A"
+          choice: "A",
+          referenceAnswer: "A",
+          score: 20
         },
         {
-          subject: "haha",
-          title: "2、单选题",
-          choice: "B"
+          subjectType: "多选题",
+          subject: "钢铁是怎么炼成的?",
+          title: "2、多选题",
+          choice: ["A", "B"],
+          referenceAnswer: ["A", "B"],
+          score: 20
         },
         {
-          subject: "haha",
-          title: "3、多选题",
-          choice: ["A", "B"]
+          subjectType: "填空题",
+          subject: [
+            {
+              subject:
+                "《红楼梦》又名_________ ，是中国古典现实主义小说发展的顶峰。全书共置120回，前80回为曹雪芹所作，后40回一般认为是_________ 续写。《红楼梦》又名_________ ，是中国古典现实主义小说发展的顶峰。全书共置120回，前80回为曹雪芹所作，后40回一般认为是_________ 续写。",
+              answer:
+                "石头记 高鹗我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？",
+              showCreSubjectBtn: false
+            },
+            {
+              subject:
+                "《红楼梦》又名_________ ，是中国古典现实主义小说发展的顶峰。全书共置120回，前80回为曹雪芹所作，后40回一般认为是_________ 续写。",
+              answer:
+                "石头记 高鹗我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？",
+              showCreSubjectBtn: false
+            }
+          ],
+          title: "3、填空题",
+          choice: "填空题回答",
+          referenceAnswer: "填空题参考答案",
+          score: 0
         },
         {
-          subject: "haha",
-          title: "4、主观题",
-          choice: ""
+          subjectType: "问答题",
+          subject: "钢铁是怎么炼成的?",
+          title: "4、问答题",
+          choice: "飞龙在天双龙出海",
+          referenceAnswer: "问答题参考答案",
+          score: 40
         }
       ]
     };

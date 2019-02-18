@@ -1,6 +1,6 @@
 <template>
   <div class="select-list-con">
-    <p class="select-title">{{semesterTip}}:</p>
+    <h3 class="select-title">{{semesterTip}}:</h3>
     <Select
       v-model="semester"
       class="select-list"

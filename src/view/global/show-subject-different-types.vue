@@ -20,6 +20,7 @@
 
     <FillTheQuestion
       v-if="inputInfo['subjectType'] === '填空题'"
+      @delFillSubject='delFillSubject'
       :type='type'
       :info='inputInfo'
     />
@@ -48,6 +49,12 @@ export default {
 
   data() {
     return {};
+  },
+
+  methods: {
+    delFillSubject(index) {
+      this.$emit("delFillSubject", index);
+    }
   }
 };
 </script>

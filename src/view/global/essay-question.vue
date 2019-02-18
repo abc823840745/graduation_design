@@ -1,42 +1,48 @@
 <template>
   <div class="essay-question df-aic">
     <div class='df-fdc'>
+      <!-- 标题 -->
       <h2 class="input-title mb-5">{{info['title']}}</h2>
 
+      <!-- 显示的题目 -->
       <p
-        class="subjectText mb-10"
+        class="subjectText mb-20"
         v-if="type !== 'create'"
-      >{{info['subject']}}</p>
+      > 题目：{{info['subject']}}</p>
 
+      <!-- 输入题目 -->
       <Input
         class='mb-10'
         v-if="type === 'create'"
         type="textarea"
-        :rows="2"
+        :rows="3"
         v-model="subject"
         :placeholder="`第${info['title'].slice(0,1)}题题目`"
         clearable
-        style="width: 250px"
+        style="width: 400px"
       />
 
+      <!-- 输入答案 -->
       <Input
         v-if="type === 'create' || type === 'testing'"
         type="textarea"
-        :rows="2"
+        :rows="3"
         v-model="choice"
         placeholder="请输入问答题答案"
         clearable
-        style="width: 250px"
+        style="width: 400px"
       />
 
+      <!-- 参考答案 -->
       <div
-        class='reference-answer'
+        class='mb-20'
         v-if="type === 'check' || type === 'score'"
       >
         <span>参考答案：</span>
         <span class='green'>{{info['referenceAnswer']}}</span>
       </div>
 
+      <!-- 显示的回答 -->
       <div class='df-aic'>
         <div
           class='df-aic'
@@ -129,10 +135,6 @@ export default {
     .input-title {
       margin-bottom: 5px;
     }
-  }
-
-  .reference-answer {
-    margin-bottom: 10px;
   }
 }
 </style>

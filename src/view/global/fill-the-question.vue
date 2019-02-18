@@ -1,9 +1,9 @@
 <template>
   <div class="fill-the-queation-con df-aic">
     <div class="fill-the-queation-left-con">
+      <!-- 标题 -->
       <h2 class="input-title">{{info['title']}}</h2>
 
-      <!-- 题目、答案和参考答案 -->
       <div v-if="type === 'score' || type === 'check'">
         <div
           class="df-aic w100"
@@ -11,11 +11,13 @@
           :key='index'
         >
           <div class="mb-20 w100">
+            <!-- 显示的题目 -->
             <div class="df mb-10 w100">
               <p>({{index+1}})</p>
               <p v-if="type !== 'create'">{{item['subject']}}</p>
             </div>
 
+            <!-- 参考答案和显示的回答 -->
             <div class="df-fdc">
               <div
                 class="mb-10"
@@ -38,7 +40,6 @@
         </div>
       </div>
 
-      <!-- 输入和添加填空项 -->
       <div
         class="df mb-10"
         v-for="(item,index) in subjectList"
@@ -46,11 +47,13 @@
         v-show="type === 'create' || type === 'testing'"
       >
         <div class="df-fdc">
+          <!-- 显示的题目 -->
           <div class="df mb-10 w100">
             <p>({{index+1}})</p>
             <p v-if="type !== 'create'">{{item['subject']}}</p>
           </div>
 
+          <!-- 输入题目 -->
           <div
             class="df-aic mb-10"
             v-if="type === 'create'"
@@ -58,10 +61,10 @@
             <Input
               type="textarea"
               :rows="3"
-              v-model="item['choice']"
+              v-model="item['subject']"
               :placeholder="`请输入题目`"
               clearable
-              style="width: 250px"
+              style="width: 400px"
             />
 
             <Button
@@ -74,15 +77,21 @@
               class="add-fill-item-btn"
               @click="addNewSubject"
             >添加填空题</Button>
+
+            <Button
+              class="add-fill-item-btn"
+              @click="$emit('delFillSubject',index)"
+            >删除该题</Button>
           </div>
 
+          <!-- 填写填空题答案 -->
           <Input
             type="textarea"
             :rows="3"
             v-model="item['answer']"
             placeholder="请输入填空题答案"
             clearable
-            style="width: 250px"
+            style="width: 400px"
           />
         </div>
       </div>
@@ -119,7 +128,6 @@ export default {
 
   data() {
     return {
-      choice: this.info["choice"],
       answer: "",
       score: 60,
       subjectList: this.info["subject"]
@@ -127,14 +135,16 @@ export default {
   },
 
   methods: {
+    // 添加填空项
     addFillItem(index) {
       let subjectList = this.subjectList;
-      let strArr = subjectList[index]["choice"].toString().split();
-      strArr.push(" ____ ");
-      subjectList[index]["choice"] = strArr.join("");
+      let strArr = subjectList[index]["subject"].split();
+      strArr.push(" _____ ");
+      subjectList[index]["subject"] = strArr.join("");
       this.subjectList = subjectList;
     },
 
+    // 添加题目
     addNewSubject() {
       let subjectList = this.subjectList;
       subjectList.forEach((item, index) => {
@@ -143,10 +153,18 @@ export default {
         }
       });
       subjectList.push({
-        choice: "",
+        subject: "",
         answer: "",
         showCreSubjectBtn: true
       });
+      this.subjectList = subjectList;
+    },
+
+    // 删除题目
+    delSubject(index) {
+      let subjectList = this.subjectList;
+      subjectList.splice(index, 1);
+      this.subjectList = subjectList;
     }
   }
 };

@@ -5,20 +5,28 @@
   >
 
     <div class="radio-left-con">
+      <!-- 标题 -->
       <h2 class="input-title">{{info['title']}}</h2>
 
-      <p v-if="type !== 'create'">{{info['subject']}}</p>
+      <!-- 显示题目 -->
+      <p v-if="type !== 'create'">题目：{{info['subject']}}</p>
 
-      <Input
-        type="textarea"
+      <!-- 输入题目 -->
+      <div
+        class='df-aic'
         v-if="type === 'create'"
-        v-model="subject"
-        :rows="2"
-        :placeholder="`第${info['title'].slice(0,1)}题题目`"
-        clearable
-        style="width: 250px"
-      />
+      >
+        <Input
+          type="textarea"
+          v-model="subject"
+          :rows="3"
+          :placeholder="`第${info['title'].slice(0,1)}题题目`"
+          clearable
+          style="width: 400px"
+        />
+      </div>
 
+      <!-- 按钮组 -->
       <div class="radio-list">
         <span>答案:</span>
 
@@ -46,6 +54,7 @@
         </RadioGroup>
       </div>
 
+      <!-- 参考答案 -->
       <div
         class='reference-answer'
         v-if="type === 'check' || type === 'score'"
@@ -54,6 +63,7 @@
         <span class='green'>{{info['referenceAnswer']}}</span>
       </div>
 
+      <!-- 评分 -->
       <div
         class="radio-list"
         v-if="type === 'score' || type === 'check'"
@@ -143,6 +153,10 @@ export default {
         margin-left: 20px;
       }
     }
+  }
+
+  .delete-subject-btn {
+    margin-left: 10px;
   }
 
   .reference-answer {

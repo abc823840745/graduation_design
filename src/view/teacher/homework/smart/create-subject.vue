@@ -24,13 +24,25 @@
       />
     </Modal>
 
-    <SubjectType
-      class="mb-30"
+    <div
+      class="df-aic"
       v-for="(item,index) in inputInfo"
-      type='create'
       :key="index"
-      :inputInfo='item'
-    />
+      v-show="inputInfo.length > 0"
+    >
+      <SubjectType
+        class="mb-30 subject-type"
+        type='create'
+        :inputInfo='item'
+        @delFillSubject='delFillSubject($event,index)'
+      />
+
+      <Button
+        v-show="item['subjectType'] !== '填空题'"
+        class="delete-subject-btn"
+        @click="delSubject(index)"
+      >删除该题</Button>
+    </div>
 
     <div class="btn-ground">
       <Button
@@ -115,13 +127,14 @@ export default {
       this.$Message.success("成功");
     },
 
+    // 显示 dialog
     createSubject() {
       this.isShowModal = true;
     },
 
+    // 新建题目
     dialogOk() {
       let inputInfo = this.inputInfo;
-
       /**
        * @subjectType 标题类型
        * @subject 作业题目
@@ -145,6 +158,34 @@ export default {
         title: `${inputInfo.length + 1}、${this.subjectClassify}`,
         choice: this.subjectClassify === "多选题" ? [] : ""
       });
+      this.inputInfo = inputInfo;
+    },
+
+    // 删除题目
+    delSubject(index) {
+      let inputInfo = this.inputInfo;
+      inputInfo.splice(index, 1);
+      inputInfo.forEach((item, index) => {
+        item["title"] = `${index + 1}、${item["subjectType"]}`;
+      });
+      this.inputInfo = inputInfo;
+    },
+
+    // 删除填空题小题
+    delFillSubject($event, index) {
+      let inputInfo = this.inputInfo;
+      let fillindex = $event;
+      inputInfo[index]["subject"].splice(fillindex, 1);
+      let subjectListLength = inputInfo[index]["subject"].length;
+
+      // 删除的是最后一个才显示前一个的删除按钮
+      if (fillindex - 1 >= 0 && subjectListLength === fillindex) {
+        inputInfo[index]["subject"][fillindex - 1]["showCreSubjectBtn"] = true;
+      }
+
+      if (subjectListLength === 0) {
+        inputInfo.splice(index, 1);
+      }
       this.inputInfo = inputInfo;
     }
   }
@@ -184,6 +225,14 @@ export default {
     .checkbox-item {
       margin-left: 21px;
     }
+  }
+
+  .subject-type {
+    width: 400px;
+  }
+
+  .delete-subject-btn {
+    margin-left: 10px;
   }
 
   .btn-ground {

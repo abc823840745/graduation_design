@@ -9,8 +9,8 @@
 
       <Divider />
 
-      <div class="mar-bottom mar-top">
-        作业名称：
+      <div class="mar-bottom mar-top df-aic">
+        <h3>作业名称：</h3>
         <Input
           v-model="homeworkInfo['name']"
           placeholder="输入内容"
@@ -37,8 +37,21 @@
         />
       </div>
 
-      <div class="mar-bottom">
-        截止日期：
+      <div
+        class="mar-bottom df-aic"
+        v-show="homeworkInfo['classify'] === '在线作业'"
+      >
+        <h3>考试时间：</h3>
+        <InputNumber
+          :max="80"
+          :min="5"
+          v-model="homeworkInfo['testingTime']"
+        />
+        <span class="ml-5">分钟</span>
+      </div>
+
+      <div class="mar-bottom df-aic">
+        <h3>完成时间：</h3>
         <DatePicker
           :value="homeworkInfo['stopTimeList']"
           type="datetimerange"
@@ -160,6 +173,8 @@ export default {
 </script>
 
 <style lang="less" scoped>
+@import "../../../../public.less";
+
 .containter {
   width: 100%;
   height: auto;

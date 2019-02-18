@@ -1,21 +1,24 @@
 <template>
   <div class="check-box-item-con df-aic">
     <div class="check-box-left-con">
+      <!-- 标题 -->
       <h2 class="input-title">{{info['title']}}</h2>
 
-      <p v-if="type !== 'create'">{{info['subject']}}</p>
+      <!-- 显示题目 -->
+      <p v-if="type !== 'create'">题目：{{info['subject']}}</p>
 
+      <!-- 输入题目 -->
       <Input
         v-if="type === 'create'"
         type="textarea"
-        :rows="2"
+        :rows="3"
         v-model="subject"
         :placeholder="`第${info['title'].slice(0,1)}题题目`"
         clearable
-        style="width: 250px"
+        style="width: 400px"
       />
 
-      <!-- radio选择 -->
+      <!-- 多选框选择 -->
       <div class="radio-list">
         <p>答案:</p>
         <CheckboxGroup v-model="choice">
@@ -51,6 +54,7 @@
         <span class='green'>{{info['referenceAnswer']}}</span>
       </div>
 
+      <!-- 评分 -->
       <div
         class="radio-list"
         v-if="type === 'score' || type === 'check'"
