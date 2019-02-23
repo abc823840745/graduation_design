@@ -263,7 +263,7 @@ export default [
     name: 'student-course',
     meta: {
       icon: 'logo-buffer',
-      title: '课程设计',
+      title: '课程管理',
       access: ['student'],
     },
     component: Main,
@@ -277,6 +277,26 @@ export default [
           access: ['student'],
         },
         component: () => import('@/view/student/course/my-course.vue'),
+      },
+      {
+        path: 'course-detail/:code',
+        name: 'student-my-course-detail',
+        meta: {
+          title: '课程详情',
+          access: ['student'],
+          hideInMenu: true,
+        },
+        component: () => import('@/view/student/course/course-detail/index.vue'),
+      },
+      {
+        path: 'course-detail/:code/:id',
+        name: 'student-my-course-class-detail',
+        meta: {
+          title: '课时详情',
+          access: ['student'],
+          hideInMenu: true,
+        },
+        component: () => import('@/view/student/course/course-detail/class-detail.vue'),
       },
       {
         path: 'other',
@@ -589,14 +609,47 @@ export default [
         component: () => import('@/view/teacher/course/my-course.vue'),
       },
       {
-        path: 'other',
-        name: 'teacher-course-other',
+        path: 'my-course-detail/:id',
+        name: 'teacher-my-course-detail',
+        meta: {
+          icon: 'logo-markdown',
+          title: '课程详情',
+          access: ['teacher', 'admin'],
+          hideInMenu: true,
+        },
+        component: () => import('@/view/teacher/course/my-course-detail.vue'),
+      },
+      {
+        path: 'my-course-detail/:id/:class_id',
+        name: 'teacher-my-course-class',
+        meta: {
+          icon: 'logo-markdown',
+          title: '课时详情',
+          access: ['teacher', 'admin'],
+          hideInMenu: true,
+        },
+        component: () => import('@/view/teacher/course/my-course-class.vue'),
+      },
+      {
+        path: 'teacher-question-detail/:id',
+        name: 'teacher-question-detail',
+        meta: {
+          icon: 'logo-markdown',
+          title: '问题详情',
+          access: ['teacher', 'admin'],
+          hideInMenu: true,
+        },
+        component: () => import('@/view/teacher/course/teacher-question-detail.vue'),
+      },
+      {
+        path: 'my-course-questions',
+        name: 'teacher-my-course-questions',
         meta: {
           icon: 'ios-create',
-          title: '其他',
+          title: '课程答疑',
           access: ['teacher', 'admin'],
         },
-        component: () => import('@/view/teacher/course/other.vue'),
+        component: () => import('@/view/teacher/course/my-course-questions.vue'),
       },
     ],
   },
@@ -641,16 +694,16 @@ export default [
         },
         component: () => import('@teaHomework/page/check-homework.vue'),
       },
-      {
-        path: 'upload-courseware',
-        name: 'teacher-upload-courseware',
-        meta: {
-          icon: 'ios-cloud-upload',
-          title: '上传课件',
-          access: ['teacher', 'admin'],
-        },
-        component: () => import('@teaHomework/page/upload-courseware.vue'),
-      },
+      // {
+      //   path: 'upload-courseware',
+      //   name: 'teacher-upload-courseware',
+      //   meta: {
+      //     icon: 'ios-cloud-upload',
+      //     title: '上传课件',
+      //     access: ['teacher', 'admin'],
+      //   },
+      //   component: () => import('@teaHomework/page/upload-courseware.vue'),
+      // },
       {
         path: 'task-center',
         name: 'teacher-task-center',

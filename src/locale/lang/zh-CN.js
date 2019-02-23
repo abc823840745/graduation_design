@@ -8,10 +8,11 @@ export default {
   'student-personal': '个人中心',
   'student-my-info': '我的资料',
   'student-my-message': '我的私信',
-
-  // 学生课程管理
-  'student-course': '课程设计',
+  //学生课程管理
+  'student-course': '课程管理',
   'student-my-course': '我的课程',
+  'student-my-course-detail': '课程详情',
+  'student-my-course-class-detail': '课时详情',
   'student-other': '其他',
   'student-else': '其他',
 
@@ -52,11 +53,14 @@ export default {
   // 教师课程管理
   'teacher-course': '课程管理',
   'teacher-my-course': '我的课程',
-  'teacher-course-other': '其他',
+  'teacher-my-course-detail': '课程详情',
+  'teacher-my-course-class': '课时详情',
+  'teacher-question-detail': '问题详情',
+  'teacher-my-course-questions': '课程答疑',
 
   // 教师作业管理
-  'teacher-homework-main': '主页',
   'teacher-homework': '作业管理',
+  'teacher-homework-main': '首页',
   'teacher-homework-create': '新建作业',
   'teacher-check-homework': '作业评分',
   'teacher-upload-courseware': '上传课件',
@@ -76,7 +80,7 @@ export default {
   'teacher-answering': '答疑管理',
   'teacher-answer-questions': '答疑管理',
 
-  //管理员模块
+  // 管理员模块
   'admin-content': '管理员模块',
   'teacher-manager': '教师管理',
   'time-manager': '时间管理',
