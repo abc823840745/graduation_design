@@ -2,7 +2,9 @@
   <div class="fill-the-queation-con df-aic">
     <div class="fill-the-queation-left-con">
       <!-- 标题 -->
-      <h2 class="input-title">{{info['title']}}</h2>
+      <h2 class="input-title">
+        {{`${info['title']} (${info['weighting']}分)`}}
+      </h2>
 
       <div v-if="type === 'score' || type === 'check'">
         <div
@@ -79,6 +81,7 @@
             >添加填空题</Button>
 
             <Button
+              type="error"
               class="add-fill-item-btn"
               @click="$emit('delFillSubject',index)"
             >删除该题</Button>
@@ -86,6 +89,7 @@
 
           <!-- 填写填空题答案 -->
           <Input
+            class="mb-10"
             type="textarea"
             :rows="3"
             v-model="item['answer']"
@@ -93,6 +97,18 @@
             clearable
             style="width: 400px"
           />
+
+          <div
+            class='df-aic mb-10'
+            v-if="type === 'create'"
+          >
+            <span>分值：</span>
+            <InputNumber
+              :max="10"
+              :min="1"
+              v-model="info['weighting']"
+            ></InputNumber>
+          </div>
         </div>
       </div>
 
@@ -171,7 +187,7 @@ export default {
 </script>
 
 <style lang='less' scoped>
-@import "../../public.less";
+@import "../public.less";
 
 .fill-the-queation-con {
   width: 100%;

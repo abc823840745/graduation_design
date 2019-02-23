@@ -25,21 +25,21 @@
     </Modal>
 
     <div
-      class="df-aic"
       v-for="(item,index) in inputInfo"
       :key="index"
       v-show="inputInfo.length > 0"
     >
       <SubjectType
-        class="mb-30 subject-type"
+        class="mb-10 subject-type"
         type='create'
         :inputInfo='item'
         @delFillSubject='delFillSubject($event,index)'
       />
 
       <Button
+        type="error"
         v-show="item['subjectType'] !== '填空题'"
-        class="delete-subject-btn"
+        class="delete-subject-btn mb-30"
         @click="delSubject(index)"
       >删除该题</Button>
     </div>
@@ -70,8 +70,7 @@
 
 <script>
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
-import SubjectType from "@/view/global/show-subject-different-types";
-import RadioItem from "@/view/global/radio-item";
+import SubjectType from "@/view/global/component/show-subject-different-types";
 
 export default {
   name: "create-subject",
@@ -81,7 +80,6 @@ export default {
   },
 
   components: {
-    RadioItem,
     MultipleChoice,
     SubjectType
   },
@@ -134,7 +132,6 @@ export default {
 
     // 新建题目
     dialogOk() {
-      let inputInfo = this.inputInfo;
       /**
        * @subjectType 标题类型
        * @subject 作业题目
@@ -142,6 +139,7 @@ export default {
        * @placeholder 输入框提示
        * @choice 选择的答案
        */
+      let inputInfo = this.inputInfo;
       let subject =
         this.subjectClassify !== "填空题"
           ? ""
@@ -183,8 +181,12 @@ export default {
         inputInfo[index]["subject"][fillindex - 1]["showCreSubjectBtn"] = true;
       }
 
+      // 删除当前填空题并更新题号
       if (subjectListLength === 0) {
         inputInfo.splice(index, 1);
+        inputInfo.forEach((item, index) => {
+          item["title"] = `${index + 1}、${item["subjectType"]}`;
+        });
       }
       this.inputInfo = inputInfo;
     }
@@ -193,7 +195,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import "../../../../public.less";
+@import "../../../global/public.less";
 
 .containters {
   width: 100%;
@@ -232,7 +234,8 @@ export default {
   }
 
   .delete-subject-btn {
-    margin-left: 10px;
+    // width: 30px;
+    // margin-left: 10px;
   }
 
   .btn-ground {

@@ -1,15 +1,17 @@
 <template>
   <div class="select-list-con">
-    <h3 class="select-title">{{semesterTip}}:</h3>
+    <h3 class="select-title">{{ semesterTip }}:</h3>
     <Select
       v-model="semester"
       class="select-list"
+      @on-change="$emit('onChange', $event)"
     >
       <Option
         v-for="item in semesterList"
         :value="item.value"
         :key="item.value"
-      >{{ item.label }}</Option>
+        >{{ item.label }}</Option
+      >
     </Select>
   </div>
 </template>

@@ -64,7 +64,7 @@
 
 <script>
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
-import myMixin from "@teaHomework/mixin";
+import myMixin from "@/view/global/mixin";
 
 export default {
   mixins: [myMixin],

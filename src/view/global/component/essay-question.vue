@@ -1,14 +1,20 @@
 <template>
-  <div class="check-box-item-con df-aic">
-    <div class="check-box-left-con">
+  <div class="essay-question df-aic">
+    <div class='df-fdc'>
       <!-- 标题 -->
-      <h2 class="input-title">{{info['title']}}</h2>
+      <h2 class="input-title mb-5">
+        {{`${info['title']} (${info['weighting']}分)`}}
+      </h2>
 
-      <!-- 显示题目 -->
-      <p v-if="type !== 'create'">题目：{{info['subject']}}</p>
+      <!-- 显示的题目 -->
+      <p
+        class="subjectText mb-20"
+        v-if="type !== 'create'"
+      > 题目：{{info['subject']}}</p>
 
       <!-- 输入题目 -->
       <Input
+        class='mb-10'
         v-if="type === 'create'"
         type="textarea"
         :rows="3"
@@ -18,40 +24,51 @@
         style="width: 400px"
       />
 
-      <!-- 多选框选择 -->
-      <div class="radio-list">
-        <p>答案:</p>
-        <CheckboxGroup v-model="choice">
-          <Checkbox
-            label="A"
-            class="checkbox-item"
-            :disabled="isDisabled"
-          >A</Checkbox>
-          <Checkbox
-            label="B"
-            class="checkbox-item"
-            :disabled="isDisabled"
-          >B</Checkbox>
-          <Checkbox
-            label="C"
-            class="checkbox-item"
-            :disabled="isDisabled"
-          >C</Checkbox>
-          <Checkbox
-            label="D"
-            class="checkbox-item"
-            :disabled="isDisabled"
-          >D</Checkbox>
-        </CheckboxGroup>
+      <!-- 输入答案 -->
+      <Input
+        class='mb-10'
+        v-if="type === 'create' || type === 'testing'"
+        type="textarea"
+        :rows="3"
+        v-model="choice"
+        placeholder="请输入问答题答案"
+        clearable
+        style="width: 400px"
+      />
+
+      <div
+        class='df-aic'
+        v-if="type === 'create'"
+      >
+        <span>分值：</span>
+        <InputNumber
+          :max="10"
+          :min="1"
+          v-model="info['weighting']"
+        ></InputNumber>
       </div>
 
       <!-- 参考答案 -->
       <div
-        class='reference-answer'
+        class='mb-20'
         v-if="type === 'check' || type === 'score'"
       >
         <span>参考答案：</span>
         <span class='green'>{{info['referenceAnswer']}}</span>
+      </div>
+
+      <!-- 显示的回答 -->
+      <div class='df-aic'>
+        <div
+          class='df-aic'
+          v-if="type === 'check' || type === 'score'"
+        >
+          <p>
+            回答:
+            <span class="blue">{{info['choice']}}</span>
+          </p>
+
+        </div>
       </div>
 
       <!-- 评分 -->
@@ -75,7 +92,6 @@
         ></InputNumber>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -89,21 +105,15 @@ export default {
   watch: {
     info(newVal, oldVal) {
       this.subject = this.info["subject"];
-      this.choice = this.info["choice"];
+      this.chocie = this.info["choice"];
     },
 
     subject(newVal, oldVal) {
       this.$emit("update:subject", newVal);
     },
 
-    choice(newVal, oldVal) {
-      this.$emit("update:choice", newVal);
-    }
-  },
-
-  computed: {
-    isDisabled() {
-      return this.type === "score" || this.type === "check" ? true : false;
+    chocie(newVal, oldVal) {
+      this.$emit("update:chocie", newVal);
     }
   },
 
@@ -118,10 +128,10 @@ export default {
 </script>
 
 <style lang='less' scoped>
-@import "../../public.less";
+@import "../public.less";
 
-.check-box-item-con {
-  widows: 100%;
+.essay-question {
+  width: 100%;
   height: auto;
 
   p,
@@ -129,25 +139,17 @@ export default {
     font-size: 15px;
   }
 
-  .check-box-left-con {
+  .radio-list {
+    width: 100%;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+  }
+
+  .mar-bottom {
     .input-title {
       margin-bottom: 5px;
     }
-
-    .radio-list {
-      width: 100%;
-      margin-top: 10px;
-      display: flex;
-      align-items: center;
-    }
-
-    .checkbox-item {
-      margin-left: 21px;
-    }
-  }
-
-  .reference-answer {
-    margin-top: 10px;
   }
 }
 </style>

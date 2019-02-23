@@ -77,7 +77,7 @@ export default {
 </script>
 
 <style lang='less' >
-@import "../../../../public.less";
+@import "../../../global/public.less";
 
 .teacher-homework-main {
   .w(100%);

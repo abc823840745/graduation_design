@@ -60,6 +60,7 @@ export default {
 
   // 教师作业管理
   'teacher-homework': '作业管理',
+  'teacher-homework-main': '首页',
   'teacher-homework-create': '新建作业',
   'teacher-check-homework': '作业评分',
   'teacher-upload-courseware': '上传课件',

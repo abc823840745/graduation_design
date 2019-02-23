@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import SubjectType from "@/view/global/show-subject-different-types";
+import SubjectType from "@/view/global/component/show-subject-different-types";
 
 export default {
   name: "check-online-homework-detail",
@@ -53,7 +53,8 @@ export default {
           title: "1、单选题",
           choice: "A",
           referenceAnswer: "A",
-          score: 20
+          score: 20,
+          weighting: 20
         },
         {
           subjectType: "多选题",
@@ -61,7 +62,8 @@ export default {
           title: "2、多选题",
           choice: ["A", "B"],
           referenceAnswer: ["A", "B"],
-          score: 20
+          score: 20,
+          weighting: 20
         },
         {
           subjectType: "填空题",
@@ -84,7 +86,8 @@ export default {
           title: "3、填空题",
           choice: "填空题回答",
           referenceAnswer: "填空题参考答案",
-          score: 0
+          score: 0,
+          weighting: 20
         },
         {
           subjectType: "问答题",
@@ -92,7 +95,8 @@ export default {
           title: "4、问答题",
           choice: "飞龙在天双龙出海",
           referenceAnswer: "问答题参考答案",
-          score: 40
+          score: 40,
+          weighting: 20
         }
       ]
     };

@@ -1,57 +1,62 @@
 <template>
-  <div
-    class="radio-containter df-aic"
-    v-if="!$tools.isEmptyObject(info)"
-  >
-
-    <div class="radio-left-con">
+  <div class="check-box-item-con df-aic">
+    <div class="check-box-left-con">
       <!-- 标题 -->
-      <h2 class="input-title">{{info['title']}}</h2>
+      <h2 class="input-title">
+        {{`${info['title']} (${info['weighting']}分)`}}
+      </h2>
 
       <!-- 显示题目 -->
       <p v-if="type !== 'create'">题目：{{info['subject']}}</p>
 
       <!-- 输入题目 -->
+      <Input
+        v-if="type === 'create'"
+        type="textarea"
+        :rows="3"
+        v-model="subject"
+        :placeholder="`第${info['title'].slice(0,1)}题题目`"
+        clearable
+        style="width: 400px"
+      />
+
+      <!-- 多选框选择 -->
+      <div class="radio-list mb-10">
+        <p>答案:</p>
+        <CheckboxGroup v-model="choice">
+          <Checkbox
+            label="A"
+            class="checkbox-item"
+            :disabled="isDisabled"
+          >A</Checkbox>
+          <Checkbox
+            label="B"
+            class="checkbox-item"
+            :disabled="isDisabled"
+          >B</Checkbox>
+          <Checkbox
+            label="C"
+            class="checkbox-item"
+            :disabled="isDisabled"
+          >C</Checkbox>
+          <Checkbox
+            label="D"
+            class="checkbox-item"
+            :disabled="isDisabled"
+          >D</Checkbox>
+        </CheckboxGroup>
+      </div>
+
       <div
         class='df-aic'
         v-if="type === 'create'"
       >
-        <Input
-          type="textarea"
-          v-model="subject"
-          :rows="3"
-          :placeholder="`第${info['title'].slice(0,1)}题题目`"
-          clearable
-          style="width: 400px"
-        />
-      </div>
-
-      <!-- 按钮组 -->
-      <div class="radio-list">
-        <span>答案:</span>
-
-        <RadioGroup v-model="radioChoice">
-          <Radio
-            class="radio-item"
-            label='A'
-            :disabled="isDisabled"
-          >A</Radio>
-          <Radio
-            class="radio-item"
-            label='B'
-            :disabled="isDisabled"
-          >B</Radio>
-          <Radio
-            class="radio-item"
-            label='C'
-            :disabled="isDisabled"
-          >C</Radio>
-          <Radio
-            class="radio-item"
-            label='D'
-            :disabled="isDisabled"
-          >D</Radio>
-        </RadioGroup>
+        <span>分值：</span>
+        <InputNumber
+          :max="10"
+          :min="1"
+          v-model="info['weighting']"
+        ></InputNumber>
       </div>
 
       <!-- 参考答案 -->
@@ -84,27 +89,28 @@
         ></InputNumber>
       </div>
     </div>
+
   </div>
 </template>
 
 <script>
 export default {
   props: {
-    info: Object, // 输入的数据信息
+    info: Object,
     type: String
   },
 
   watch: {
     info(newVal, oldVal) {
       this.subject = this.info["subject"];
-      this.radioChoice = this.info["choice"];
+      this.choice = this.info["choice"];
     },
 
     subject(newVal, oldVal) {
       this.$emit("update:subject", newVal);
     },
 
-    radioChoice(newVal, oldVal) {
+    choice(newVal, oldVal) {
       this.$emit("update:choice", newVal);
     }
   },
@@ -118,27 +124,26 @@ export default {
   data() {
     return {
       subject: this.info["subject"],
-      radioChoice: this.info["choice"],
+      choice: this.info["choice"],
       score: 60
     };
-  },
-
-  methods: {}
+  }
 };
 </script>
 
-<style  lang="less" scoped>
-@import "../../public.less";
+<style lang='less' scoped>
+@import "../public.less";
 
-.radio-containter {
-  width: 100%;
+.check-box-item-con {
+  widows: 100%;
+  height: auto;
 
   p,
   span {
     font-size: 15px;
   }
 
-  .radio-left-con {
+  .check-box-left-con {
     .input-title {
       margin-bottom: 5px;
     }
@@ -148,15 +153,11 @@ export default {
       margin-top: 10px;
       display: flex;
       align-items: center;
-
-      .radio-item {
-        margin-left: 20px;
-      }
     }
-  }
 
-  .delete-subject-btn {
-    margin-left: 10px;
+    .checkbox-item {
+      margin-left: 21px;
+    }
   }
 
   .reference-answer {

@@ -49,7 +49,7 @@
 import HomeworkDetail from "@stuHomework/smart/check-online-homework-detail";
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import CourseSelect from "@teaHomework/smart/course-select";
-import myMixin from "@stuHomework/mixin";
+import myMixin from "@/view/global/mixin";
 
 export default {
   name: "my-homework",
@@ -175,7 +175,7 @@ export default {
 
     .search-item {
       margin-left: 4%;
-      width: 20%;
+      width: 271px;
     }
   }
 

@@ -75,7 +75,7 @@ export default {
 </script>
 
 <style lang='less' scoped>
-@import "../../../../public.less";
+@import "../../../global/public.less";
 
 .echart-con {
   .w(100%);

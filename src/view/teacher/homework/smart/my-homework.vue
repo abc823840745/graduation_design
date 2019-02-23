@@ -1,10 +1,6 @@
 <template>
   <div class="containter">
-    <div
-      v-show="!showCreateSubject"
-      class="create-subject-con"
-    >
-
+    <div v-show="!showCreateSubject" class="create-subject-con">
       <h2>新建作业</h2>
 
       <Divider />
@@ -21,18 +17,18 @@
 
       <div class="mar-bottom">
         <MultipleChoice
-          semesterTip='作业类型'
+          semesterTip="作业类型"
           :defaultValue.sync="homeworkInfo['classify']"
-          :semesterList='homeworkCategory'
+          :semesterList="homeworkCategory"
           class="multiple-choice"
         />
       </div>
 
       <div class="mar-bottom">
         <MultipleChoice
-          semesterTip='周数选择'
+          semesterTip="周数选择"
           :defaultValue.sync="homeworkInfo['weekNum']"
-          :semesterList='weekList'
+          :semesterList="weekList"
           class="multiple-choice"
         />
       </div>
@@ -42,11 +38,7 @@
         v-show="homeworkInfo['classify'] === '在线作业'"
       >
         <h3>考试时间：</h3>
-        <InputNumber
-          :max="80"
-          :min="5"
-          v-model="homeworkInfo['testingTime']"
-        />
+        <InputNumber :max="80" :min="5" v-model="homeworkInfo['testingTime']" />
         <span class="ml-5">分钟</span>
       </div>
 
@@ -62,73 +54,93 @@
         ></DatePicker>
       </div>
 
+      <Button
+        icon="ios-cloud-upload-outline"
+        class="show-dialog-btn"
+        @click="showDialog"
+      >
+        上传课件
+      </Button>
+
+      <Modal v-model="isShowDialog" title="上传" @on-ok="dialogOk">
+        <Alert>注意：如果上传有误，请到任务中心查找对应任务进行重新上传</Alert>
+        <Upload
+          class="upload-con"
+          type="drag"
+          action="//jsonplaceholder.typicode.com/posts/"
+        >
+          <div style="padding: 20px 0">
+            <Icon
+              type="ios-cloud-upload"
+              size="52"
+              style="color: #3399ff"
+            ></Icon>
+            <p>点击或拖拽到这里进行上传</p>
+          </div>
+        </Upload>
+      </Modal>
+
       <div class="btnGround">
         <Button
           type="primary"
-          @click="homeworkInfo['classify'] === '在线作业' ? createSubject() : sumbit()"
+          @click="
+            homeworkInfo['classify'] === '在线作业' ? createSubject() : sumbit()
+          "
           long
         >
-          {{homeworkInfo['classify'] === '在线作业' ? '新建题目' : '新建作业'}}
+          {{
+            homeworkInfo["classify"] === "在线作业" ? "新建题目" : "新建作业"
+          }}
         </Button>
 
-        <Button
-          type="primary"
-          @click="$emit('goBack')"
-          long
-        >返回</Button>
+        <Button type="primary" @click="$emit('goBack')" long>返回</Button>
       </div>
-
     </div>
 
     <CreateSubject
       v-show="showCreateSubject"
       @goBack="goBack"
-      :homeworkInfo='homeworkInfo'
+      :homeworkInfo="homeworkInfo"
     />
   </div>
-
 </template>
 
 <script>
 import CreateSubject from "@teaHomework/smart/create-subject";
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
+import myMixin from "@/view/global/mixin";
 
 export default {
   name: "my-homework",
+
+  mixins: [myMixin],
+
+  props: {
+    sumbitInfo: Object
+  },
 
   components: {
     CreateSubject,
     MultipleChoice
   },
 
+  computed: {
+    weekList() {
+      return this.getWeekList().filter(item => item.value !== "所有周数");
+    }
+  },
+
   data() {
     return {
+      isShowDialog: false,
       showCreateSubject: false,
       homeworkInfo: {
         name: "",
         classify: "",
         weekNum: "",
-        testingTime: "",
+        testingTime: 0,
         stopTimeList: []
       },
-      weekList: [
-        {
-          value: "第一周",
-          label: "第一周"
-        },
-        {
-          value: "第二周",
-          label: "第二周"
-        },
-        {
-          value: "第三周",
-          label: "第三周"
-        },
-        {
-          value: "第四周",
-          label: "第四周"
-        }
-      ],
       homeworkCategory: [
         {
           value: "课时作业",
@@ -151,10 +163,29 @@ export default {
     },
 
     // 提交表单
-    sumbit() {
-      let { name, classify, stopTimeList } = this.homeworkInfo;
-      if (!name || !classify || stopTimeList.length === 0) {
+    async sumbit() {
+      let {
+        name,
+        classify,
+        weekNum,
+        testingTime,
+        stopTimeList
+      } = this.homeworkInfo;
+      if (!name || !classify || !weekNum || stopTimeList.length === 0) {
         return this.$Message.error("缺少必填信息");
+      }
+      if (classify === "课时作业") {
+        return await addClassHomework({
+          name,
+          path: obj["path"],
+          semester: this.sumbitInfo["semester"],
+          week: weekNum,
+          course: this.sumbitInfo["course"],
+          course_id: this.sumbitInfo["course_id"],
+          teacher: this.sumbitInfo["teacher"],
+          startime: stopTimeList[0],
+          fintime: stopTimeList[1]
+        });
       }
     },
 
@@ -170,13 +201,21 @@ export default {
     // 传递给子组件的上一步事件
     goBack() {
       this.showCreateSubject = false;
+    },
+
+    dialogOk() {
+      this.isShowDialog = false;
+    },
+
+    showDialog() {
+      this.isShowDialog = true;
     }
   }
 };
 </script>
 
 <style lang="less" scoped>
-@import "../../../../public.less";
+@import "../../../global/public.less";
 
 .containter {
   display: flex;
@@ -209,8 +248,13 @@ export default {
     margin-top: 20px;
   }
 
+  .show-dialog-btn {
+    width: 322px;
+    margin-bottom: 30px;
+  }
+
   .btnGround {
-    width: 30%;
+    width: 321px;
     display: flex;
     align-items: center;
     justify-content: space-between;

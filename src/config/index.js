@@ -1,6 +1,3 @@
-
-
-
 let config = {
   /**
    * @description token在Cookie中存储的天数，默认1天
@@ -19,10 +16,10 @@ let config = {
    */
   baseUrl: {
     dev: 'http://www.kaolaplay.com:7002',
-    pro: 'http://www.kaolaplay.com:7002'
+    pro: 'http://www.kaolaplay.com:7002',
   },
   /**
    * @description 需要加载的插件
    */
-}
-export default config
+};
+export default config;

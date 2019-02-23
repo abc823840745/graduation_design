@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import SubjectType from "@/view/global/show-subject-different-types";
+import SubjectType from "@/view/global/component/show-subject-different-types";
 
 export default {
   name: "create-subject",

@@ -289,3 +289,19 @@ export function isEmptyObject(obj) {
   }
   return false;
 }
+
+/**
+ * 存sessionStorage
+ */
+export function setSessionStorage(key, val) {
+  let jsonVal = JSON.stringify(val);
+  sessionStorage.setItem(key, jsonVal);
+}
+
+/**
+ * 取sessionStorage
+ */
+export function getSessionStorage(key) {
+  let value = sessionStorage.getItem(key);
+  return JSON.parse(value);
+}

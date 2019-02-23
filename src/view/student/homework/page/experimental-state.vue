@@ -1,14 +1,9 @@
 <template>
   <div class="containter">
-
-    <div
-      class="containter"
-      v-show="curDirectory !== 2"
-    >
-
+    <div class="containter" v-show="curDirectory !== 2">
       <div class="select-con">
         <MultipleChoice
-          v-for="(item,index) in selectList"
+          v-for="(item, index) in selectList"
           :key="index"
           :defaultValue.sync="item['defaultValue']"
           :semesterTip="item['semesterTip']"
@@ -31,23 +26,17 @@
         :data="data1"
       />
 
-      <Page
-        :total="30"
-        class="mar-top page"
-      />
+      <Page :total="30" class="mar-top page" />
     </div>
 
-    <HomeworkDetail
-      v-show="curDirectory === 2"
-      @goBack='goBack'
-    />
+    <HomeworkDetail v-show="curDirectory === 2" @goBack="goBack" />
   </div>
 </template>
 
 <script>
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import HomeworkDetail from "@stuHomework/smart/check-online-homework-detail";
-import myMixin from "@stuHomework/mixin";
+import myMixin from "@/view/global/mixin";
 
 export default {
   mixins: [myMixin],
@@ -91,93 +80,28 @@ export default {
       selectList: [
         {
           semesterTip: "学期选择",
-          defaultValue: "2018-2019上学期",
-          semesterList: [
-            {
-              value: "2015-2016上学期",
-              label: "2015-2016上学期"
-            },
-            {
-              value: "2016-2017上学期",
-              label: "2016-2017上学期"
-            },
-            {
-              value: "2017-2018上学期",
-              label: "2017-2018上学期"
-            },
-            {
-              value: "2018-2019上学期",
-              label: "2018-2019上学期"
-            }
-          ]
+          defaultValue: this.getCurSchoolYear(),
+          semesterList: this.getSchoolYear()
         },
         {
           semesterTip: "课程选择",
           defaultValue: "所有课程",
-          semesterList: [
-            {
-              value: "所有课程",
-              label: "所有课程"
-            },
-            {
-              value: "新媒体实训",
-              label: "新媒体实训"
-            },
-            {
-              value: "JavaScript编程",
-              label: "JavaScript编程"
-            },
-            {
-              value: "Vue应用开发",
-              label: "Vue应用开发"
-            }
-          ]
+          semesterList: this.getCourseList()
         },
         {
           semesterTip: "周数选择",
-          defaultValue: "",
-          semesterList: [
-            {
-              value: "第一周",
-              label: "第一周"
-            },
-            {
-              value: "第二周",
-              label: "第二周"
-            }
-          ]
+          defaultValue: "所有周数",
+          semesterList: this.getWeekList()
         },
         {
           semesterTip: "作业类型",
-          defaultValue: "",
-          semesterList: [
-            {
-              value: "课时作业",
-              label: "课时作业"
-            },
-            {
-              value: "在线作业",
-              label: "在线作业"
-            }
-          ]
+          defaultValue: "所有类型",
+          semesterList: this.getClassifyList()
         },
         {
           semesterTip: "完成状态",
-          defaultValue: "",
-          semesterList: [
-            {
-              value: "未完成",
-              label: "未完成"
-            },
-            {
-              value: "已完成",
-              label: "已完成"
-            },
-            {
-              value: "已过期",
-              label: "已过期"
-            }
-          ]
+          defaultValue: "所有状态",
+          semesterList: this.getFinishList()
         }
       ],
       columns1: [
@@ -319,7 +243,7 @@ export default {
 
     .search-item {
       margin-top: -1px;
-      width: 262px;
+      width: 271px;
     }
   }
 }
