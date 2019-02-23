@@ -1,17 +1,13 @@
 <template>
   <div class="containter">
-    <div
-      class="containter"
-      v-if="!isChangeHWTasks"
-    >
-
+    <div class="containter" v-if="!isChangeHWTasks">
       <div class="select-list">
         <MultipleChoice
           v-for="item in selectList"
-          :key="item['semesterTip']"
-          :semesterTip="item['semesterTip']"
-          :defaultValue.sync="item['semester']"
-          :semesterList="item['semesterList']"
+          :key="item['tip']"
+          :semesterTip="item['tip']"
+          :defaultValue.sync="item['value']"
+          :semesterList="item['list']"
           class="multiple-choice"
         />
 
@@ -29,23 +25,17 @@
         :columns="columns1"
         :data="data1"
       />
-      <Page
-        :total="30"
-        class="mar-top page"
-      />
+      <Page :total="30" class="mar-top page" />
     </div>
 
-    <ChangeHomeworkTasks
-      v-if="isChangeHWTasks"
-      @goBack="goBack"
-    />
+    <ChangeHomeworkTasks v-if="isChangeHWTasks" @goBack="goBack" />
   </div>
 </template>
 
 <script>
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import ChangeHomeworkTasks from "@teaHomework/smart/change-homework-tasks";
-import myMixin from "@teaHomework/mixin";
+import myMixin from "@/view/global/mixin";
 
 export default {
   mixins: [myMixin],
@@ -60,66 +50,19 @@ export default {
       isChangeHWTasks: false,
       selectList: [
         {
-          semesterTip: "学期选择",
-          semester: "2017-2018第二学期",
-          semesterList: [
-            {
-              value: "2016-2017第一学期",
-              label: "2016-2017第一学期"
-            },
-            {
-              value: "2016-2017第二学期",
-              label: "2016-2017第二学期"
-            },
-            {
-              value: "2017-2018第一学期",
-              label: "2017-2018第一学期"
-            },
-            {
-              value: "2017-2018第二学期",
-              label: "2017-2018第二学期"
-            }
-          ]
+          tip: "学期选择",
+          value: this.getCurSchoolYear(),
+          list: this.getSchoolYear()
         },
         {
-          semesterTip: "课程选择",
-          semester: "所有课程",
-          semesterList: [
-            {
-              value: "所有课程",
-              label: "所有课程"
-            },
-            {
-              value: "新媒体实训",
-              label: "新媒体实训"
-            },
-            {
-              value: "JavaScript编程",
-              label: "JavaScript编程"
-            },
-            {
-              value: "vue应用程序开发",
-              label: "vue应用程序开发"
-            },
-            {
-              value: "mysql数据库",
-              label: "mysql数据库"
-            }
-          ]
+          tip: "课程选择",
+          value: "所有课程",
+          list: this.getCourseList()
         },
         {
-          semesterTip: "作业类型",
-          defaultValue: "",
-          semesterList: [
-            {
-              value: "课时作业",
-              label: "课时作业"
-            },
-            {
-              value: "在线作业",
-              label: "在线作业"
-            }
-          ]
+          tip: "作业类型",
+          value: "所有类型",
+          list: this.getClassifyList()
         }
       ],
       columns1: [
@@ -215,7 +158,7 @@ export default {
 
     .search-item {
       margin-top: -1px;
-      width: 262px;
+      width: 271px;
     }
   }
 

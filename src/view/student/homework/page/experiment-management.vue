@@ -1,34 +1,19 @@
 <template>
   <div class="containter">
-
-    <div
-      class="containter"
-      v-if="curDirectory !== 3"
-    >
-
-      <Modal
-        v-model="showModal"
-        title="上传"
-        @on-ok="dialogOk"
-      >
-        <Alert show-icon>只能上传单个文件或文件夹，如果上传有误，请重新上传即可</Alert>
-
-        <Select
-          v-model="weeksNum"
-          placeholder='请选择周数'
-          style="width:200px;margin-bottom:10px;"
+    <div class="containter" v-if="curDirectory !== 3">
+      <Modal v-model="showModal" title="上传" @on-ok="dialogOk">
+        <Alert show-icon
+          >只能上传单个文件或文件夹，如果上传有误，请重新上传即可</Alert
         >
-          <Option
-            v-for="item in weeksList"
-            :value="item.value"
-            :key="item.value"
-          >{{ item.label }}</Option>
-        </Select>
 
         <Upload
           ref="upload"
           type="drag"
-          action="//jsonplaceholder.typicode.com/posts/"
+          :max-size="2048"
+          :format="['jpg', 'png', 'jpeg']"
+          :action="uploadUrl"
+          :on-exceeded-size="handleMaxSize"
+          :on-success="handleSuccess"
         >
           <div style="padding: 20px 0">
             <Icon
@@ -43,11 +28,12 @@
 
       <div class="select-con">
         <MultipleChoice
-          v-for="(item,index) in selectList"
+          v-for="(item, index) in selectList"
           :key="index"
-          :defaultValue.sync="item['semester']"
-          :semesterTip="item['semesterTip']"
-          :semesterList="item['semesterList']"
+          :defaultValue.sync="item['value']"
+          :semesterTip="item['tip']"
+          :semesterList="item['list']"
+          @onChange="item['onChange']"
           class="multiple-choice"
         />
 
@@ -63,20 +49,25 @@
         border
         class="table-con mar-top"
         :columns="columns1"
-        :data="data1"
+        :data="tableData"
       />
 
-      <Page
-        :total="30"
-        class="mar-top page"
-      />
+      <Page class="mar-top page" :total="30" @on-change="changePage" />
     </div>
   </div>
 </template>
 
 <script>
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
-import myMixin from "@stuHomework/mixin";
+import myMixin from "@/view/global/mixin";
+import config from "@/config";
+import { mapActions, mapState } from "vuex";
+
+const baseUrl =
+  process.env.NODE_ENV === "development"
+    ? config.baseUrl.dev
+    : config.baseUrl.pro;
+const uploadUrl = baseUrl + "/upload/work";
 
 export default {
   mixins: [myMixin],
@@ -85,131 +76,64 @@ export default {
     MultipleChoice
   },
 
+  computed: {
+    allCourse() {
+      return this.$tools
+        .getSessionStorage("formatLesson")
+        .map(item => item["courseName"]);
+    }
+  },
+
   data() {
     return {
+      uploadUrl,
       curDirectory: 1, // 当前的目录
       showModal: false,
-      weeksNum: "",
-      weeksList: [
-        {
-          value: "第一周",
-          label: "第一周"
-        },
-        {
-          value: "第二周",
-          label: "第二周"
-        },
-        {
-          value: "第三周",
-          label: "第三周"
-        },
-        {
-          value: "第四周",
-          label: "第四周"
-        },
-        {
-          value: "第五周",
-          label: "第五周"
-        },
-        {
-          value: "第六周",
-          label: "第六周"
-        }
-      ],
       selectList: [
         {
-          semesterTip: "学期选择",
-          semester: "2017-2018第二学期",
-          semesterList: [
-            {
-              value: "2016-2017第一学期",
-              label: "2016-2017第一学期"
-            },
-            {
-              value: "2016-2017第二学期",
-              label: "2016-2017第二学期"
-            },
-            {
-              value: "2017-2018第一学期",
-              label: "2017-2018第一学期"
-            },
-            {
-              value: "2017-2018第二学期",
-              label: "2017-2018第二学期"
-            }
-          ]
+          tip: "学期选择",
+          value: this.getCurSchoolYear(),
+          list: this.getSchoolYear(),
+          onChange: this.yearChange
         },
         {
-          semesterTip: "课程选择",
-          semester: "所有课程",
-          semesterList: [
-            {
-              value: "所有课程",
-              label: "所有课程"
-            },
-            {
-              value: "新媒体实训",
-              label: "新媒体实训"
-            },
-            {
-              value: "JavaScript编程",
-              label: "JavaScript编程"
-            },
-            {
-              value: "vue应用程序开发",
-              label: "vue应用程序开发"
-            },
-            {
-              value: "mysql数据库",
-              label: "mysql数据库"
-            }
-          ]
+          tip: "课程选择",
+          value: "所有课程",
+          list: this.getCourseList(),
+          onChange: this.courseChange
         },
         {
-          semesterTip: "周数选择",
-          defaultValue: "",
-          semesterList: [
-            {
-              value: "第一周",
-              label: "第一周"
-            },
-            {
-              value: "第二周",
-              label: "第二周"
-            }
-          ]
+          tip: "周数选择",
+          value: "所有周数",
+          list: this.getWeekList(),
+          onChange: this.weekChange
         },
         {
-          semesterTip: "完成状态",
-          defaultValue: "",
-          semesterList: [
-            {
-              value: "未完成",
-              label: "未完成"
-            },
-            {
-              value: "已完成",
-              label: "已完成"
-            },
-            {
-              value: "已过期",
-              label: "已过期"
-            }
-          ]
+          tip: "完成状态",
+          value: "所有状态",
+          list: this.getFinishList(),
+          onChange: () => {
+            console.log("haha");
+          }
         }
       ],
       columns1: [
         {
+          title: "课程",
+          key: "course"
+        },
+        {
           title: "实验",
-          key: "experiment"
+          key: "name"
         },
         {
           title: "周数",
-          key: "weeksNum"
+          key: "week",
+          sortable: true
         },
         {
           title: "完成时间",
-          key: "finishTime",
+          key: "fintime",
           sortable: true
         },
         {
@@ -222,60 +146,104 @@ export default {
           render: (h, params) => {
             return h("div", [
               this.btnStyle("上传作业", h, () => (this.showModal = true)),
-              this.btnStyle(
-                "下载实验指导书",
-                h,
-                () => console.log("下载"),
-                "success"
-              )
+              this.btnStyle("下载实验", h, () => console.log("下载"), "success")
             ]);
           }
         }
       ],
-      data1: [
-        {
-          weeksNum: "第一周",
-          experiment: "堂上构建简单服务器",
-          finishTime: "2019-02-13",
-          status: "未完成"
-        },
-        {
-          weeksNum: "第二周",
-          experiment: "构建简单服务器",
-          finishTime: "2019-02-13",
-          status: "未完成"
-        },
-        {
-          weeksNum: "第三周",
-          experiment: "堂上构建简单服务器",
-          finishTime: "2019-02-13",
-          status: "未完成"
-        },
-        {
-          weeksNum: "第四周",
-          experiment: "构建简单服务器",
-          finishTime: "2019-02-13",
-          status: "未完成"
-        },
-        {
-          weeksNum: "第五周",
-          experiment: "堂上构建简单服务器",
-          finishTime: "2019-02-13",
-          status: "未完成"
-        },
-        {
-          weeksNum: "第六周",
-          experiment: "构建简单服务器",
-          finishTime: "2019-02-13",
-          status: "未完成"
-        }
-      ]
+      tableData: []
     };
   },
 
+  async mounted() {
+    await this.getTableData();
+  },
+
   methods: {
+    ...mapActions(["getClassHomework"]),
+
+    async getTableData() {
+      let res = await this.getClassHomework({
+        course: this.allCourse,
+        semester: this.getCurSchoolYear()
+      });
+      this.tableData = res;
+    },
+
     dialogOk() {
       console.log("上传");
+    },
+
+    handleMaxSize(file) {
+      this.$Notice.warning({
+        title: "文件超过大小限制",
+        desc: "文件大小不能查过2M！"
+      });
+    },
+
+    handleSuccess(res, file, fileList) {
+      console.log(res, file, fileList);
+      this.$Notice.success({
+        title: "上传成功！",
+        desc: ""
+      });
+    },
+
+    async yearChange(value) {
+      let res = await this.getClassHomework({
+        course:
+          this.selectList[1]["value"] === "所有课程" ? this.allCourse : value,
+        semester: value,
+        week:
+          this.selectList[2]["value"] === "所有周数"
+            ? undefined
+            : this.selectList[2]["value"]
+      });
+      this.tableData = res;
+    },
+
+    async courseChange(value) {
+      let res = await this.getClassHomework({
+        course: value === "所有课程" ? this.allCourse : value,
+        semester: this.selectList[0]["value"],
+        week:
+          this.selectList[2]["value"] === "所有周数"
+            ? undefined
+            : this.selectList[2]["value"]
+      });
+      this.tableData = res;
+    },
+
+    async weekChange(value) {
+      let res = await this.getClassHomework({
+        course:
+          this.selectList[1]["value"] === "所有课程"
+            ? this.allCourse
+            : this.selectList[1]["value"],
+        semester: this.selectList[0]["value"],
+        week: value === "所有周数" ? undefined : value
+      });
+      this.tableData = res;
+    },
+
+    async finishChange(value) {
+      // TODO:完成状态
+    },
+
+    async changePage(page) {
+      let res = await this.getClassHomework({
+        page,
+        course:
+          this.selectList[1]["value"] === "所有课程"
+            ? this.allCourse
+            : this.selectList[1]["value"],
+        semester: this.selectList[0]["value"],
+        week:
+          this.selectList[2]["value"] === "所有周数"
+            ? undefined
+            : this.selectList[2]["value"]
+      });
+      this.tableData = res;
     }
   }
 };
@@ -318,7 +286,7 @@ export default {
 
     .search-item {
       margin-top: -1px;
-      width: 262px;
+      width: 271px;
     }
   }
 }

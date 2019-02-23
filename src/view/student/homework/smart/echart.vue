@@ -1,6 +1,6 @@
 <template>
   <div
-    id="main"
+    ref="main"
     class="echart-con"
   ></div>
 </template>
@@ -9,12 +9,20 @@
 import echarts from "echarts";
 
 export default {
+  data() {
+    return {
+      formatLesson: this.$tools.getSessionStorage("formatLesson")
+    };
+  },
+
   mounted() {
+    let xAxisData = this.formatLesson.map((item, index) => item["courseName"]);
+
     // 基于准备好的dom，初始化echarts实例
-    var myChart = echarts.init(document.getElementById("main"));
+    let myChart = echarts.init(this.$refs.main);
 
     // 指定图表的配置项和数据
-    var option = {
+    let option = {
       title: {
         text: "每周作业汇总图表"
       },
@@ -40,15 +48,7 @@ export default {
         {
           type: "category",
           boundaryGap: true,
-          data: [
-            "新媒体实训",
-            "vue应用程序开发",
-            "新媒体实务",
-            "JavaScript",
-            "Reactjs",
-            "Angularjs",
-            "新媒体概论"
-          ]
+          data: xAxisData
         }
       ],
       yAxis: [
@@ -82,7 +82,7 @@ export default {
 </script>
 
 <style lang='less' scoped>
-@import "../../../../public.less";
+@import "../../../global/public.less";
 
 .echart-con {
   .w(100%);

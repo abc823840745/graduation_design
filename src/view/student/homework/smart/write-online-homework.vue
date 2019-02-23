@@ -103,7 +103,7 @@
 </template>
 
 <script>
-import SubjectType from "@/view/global/show-subject-different-types";
+import SubjectType from "@/view/global/component/show-subject-different-types";
 import CountDown from "@stuHomework/smart/count-down";
 
 export default {
@@ -186,7 +186,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import "../../../../public.less";
+@import "../../../global/public.less";
 
 .containter {
   width: 100%;

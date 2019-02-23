@@ -1,10 +1,6 @@
 <template>
   <div class="containter">
-    <div
-      v-show="!showCreateSubject"
-      class="change-homework-tasks-con"
-    >
-
+    <div v-show="!showCreateSubject" class="change-homework-tasks-con">
       <h2>修改任务信息</h2>
 
       <Divider />
@@ -21,18 +17,9 @@
 
       <div class="mar-bottom">
         <MultipleChoice
-          semesterTip='作业类型'
-          :defaultValue.sync="homeworkInfo['classify']"
-          :semesterList='homeworkCategory'
-          class="multiple-choice"
-        />
-      </div>
-
-      <div class="mar-bottom">
-        <MultipleChoice
-          semesterTip='周数选择'
+          semesterTip="周数选择"
           :defaultValue.sync="homeworkInfo['weekNum']"
-          :semesterList='weekList'
+          :semesterList="weekList"
           class="multiple-choice"
         />
       </div>
@@ -42,11 +29,7 @@
         v-show="homeworkInfo['classify'] === '在线作业'"
       >
         <h3>考试时间：</h3>
-        <InputNumber
-          :max="80"
-          :min="5"
-          v-model="homeworkInfo['testingTime']"
-        />
+        <InputNumber :max="80" :min="5" v-model="homeworkInfo['testingTime']" />
         <span class="ml-5">分钟</span>
       </div>
 
@@ -65,77 +48,65 @@
       <div class="btnGround">
         <Button
           type="primary"
-          @click="homeworkInfo['classify']==='在线作业'?createSubject():sumbit()"
+          @click="
+            homeworkInfo['classify'] === '在线作业' ? createSubject() : sumbit()
+          "
           long
-        >{{homeworkInfo['classify']==='在线作业'? '修改题目':'修改作业任务'}}</Button>
+          >{{
+            homeworkInfo["classify"] === "在线作业"
+              ? "修改题目"
+              : "修改作业任务"
+          }}</Button
+        >
 
-        <Button
-          type="primary"
-          @click="$emit('goBack')"
-          long
-        >返回</Button>
+        <Button type="primary" @click="$emit('goBack')" long>返回</Button>
       </div>
-
     </div>
 
     <ChangeHomeworkTasksSubject
       v-show="showCreateSubject"
       @goBack="goBack"
-      :homeworkInfo='homeworkInfo'
+      :homeworkInfo="homeworkInfo"
     />
   </div>
-
 </template>
 
 <script>
 import ChangeHomeworkTasksSubject from "@teaHomework/smart/change-homework-tasks-subject";
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
+import myMixin from "@/view/global/mixin";
 
 export default {
   name: "my-homework",
+
+  mixins: [myMixin],
+
+  props: {
+    info: Object,
+    classify: String
+  },
 
   components: {
     ChangeHomeworkTasksSubject,
     MultipleChoice
   },
 
+  computed: {
+    weekList() {
+      return this.getWeekList().filter(item => item.value !== "所有周数");
+    }
+  },
+
   data() {
     return {
       showCreateSubject: false,
       homeworkInfo: {
-        name: "搭建服务器",
-        classify: "在线作业",
-        weekNum: "第一周",
-        stopTimeList: ["2019-01-28 00:00", "2019-01-28 00:00"]
+        name: this.info["name"],
+        weekNum: this.info["week"],
+        classify: this.classify,
+        stopTimeList: [this.info["startime"], this.info["fintime"]]
       },
-      weekList: [
-        {
-          value: "第一周",
-          label: "第一周"
-        },
-        {
-          value: "第二周",
-          label: "第二周"
-        },
-        {
-          value: "第三周",
-          label: "第三周"
-        },
-        {
-          value: "第四周",
-          label: "第四周"
-        }
-      ],
-      homeworkCategory: [
-        {
-          value: "课时作业",
-          label: "课时作业"
-        },
-        {
-          value: "在线作业",
-          label: "在线作业"
-        }
-      ]
+      homeworkCategory: this.getClassifyList()
     };
   },
 
@@ -173,7 +144,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import "../../../../public.less";
+@import "../../../global/public.less";
 
 .containter {
   width: 100%;

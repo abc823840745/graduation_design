@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import myMixin from "@stuHomework/mixin";
+import myMixin from "@/view/global/mixin";
 
 export default {
   name: "course-detail",

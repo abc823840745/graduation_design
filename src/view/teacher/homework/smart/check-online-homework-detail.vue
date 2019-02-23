@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import SubjectType from "@/view/global/show-subject-different-types";
+import SubjectType from "@/view/global/component/show-subject-different-types";
 
 export default {
   name: "check-online-homework-detail",
@@ -58,7 +58,8 @@ export default {
           title: "1、单选题",
           choice: "A",
           referenceAnswer: "A",
-          score: 60
+          score: 60,
+          weighting: 20
         },
         {
           subjectType: "多选题",
@@ -67,7 +68,8 @@ export default {
           title: "2、多选题",
           choice: ["B"],
           referenceAnswer: ["A"],
-          score: 60
+          score: 60,
+          weighting: 20
         },
         {
           subjectType: "填空题",
@@ -91,7 +93,8 @@ export default {
           choice: "填空题的回答",
           referenceAnswer:
             "填空题的参考答案我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？",
-          score: 60
+          score: 60,
+          weighting: 20
         },
         {
           subjectType: "问答题",
@@ -102,7 +105,8 @@ export default {
             "我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？",
           referenceAnswer:
             "我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？",
-          score: 60
+          score: 60,
+          weighting: 20
         }
       ]
     };
@@ -143,7 +147,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import "../../../../public.less";
+@import "../../../global/public.less";
 
 .homework-detail-con {
   width: 100%;

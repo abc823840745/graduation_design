@@ -1,27 +1,27 @@
 <template>
   <div class="containter">
-    <div
-      class="containter"
-      v-show="curDirectory!==3"
-    >
+    <div class="containter" v-show="curDirectory !== 3">
       <Modal
         v-model="showModal"
         title="上传"
         @on-ok="dialogOk"
         @on-cancel="dialogCancel"
       >
-        <Alert show-icon>只能上传单个文件或文件夹，如果上传有误，请重新上传即可</Alert>
+        <Alert show-icon
+          >只能上传单个文件或文件夹，如果上传有误，请重新上传即可</Alert
+        >
 
         <Select
           v-model="weeksNum"
-          placeholder='请选择周数'
+          placeholder="请选择周数"
           style="width:200px;margin-bottom:10px;"
         >
           <Option
             v-for="item in weeksList"
             :value="item.value"
             :key="item.value"
-          >{{ item.label }}</Option>
+            >{{ item.label }}</Option
+          >
         </Select>
 
         <Upload
@@ -42,7 +42,7 @@
 
       <div class="select-con">
         <MultipleChoice
-          v-for="(item,index) in selectList"
+          v-for="(item, index) in selectList"
           :key="index"
           :defaultValue.sync="item['defaultValue']"
           :semesterTip="item['semesterTip']"
@@ -64,24 +64,17 @@
         :data="data1"
       />
 
-      <Page
-        :total="30"
-        class="mar-top"
-      />
+      <Page :total="30" class="mar-top" />
     </div>
 
-    <WriteOnlineHomework
-      v-show="curDirectory===3"
-      @goBack="goBack"
-    />
-
+    <WriteOnlineHomework v-show="curDirectory === 3" @goBack="goBack" />
   </div>
 </template>
 
 <script>
 import WriteOnlineHomework from "@stuHomework/smart/write-online-homework.vue";
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
-import myMixin from "@stuHomework/mixin";
+import myMixin from "@/view/global/mixin";
 
 export default {
   name: "course-detail",
@@ -269,7 +262,7 @@ export default {
     .search-item {
       margin-top: -1px;
       margin-left: 4%;
-      width: 20%;
+      width: 271px;
     }
   }
 

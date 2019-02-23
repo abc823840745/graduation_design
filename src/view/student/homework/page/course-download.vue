@@ -35,7 +35,7 @@
 
 <script>
 import CourseSelect from "@teaHomework/smart/course-select";
-import myMixin from "@stuHomework/mixin";
+import myMixin from "@/view/global/mixin";
 
 export default {
   name: "course-detail",

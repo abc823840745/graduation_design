@@ -1,42 +1,27 @@
 <template>
   <div class="containter">
-    <CourseSelect
-      v-show="isSelectCourse"
-      @goNext='goNext'
-    />
+    <CourseSelect v-show="isSelectCourse" @goNext="goNext" />
 
-    <div
-      class="containter"
-      v-show="!isSelectCourse && curDirectory !== 6"
-    >
-      <div
-        class="header-bar"
-        v-show="curDirectory === 4 || curDirectory === 5"
-      >
+    <div class="containter" v-show="!isSelectCourse && curDirectory !== 6">
+      <div class="header-bar" v-show="curDirectory === 4 || curDirectory === 5">
         <MultipleChoice
-          :semesterTip='selTip'
-          :defaultValue.sync='semester'
-          :semesterList='semesterList'
+          :semesterTip="selectInfo['tip']"
+          :defaultValue.sync="selectInfo['value']"
+          :semesterList="selectInfo['list']"
           class="float-left"
         />
 
-        <ProgressBar
-          :completeProgress='90'
-          class="float-right"
-        />
+        <ProgressBar :completeProgress="90" class="float-right" />
       </div>
 
       <Table
         border
-        :columns="showTable('columns',6)"
-        :data="showTable('data',6)"
+        :columns="showTable('columns', 6)"
+        :data="showTable('data', 6)"
         class="table-con mar-top"
       />
 
-      <Page
-        :total="30"
-        class="mar-top page"
-      />
+      <Page :total="30" class="mar-top page" />
 
       <div class="btn-ground">
         <Button
@@ -44,29 +29,25 @@
           @click="submit"
           type="primary"
           class="mar-top"
-          size='large'
+          size="large"
           icon="ios-download-outline"
-        >全部下载</Button>
+          >全部下载</Button
+        >
 
         <Button
           v-show="curDirectory === 4"
           @click="submit"
           type="primary"
           class="mar-top"
-          size='large'
+          size="large"
           icon="ios-download-outline"
-        >提交评分</Button>
+          >提交评分</Button
+        >
       </div>
-
     </div>
 
-    <CheckOnlineHWDetail
-      v-show="curDirectory === 6"
-      @goBack='goBack'
-    />
-
+    <CheckOnlineHWDetail v-show="curDirectory === 6" @goBack="goBack" />
   </div>
-
 </template>
 
 <script>
@@ -74,7 +55,7 @@ import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import ProgressBar from "@teaHomework/smart/progress-bar";
 import CourseSelect from "@teaHomework/smart/course-select";
 import CheckOnlineHWDetail from "@teaHomework/smart/check-online-homework-detail";
-import myMixin from "@teaHomework/mixin";
+import myMixin from "@/view/global/mixin";
 
 export default {
   name: "check-homework",
@@ -93,18 +74,11 @@ export default {
       isSelectCourse: true,
       curDirectory: 1,
       hwType: "", //作业类型
-      selTip: "提交情况",
-      semester: "",
-      semesterList: [
-        {
-          value: "已完成",
-          label: "已完成"
-        },
-        {
-          value: "未完成",
-          label: "未完成"
-        }
-      ],
+      selectInfo: {
+        tip: "完成状态",
+        value: "所有状态",
+        list: this.getFinishList()
+      },
       columns1: [
         {
           title: "班级",
@@ -174,7 +148,7 @@ export default {
           key: "name"
         },
         {
-          title: "提交情况",
+          title: "完成状态",
           key: "submission"
         },
         {
@@ -221,7 +195,7 @@ export default {
           key: "name"
         },
         {
-          title: "提交情况",
+          title: "完成状态",
           key: "submission"
         },
         {
