@@ -1,52 +1,31 @@
 <template>
   <div class="containter">
     <MultipleChoice
-      semesterTip='学期选择'
-      :defaultValue.sync='semester'
-      :semesterList='semesterList'
+      semesterTip="学期选择"
+      :defaultValue.sync="semester"
+      :semesterList="semesterList"
       class="flex-start"
     />
 
-    <div class="course-containter">
-      <Card
-        class="card"
-        v-for="item in courseList"
-        :key="item['name']"
-      >
-        <div
-          class="course-touch"
-          @click='goNext'
-        >
-          <div class="card-containter">
-            <div class="left-con">
-              <div
-                class="circle"
-                :style="{background:getRandomColor()}"
-              >
-                <p>{{item['name'].slice(0,1)}}</p>
-              </div>
-            </div>
-
-            <div class="right-con">
-              <p>{{item['name']}}</p>
-            </div>
-
-          </div>
-        </div>
-
-        <div
-          class="card-fill"
-          v-for="(item,index) in 10"
-          :key="index"
-        ></div>
-      </Card>
+    <div class="course-list-wrap">
+      <div class="course-item" v-for="(item, index) in courseList" :key="index">
+        <h3>{{ item.name }}</h3>
+        <p class="course-code">课程代码：{{ item.code }}</p>
+        <p class="course-code">教学班：{{ item.classCode }}</p>
+        <ButtonGroup class="course-btn">
+          <Button
+            shape="circle"
+            type="info"
+            @click.native="goNext()"
+            class="select-course-btn"
+          >
+            选择课程
+          </Button>
+        </ButtonGroup>
+      </div>
     </div>
 
-    <Page
-      :total="30"
-      class="mar-top page"
-    />
-
+    <Page :total="30" class="mar-top page" />
   </div>
 </template>
 
@@ -83,51 +62,61 @@ export default {
         }
       ],
       courseList: [
-        { name: "新媒体实训" },
-        { name: "JavaScript编程" },
-        { name: "vue应用程序开发哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈" },
-        { name: "新媒体概论" },
-        { name: "PhotoShop" },
-        { name: "Java" },
-        { name: "Flash" },
-        { name: "html5" },
-        { name: "React" },
-        { name: "Angular" }
+        {
+          name: "新媒体实训",
+          code: "GT2004",
+          classCode: "ACM01"
+        },
+        {
+          name: "JavaScript编程",
+          code: "GT2004",
+          classCode: "ACM01"
+        },
+        {
+          name: "vue应用程序开发",
+          code: "GT2004",
+          classCode: "ACM01"
+        },
+        {
+          name: "新媒体概论",
+          code: "GT2004",
+          classCode: "ACM01"
+        },
+        {
+          name: "PhotoShop",
+          code: "GT2004",
+          classCode: "ACM01"
+        },
+        {
+          name: "Java",
+          code: "GT2004",
+          classCode: "ACM01"
+        },
+        {
+          name: "Flash",
+          code: "GT2004",
+          classCode: "ACM01"
+        },
+        {
+          name: "html5",
+          code: "GT2004",
+          classCode: "ACM01"
+        },
+        {
+          name: "React",
+          code: "GT2004",
+          classCode: "ACM01"
+        },
+        {
+          name: "Angular",
+          code: "GT2004",
+          classCode: "ACM01"
+        }
       ]
     };
   },
 
   methods: {
-    getRandomColor() {
-      let colorList = [
-        "#4d4af2",
-        "#bea41e",
-        "#68eec6",
-        "#9b2cf2",
-        "#d2ee81",
-        "#1c87b5",
-        "#c21487",
-        "#ace114",
-        "#5d17cf",
-        "#8beebf",
-        "#f06072",
-        "#e8ea86",
-        "#0ac7a5",
-        "#8e1aea",
-        "#c8f68d",
-        "#c219bb",
-        "#FF1493",
-        "#8B008B",
-        "#483D8B",
-        "#00BFFF",
-        "#2F4F4F",
-        "#2E8B57",
-        "#FF6347"
-      ];
-      let color = colorList[Math.floor(Math.random() * colorList.length)];
-      return color;
-    },
-
     goNext() {
       this.$emit("goNext");
     }
@@ -146,6 +135,44 @@ export default {
   .page {
     align-self: flex-end;
     padding-right: 0.5%;
+  }
+
+  .course-list-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+
+    .course-item {
+      width: 220px;
+      padding: 20px;
+      border-radius: 10px;
+      background-color: #fff;
+      box-shadow: 2px 2px 2px #eee;
+      margin-top: 20px;
+      margin-right: 20px;
+      text-align: center;
+      color: #666;
+      cursor: pointer;
+
+      h3 {
+        font-weight: 700;
+        font-size: 16px;
+      }
+
+      .course-code {
+        font-size: 12px;
+      }
+
+      .course-btn {
+        margin-top: 10px;
+        display: flex;
+        justify-content: center;
+
+        .select-course-btn {
+          width: 200px;
+        }
+      }
+    }
   }
 
   .course-containter {

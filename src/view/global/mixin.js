@@ -6,13 +6,26 @@ const myMixin = {
         {
           props: {
             type: color,
-            size: 'small',
+            shape: 'circle',
           },
           style: {
             marginRight: '5px',
           },
           on: {
             click: onclick,
+          },
+        },
+        btnTitle
+      );
+    },
+
+    statusBtnStyle(btnTitle, h, color = 'primary') {
+      return h(
+        'Tag',
+        {
+          props: {
+            type: 'dot',
+            color,
           },
         },
         btnTitle

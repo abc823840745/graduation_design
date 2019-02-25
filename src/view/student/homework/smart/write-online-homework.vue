@@ -1,6 +1,5 @@
 <template>
   <div class="containter">
-
     <div class="header-bar">
       <div class="homework-info">
         <span>在线作业</span>
@@ -13,12 +12,12 @@
         <P class="count-down-text">倒计时：</P>
         <P class="count-down-text primary-color">
           <CountDown
-            :isStartTimer='isStartTimer'
-            :initialTime='1200'
-            @callBack='endTimeDoing'
+            :isStartTimer="isStartTimer"
+            :initialTime="1200"
+            @callBack="endTimeDoing"
           >
-            <h2 slot-scope="{remainingTime}">
-              {{$tools.formatSeconds(remainingTime)}}
+            <h2 slot-scope="{ remainingTime }">
+              {{ $tools.formatSeconds(remainingTime) }}
             </h2>
           </CountDown>
         </P>
@@ -29,75 +28,19 @@
 
     <SubjectType
       class="mb-30"
-      v-for="(item,index) in inputInfo"
-      type='testing'
+      v-for="(item, index) in inputInfo"
+      type="testing"
       :key="index"
-      :inputInfo='item'
+      :inputInfo="item"
     />
-
-    <!-- <RadioItem
-      :inputInfo='inputInfo[0]'
-      :ifEdit="false"
-      @onChangeRadio="onChangeRadio"
-    />
-    <RadioItem
-      :inputInfo='inputInfo[1]'
-      :ifEdit="false"
-      @onChangeRadio="onChangeRadio2"
-    />
-
-    <div class="mar-bottom">
-      <p class="input-title">{{inputInfo[2]['title']}}</p>
-      <p class="subjectText">{{inputInfo[2]['subject']}}</p>
-      <div class="radio-list">
-        <span>答案:</span>
-        <CheckboxGroup v-model="inputInfo[2]['choice']">
-          <Checkbox
-            label="A"
-            class="checkbox-item"
-          ></Checkbox>
-          <Checkbox
-            label="B"
-            class="checkbox-item"
-          ></Checkbox>
-          <Checkbox
-            label="C"
-            class="checkbox-item"
-          ></Checkbox>
-          <Checkbox
-            label="D"
-            class="checkbox-item"
-          ></Checkbox>
-        </CheckboxGroup>
-      </div>
-
-    </div>
-
-    <div class="mar-bottom">
-      <p class="input-title">{{inputInfo[3]['title']}}</p>
-      <p class="subjectText">{{inputInfo[3]['subject']}}</p>
-      <Input
-        v-model="inputInfo[3]['choice']"
-        type="textarea"
-        :autosize="{minRows: 3,maxRows: 5}"
-        placeholder="请输入你的答案"
-        class="text-input"
-      />
-    </div> -->
 
     <div class="btnGround">
-      <Button
-        type="primary"
-        @click="submit"
-        class="submitBtn"
-        long
-      >提交</Button>
-      <Button
-        type="primary"
-        @click="$emit('goBack')"
-        class="submitBtn"
-        long
-      >上一步</Button>
+      <Button type="primary" @click="submit" class="submitBtn" long
+        >提交</Button
+      >
+      <Button type="primary" @click="$emit('goBack')" class="submitBtn" long
+        >上一步</Button
+      >
     </div>
   </div>
 </template>
@@ -122,14 +65,16 @@ export default {
           subject: "钢铁是怎么炼成的?",
           title: "1、单选题",
           choice: "",
-          referenceAnswer: ""
+          referenceAnswer: "",
+          weighting: 5
         },
         {
           subjectType: "多选题",
           subject: "钢铁是怎么炼成的?",
           title: "2、多选题",
           choice: [],
-          referenceAnswer: ""
+          referenceAnswer: "",
+          weighting: 5
         },
         {
           subjectType: "填空题",
@@ -149,14 +94,16 @@ export default {
           ],
           title: "3、填空题",
           choice: "",
-          referenceAnswer: ""
+          referenceAnswer: "",
+          weighting: 20
         },
         {
           subjectType: "问答题",
           subject: "钢铁是怎么炼成的?",
           title: "4、主观题",
           choice: "",
-          referenceAnswer: ""
+          referenceAnswer: "",
+          weighting: 20
         }
       ],
       isStartTimer: true // 是否开启定时器

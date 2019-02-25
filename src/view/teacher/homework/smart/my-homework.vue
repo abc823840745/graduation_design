@@ -64,10 +64,17 @@
 
       <Modal v-model="isShowDialog" title="上传" @on-ok="dialogOk">
         <Alert>注意：如果上传有误，请到任务中心查找对应任务进行重新上传</Alert>
+
+        <!-- <input type="file" @change="hanldeUpload" /> -->
+
         <Upload
           class="upload-con"
           type="drag"
-          action="//jsonplaceholder.typicode.com/posts/"
+          :action="uploadUrl"
+          :format="['doc', 'docx']"
+          :on-success="hanldeSuccess"
+          :on-format-error="handleFormatErr"
+          :on-exceeded-size="handleMaxSize"
         >
           <div style="padding: 20px 0">
             <Icon
@@ -109,6 +116,14 @@
 import CreateSubject from "@teaHomework/smart/create-subject";
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import myMixin from "@/view/global/mixin";
+import config from "@/config";
+import { mapActions } from "vuex";
+
+const baseUrl =
+  process.env.NODE_ENV === "development"
+    ? config.baseUrl.dev
+    : config.baseUrl.pro;
+const uploadUrl = baseUrl + "/upload/teacher/exper";
 
 export default {
   name: "my-homework",
@@ -132,6 +147,7 @@ export default {
 
   data() {
     return {
+      uploadUrl,
       isShowDialog: false,
       showCreateSubject: false,
       homeworkInfo: {
@@ -155,6 +171,8 @@ export default {
   },
 
   methods: {
+    ...mapActions(["uploadclassHomework"]),
+
     // 监听选择时间日期函数
     timeOnChange(value) {
       let homeworkInfo = { ...this.homeworkInfo };
@@ -209,6 +227,27 @@ export default {
 
     showDialog() {
       this.isShowDialog = true;
+    },
+
+    handleMaxSize(file) {
+      this.$Notice.warning({
+        title: "文件超过大小限制",
+        desc: "文件大小不能查过15M！"
+      });
+    },
+
+    handleFormatErr(file) {
+      this.$Notice.warning({
+        title: "文件格式应该为doc",
+        desc: ""
+      });
+    },
+
+    hanldeSuccess(file) {
+      this.$Notice.success({
+        title: "上传成功！",
+        desc: ""
+      });
     }
   }
 };

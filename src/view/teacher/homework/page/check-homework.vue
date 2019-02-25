@@ -3,6 +3,20 @@
     <CourseSelect v-show="isSelectCourse" @goNext="goNext" />
 
     <div class="containter" v-show="!isSelectCourse && curDirectory !== 6">
+      <div class="top_title">
+        <h2 class="class_title">
+          新媒体综合实训 <span class="course-code">[GT2004]</span>
+        </h2>
+        <Button
+          class="return_btn"
+          type="primary"
+          shape="circle"
+          @click="$router.go(-1)"
+          icon="md-arrow-back"
+          >返回</Button
+        >
+      </div>
+
       <div class="header-bar" v-show="curDirectory === 4 || curDirectory === 5">
         <MultipleChoice
           :semesterTip="selectInfo['tip']"
@@ -89,11 +103,11 @@ export default {
           key: "operation",
           render: (h, params) => {
             return h("div", [
-              this.btnStyle("查看", h, () => (this.curDirectory = 2)),
-              this.btnStyle("返回", h, () => {
-                this.isSelectCourse = true;
-                this.curDirectory = 1;
-              })
+              this.btnStyle("查看", h, () => (this.curDirectory = 2))
+              // this.btnStyle("返回", h, () => {
+              //   this.isSelectCourse = true;
+              //   this.curDirectory = 1;
+              // })
             ]);
           }
         }
@@ -108,8 +122,8 @@ export default {
           key: "operation",
           render: (h, params) => {
             return h("div", [
-              this.btnStyle("查看", h, () => (this.curDirectory = 3)),
-              this.btnStyle("返回", h, () => (this.curDirectory = 1))
+              this.btnStyle("查看", h, () => (this.curDirectory = 3))
+              // this.btnStyle("返回", h, () => (this.curDirectory = 1))
             ]);
           }
         }
@@ -132,8 +146,8 @@ export default {
                   return (this.curDirectory = 4);
                 }
                 this.curDirectory = 5;
-              }),
-              this.btnStyle("返回", h, () => (this.curDirectory = 2))
+              })
+              // this.btnStyle("返回", h, () => (this.curDirectory = 2))
             ]);
           }
         }
@@ -149,7 +163,12 @@ export default {
         },
         {
           title: "完成状态",
-          key: "submission"
+          key: "submission",
+          render: (h, params) => {
+            let text = params.row.submission;
+            let btnColor = text === "已完成" ? "success" : "error";
+            return h("div", [this.statusBtnStyle(text, h, btnColor)]);
+          }
         },
         {
           title: "评分",
@@ -179,8 +198,8 @@ export default {
             return h("div", [
               this.btnStyle("下载", h, () => {
                 // TODO:打开实验报告
-              }),
-              this.btnStyle("返回", h, () => (this.curDirectory = 3))
+              })
+              // this.btnStyle("返回", h, () => (this.curDirectory = 3))
             ]);
           }
         }
@@ -196,7 +215,12 @@ export default {
         },
         {
           title: "完成状态",
-          key: "submission"
+          key: "submission",
+          render: (h, params) => {
+            let text = params.row.submission;
+            let btnColor = text === "已完成" ? "success" : "error";
+            return h("div", [this.statusBtnStyle(text, h, btnColor)]);
+          }
         },
         {
           title: "评分",
@@ -207,8 +231,8 @@ export default {
           key: "operation",
           render: (h, params) => {
             return h("div", [
-              this.btnStyle("查看", h, () => (this.curDirectory = 6)),
-              this.btnStyle("返回", h, () => (this.curDirectory = 3))
+              this.btnStyle("查看", h, () => (this.curDirectory = 6))
+              // this.btnStyle("返回", h, () => (this.curDirectory = 3))
             ]);
           }
         }
@@ -256,21 +280,21 @@ export default {
         {
           studentId: "1540624158",
           name: "吕嘉俊",
-          submission: "已完成",
+          submission: "未完成",
           score: "",
           operation: ""
         },
         {
           studentId: "1540624158",
           name: "吕嘉俊",
-          submission: "已完成",
+          submission: "未完成",
           score: "",
           operation: ""
         },
         {
           studentId: "1540624158",
           name: "吕嘉俊",
-          submission: "已完成",
+          submission: "未完成",
           score: "",
           operation: ""
         },
@@ -323,6 +347,33 @@ export default {
   align-items: center;
 }
 
+.top_title {
+  // overflow: hidden;
+  // padding-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  background-color: #fff;
+  padding: 14px 20px;
+  border-radius: 10px;
+  color: #666;
+  box-shadow: 2px 2px 2px #eee;
+  .class_title {
+    font-size: 18px;
+    font-weight: 700;
+    float: left;
+    line-height: 32px;
+    .course-code {
+      font-weight: 500;
+      color: #888;
+      font-size: 14px;
+    }
+  }
+  .return_btn {
+    float: right;
+  }
+}
+
 .mar-top {
   margin-top: 20px;
 }
@@ -365,6 +416,7 @@ export default {
 .header-bar {
   position: relative;
   width: 100%;
+  margin-top: 20px;
 
   .float-left {
     position: absolute;
