@@ -1,11 +1,11 @@
 <template>
   <div class="containter">
-    <div v-show="!showCreateSubject" class="create-subject-con">
-      <h2>新建作业</h2>
+    <p slot="header" style="color:#666;text-align:center;font-size:18px;">
+      <span>新建作业</span>
+    </p>
 
-      <Divider />
-
-      <div class="mar-bottom mar-top df-aic">
+    <div class="create-subject-con">
+      <div class="df-aic mb-20">
         <h3>作业名称：</h3>
         <Input
           v-model="homeworkInfo['name']"
@@ -15,7 +15,7 @@
         />
       </div>
 
-      <div class="mar-bottom">
+      <div class="mb-20">
         <MultipleChoice
           semesterTip="作业类型"
           :defaultValue.sync="homeworkInfo['classify']"
@@ -24,7 +24,7 @@
         />
       </div>
 
-      <div class="mar-bottom">
+      <div class="mar-bottom mb-20">
         <MultipleChoice
           semesterTip="周数选择"
           :defaultValue.sync="homeworkInfo['weekNum']"
@@ -34,7 +34,7 @@
       </div>
 
       <div
-        class="mar-bottom df-aic"
+        class="df-aic mb-20"
         v-show="homeworkInfo['classify'] === '在线作业'"
       >
         <h3>考试时间：</h3>
@@ -42,7 +42,7 @@
         <span class="ml-5">分钟</span>
       </div>
 
-      <div class="mar-bottom df-aic">
+      <div class="df-aic mb-20">
         <h3>完成时间：</h3>
         <DatePicker
           :value="homeworkInfo['stopTimeList']"
@@ -54,61 +54,33 @@
         ></DatePicker>
       </div>
 
-      <Button
-        icon="ios-cloud-upload-outline"
-        class="show-dialog-btn"
-        @click="showDialog"
-      >
-        上传课件
-      </Button>
-
-      <Modal v-model="isShowDialog" title="上传" @on-ok="dialogOk">
-        <Alert>注意：如果上传有误，请到任务中心查找对应任务进行重新上传</Alert>
-
-        <!-- <input type="file" @change="hanldeUpload" /> -->
-
+      <div class="df-aic">
+        <h3>上传课件：</h3>
         <Upload
           class="upload-con"
-          type="drag"
+          :show-upload-list="false"
           :action="uploadUrl"
           :format="['doc', 'docx']"
           :on-success="hanldeSuccess"
           :on-format-error="handleFormatErr"
           :on-exceeded-size="handleMaxSize"
         >
-          <div style="padding: 20px 0">
-            <Icon
-              type="ios-cloud-upload"
-              size="52"
-              style="color: #3399ff"
-            ></Icon>
-            <p>点击或拖拽到这里进行上传</p>
-          </div>
+          <Button icon="ios-cloud-upload-outline">请点击此处上传</Button>
         </Upload>
-      </Modal>
-
-      <div class="btnGround">
-        <Button
-          type="primary"
-          @click="
-            homeworkInfo['classify'] === '在线作业' ? createSubject() : sumbit()
-          "
-          long
-        >
-          {{
-            homeworkInfo["classify"] === "在线作业" ? "新建题目" : "新建作业"
-          }}
-        </Button>
-
-        <Button type="primary" @click="$emit('goBack')" long>返回</Button>
       </div>
     </div>
 
-    <CreateSubject
-      v-show="showCreateSubject"
-      @goBack="goBack"
-      :homeworkInfo="homeworkInfo"
-    />
+    <div slot="footer">
+      <Button
+        type="primary"
+        @click="
+          homeworkInfo['classify'] === '在线作业' ? createSubject() : sumbit()
+        "
+        long
+      >
+        {{ homeworkInfo["classify"] === "在线作业" ? "新建题目" : "新建作业" }}
+      </Button>
+    </div>
   </div>
 </template>
 

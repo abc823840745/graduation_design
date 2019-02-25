@@ -11,7 +11,7 @@
           class="return_btn"
           type="primary"
           shape="circle"
-          @click="$router.go(-1)"
+          @click="headerGoBack"
           icon="md-arrow-back"
           >返回</Button
         >
@@ -60,7 +60,15 @@
       </div>
     </div>
 
-    <CheckOnlineHWDetail v-show="curDirectory === 6" @goBack="goBack" />
+    <Modal
+      fullscreen
+      title="作业评分"
+      v-model="showModal"
+      @on-ok="handleOk"
+      @on-cancel="handleCancel"
+    >
+      <CheckOnlineHWDetail />
+    </Modal>
   </div>
 </template>
 
@@ -86,6 +94,7 @@ export default {
   data() {
     return {
       isSelectCourse: true,
+      showModal: false,
       curDirectory: 1,
       hwType: "", //作业类型
       selectInfo: {
@@ -104,10 +113,6 @@ export default {
           render: (h, params) => {
             return h("div", [
               this.btnStyle("查看", h, () => (this.curDirectory = 2))
-              // this.btnStyle("返回", h, () => {
-              //   this.isSelectCourse = true;
-              //   this.curDirectory = 1;
-              // })
             ]);
           }
         }
@@ -123,7 +128,6 @@ export default {
           render: (h, params) => {
             return h("div", [
               this.btnStyle("查看", h, () => (this.curDirectory = 3))
-              // this.btnStyle("返回", h, () => (this.curDirectory = 1))
             ]);
           }
         }
@@ -147,7 +151,6 @@ export default {
                 }
                 this.curDirectory = 5;
               })
-              // this.btnStyle("返回", h, () => (this.curDirectory = 2))
             ]);
           }
         }
@@ -199,7 +202,6 @@ export default {
               this.btnStyle("下载", h, () => {
                 // TODO:打开实验报告
               })
-              // this.btnStyle("返回", h, () => (this.curDirectory = 3))
             ]);
           }
         }
@@ -231,8 +233,10 @@ export default {
           key: "operation",
           render: (h, params) => {
             return h("div", [
-              this.btnStyle("查看", h, () => (this.curDirectory = 6))
-              // this.btnStyle("返回", h, () => (this.curDirectory = 3))
+              this.btnStyle("查看", h, () => {
+                this.showModal = true;
+                this.curDirectory = 6;
+              })
             ]);
           }
         }
@@ -327,12 +331,27 @@ export default {
       this.selValue = data.selValue;
     },
 
-    goBack() {
+    goNext() {
+      this.isSelectCourse = false;
+    },
+
+    handleOk() {
+      // TODO:提交评分
       this.curDirectory = 5;
     },
 
-    goNext() {
-      this.isSelectCourse = false;
+    handleCancel() {
+      this.curDirectory = 5;
+    },
+
+    headerGoBack() {
+      if (this.curDirectory === 1) {
+        return (this.isSelectCourse = true);
+      }
+      if (this.curDirectory === 5) {
+        return (this.curDirectory = 3);
+      }
+      this.curDirectory -= 1;
     }
   }
 };

@@ -1,8 +1,7 @@
 <template>
   <div class="containters">
     <div>
-
-      <div class="header-bar">
+      <!-- <div class="header-bar">
         <div class="homework-info">
           <span>在线作业</span>
           <span>课程：nodejs实验</span>
@@ -11,24 +10,21 @@
         </div>
       </div>
 
-      <Divider />
+      <Divider /> -->
 
       <SubjectType
         class="mar-bottom"
-        v-for="(item,index) in inputInfo"
-        type='check'
+        v-for="(item, index) in inputInfo"
+        type="check"
         :key="index"
-        :inputInfo='item'
+        :inputInfo="item"
       />
 
       <div class="bottom-bar">
-        <p class="total-score">总评分:
+        <p class="total-score">
+          总评分:
           <span class="total-score score">80</span>
         </p>
-        <Button
-          type="primary"
-          @click="$emit('goBack')"
-        >上一步</Button>
       </div>
     </div>
   </div>
@@ -110,7 +106,7 @@ export default {
 .containters {
   width: 100%;
   height: auto;
-  padding-left: 3%;
+  padding: 0 1%;
 
   .header-bar {
     width: 100%;

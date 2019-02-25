@@ -63,7 +63,15 @@
       <Page :total="30" class="mar-top page" />
     </div>
 
-    <WriteOnlineHomework v-show="curDirectory === 2" @goBack="goBack" />
+    <Modal
+      fullscreen
+      title="完成在线作业"
+      v-model="showModal2"
+      @on-ok="handleOk"
+      @on-cancel="handleCancel"
+    >
+      <WriteOnlineHomework />
+    </Modal>
   </div>
 </template>
 
@@ -84,6 +92,7 @@ export default {
     return {
       curDirectory: 1, // 当前的目录
       showModal: false,
+      showModal2: false,
       selectList: [
         {
           tip: "学期选择",
@@ -138,7 +147,7 @@ export default {
                 if (status === "已完成") {
                   return this.$Message.info("你已完成作业");
                 }
-                this.curDirectory = 2;
+                this.showModal2 = true;
               })
             ]);
           }
@@ -192,12 +201,16 @@ export default {
   },
 
   methods: {
-    goBack() {
+    dialogOk() {
+      console.log("上传");
+    },
+
+    handleOk() {
       this.curDirectory = 1;
     },
 
-    dialogOk() {
-      console.log("上传");
+    handleCancel() {
+      this.curDirectory = 1;
     }
   }
 };

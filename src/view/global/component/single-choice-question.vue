@@ -1,28 +1,25 @@
 <template>
-  <div
-    class="radio-containter df-aic"
-    v-if="!$tools.isEmptyObject(info)"
-  >
-
+  <div class="radio-containter df-aic" v-if="!$tools.isEmptyObject(info)">
     <div class="radio-left-con">
       <!-- 标题和分值 -->
       <h2 class="input-title">
-        {{`${info['title']} (${info['weighting']}分)`}}
+        {{ `${info["title"]}` }}
+
+        <span class="ml-5" v-if="type !== 'create'">
+          {{ `(${info["weighting"]}分)` }}
+        </span>
       </h2>
 
       <!-- 显示题目 -->
-      <p v-if="type !== 'create'">题目：{{info['subject']}}</p>
+      <p v-if="type !== 'create'">题目：{{ info["subject"] }}</p>
 
       <!-- 输入题目 -->
-      <div
-        class='df-aic'
-        v-if="type === 'create'"
-      >
+      <div class="df-aic" v-if="type === 'create'">
         <Input
           type="textarea"
           v-model="subject"
           :rows="3"
-          :placeholder="`第${info['title'].slice(0,1)}题题目`"
+          :placeholder="`第${info['title'].slice(0, 1)}题题目`"
           clearable
           style="width: 400px"
         />
@@ -33,33 +30,14 @@
         <span>答案:</span>
 
         <RadioGroup v-model="radioChoice">
-          <Radio
-            class="radio-item"
-            label='A'
-            :disabled="isDisabled"
-          >A</Radio>
-          <Radio
-            class="radio-item"
-            label='B'
-            :disabled="isDisabled"
-          >B</Radio>
-          <Radio
-            class="radio-item"
-            label='C'
-            :disabled="isDisabled"
-          >C</Radio>
-          <Radio
-            class="radio-item"
-            label='D'
-            :disabled="isDisabled"
-          >D</Radio>
+          <Radio class="radio-item" label="A" :disabled="isDisabled">A</Radio>
+          <Radio class="radio-item" label="B" :disabled="isDisabled">B</Radio>
+          <Radio class="radio-item" label="C" :disabled="isDisabled">C</Radio>
+          <Radio class="radio-item" label="D" :disabled="isDisabled">D</Radio>
         </RadioGroup>
       </div>
 
-      <div
-        class='df-aic'
-        v-if="type === 'create'"
-      >
+      <div class="df-aic" v-if="type === 'create'">
         <span>分值：</span>
         <InputNumber
           :max="10"
@@ -69,25 +47,16 @@
       </div>
 
       <!-- 参考答案 -->
-      <div
-        class='reference-answer'
-        v-if="type === 'check' || type === 'score'"
-      >
+      <div class="reference-answer" v-if="type === 'check' || type === 'score'">
         <span>参考答案：</span>
-        <span class='green'>{{info['referenceAnswer']}}</span>
+        <span class="green">{{ info["referenceAnswer"] }}</span>
       </div>
 
       <!-- 评分 -->
-      <div
-        class="radio-list"
-        v-if="type === 'score' || type === 'check'"
-      >
+      <div class="radio-list" v-if="type === 'score' || type === 'check'">
         <span>评分：</span>
 
-        <span
-          class="blue"
-          v-if="type === 'check'"
-        >{{info['score']}}</span>
+        <span class="blue" v-if="type === 'check'">{{ info["score"] }}</span>
 
         <InputNumber
           v-if="type === 'score'"

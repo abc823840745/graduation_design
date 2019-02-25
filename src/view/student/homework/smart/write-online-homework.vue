@@ -2,7 +2,6 @@
   <div class="containter">
     <div class="header-bar">
       <div class="homework-info">
-        <span>在线作业</span>
         <span>课程：nodejs实验</span>
         <span>实验：堂上构建简单服务器</span>
         <span>时间：20分钟</span>
@@ -33,15 +32,6 @@
       :key="index"
       :inputInfo="item"
     />
-
-    <div class="btnGround">
-      <Button type="primary" @click="submit" class="submitBtn" long
-        >提交</Button
-      >
-      <Button type="primary" @click="$emit('goBack')" class="submitBtn" long
-        >上一步</Button
-      >
-    </div>
   </div>
 </template>
 
@@ -120,10 +110,6 @@ export default {
       this.inputInfo[1]["choice"] = data.radioChoice;
     },
 
-    submit() {
-      console.log(this.inputInfo[0]["choice"], this.inputInfo[1]["choice"]);
-    },
-
     endTimeDoing() {
       this.isStartTimer = false;
       console.log("结束后的回调");
@@ -138,9 +124,11 @@ export default {
 .containter {
   width: 100%;
   height: auto;
-  padding-left: 5%;
+  padding: 0 1%;
+
   .header-bar {
     width: 100%;
+
     .homework-info {
       span {
         font-size: 15px;
@@ -148,48 +136,60 @@ export default {
       }
     }
   }
+
   p,
   span {
     font-size: 15px;
   }
+
   .mar-bottom {
     width: 100%;
     margin-bottom: 30px;
+
     .input-title {
       margin-bottom: 5px;
     }
+
     .radio-list {
       width: 100%;
       margin-top: 10px;
       display: flex;
+
       .checkbox-item {
         margin-left: 20px;
       }
     }
+
     .text-input {
       width: 50%;
       margin-top: 10px;
     }
   }
+
   .count-down-con {
     position: fixed;
-    top: 18%;
-    right: 10%;
+    top: 1%;
+    right: 5%;
     display: flex;
     align-items: center;
+
     .count-down-text {
       font-size: 16px;
     }
   }
+
   .primary-color {
     color: #2d8cf0;
   }
+
   .submitBtn {
     width: 10%;
   }
+
   .submitBtn:nth-of-type(1) {
     margin-right: 10px;
   }
+
   .subjectText {
     width: 50%;
     height: auto;
@@ -197,6 +197,7 @@ export default {
     word-break: break-all;
     overflow: hidden;
   }
+
   .btnGround {
     width: 100%;
     display: flex;

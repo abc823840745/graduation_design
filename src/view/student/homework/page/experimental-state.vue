@@ -29,7 +29,17 @@
       <Page :total="30" class="mar-top page" />
     </div>
 
-    <HomeworkDetail v-show="curDirectory === 2" @goBack="goBack" />
+    <Modal
+      fullscreen
+      v-model="showModal"
+      @on-ok="handleOk"
+      @on-cancel="handleCancel"
+    >
+      <p slot="header" style="text-align:center">
+        在线作业：堂上构建简单服务器
+      </p>
+      <HomeworkDetail />
+    </Modal>
   </div>
 </template>
 
@@ -136,7 +146,7 @@ export default {
             const homeworkClassify = params["row"]["homeworkClassify"];
             if (homeworkClassify === "在线作业") {
               return h("div", [
-                this.btnStyle("查看", h, () => (this.curDirectory = 2))
+                this.btnStyle("查看", h, () => (this.showModal = true))
               ]);
             }
             return h("div", [
@@ -199,7 +209,11 @@ export default {
   },
 
   methods: {
-    goBack() {
+    handleOk() {
+      this.curDirectory = 1;
+    },
+
+    handleCancel() {
       this.curDirectory = 1;
     }
   }
@@ -207,6 +221,8 @@ export default {
 </script>
 
 <style lang='less' scoped>
+@import "../../../global/public.less";
+
 .containter {
   width: 100%;
   height: auto;

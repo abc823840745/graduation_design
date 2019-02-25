@@ -1,39 +1,19 @@
 <template>
   <div class="containters">
-
-    <h2>新建作业</h2>
-
-    <Divider />
-
-    <Alert
-      show-icon
-      v-if="inputInfo.length === 0"
-    >请点击新建作业按钮快点新建作业吧！</Alert>
-
-    <Modal
-      v-model="isShowModal"
-      title="新建作业"
-      @on-ok="dialogOk"
-    >
-      <MultipleChoice
-        semesterTip="题目类型"
-        placeholder='请选择题目类型'
-        :defaultValue.sync="subjectClassify"
-        :semesterList="subjectClassifyList"
-        class="multiple-choice"
-      />
-    </Modal>
+    <Alert show-icon v-if="inputInfo.length === 0">
+      请点击新建作业按钮快点新建作业吧！
+    </Alert>
 
     <div
-      v-for="(item,index) in inputInfo"
+      v-for="(item, index) in inputInfo"
       :key="index"
       v-show="inputInfo.length > 0"
     >
       <SubjectType
         class="mb-10 subject-type"
-        type='create'
-        :inputInfo='item'
-        @delFillSubject='delFillSubject($event,index)'
+        type="create"
+        :inputInfo="item"
+        @delFillSubject="delFillSubject($event, index)"
       />
 
       <Button
@@ -41,29 +21,23 @@
         v-show="item['subjectType'] !== '填空题'"
         class="delete-subject-btn mb-30"
         @click="delSubject(index)"
-      >删除该题</Button>
+        >删除该题</Button
+      >
     </div>
 
     <div class="btn-ground">
-      <Button
-        class="bottom-btn"
-        type="primary"
-        long
-        @click="createSubject"
-      >新建题目</Button>
-      <Button
-        class="bottom-btn"
-        type="primary"
-        long
-        @click="$emit('goBack')"
-      >上一步</Button>
-      <Button
-        v-show="inputInfo.length > 0"
-        class="bottom-btn"
-        type="primary"
-        long
-        @click="submit"
-      >提交</Button>
+      <Dropdown @on-click="createSubject">
+        <Button type="primary">
+          新建题目
+          <Icon type="ios-arrow-down"></Icon>
+        </Button>
+        <DropdownMenu slot="list">
+          <DropdownItem name="单选题">单选题</DropdownItem>
+          <DropdownItem name="多选题">多选题</DropdownItem>
+          <DropdownItem name="填空题">填空题</DropdownItem>
+          <DropdownItem name="问答题">问答题</DropdownItem>
+        </DropdownMenu>
+      </Dropdown>
     </div>
   </div>
 </template>
@@ -86,7 +60,6 @@ export default {
 
   data() {
     return {
-      isShowModal: false,
       inputInfo: [],
       subjectClassify: "单选题",
       subjectClassifyList: [
@@ -125,13 +98,8 @@ export default {
       this.$Message.success("成功");
     },
 
-    // 显示 dialog
-    createSubject() {
-      this.isShowModal = true;
-    },
-
     // 新建题目
-    dialogOk() {
+    createSubject(name) {
       /**
        * @subjectType 标题类型
        * @subject 作业题目
@@ -141,7 +109,7 @@ export default {
        */
       let inputInfo = this.inputInfo;
       let subject =
-        this.subjectClassify !== "填空题"
+        name !== "填空题"
           ? ""
           : [
               {
@@ -152,9 +120,9 @@ export default {
             ];
       inputInfo.push({
         subject,
-        subjectType: this.subjectClassify,
-        title: `${inputInfo.length + 1}、${this.subjectClassify}`,
-        choice: this.subjectClassify === "多选题" ? [] : ""
+        subjectType: name,
+        title: `${inputInfo.length + 1}、${name}`,
+        choice: name === "多选题" ? [] : ""
       });
       this.inputInfo = inputInfo;
     },
@@ -202,6 +170,11 @@ export default {
   height: auto;
   padding: 0 1%;
 
+  .modal {
+    position: absolute;
+    z-index: 99999;
+  }
+
   p {
     font-size: 15px;
   }
@@ -241,7 +214,6 @@ export default {
   .btn-ground {
     display: flex;
     align-items: center;
-    margin-top: 30px;
 
     .bottom-btn {
       width: 100px;

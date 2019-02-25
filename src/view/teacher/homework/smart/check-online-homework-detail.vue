@@ -1,40 +1,21 @@
 <template>
   <div class="homework-detail-con">
     <div>
-
-      <h2>作业评分</h2>
-
-      <Divider />
-
       <SubjectType
         class="mb-30"
-        v-for="(item,index) in inputInfo"
-        type='score'
+        v-for="(item, index) in inputInfo"
+        type="score"
         :key="index"
-        :inputInfo='item'
+        :inputInfo="item"
       />
 
       <div class="bottom-bar">
-        <p class="total-score">总评分:
+        <p class="total-score">
+          总评分:
           <span class="total-score score">80</span>
         </p>
       </div>
-
-      <div class="btnGround">
-        <Button
-          type="primary"
-          @click="submit"
-          long
-        >提交评分</Button>
-
-        <Button
-          type="primary"
-          @click="$emit('goBack')"
-          long
-        >返回</Button>
-      </div>
     </div>
-
   </div>
 </template>
 
@@ -113,20 +94,6 @@ export default {
   },
 
   methods: {
-    submit() {
-      if (
-        !this.inputInfo[0]["subject"] ||
-        !this.inputInfo[0]["choice"] ||
-        !this.inputInfo[1]["subject"] ||
-        !this.inputInfo[1]["choice"] ||
-        !this.inputInfo[2]["subject"] ||
-        this.inputInfo[2]["choice"].length === 0
-      ) {
-        return this.$Message.error("缺少必填信息");
-      }
-      alert("提交表单");
-    },
-
     goBack() {
       console.log("goback");
     },
@@ -152,12 +119,11 @@ export default {
 .homework-detail-con {
   width: 100%;
   height: auto;
-  padding: 1%;
+  padding: 0 1%;
 
   .bottom-bar {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 4%;
 
     .total-score {
       font-size: 18px;
