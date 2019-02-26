@@ -1,44 +1,51 @@
 <template>
   <div class="containters">
-    <Alert show-icon v-if="inputInfo.length === 0">
-      请点击新建作业按钮快点新建作业吧！
-    </Alert>
-
-    <div
-      v-for="(item, index) in inputInfo"
-      :key="index"
-      v-show="inputInfo.length > 0"
+    <Modal
+      fullscreen
+      v-model="isShowModal"
+      title="新建题目"
+      @on-ok="$emit('modalOk')"
     >
-      <SubjectType
-        class="mb-10 subject-type"
-        type="create"
-        :inputInfo="item"
-        @delFillSubject="delFillSubject($event, index)"
-      />
+      <Alert show-icon v-if="inputInfo.length === 0">
+        请点击新建作业按钮快点新建作业吧！
+      </Alert>
 
-      <Button
-        type="error"
-        v-show="item['subjectType'] !== '填空题'"
-        class="delete-subject-btn mb-30"
-        @click="delSubject(index)"
-        >删除该题</Button
+      <div
+        v-for="(item, index) in inputInfo"
+        :key="index"
+        v-show="inputInfo.length > 0"
       >
-    </div>
+        <SubjectType
+          class="mb-10 subject-type"
+          type="create"
+          :inputInfo="item"
+          @delFillSubject="delFillSubject($event, index)"
+        />
 
-    <div class="btn-ground">
-      <Dropdown @on-click="createSubject">
-        <Button type="primary">
-          新建题目
-          <Icon type="ios-arrow-down"></Icon>
-        </Button>
-        <DropdownMenu slot="list">
-          <DropdownItem name="单选题">单选题</DropdownItem>
-          <DropdownItem name="多选题">多选题</DropdownItem>
-          <DropdownItem name="填空题">填空题</DropdownItem>
-          <DropdownItem name="问答题">问答题</DropdownItem>
-        </DropdownMenu>
-      </Dropdown>
-    </div>
+        <Button
+          type="error"
+          v-show="item['subjectType'] !== '填空题'"
+          class="delete-subject-btn mb-30"
+          @click="delSubject(index)"
+          >删除该题</Button
+        >
+      </div>
+
+      <div class="btn-ground">
+        <Dropdown @on-click="createSubject">
+          <Button type="primary">
+            新建题目
+            <Icon type="ios-arrow-down"></Icon>
+          </Button>
+          <DropdownMenu slot="list">
+            <DropdownItem name="单选题">单选题</DropdownItem>
+            <DropdownItem name="多选题">多选题</DropdownItem>
+            <DropdownItem name="填空题">填空题</DropdownItem>
+            <DropdownItem name="问答题">问答题</DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
+      </div>
+    </Modal>
   </div>
 </template>
 
@@ -50,7 +57,8 @@ export default {
   name: "create-subject",
 
   props: {
-    homeworkInfo: Object
+    homeworkInfo: Object,
+    showModal: Boolean
   },
 
   components: {
@@ -58,9 +66,20 @@ export default {
     SubjectType
   },
 
+  watch: {
+    showModal(newVal, oldVal) {
+      this.isShowModal = newVal;
+    },
+
+    isShowModal(newVal, oldVal) {
+      this.$emit("update:showModal", newVal);
+    }
+  },
+
   data() {
     return {
       inputInfo: [],
+      isShowModal: false,
       subjectClassify: "单选题",
       subjectClassifyList: [
         {

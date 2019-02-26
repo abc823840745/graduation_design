@@ -1,86 +1,96 @@
 <template>
   <div class="containter">
-    <p slot="header" style="color:#666;text-align:center;font-size:18px;">
-      <span>新建作业</span>
-    </p>
+    <CreateSubject :showModal.sync="showModal2" @modalOk="submitSubject" />
 
-    <div class="create-subject-con">
-      <div class="df-aic mb-20">
-        <h3>作业名称：</h3>
-        <Input
-          v-model="homeworkInfo['name']"
-          placeholder="输入内容"
-          clearable
-          style="width: 250px"
-        />
-      </div>
+    <Modal v-model="showModal" title="新建任务">
+      <p slot="header" style="color:#666;text-align:center;font-size:18px;">
+        <span>新建作业</span>
+      </p>
 
-      <div class="mb-20">
-        <MultipleChoice
-          semesterTip="作业类型"
-          :defaultValue.sync="homeworkInfo['classify']"
-          :semesterList="homeworkCategory"
-          class="multiple-choice"
-        />
-      </div>
+      <div class="create-subject-con">
+        <div class="df-aic mb-20">
+          <h3>作业名称：</h3>
+          <Input
+            v-model="homeworkInfo['name']"
+            placeholder="输入内容"
+            clearable
+            style="width: 250px"
+          />
+        </div>
 
-      <div class="mar-bottom mb-20">
-        <MultipleChoice
-          semesterTip="周数选择"
-          :defaultValue.sync="homeworkInfo['weekNum']"
-          :semesterList="weekList"
-          class="multiple-choice"
-        />
-      </div>
+        <div class="mb-20">
+          <MultipleChoice
+            semesterTip="作业类型"
+            :defaultValue.sync="homeworkInfo['classify']"
+            :semesterList="classifyList"
+            class="multiple-choice"
+          />
+        </div>
 
-      <div
-        class="df-aic mb-20"
-        v-show="homeworkInfo['classify'] === '在线作业'"
-      >
-        <h3>考试时间：</h3>
-        <InputNumber :max="80" :min="5" v-model="homeworkInfo['testingTime']" />
-        <span class="ml-5">分钟</span>
-      </div>
+        <div class="mar-bottom mb-20">
+          <MultipleChoice
+            semesterTip="周数选择"
+            :defaultValue.sync="homeworkInfo['weekNum']"
+            :semesterList="weekList"
+            class="multiple-choice"
+          />
+        </div>
 
-      <div class="df-aic mb-20">
-        <h3>完成时间：</h3>
-        <DatePicker
-          :value="homeworkInfo['stopTimeList']"
-          type="datetimerange"
-          format="yyyy-MM-dd HH:mm"
-          placeholder="选择时间"
-          style="width: 250px"
-          @on-change="timeOnChange"
-        ></DatePicker>
-      </div>
-
-      <div class="df-aic">
-        <h3>上传课件：</h3>
-        <Upload
-          class="upload-con"
-          :show-upload-list="false"
-          :action="uploadUrl"
-          :format="['doc', 'docx']"
-          :on-success="hanldeSuccess"
-          :on-format-error="handleFormatErr"
-          :on-exceeded-size="handleMaxSize"
+        <div
+          class="df-aic mb-20"
+          v-show="homeworkInfo['classify'] === '在线作业'"
         >
-          <Button icon="ios-cloud-upload-outline">请点击此处上传</Button>
-        </Upload>
-      </div>
-    </div>
+          <h3>考试时间：</h3>
+          <InputNumber
+            :max="80"
+            :min="5"
+            v-model="homeworkInfo['testingTime']"
+          />
+          <span class="ml-5">分钟</span>
+        </div>
 
-    <div slot="footer">
-      <Button
-        type="primary"
-        @click="
-          homeworkInfo['classify'] === '在线作业' ? createSubject() : sumbit()
-        "
-        long
-      >
-        {{ homeworkInfo["classify"] === "在线作业" ? "新建题目" : "新建作业" }}
-      </Button>
-    </div>
+        <div class="df-aic mb-20">
+          <h3>完成时间：</h3>
+          <DatePicker
+            :value="homeworkInfo['stopTimeList']"
+            type="datetimerange"
+            format="yyyy-MM-dd HH:mm"
+            placeholder="选择时间"
+            style="width: 250px"
+            @on-change="timeOnChange"
+          ></DatePicker>
+        </div>
+
+        <div class="df-aic">
+          <h3>上传课件：</h3>
+          <Upload
+            class="upload-con"
+            :show-upload-list="false"
+            :action="uploadUrl"
+            :format="['doc', 'docx']"
+            :on-success="hanldeSuccess"
+            :on-format-error="handleFormatErr"
+            :on-exceeded-size="handleMaxSize"
+          >
+            <Button icon="ios-cloud-upload-outline">请点击此处上传</Button>
+          </Upload>
+        </div>
+      </div>
+
+      <div slot="footer">
+        <Button
+          type="primary"
+          @click="
+            homeworkInfo['classify'] === '在线作业' ? createSubject() : sumbit()
+          "
+          long
+        >
+          {{
+            homeworkInfo["classify"] === "在线作业" ? "新建题目" : "新建作业"
+          }}
+        </Button>
+      </div>
+    </Modal>
   </div>
 </template>
 
@@ -103,7 +113,10 @@ export default {
   mixins: [myMixin],
 
   props: {
-    sumbitInfo: Object
+    type: String, // 新建状态和编辑状态
+    homeworkType: String, // 作业状态
+    sumbitInfo: Object,
+    modalOpen: Boolean
   },
 
   components: {
@@ -111,40 +124,46 @@ export default {
     MultipleChoice
   },
 
+  watch: {
+    modalOpen(newVal, oldVal) {
+      this.showModal = newVal;
+    },
+
+    showModal(newVal, oldVal) {
+      this.$emit("update:modalOpen", newVal);
+    }
+  },
+
   computed: {
     weekList() {
       return this.getWeekList().filter(item => item.value !== "所有周数");
+    },
+
+    classifyList() {
+      return this.getClassifyList().filter(item => item.value !== "所有类型");
     }
   },
 
   data() {
     return {
       uploadUrl,
-      isShowDialog: false,
-      showCreateSubject: false,
+      showModal: false,
+      showModal2: false,
       homeworkInfo: {
         name: "",
         classify: "",
         weekNum: "",
         testingTime: 0,
         stopTimeList: []
-      },
-      homeworkCategory: [
-        {
-          value: "课时作业",
-          label: "课时作业"
-        },
-        {
-          value: "在线作业",
-          label: "在线作业"
-        }
-      ]
+      }
     };
   },
 
-  methods: {
-    ...mapActions(["uploadclassHomework"]),
+  mounted() {
+    // TODO: 根据type判断是否为新建模式和修改模式，根据homeworkType获取对应接口的信息
+  },
 
+  methods: {
     // 监听选择时间日期函数
     timeOnChange(value) {
       let homeworkInfo = { ...this.homeworkInfo };
@@ -185,20 +204,7 @@ export default {
       if (!name || !classify || stopTimeList.length === 0) {
         return this.$Message.error("缺少必填信息");
       }
-      this.showCreateSubject = true;
-    },
-
-    // 传递给子组件的上一步事件
-    goBack() {
-      this.showCreateSubject = false;
-    },
-
-    dialogOk() {
-      this.isShowDialog = false;
-    },
-
-    showDialog() {
-      this.isShowDialog = true;
+      this.showModal2 = true;
     },
 
     handleMaxSize(file) {
@@ -220,6 +226,12 @@ export default {
         title: "上传成功！",
         desc: ""
       });
+    },
+
+    // 提交题目Modal确定事件
+    submitSubject() {
+      // TODO:提交题目
+      this.showModal = false;
     }
   }
 };

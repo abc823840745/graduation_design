@@ -19,10 +19,6 @@ export default {
   // 学生作业管理
   'student-homework-main': '首页',
   'student-homework': '作业设计',
-  'student-my-homework': '查看作业评分',
-  'student-homework-tasks': '任务中心',
-  'student-write-online-homework': '完成在线作业',
-  'student-course-download': '课件下载',
   'student-experiment-management': '实验管理',
   'student-online-homework': '在线作业',
   'student-experimental-state': '实验状态',
@@ -63,7 +59,6 @@ export default {
   'teacher-homework-main': '首页',
   'teacher-homework-create': '新建作业',
   'teacher-check-homework': '作业评分',
-  'teacher-upload-courseware': '上传课件',
   'teacher-task-center': '任务中心',
 
   // 教师毕设管理

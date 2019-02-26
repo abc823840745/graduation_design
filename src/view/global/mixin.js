@@ -80,7 +80,20 @@ const myMixin = {
         value: '所有课程',
         label: '所有课程',
       };
-      let couseList = this.$tools.getSessionStorage('formatLesson').map(item => ({
+      let formatLesson = this.$tools.getSessionStorage('formatLesson');
+      if (!formatLesson) {
+        return [
+          {
+            value: '新媒体综合实训',
+            label: '新媒体综合实训',
+          },
+          {
+            value: '就业与创业指导',
+            label: '就业与创业指导',
+          },
+        ];
+      }
+      let couseList = formatLesson.map(item => ({
         value: item['courseName'],
         label: item['courseName'],
       }));

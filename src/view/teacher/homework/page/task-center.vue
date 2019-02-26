@@ -1,6 +1,6 @@
 <template>
   <div class="containter">
-    <div class="containter" v-if="!isChangeHWTasks">
+    <div class="containter">
       <div class="select-list">
         <MultipleChoice
           v-for="item in selectList"
@@ -19,22 +19,17 @@
         />
       </div>
 
-      <Table
-        border
-        class="table-con mar-top"
-        :columns="columns1"
-        :data="data1"
-      />
+      <Table border class="table-con mar-top" :columns="columns" :data="data" />
       <Page :total="30" class="mar-top page" />
     </div>
 
-    <ChangeHomeworkTasks v-if="isChangeHWTasks" @goBack="goBack" />
+    <MyHomework :modalOpen.sync="modalOpen" />
   </div>
 </template>
 
 <script>
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
-import ChangeHomeworkTasks from "@teaHomework/smart/change-homework-tasks";
+import MyHomework from "@teaHomework/smart/my-homework";
 import myMixin from "@/view/global/mixin";
 
 export default {
@@ -42,12 +37,12 @@ export default {
 
   components: {
     MultipleChoice,
-    ChangeHomeworkTasks
+    MyHomework
   },
 
   data() {
     return {
-      isChangeHWTasks: false,
+      modalOpen: false,
       selectList: [
         {
           tip: "学期选择",
@@ -65,7 +60,7 @@ export default {
           list: this.getClassifyList()
         }
       ],
-      columns1: [
+      columns: [
         {
           title: "课程名",
           key: "courseName"
@@ -88,11 +83,7 @@ export default {
           key: "operation",
           render: (h, params) => {
             return h("div", [
-              this.btnStyle(
-                "修改任务信息",
-                h,
-                () => (this.isChangeHWTasks = true)
-              ),
+              this.btnStyle("修改任务信息", h, () => (this.modalOpen = true)),
               this.btnStyle(
                 "删除",
                 h,
@@ -109,7 +100,7 @@ export default {
           }
         }
       ],
-      data1: [
+      data: [
         {
           courseName: "新媒体实训",
           homeworkName: "搭建服务器",
@@ -126,11 +117,7 @@ export default {
     };
   },
 
-  methods: {
-    goBack() {
-      this.isChangeHWTasks = false;
-    }
-  }
+  methods: {}
 };
 </script>
 
