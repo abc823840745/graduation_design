@@ -483,6 +483,28 @@ export default [
 
   //教师端路由
   {
+    path: '/teacher/main',
+    name: 'teacher-main',
+    meta: {
+      icon: 'logo-buffer',
+      title: '首页',
+      access: ['teacher', 'admin'],
+    },
+    component: Main,
+    children: [
+      {
+        path: '',
+        name: 'teacher-main',
+        meta: {
+          icon: 'md-contacts',
+          title: '首页',
+          access: ['teacher', 'admin'],
+        },
+        component: () => import('@teaHomework/page/homework-main.vue'),
+      },
+    ],
+  },
+  {
     path: '/teacher/personal',
     name: 'teacher-personal',
     meta: {
@@ -694,16 +716,6 @@ export default [
         },
         component: () => import('@teaHomework/page/check-homework.vue'),
       },
-      // {
-      //   path: 'upload-courseware',
-      //   name: 'teacher-upload-courseware',
-      //   meta: {
-      //     icon: 'ios-cloud-upload',
-      //     title: '上传课件',
-      //     access: ['teacher', 'admin'],
-      //   },
-      //   component: () => import('@teaHomework/page/upload-courseware.vue'),
-      // },
       {
         path: 'task-center',
         name: 'teacher-task-center',

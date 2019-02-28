@@ -117,6 +117,20 @@ const myMixin = {
       return weekList;
     },
 
+    // 课时选择列表
+    getClassHourList() {
+      return [
+        {
+          value: '所有课时',
+          label: '所有课时',
+        },
+        {
+          value: '第一课：课程介绍及环境配置安装详解',
+          label: '第一课：课程介绍及环境配置安装详解',
+        },
+      ];
+    },
+
     // 作业完成状态选择列表
     getFinishList() {
       return [

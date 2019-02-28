@@ -53,12 +53,7 @@
         />
       </div>
 
-      <Table
-        border
-        class="table-con mar-top"
-        :columns="columns1"
-        :data="data1"
-      />
+      <Table border class="table-con mar-top" :columns="columns" :data="data" />
 
       <Page :total="30" class="mar-top page" />
     </div>
@@ -105,6 +100,11 @@ export default {
           list: this.getCourseList()
         },
         {
+          tip: "课时选择",
+          value: "所有课时",
+          list: this.getClassHourList()
+        },
+        {
           tip: "周数选择",
           value: "所有周数",
           list: this.getWeekList()
@@ -115,18 +115,18 @@ export default {
           list: this.getFinishList()
         }
       ],
-      columns1: [
+      columns: [
         {
-          title: "课程",
+          title: "课程名称",
           key: "courseName"
         },
         {
-          title: "实验",
-          key: "experiment"
+          title: "课时",
+          key: "classHour"
         },
         {
-          title: "周数",
-          key: "weeksNum"
+          title: "实验名称",
+          key: "experiment"
         },
         {
           title: "完成时间",
@@ -153,45 +153,45 @@ export default {
           }
         }
       ],
-      data1: [
+      data: [
         {
           courseName: "新媒体实训",
-          weeksNum: "第一周",
+          classHour: "第一课:程介绍及环境配置安装详解",
           experiment: "堂上构建简单服务器",
           finishTime: "2019-02-13",
           status: "未完成"
         },
         {
           courseName: "新媒体实训",
-          weeksNum: "第二周",
+          classHour: "第一课:程介绍及环境配置安装详解",
           experiment: "构建简单服务器",
           finishTime: "2019-02-13",
           status: "未完成"
         },
         {
           courseName: "新媒体实训",
-          weeksNum: "第三周",
+          classHour: "第一课:程介绍及环境配置安装详解",
           experiment: "堂上构建简单服务器",
           finishTime: "2019-02-13",
           status: "未完成"
         },
         {
           courseName: "新媒体实训",
-          weeksNum: "第四周",
+          classHour: "第一课:程介绍及环境配置安装详解",
           experiment: "构建简单服务器",
           finishTime: "2019-02-13",
           status: "未完成"
         },
         {
           courseName: "新媒体实训",
-          weeksNum: "第五周",
+          classHour: "第一课:程介绍及环境配置安装详解",
           experiment: "堂上构建简单服务器",
           finishTime: "2019-02-13",
           status: "未完成"
         },
         {
           courseName: "新媒体实训",
-          weeksNum: "第六周",
+          classHour: "第一课:程介绍及环境配置安装详解",
           experiment: "构建简单服务器",
           finishTime: "2019-02-13",
           status: "未完成"

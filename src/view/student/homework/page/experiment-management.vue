@@ -7,12 +7,12 @@
         >
 
         <Upload
-          ref="upload"
           type="drag"
           :max-size="2048"
-          :format="['jpg', 'png', 'jpeg']"
+          :format="['doc', 'docx']"
           :action="uploadUrl"
           :on-exceeded-size="handleMaxSize"
+          :on-format-error="handleFormatErr"
           :on-success="handleSuccess"
         >
           <div style="padding: 20px 0">
@@ -48,7 +48,7 @@
       <Table
         border
         class="table-con mar-top"
-        :columns="columns1"
+        :columns="columns"
         :data="tableData"
       />
 
@@ -63,12 +63,6 @@ import myMixin from "@/view/global/mixin";
 import config from "@/config";
 import { mapActions, mapState } from "vuex";
 
-const baseUrl =
-  process.env.NODE_ENV === "development"
-    ? config.baseUrl.dev
-    : config.baseUrl.pro;
-const uploadUrl = baseUrl + "/upload/work";
-
 export default {
   mixins: [myMixin],
 
@@ -77,16 +71,28 @@ export default {
   },
 
   computed: {
-    allCourse() {
+    getAllCourse() {
       return this.$tools
         .getSessionStorage("formatLesson")
         .map(item => item["courseName"]);
-    }
+    },
+
+    uploadUrl() {
+      const baseUrl =
+        process.env.NODE_ENV === "development"
+          ? config.baseUrl.dev
+          : config.baseUrl.pro;
+      const uploadUrl = baseUrl + "/upload/teacher/exper";
+      return uploadUrl;
+    },
+
+    ...mapState({
+      userName: state => state.user.userName
+    })
   },
 
   data() {
     return {
-      uploadUrl,
       curDirectory: 1, // 当前的目录
       showModal: false,
       selectList: [
@@ -103,10 +109,12 @@ export default {
           onChange: this.courseChange
         },
         {
-          tip: "周数选择",
-          value: "所有周数",
-          list: this.getWeekList(),
-          onChange: this.weekChange
+          tip: "课时选择",
+          value: "所有课时",
+          list: this.getClassHourList(),
+          onChange: () => {
+            console.log("haha");
+          }
         },
         {
           tip: "完成状态",
@@ -117,27 +125,26 @@ export default {
           }
         }
       ],
-      columns1: [
+      columns: [
         {
-          title: "课程",
+          title: "课程名称",
           key: "course"
         },
         {
-          title: "实验",
-          key: "name"
+          title: "课时",
+          key: "week"
         },
         {
-          title: "周数",
-          key: "week",
-          sortable: true
+          title: "实验名称",
+          key: "exper_name"
         },
         {
           title: "完成时间",
-          key: "fintime",
+          key: "exper_fintime",
           sortable: true
         },
         {
-          title: "状态",
+          title: "完成状态",
           key: "status"
         },
         {
@@ -145,7 +152,10 @@ export default {
           key: "operation",
           render: (h, params) => {
             return h("div", [
-              this.btnStyle("上传作业", h, () => (this.showModal = true)),
+              this.btnStyle("上传作业", h, () => {
+                this.showModal = true;
+                this.itemInfo = this.tableData[params.index];
+              }),
               this.btnStyle("下载实验", h, () => console.log("下载"), "success")
             ]);
           }
@@ -160,12 +170,19 @@ export default {
   },
 
   methods: {
-    ...mapActions(["getClassHomework"]),
+    ...mapActions(["getStuClassHW", "stuSubmitHW", "stuUploadAgain"]),
 
     async getTableData() {
-      let res = await this.getClassHomework({
-        course: this.allCourse,
-        semester: this.getCurSchoolYear()
+      let res = await this.getStuClassHW({
+        obj: [
+          {
+            course: "新媒体综合实训",
+            stuclass: "ATM", // TODO: 暂时写死，班级由课程接口返回
+            teacher: "程亮" // TODO: 暂时写死
+          }
+        ],
+        semester: this.getCurSchoolYear(),
+        student: this.userName
       });
       this.tableData = res;
     },
@@ -181,29 +198,64 @@ export default {
       });
     },
 
-    handleSuccess(res, file, fileList) {
-      console.log(res, file, fileList);
-      this.$Notice.success({
-        title: "上传成功！",
+    handleFormatErr(file) {
+      this.$Notice.warning({
+        title: "文件格式应该为doc",
         desc: ""
       });
     },
 
+    async handleSuccess(result) {
+      let { exper_id, exper_name, status } = this.itemInfo;
+      let { localpath, url, filename } = result;
+      let res = null;
+      let res2 = null;
+      if (status === "未完成") {
+        res = await this.stuSubmitHW({
+          localpath,
+          id: exper_id,
+          name: exper_name,
+          localname: filename,
+          webpath: url,
+          submit_time: this.$tools.getCurDate()
+        });
+        console.log(res);
+      } else {
+        res2 = await this.stuUploadAgain({
+          localpath,
+          id: exper_id,
+          name: exper_name,
+          localname: filename,
+          webpath: url,
+          submit_time: this.$tools.getCurDate()
+        });
+      }
+      if (res["status"] === 1 || res2["status"] === 1) {
+        this.$Notice.success({
+          title: status === "未完成" ? "上传成功！" : "重新上传成功！"
+        });
+        await this.getTableData();
+      }
+    },
+
     async yearChange(value) {
-      let res = await this.getClassHomework({
+      let res = await this.getTeaClassHW({
         course:
           this.selectList[1]["value"] === "所有课程" ? this.allCourse : value,
         semester: value,
         week:
-          this.selectList[2]["value"] === "所有周数"
+          this.selectList[2]["value"] === "所有课时"
             ? undefined
-            : this.selectList[2]["value"]
+            : this.selectList[2]["value"],
+        stuclass: "ATM", // TODO: 暂时写死，班级由课程接口返回
+        teacher: "孟辉",
+        student: "吕氏春秋"
       });
       this.tableData = res;
     },
 
     async courseChange(value) {
-      let res = await this.getClassHomework({
+      let res = await this.getTeaClassHW({
         course: value === "所有课程" ? this.allCourse : value,
         semester: this.selectList[0]["value"],
         week:
@@ -215,7 +267,7 @@ export default {
     },
 
     async weekChange(value) {
-      let res = await this.getClassHomework({
+      let res = await this.getTeaClassHW({
         course:
           this.selectList[1]["value"] === "所有课程"
             ? this.allCourse
@@ -231,7 +283,7 @@ export default {
     },
 
     async changePage(page) {
-      let res = await this.getClassHomework({
+      let res = await this.getTeaClassHW({
         page,
         course:
           this.selectList[1]["value"] === "所有课程"

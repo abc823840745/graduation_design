@@ -119,8 +119,8 @@ export default {
       ],
       columns2: [
         {
-          title: "周数",
-          key: "weeksNum"
+          title: "课时名称",
+          key: "classHour"
         },
         {
           title: "操作",
@@ -263,13 +263,13 @@ export default {
       ],
       data2: [
         {
-          weeksNum: "第一周"
+          classHour: "第一课：课程介绍及环境配置安装详解"
         },
         {
-          weeksNum: "第二周"
+          classHour: "第一课：课程介绍及环境配置安装详解"
         },
         {
-          weeksNum: "第三周"
+          classHour: "第一课：课程介绍及环境配置安装详解"
         }
       ],
       data3: [

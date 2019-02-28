@@ -2,7 +2,11 @@
   <div class="containter">
     <CourseSelect @goNext="goNext" />
 
-    <MyHomework :modalOpen.sync="modalOpen" />
+    <MyHomework
+      :modalOpen.sync="modalOpen"
+      type="create"
+      :sumbitInfo="sumbitInfo"
+    />
   </div>
 </template>
 
@@ -10,14 +14,9 @@
 import CourseSelect from "@teaHomework/smart/course-select";
 import MyHomework from "@teaHomework/smart/my-homework";
 import myMixin from "@/view/global/mixin";
-import { mapActions } from "vuex";
 
 export default {
   mixins: [myMixin],
-
-  props: {
-    sumbitInfo: Object
-  },
 
   components: {
     CourseSelect,
@@ -26,7 +25,13 @@ export default {
 
   data() {
     return {
-      modalOpen: false
+      modalOpen: false,
+      sumbitInfo: {
+        semester: "2018-2019上学期",
+        course: "新媒体综合实训",
+        course_id: 1,
+        teacher: this.$store.state.user.userName
+      }
     };
   },
 

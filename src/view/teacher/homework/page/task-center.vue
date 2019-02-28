@@ -19,11 +19,21 @@
         />
       </div>
 
-      <Table border class="table-con mar-top" :columns="columns" :data="data" />
+      <Table
+        border
+        class="table-con mar-top"
+        :columns="columns"
+        :data="tableData"
+      />
       <Page :total="30" class="mar-top page" />
     </div>
 
-    <MyHomework :modalOpen.sync="modalOpen" />
+    <MyHomework
+      type="update"
+      :modalOpen.sync="modalOpen"
+      :info="itemInfo"
+      @getTableData="getTableData"
+    />
   </div>
 </template>
 
@@ -31,6 +41,7 @@
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import MyHomework from "@teaHomework/smart/my-homework";
 import myMixin from "@/view/global/mixin";
+import { mapActions, mapState } from "vuex";
 
 export default {
   mixins: [myMixin],
@@ -40,9 +51,17 @@ export default {
     MyHomework
   },
 
+  computed: {
+    ...mapState({
+      userName: state => state.user.userName
+    })
+  },
+
   data() {
     return {
       modalOpen: false,
+      curIndex: 0,
+      itemInfo: {},
       selectList: [
         {
           tip: "学期选择",
@@ -62,20 +81,24 @@ export default {
       ],
       columns: [
         {
-          title: "课程名",
-          key: "courseName"
+          title: "课程名称",
+          key: "course"
         },
         {
-          title: "作业名",
-          key: "homeworkName"
+          title: "课时",
+          key: "week"
+        },
+        {
+          title: "作业名称",
+          key: "name"
         },
         {
           title: "作业类型",
-          key: "homeworkClassify"
+          key: "classify"
         },
         {
           title: "截止时间",
-          key: "stopTime",
+          key: "fintime",
           sortable: true
         },
         {
@@ -83,7 +106,10 @@ export default {
           key: "operation",
           render: (h, params) => {
             return h("div", [
-              this.btnStyle("修改任务信息", h, () => (this.modalOpen = true)),
+              this.btnStyle("修改任务信息", h, () => {
+                this.modalOpen = true;
+                this.itemInfo = this.tableData[params.index];
+              }),
               this.btnStyle(
                 "删除",
                 h,
@@ -91,7 +117,7 @@ export default {
                   this.$Modal.confirm({
                     title: "确定要删除该任务？",
                     onOk: () => {
-                      // TODO: 删除任务信息
+                      this.delHWInfo(params.index);
                     }
                   }),
                 "error"
@@ -100,24 +126,41 @@ export default {
           }
         }
       ],
-      data: [
-        {
-          courseName: "新媒体实训",
-          homeworkName: "搭建服务器",
-          homeworkClassify: "课时作业",
-          stopTime: "2019-1-27"
-        },
-        {
-          courseName: "新媒体实训",
-          homeworkClassify: "在线作业",
-          homeworkName: "堂上搭建服务器",
-          stopTime: "2019-1-27"
-        }
-      ]
+      tableData: []
     };
   },
 
-  methods: {}
+  async mounted() {
+    await this.getTableData();
+  },
+
+  methods: {
+    ...mapActions(["getTeaClassHW", "delTeaClassHW"]),
+
+    async getTableData() {
+      let res = await this.getTeaClassHW({
+        course: "新媒体综合实训",
+        teacher: this.userName,
+        semester: this.getCurSchoolYear()
+      });
+      res.forEach(item => {
+        item["classify"] = "课时作业";
+      });
+      this.tableData = res;
+    },
+
+    async delHWInfo(index) {
+      let { id } = this.tableData[index];
+      let res = await this.delTeaClassHW(id);
+      if (res["status"] === 1) {
+        await this.getTableData();
+        this.$Notice.success({
+          title: "删除成功！",
+          desc: ""
+        });
+      }
+    }
+  }
 };
 </script>
 

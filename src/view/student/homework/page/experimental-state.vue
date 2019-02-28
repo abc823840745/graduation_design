@@ -19,12 +19,7 @@
         />
       </div>
 
-      <Table
-        border
-        class="table-con mar-top"
-        :columns="columns1"
-        :data="data1"
-      />
+      <Table border class="table-con mar-top" :columns="columns" :data="data" />
 
       <Page :total="30" class="mar-top page" />
     </div>
@@ -60,33 +55,6 @@ export default {
     return {
       curDirectory: 1, // 当前的目录
       showModal: false,
-      weeksNum: "",
-      weeksList: [
-        {
-          value: "第一周",
-          label: "第一周"
-        },
-        {
-          value: "第二周",
-          label: "第二周"
-        },
-        {
-          value: "第三周",
-          label: "第三周"
-        },
-        {
-          value: "第四周",
-          label: "第四周"
-        },
-        {
-          value: "第五周",
-          label: "第五周"
-        },
-        {
-          value: "第六周",
-          label: "第六周"
-        }
-      ],
       selectList: [
         {
           semesterTip: "学期选择",
@@ -99,9 +67,9 @@ export default {
           semesterList: this.getCourseList()
         },
         {
-          semesterTip: "周数选择",
-          defaultValue: "所有周数",
-          semesterList: this.getWeekList()
+          semesterTip: "课时选择",
+          defaultValue: "所有课时",
+          semesterList: this.getClassHourList()
         },
         {
           semesterTip: "作业类型",
@@ -114,18 +82,18 @@ export default {
           semesterList: this.getFinishList()
         }
       ],
-      columns1: [
+      columns: [
         {
           title: "课程名称",
           key: "courseName"
         },
         {
-          title: "实验",
-          key: "experiment"
+          title: "课时",
+          key: "classHour"
         },
         {
-          title: "周数",
-          key: "weeksNum"
+          title: "实验名称",
+          key: "experiment"
         },
         {
           title: "作业类型",
@@ -155,10 +123,10 @@ export default {
           }
         }
       ],
-      data1: [
+      data: [
         {
           courseName: "新媒体实训",
-          weeksNum: "第一周",
+          classHour: "第一课:程介绍及环境配置安装详解",
           experiment: "堂上构建简单服务器",
           grading: 100,
           status: "已完成",
@@ -166,6 +134,7 @@ export default {
         },
         {
           courseName: "新媒体实训",
+          classHour: "第一课:程介绍及环境配置安装详解",
           weeksNum: "第二周",
           experiment: "构建简单服务器",
           grading: 0,
@@ -174,7 +143,7 @@ export default {
         },
         {
           courseName: "JavaScript编程",
-          weeksNum: "第一周",
+          classHour: "第一课:程介绍及环境配置安装详解",
           experiment: "堂上构建简单服务器",
           grading: 100,
           status: "已完成",
@@ -182,7 +151,7 @@ export default {
         },
         {
           courseName: "JavaScript编程",
-          weeksNum: "第二周",
+          classHour: "第一课:程介绍及环境配置安装详解",
           experiment: "构建简单服务器",
           grading: 0,
           status: "未完成",
@@ -190,7 +159,7 @@ export default {
         },
         {
           courseName: "Vue应用开发",
-          weeksNum: "第一周",
+          classHour: "第一课:程介绍及环境配置安装详解",
           experiment: "堂上构建简单服务器",
           grading: 100,
           status: "已完成",
@@ -198,7 +167,7 @@ export default {
         },
         {
           courseName: "Vue应用开发",
-          weeksNum: "第二周",
+          classHour: "第一课:程介绍及环境配置安装详解",
           experiment: "构建简单服务器",
           grading: 0,
           status: "未完成",

@@ -1,4 +1,13 @@
-import { getClassHomework, addClassHomework, updateClassHomework, delClassHomework } from '@/api/homework';
+import {
+  getTeaClassHW,
+  addTeaClassHW,
+  updateTeaClassHW,
+  delTeaClassHW,
+  teaUploadAgain,
+  getStuClassHW,
+  stuUploadAgain,
+  stuSubmitHW,
+} from '@/api/homework';
 
 export default {
   state: {},
@@ -9,38 +18,83 @@ export default {
     },
   },
   actions: {
-    async getClassHomework({ commit }, obj) {
+    // 教师端
+    // 查看课时作业
+    async getTeaClassHW({ commit }, obj) {
       try {
-        let res = await getClassHomework(obj);
-        console.log(res.data.data);
+        let res = await getTeaClassHW(obj);
         return res.data.data;
       } catch (err) {
         console.error(err);
       }
     },
 
-    async addClassHomework({ commit }, obj) {
+    // 新增课时作业
+    async addTeaClassHW({ commit }, obj) {
       try {
-        let res = await addClassHomework(obj);
+        let res = await addTeaClassHW(obj);
+        return res.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
+    // 更新课时作业
+    async updateTeaClassHW({ commit }, obj) {
+      try {
+        let res = await updateTeaClassHW(obj);
+        return res.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
+    // 删除课时作业
+    async delTeaClassHW({ commit }, id) {
+      try {
+        let res = await delTeaClassHW(id);
+        return res.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
+    // 重新上传课件
+    async teaUploadAgain({ commit }, obj) {
+      try {
+        let res = await teaUploadAgain(obj);
         return res.data.data;
       } catch (err) {
         console.error(err);
       }
     },
 
-    async updateClassHomework({ commit }, obj) {
+    // 学生端
+    // 查询课时作业
+    async getStuClassHW({ commit }, obj) {
       try {
-        let res = await updateClassHomework(obj);
+        let res = await getStuClassHW(obj);
         return res.data.data;
       } catch (err) {
         console.error(err);
       }
     },
 
-    async delClassHomework({ commit }, id) {
+    // 重新上传课件
+    async stuUploadAgain({ commit }, obj) {
       try {
-        let res = await delClassHomework(id);
-        return res.data.data;
+        let res = await stuUploadAgain(obj);
+        return res.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
+    // 提交作业
+    async stuSubmitHW({ commit }, obj) {
+      try {
+        let res = await stuSubmitHW(obj);
+        return res.data;
       } catch (err) {
         console.error(err);
       }

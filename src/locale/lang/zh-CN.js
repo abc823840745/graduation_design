@@ -46,6 +46,9 @@ export default {
   'teacher-my-info': '我的资料',
   'teacher-my-message': '我的私信',
 
+  // 教师首页
+  'teacher-main': '首页',
+
   // 教师课程管理
   'teacher-course': '课程管理',
   'teacher-my-course': '我的课程',

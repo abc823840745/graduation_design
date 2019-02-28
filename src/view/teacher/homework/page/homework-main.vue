@@ -4,22 +4,15 @@
       <Echart />
 
       <div class="table-con df-fdc">
-        <Table
-          border
-          class="table mb-10"
-          :columns="columns1"
-          :data="data1"
-        />
+        <Table border class="table mb-10" :columns="columns1" :data="data1" />
 
         <Page :total="30" />
       </div>
-
     </div>
 
     <div class="main-right-con">
       <SliderBar />
     </div>
-
   </div>
 </template>
 
@@ -80,13 +73,13 @@ export default {
 @import "../../../global/public.less";
 
 .teacher-homework-main {
-  .w(100%);
+  width: 100%;
 
   .main-left-con {
-    .w(70%);
+    width: 70%;
 
     .echart-containter {
-      .w(100%);
+      width: 100%;
       display: flex;
     }
 
@@ -104,7 +97,7 @@ export default {
   }
 
   .main-right-con {
-    .w(30%);
+    width: 30%;
   }
 }
 </style>
