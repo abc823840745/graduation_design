@@ -76,7 +76,8 @@ export default {
 
   // 教师答疑模块
   'teacher-answering': '答疑管理',
-  'teacher-answer-questions': '答疑管理',
+  'teacher-answer-index': '答疑管理',
+  'teacher-answer-detail': '问题详情',
 
   // 管理员模块
   'admin-content': '管理员模块',

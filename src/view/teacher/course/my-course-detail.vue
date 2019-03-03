@@ -354,7 +354,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.$router.push('/teacher/course/teacher-question-detail/'+params.index)
+                      this.$router.push('/teacher/answering/detail/'+params.index)
                     }
                   }
                 },

@@ -652,30 +652,41 @@ export default [
         },
         component: () => import('@/view/teacher/course/my-course-class.vue'),
       },
+    ],
+  },
+  {
+    path: '/teacher/answering',
+    name: 'teacher-answering',
+    meta: {
+      icon: 'logo-buffer',
+      title: '答疑管理',
+      access: ['teacher', 'admin'],
+    },
+    component: Main,
+    children: [
       {
-        path: 'teacher-question-detail/:id',
-        name: 'teacher-question-detail',
+        path: 'index',
+        name: 'teacher-answer-index',
         meta: {
-          icon: 'logo-markdown',
-          title: '问题详情',
+          icon: 'md-contacts',
+          title: '答疑管理',
+          access: ['teacher', 'admin'],
+        },
+        component: () => import('@/view/teacher/answering/answer-index.vue'),
+      },
+      {
+        path: 'detail/:id',
+        name: 'teacher-answer-detail',
+        meta: {
+          icon: 'md-contacts',
+          title: '答疑管理',
           access: ['teacher', 'admin'],
           hideInMenu: true,
         },
-        component: () => import('@/view/teacher/course/teacher-question-detail.vue'),
-      },
-      {
-        path: 'my-course-questions',
-        name: 'teacher-my-course-questions',
-        meta: {
-          icon: 'ios-create',
-          title: '课程答疑',
-          access: ['teacher', 'admin'],
-        },
-        component: () => import('@/view/teacher/course/my-course-questions.vue'),
+        component: () => import('@/view/teacher/answering/answer-detail.vue'),
       },
     ],
   },
-
   {
     path: '/teacher/homework',
     name: 'teacher-homework',
@@ -767,28 +778,6 @@ export default [
           access: ['teacher', 'admin'],
         },
         component: () => import('@/view/teacher/graduation/my-mission.vue'),
-      },
-    ],
-  },
-  {
-    path: '/teacher/answering',
-    name: 'teacher-answering',
-    meta: {
-      icon: 'logo-buffer',
-      title: '答疑管理',
-      access: ['teacher', 'admin'],
-    },
-    component: Main,
-    children: [
-      {
-        path: '',
-        name: 'teacher-answer-questions',
-        meta: {
-          icon: 'md-contacts',
-          title: '解答问题',
-          access: ['teacher', 'admin'],
-        },
-        component: () => import('@/view/teacher/answering/answer-questions.vue'),
       },
     ],
   },
