@@ -3,7 +3,7 @@
     <Modal
       fullscreen
       v-model="isShowModal"
-      title="新建题目"
+      :title="type === 'create' ? '新建题目信息' : '修改题目信息'"
       @on-ok="$emit('modalOk')"
     >
       <Alert show-icon v-if="inputInfo.length === 0">
@@ -18,7 +18,7 @@
         <SubjectType
           class="mb-10 subject-type"
           type="create"
-          :inputInfo="item"
+          :index="index"
           @delFillSubject="delFillSubject($event, index)"
         />
 
@@ -52,11 +52,13 @@
 <script>
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import SubjectType from "@/view/global/component/show-subject-different-types";
+import { mapMutations, mapState } from "vuex";
 
 export default {
   name: "create-subject",
 
   props: {
+    type: String, // 新建状态和编辑状态
     homeworkInfo: Object,
     showModal: Boolean
   },
@@ -73,12 +75,21 @@ export default {
 
     isShowModal(newVal, oldVal) {
       this.$emit("update:showModal", newVal);
+      if (newVal === true) {
+        this.setSubjectData();
+      }
     }
+  },
+
+  computed: {
+    ...mapState({
+      inputInfo: state => state.homework.inputInfo,
+      subjectList: state => state.homework.subjectList
+    })
   },
 
   data() {
     return {
-      inputInfo: [],
       isShowModal: false,
       subjectClassify: "单选题",
       subjectClassifyList: [
@@ -102,7 +113,13 @@ export default {
     };
   },
 
+  mounted() {
+    console.log(this.inputInfo);
+  },
+
   methods: {
+    ...mapMutations(["setInputInfo"]),
+
     submit() {
       if (
         !this.firstSubject ||
@@ -134,16 +151,33 @@ export default {
               {
                 subject: "",
                 answer: "",
+                referenceAnswer: "",
                 showCreSubjectBtn: true
               }
             ];
+      let optionList = [
+        {
+          option: ""
+        },
+        {
+          option: ""
+        },
+        {
+          option: ""
+        },
+        {
+          option: ""
+        }
+      ];
       inputInfo.push({
         subject,
         subjectType: name,
         title: `${inputInfo.length + 1}、${name}`,
-        choice: name === "多选题" ? [] : ""
+        choice: name === "多选题" ? [] : "",
+        optionList,
+        weighting: 10
       });
-      this.inputInfo = inputInfo;
+      this.setInputInfo(inputInfo);
     },
 
     // 删除题目
@@ -153,7 +187,7 @@ export default {
       inputInfo.forEach((item, index) => {
         item["title"] = `${index + 1}、${item["subjectType"]}`;
       });
-      this.inputInfo = inputInfo;
+      this.setInputInfo(inputInfo);
     },
 
     // 删除填空题小题
@@ -175,7 +209,75 @@ export default {
           item["title"] = `${index + 1}、${item["subjectType"]}`;
         });
       }
-      this.inputInfo = inputInfo;
+      this.setInputInfo(inputInfo);
+    },
+
+    // 修改模式渲染默认的题目
+    setSubjectData() {
+      if (this.type === "update") {
+        let executeOnce = true;
+        let formatData = this.subjectList.filter(item => {
+          return item["name"] === this.homeworkInfo["name"];
+        });
+        let inputInfo = formatData[0]["questions"].reduce(
+          (arr, item, index) => {
+            let optionList = [
+              {
+                option: item["first_option"]
+              },
+              {
+                option: item["sec_option"]
+              },
+              {
+                option: item["third_option"]
+              },
+              {
+                option: item["fourth_option"]
+              }
+            ];
+            if (item["type"] !== "填空题") {
+              arr.push({
+                subject: item["context"],
+                subjectType: item["type"],
+                title: `${index + 1}、${item["type"]}`,
+                choice:
+                  item["type"] === "多选题" ? [item["answer"]] : item["answer"],
+                optionList,
+                weighting: item["grade"]
+              });
+            } else {
+              if (executeOnce) {
+                // 填空题只有一条大题，所以只执行一次
+                executeOnce = false;
+                let subject = formatData[0]["questions"].reduce((arr, item) => {
+                  if (item["type"] === "填空题") {
+                    arr.push({
+                      subject: item["context"],
+                      answer: "",
+                      referenceAnswer: item["answer"],
+                      showCreSubjectBtn: true
+                    });
+                  }
+                  return arr;
+                }, []);
+                console.log(subject);
+                arr.push({
+                  subject,
+                  subjectType: item["type"],
+                  title: `${index + 1}、${item["type"]}`,
+                  choice: item["answer"],
+                  optionList,
+                  weighting: item["grade"]
+                });
+              }
+            }
+
+            return arr;
+          },
+          []
+        );
+        this.setInputInfo(inputInfo);
+      }
     }
   }
 };

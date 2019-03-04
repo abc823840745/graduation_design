@@ -1,5 +1,5 @@
 <template>
-  <div class="radio-containter df-aic" v-if="!$tools.isEmptyObject(info)">
+  <div class="radio-containter df-aic" v-if="!$tools.isEmptyObject(inputInfo)">
     <div class="radio-left-con">
       <!-- 标题和分值 -->
       <h2 class="input-title">
@@ -17,11 +17,12 @@
       <div class="df-aic" v-if="type === 'create'">
         <Input
           type="textarea"
-          v-model="subject"
           :rows="3"
           :placeholder="`第${info['title'].slice(0, 1)}题题目`"
+          :value="info['subject']"
+          @on-change="subjectChange"
           clearable
-          style="width: 400px"
+          style="width: 650px"
         />
       </div>
 
@@ -29,41 +30,55 @@
       <div class="radio-list mb-10">
         <span>答案:</span>
 
-        <RadioGroup v-model="radioChoice">
-          <Radio class="radio-item" label="A" :disabled="isDisabled">A</Radio>
-          <Radio class="radio-item" label="B" :disabled="isDisabled">B</Radio>
-          <Radio class="radio-item" label="C" :disabled="isDisabled">C</Radio>
-          <Radio class="radio-item" label="D" :disabled="isDisabled">D</Radio>
+        <RadioGroup :value="info['choice']" @on-change="choiceChange">
+          <Radio
+            class="radio-item"
+            v-for="item in radioItem"
+            :disabled="isDisabled"
+            :key="item['label']"
+            :label="item['label']"
+          >
+            {{ item["label"] }}
+            <Input
+              style="width: 100px"
+              size="small"
+              v-model="item['option']"
+              @on-change="optionChange"
+            />
+          </Radio>
         </RadioGroup>
       </div>
 
       <div class="df-aic" v-if="type === 'create'">
         <span>分值：</span>
         <InputNumber
-          :max="10"
+          :max="100"
           :min="1"
-          v-model="info['weighting']"
+          :value="info['weighting']"
+          @on-change="weightingChange"
         ></InputNumber>
       </div>
 
       <!-- 参考答案 -->
       <div class="reference-answer" v-if="type === 'check' || type === 'score'">
         <span>参考答案：</span>
-        <span class="green">{{ info["referenceAnswer"] }}</span>
+        <span class="green">{{ inputInfo["referenceAnswer"] }}</span>
       </div>
 
       <!-- 评分 -->
       <div class="radio-list" v-if="type === 'score' || type === 'check'">
         <span>评分：</span>
 
-        <span class="blue" v-if="type === 'check'">{{ info["score"] }}</span>
+        <span class="blue" v-if="type === 'check'">{{
+          inputInfo["score"]
+        }}</span>
 
         <InputNumber
           v-if="type === 'score'"
           :max="100"
           :min="0"
           :step="10"
-          v-model="score"
+          @on-change="scoreChange"
         ></InputNumber>
       </div>
     </div>
@@ -71,42 +86,99 @@
 </template>
 
 <script>
+import { mapState, mapMutations } from "vuex";
+
 export default {
   props: {
-    info: Object, // 输入的数据信息
+    index: Number, // 题目索引
     type: String
   },
 
-  watch: {
-    info(newVal, oldVal) {
-      this.subject = this.info["subject"];
-      this.radioChoice = this.info["choice"];
-    },
-
-    subject(newVal, oldVal) {
-      this.$emit("update:subject", newVal);
-    },
-
-    radioChoice(newVal, oldVal) {
-      this.$emit("update:choice", newVal);
-    }
-  },
-
   computed: {
+    ...mapState({
+      inputInfo: state => state.homework.inputInfo
+    }),
+
     isDisabled() {
       return this.type === "score" || this.type === "check" ? true : false;
+    },
+
+    info() {
+      return this.inputInfo[this.index];
     }
   },
 
   data() {
     return {
-      subject: this.info["subject"],
-      radioChoice: this.info["choice"],
-      score: 60
+      radioItem: [
+        {
+          label: "A",
+          option: ""
+        },
+        {
+          label: "B",
+          option: ""
+        },
+        {
+          label: "C",
+          option: ""
+        },
+        {
+          label: "D",
+          option: ""
+        }
+      ]
     };
   },
 
-  methods: {}
+  mounted() {
+    this.setRadioItem();
+  },
+
+  methods: {
+    ...mapMutations(["setInputInfo"]),
+
+    setRadioItem() {
+      let optionList = this.radioItem.map((item, index) => {
+        return {
+          label: item["label"],
+          option: this.info["optionList"][index]["option"]
+        };
+      });
+      this.radioItem = optionList;
+    },
+
+    // 更新vuex的inputInfo最新值
+    subjectChange(e) {
+      let inputInfo = this.inputInfo;
+      inputInfo[this.index]["subject"] = e.target.value;
+      this.setInputInfo(inputInfo);
+    },
+
+    choiceChange(value) {
+      let inputInfo = this.inputInfo;
+      inputInfo[this.index]["choice"] = value;
+      this.setInputInfo(inputInfo);
+    },
+
+    weightingChange(value) {
+      let inputInfo = this.inputInfo;
+      inputInfo[this.index]["weighting"] = value;
+      this.setInputInfo(inputInfo);
+    },
+
+    scoreChange(value) {
+      let inputInfo = this.inputInfo;
+      inputInfo[this.index]["score"] = value;
+      this.setInputInfo(inputInfo);
+    },
+
+    optionChange(e) {
+      let inputInfo = this.inputInfo;
+      inputInfo[this.index]["optionList"] = this.radioItem;
+      this.setInputInfo(inputInfo);
+    }
+  }
 };
 </script>
 
@@ -133,7 +205,7 @@ export default {
       align-items: center;
 
       .radio-item {
-        margin-left: 20px;
+        margin-left: 10px;
       }
     }
   }

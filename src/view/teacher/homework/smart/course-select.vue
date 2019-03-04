@@ -42,25 +42,8 @@ export default {
 
   data() {
     return {
-      semester: "2017-2018第二学期",
-      semesterList: [
-        {
-          value: "2016-2017第一学期",
-          label: "2016-2017第一学期"
-        },
-        {
-          value: "2016-2017第二学期",
-          label: "2016-2017第二学期"
-        },
-        {
-          value: "2017-2018第一学期",
-          label: "2017-2018第一学期"
-        },
-        {
-          value: "2017-2018第二学期",
-          label: "2017-2018第二学期"
-        }
-      ],
+      semester: "2018-2019上学期",
+      semesterList: this.getSchoolYear(),
       courseList: [
         {
           name: "新媒体实训",

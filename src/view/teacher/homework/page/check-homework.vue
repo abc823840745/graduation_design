@@ -78,6 +78,7 @@ import ProgressBar from "@teaHomework/smart/progress-bar";
 import CourseSelect from "@teaHomework/smart/course-select";
 import CheckOnlineHWDetail from "@teaHomework/smart/check-online-homework-detail";
 import myMixin from "@/view/global/mixin";
+import { mapActions } from "vuex";
 
 export default {
   name: "check-homework",
@@ -177,6 +178,7 @@ export default {
           title: "评分",
           key: "score",
           render: (h, params) => {
+            let _this = this;
             return h("div", [
               h("Rate", {
                 props: {
@@ -186,8 +188,11 @@ export default {
                   marginRight: "5px"
                 },
                 on: {
-                  click: () => {
-                    // 评分
+                  async input(value) {
+                    let data4 = _this.data4;
+                    data4[params.index]["score"] = value;
+                    _this.data4 = data4;
+                    await this.scoreHw(params.index);
                   }
                 }
               })
@@ -323,8 +328,15 @@ export default {
   },
 
   methods: {
+    ...mapActions(["teaScoreHW"]),
+
     submit() {
       console.log("submit");
+    },
+
+    // 评分
+    async scoreHw(index) {
+      await this.teaScoreHW(id, grade);
     },
 
     onChangeSelVal(data) {

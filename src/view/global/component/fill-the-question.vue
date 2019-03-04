@@ -13,7 +13,7 @@
       <div v-if="type === 'score' || type === 'check'">
         <div
           class="df-aic w100"
-          v-for="(item, index) in subjectList"
+          v-for="(item, index) in info['subject']"
           :key="index"
         >
           <div class="mb-20 w100">
@@ -29,7 +29,7 @@
                 <p>
                   参考答案：
                   <span class="green">
-                    {{ info["referenceAnswer"] }}
+                    {{ item["referenceAnswer"] }}
                   </span>
                 </p>
               </div>
@@ -47,7 +47,7 @@
 
       <div
         class="df mb-10"
-        v-for="(item, index) in subjectList"
+        v-for="(item, index) in info['subject']"
         :key="index"
         v-show="type === 'create' || type === 'testing'"
       >
@@ -63,7 +63,8 @@
             <Input
               type="textarea"
               :rows="3"
-              v-model="item['subject']"
+              :value="item['subject']"
+              @on-change="subjectChange($event, index)"
               :placeholder="`请输入题目`"
               clearable
               style="width: 400px"
@@ -93,26 +94,27 @@
             class="mb-10"
             type="textarea"
             :rows="3"
-            v-model="item['answer']"
+            :value="item['referenceAnswer']"
+            @on-change="choiceChange($event, index)"
             placeholder="请输入填空题答案"
             clearable
             style="width: 400px"
           />
-
-          <div class="df-aic mb-10" v-if="type === 'create'">
-            <span>分值：</span>
-            <InputNumber
-              :max="10"
-              :min="1"
-              v-model="info['weighting']"
-            ></InputNumber>
-          </div>
         </div>
+      </div>
+
+      <div class="df-aic mb-10" v-if="type === 'create'">
+        <span>分值：</span>
+        <InputNumber
+          :max="100"
+          :min="1"
+          :value="info['weighting']"
+          @on-change="weightingChange"
+        ></InputNumber>
       </div>
 
       <div class="radio-list" v-if="type === 'score' || type === 'check'">
         <span>评分：</span>
-
         <span class="blue" v-if="type === 'check'">{{ info["score"] }}</span>
 
         <InputNumber
@@ -120,7 +122,8 @@
           :max="100"
           :min="0"
           :step="10"
-          v-model="score"
+          :value="info['score']"
+          @on-change="scoreChange"
         ></InputNumber>
       </div>
     </div>
@@ -128,21 +131,57 @@
 </template>
 
 <script>
+import { mapState, mapMutations } from "vuex";
+
 export default {
   props: {
-    info: Object,
+    pIndex: Number, // 题目索引
     type: String
   },
 
+  computed: {
+    ...mapState({
+      inputInfo: state => state.homework.inputInfo
+    }),
+
+    info() {
+      return this.inputInfo[this.pIndex];
+    }
+  },
+
   data() {
-    return {
-      answer: "",
-      score: 60,
-      subjectList: this.info["subject"]
-    };
+    return {};
   },
 
   methods: {
+    ...mapMutations(["setInputInfo"]),
+
+    // 更新vuex的inputInfo最新值
+    subjectChange(e, index) {
+      let inputInfo = this.inputInfo;
+      inputInfo[this.pIndex]["subject"][index]["subject"] = e.target.value;
+      this.setInputInfo(inputInfo);
+    },
+
+    choiceChange(e, index) {
+      let inputInfo = this.inputInfo;
+      inputInfo[this.pIndex]["subject"][index]["referenceAnswer"] =
+        e.target.value;
+      this.setInputInfo(inputInfo);
+    },
+
+    weightingChange(value, index) {
+      let inputInfo = this.inputInfo;
+      inputInfo[this.pIndex]["weighting"] = value;
+      this.setInputInfo(inputInfo);
+    },
+
+    scoreChange(value) {
+      let inputInfo = this.inputInfo;
+      inputInfo[this.pIndex]["score"] = value;
+      this.setInputInfo(inputInfo);
+    },
+
     // 添加填空项
     addFillItem(index) {
       let subjectList = this.subjectList;
@@ -154,25 +193,25 @@ export default {
 
     // 添加题目
     addNewSubject() {
-      let subjectList = this.subjectList;
-      subjectList.forEach((item, index) => {
+      let inputInfo = this.inputInfo;
+      inputInfo[this.pIndex]["subject"].forEach((item, index) => {
         if (item["showCreSubjectBtn"]) {
           item["showCreSubjectBtn"] = false;
         }
       });
-      subjectList.push({
+      inputInfo[this.pIndex]["subject"].push({
         subject: "",
         answer: "",
         showCreSubjectBtn: true
       });
-      this.subjectList = subjectList;
+      this.setInputInfo(inputInfo);
     },
 
     // 删除题目
     delSubject(index) {
-      let subjectList = this.subjectList;
-      subjectList.splice(index, 1);
-      this.subjectList = subjectList;
+      let inputInfo = this.inputInfo;
+      inputInfo[this.pIndex]["subject"].splice(index, 1);
+      this.setInputInfo(inputInfo);
     }
   }
 };

@@ -71,11 +71,11 @@ export default {
   },
 
   computed: {
-    getAllCourse() {
-      return this.$tools
-        .getSessionStorage("formatLesson")
-        .map(item => item["courseName"]);
-    },
+    // getAllCourse() {
+    //   return this.$tools
+    //     .getSessionStorage("formatLesson")
+    //     .map(item => item["courseName"]);
+    // },
 
     uploadUrl() {
       const baseUrl =
@@ -84,6 +84,21 @@ export default {
           : config.baseUrl.pro;
       const uploadUrl = baseUrl + "/upload/teacher/exper";
       return uploadUrl;
+    },
+
+    getAllCourse() {
+      return [
+        {
+          course: "新媒体综合实训",
+          stuclass: "ATM",
+          teacher: "程亮"
+        },
+        {
+          course: "就业与创业指导",
+          stuclass: "ATM",
+          teacher: "程亮"
+        }
+      ];
     },
 
     ...mapState({
@@ -112,17 +127,7 @@ export default {
           tip: "课时选择",
           value: "所有课时",
           list: this.getClassHourList(),
-          onChange: () => {
-            console.log("haha");
-          }
-        },
-        {
-          tip: "完成状态",
-          value: "所有状态",
-          list: this.getFinishList(),
-          onChange: () => {
-            console.log("haha");
-          }
+          onChange: this.classHourChange
         }
       ],
       columns: [
@@ -145,7 +150,8 @@ export default {
         },
         {
           title: "完成状态",
-          key: "status"
+          key: "status",
+          sortable: true
         },
         {
           title: "操作",
@@ -170,22 +176,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(["getStuClassHW", "stuSubmitHW", "stuUploadAgain"]),
-
-    async getTableData() {
-      let res = await this.getStuClassHW({
-        obj: [
-          {
-            course: "新媒体综合实训",
-            stuclass: "ATM", // TODO: 暂时写死，班级由课程接口返回
-            teacher: "程亮" // TODO: 暂时写死
-          }
-        ],
-        semester: this.getCurSchoolYear(),
-        student: this.userName
-      });
-      this.tableData = res;
-    },
+    ...mapActions(["getStuClassHW", "stuSubmitClassHW", "stuUploadAgain"]),
 
     dialogOk() {
       console.log("上传");
@@ -200,80 +191,114 @@ export default {
 
     handleFormatErr(file) {
       this.$Notice.warning({
-        title: "文件格式应该为doc",
-        desc: ""
+        title: "文件格式应该为doc"
       });
     },
 
     async handleSuccess(result) {
-      let { exper_id, exper_name, status } = this.itemInfo;
+      let { id, exper_name, status } = this.itemInfo;
       let { localpath, url, filename } = result;
-      let res = null;
-      let res2 = null;
       if (status === "未完成") {
-        res = await this.stuSubmitHW({
-          localpath,
-          id: exper_id,
+        let res = await this.stuSubmitClassHW({
+          id,
           name: exper_name,
+          localpath,
           localname: filename,
           webpath: url,
           submit_time: this.$tools.getCurDate()
         });
-        console.log(res);
+        if (res["status"] === 1) {
+          this.$Notice.success({
+            title: "上传成功！"
+          });
+        }
       } else {
-        res2 = await this.stuUploadAgain({
-          localpath,
-          id: exper_id,
+        let res = await this.stuUploadAgain({
+          id,
           name: exper_name,
+          localpath,
           localname: filename,
           webpath: url,
           submit_time: this.$tools.getCurDate()
         });
+        if (res["status"] === 1) {
+          this.$Notice.success({
+            title: "重新上传成功！"
+          });
+        }
       }
-      if (res["status"] === 1 || res2["status"] === 1) {
-        this.$Notice.success({
-          title: status === "未完成" ? "上传成功！" : "重新上传成功！"
-        });
-        await this.getTableData();
-      }
+      await this.getTableData();
+    },
+
+    async getTableData() {
+      let res = await this.getStuClassHW({
+        // TODO: 暂时写死，课程信息由课程接口返回
+        obj: this.getAllCourse,
+        semester: this.getCurSchoolYear(),
+        student: this.userName
+      });
+      this.tableData = res;
     },
 
     async yearChange(value) {
-      let res = await this.getTeaClassHW({
-        course:
-          this.selectList[1]["value"] === "所有课程" ? this.allCourse : value,
+      // TODO: 每次将value存入vuex
+      let res = await this.getStuClassHW({
+        // TODO: 暂时写死，课程信息由课程接口返回
+        obj:
+          this.selectList[1]["value"] === "所有课程"
+            ? this.getAllCourse
+            : [
+                {
+                  course: this.selectList[1]["value"],
+                  stuclass: "ATM",
+                  teacher: "程亮"
+                }
+              ],
         semester: value,
-        week:
+        classHour:
           this.selectList[2]["value"] === "所有课时"
             ? undefined
             : this.selectList[2]["value"],
-        stuclass: "ATM", // TODO: 暂时写死，班级由课程接口返回
-        teacher: "孟辉",
-        student: "吕氏春秋"
+        student: this.userName
       });
+      console.log(res);
       this.tableData = res;
     },
 
     async courseChange(value) {
-      let res = await this.getTeaClassHW({
-        course: value === "所有课程" ? this.allCourse : value,
+      let res = await this.getStuClassHW({
+        obj: [
+          {
+            course: value,
+            stuclass: "ATM",
+            teacher: "程亮"
+          }
+        ],
         semester: this.selectList[0]["value"],
-        week:
-          this.selectList[2]["value"] === "所有周数"
+        classHour:
+          this.selectList[2]["value"] === "所有课时"
             ? undefined
-            : this.selectList[2]["value"]
+            : this.selectList[2]["value"],
+        student: this.userName
       });
       this.tableData = res;
     },
 
-    async weekChange(value) {
-      let res = await this.getTeaClassHW({
-        course:
+    async classHourChange(value) {
+      let res = await this.getStuClassHW({
+        obj:
           this.selectList[1]["value"] === "所有课程"
-            ? this.allCourse
-            : this.selectList[1]["value"],
+            ? this.getAllCourse
+            : [
+                {
+                  course: this.selectList[1]["value"],
+                  stuclass: "ATM",
+                  teacher: "程亮"
+                }
+              ],
         semester: this.selectList[0]["value"],
-        week: value === "所有周数" ? undefined : value
+        classHour: value === "所有课时" ? undefined : value,
+        student: this.userName
       });
       this.tableData = res;
     },

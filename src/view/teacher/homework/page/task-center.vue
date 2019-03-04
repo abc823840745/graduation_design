@@ -31,6 +31,7 @@
     <MyHomework
       type="update"
       :modalOpen.sync="modalOpen"
+      :sumbitInfo="submitInfo"
       :info="itemInfo"
       @getTableData="getTableData"
     />
@@ -61,6 +62,13 @@ export default {
     return {
       modalOpen: false,
       curIndex: 0,
+      submitInfo: {
+        semester: "2018-2019上学期",
+        course: "新媒体综合实训",
+        course_id: 1,
+        // teacher: this.$store.state.user.userName
+        teacher: "程亮"
+      },
       itemInfo: {},
       selectList: [
         {
@@ -106,9 +114,10 @@ export default {
           key: "operation",
           render: (h, params) => {
             return h("div", [
-              this.btnStyle("修改任务信息", h, () => {
+              this.btnStyle("修改任务信息", h, async () => {
                 this.modalOpen = true;
                 this.itemInfo = this.tableData[params.index];
+                await this.getSubjectData();
               }),
               this.btnStyle(
                 "删除",
@@ -117,7 +126,10 @@ export default {
                   this.$Modal.confirm({
                     title: "确定要删除该任务？",
                     onOk: () => {
-                      this.delHWInfo(params.index);
+                      if (params.row.classify === "课时作业") {
+                        return this.delClassHWInfo(params.index);
+                      }
+                      this.delOnlineHWInfo(params.index);
                     }
                   }),
                 "error"
@@ -135,28 +147,61 @@ export default {
   },
 
   methods: {
-    ...mapActions(["getTeaClassHW", "delTeaClassHW"]),
+    ...mapActions([
+      "getTeaClassHW",
+      "delTeaClassHW",
+      "delTeaOnlineHW",
+      "getTeaHW",
+      "getTeaOnlineHW"
+    ]),
 
     async getTableData() {
-      let res = await this.getTeaClassHW({
-        course: "新媒体综合实训",
+      let res = await this.getTeaHW({
+        course: ["新媒体综合实训", "就业与创业指导"],
         teacher: this.userName,
         semester: this.getCurSchoolYear()
       });
-      res.forEach(item => {
-        item["classify"] = "课时作业";
-      });
+      if (res) {
+        res.forEach(item => {
+          item["classify"] =
+            item["type"] === "offline" ? "课时作业" : "在线作业";
+        });
+      }
       this.tableData = res;
     },
 
-    async delHWInfo(index) {
+    // 修改模式获取题目数据
+    async getSubjectData() {
+      if (this.itemInfo["classify"] === "在线作业") {
+        let { semester, course, teacher } = this.submitInfo;
+        await this.getTeaOnlineHW({
+          course,
+          teacher,
+          semester
+        });
+      }
+    },
+
+    // 删除课时作业
+    async delClassHWInfo(index) {
       let { id } = this.tableData[index];
       let res = await this.delTeaClassHW(id);
       if (res["status"] === 1) {
         await this.getTableData();
         this.$Notice.success({
-          title: "删除成功！",
-          desc: ""
+          title: "删除成功！"
+        });
+      }
+    },
+
+    // 删除在线作业
+    async delOnlineHWInfo(index) {
+      let { id } = this.tableData[index];
+      let res = await this.delTeaOnlineHW(id);
+      if (res["status"] === 1) {
+        await this.getTableData();
+        this.$Notice.success({
+          title: "删除成功！"
         });
       }
     }

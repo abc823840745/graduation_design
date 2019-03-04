@@ -4,8 +4,8 @@
 
     <MyHomework
       :modalOpen.sync="modalOpen"
-      type="create"
       :sumbitInfo="sumbitInfo"
+      type="create"
     />
   </div>
 </template>
@@ -30,7 +30,8 @@ export default {
         semester: "2018-2019上学期",
         course: "新媒体综合实训",
         course_id: 1,
-        teacher: this.$store.state.user.userName
+        // teacher: this.$store.state.user.userName
+        teacher: "程亮"
       }
     };
   },

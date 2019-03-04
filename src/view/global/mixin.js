@@ -75,7 +75,8 @@ const myMixin = {
     },
 
     // 课程选择列表
-    getCourseList() {
+    getCourseList(semester) {
+      // TODO: 根据semester获取对应的课程信息
       let def = {
         value: '所有课程',
         label: '所有课程',
@@ -118,7 +119,8 @@ const myMixin = {
     },
 
     // 课时选择列表
-    getClassHourList() {
+    getClassHourList(course) {
+      // TODO: 根据课程获取对应课程的课时
       return [
         {
           value: '所有课时',
@@ -127,6 +129,10 @@ const myMixin = {
         {
           value: '第一课：课程介绍及环境配置安装详解',
           label: '第一课：课程介绍及环境配置安装详解',
+        },
+        {
+          value: '第二课：假面骑士介绍及骑士腰带安装详解',
+          label: '第二课：假面骑士介绍及骑士腰带安装详解',
         },
       ];
     },
