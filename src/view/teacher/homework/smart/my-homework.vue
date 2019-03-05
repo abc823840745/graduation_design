@@ -5,7 +5,7 @@
       :type="type"
       :homeworkInfo="homeworkInfo"
       :showModal.sync="showModal2"
-      @modalOk="submitSubject"
+      @modalOk="type === 'create' ? submitSubject() : updateSubject()"
     />
 
     <Modal v-model="showModal" title="新建任务">
@@ -146,7 +146,7 @@ export default {
 
   props: {
     type: String, // 新建状态和修改状态
-    sumbitInfo: Object, // 新建任务需要的信息
+    submitInfo: Object, // 新建任务需要的信息
     info: {
       type: Object, // 修改任务显示的数据
       default() {
@@ -197,7 +197,8 @@ export default {
     },
 
     ...mapState({
-      inputInfo: state => state.homework.inputInfo
+      inputInfo: state => state.homework.inputInfo,
+      subjectList: state => state.homework.subjectList
     })
   },
 
@@ -227,7 +228,8 @@ export default {
       "updateTeaOnlineHW",
       "teaUploadAgain",
       "addTeaOnlineHW",
-      "addTeaOnlineSubject"
+      "addTeaOnlineSubject",
+      "updateTeaOnlineSubject"
     ]),
 
     ...mapMutations(["setInputInfo"]),
@@ -263,7 +265,7 @@ export default {
         return this.$Message.error("请上传课件");
       }
       if (classify === "课时作业") {
-        let { semester, course, course_id, teacher } = this.sumbitInfo;
+        let { semester, course, course_id, teacher } = this.submitInfo;
         let res = await this.addTeaClassHW({
           name,
           classHour,
@@ -290,7 +292,7 @@ export default {
     // 提交题目Modal确定事件
     async submitSubject() {
       let { name, classHour, testingTime, stopTimeList } = this.homeworkInfo;
-      let { semester, course, course_id, teacher } = this.sumbitInfo;
+      let { semester, course, course_id, teacher } = this.submitInfo;
       let res = await this.addTeaOnlineHW({
         name,
         classHour,
@@ -328,6 +330,7 @@ export default {
                 }
               ];
             } else {
+              // 处理填空题格式
               questions = subject.map((item, index, arr) => {
                 return {
                   context: item["subject"],
@@ -359,6 +362,60 @@ export default {
         });
       }
       this.showModal = false;
+    },
+
+    // 修改在线作业题目
+    async updateSubject() {
+      let questions = [];
+      await Promise.all(
+        this.inputInfo.map(async item => {
+          let [first, second, third, fourth] = item["optionList"];
+          let { subject, choice, weighting, subjectType, id } = item;
+          let answer = subjectType === "多选题" ? choice.join() : choice;
+
+          if (subjectType !== "填空题") {
+            questions = [
+              {
+                id,
+                context: subject,
+                obj: {
+                  first_option: first["option"],
+                  sec_option: second["option"],
+                  third_option: third["option"],
+                  fourth_option: fourth["option"]
+                },
+                qtype: subjectType,
+                answer,
+                grade: weighting
+              }
+            ];
+          } else {
+            // 处理填空题格式
+            questions = item["subject"].map((item, index, arr) => {
+              let { id, subject, referenceAnswer } = item;
+              return {
+                id,
+                context: subject,
+                obj: {
+                  first_option: "",
+                  sec_option: "",
+                  third_option: "",
+                  fourth_option: ""
+                },
+                qtype: "填空题",
+                answer: referenceAnswer,
+                grade: weighting / arr.length
+              };
+            });
+          }
+          await this.updateTeaOnlineSubject(questions);
+        })
+      );
+      this.showModal = false;
+      this.setInputInfo([]);
+      this.$Notice.success({
+        title: "修改成功！"
+      });
     },
 
     // 点击修改在线作业题目按钮事件

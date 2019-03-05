@@ -11,7 +11,7 @@
       </h2>
 
       <!-- 显示题目 -->
-      <p v-if="type !== 'create'">题目：{{ info["subject"] }}</p>
+      <p v-if="type !== 'create'" class="mt-10">题目：{{ info["subject"] }}</p>
 
       <!-- 输入题目 -->
       <div class="df-aic" v-if="type === 'create'">
@@ -38,8 +38,16 @@
             :key="item['label']"
             :label="item['label']"
           >
-            {{ item["label"] }}
+            <span class="choice-text"> {{ item["label"] }}</span>
+            <span
+              class="choice-text"
+              v-if="type === 'testing' || type === 'score'"
+            >
+              、{{ item["option"] }}
+            </span>
+
             <Input
+              v-if="type === 'create'"
               style="width: 100px"
               size="small"
               v-model="item['option']"
@@ -206,6 +214,10 @@ export default {
 
       .radio-item {
         margin-left: 10px;
+
+        .choice-text {
+          font-size: 14px;
+        }
       }
     }
   }

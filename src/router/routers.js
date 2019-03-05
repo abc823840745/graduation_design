@@ -335,7 +335,7 @@ export default [
         name: 'student-experimental-state',
         meta: {
           icon: 'ios-list-box',
-          title: '实验状态',
+          title: '作业状态',
           access: ['student'],
         },
         component: () => import('@stuHomework/page/experimental-state.vue'),
@@ -346,6 +346,7 @@ export default [
         meta: {
           icon: 'ios-keypad',
           title: '实验管理',
+          notCache: false,
           access: ['student'],
         },
         component: () => import('@stuHomework/page/experiment-management.vue'),
@@ -356,6 +357,7 @@ export default [
         meta: {
           icon: 'ios-globe',
           title: '在线作业',
+          notCache: false,
           access: ['student'],
         },
         component: () => import('@stuHomework/page/online-homework.vue'),

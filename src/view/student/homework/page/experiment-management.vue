@@ -49,10 +49,15 @@
         border
         class="table-con mar-top"
         :columns="columns"
-        :data="tableData"
+        :data="tableInfo['tableData']"
       />
 
-      <Page class="mar-top page" :total="30" @on-change="changePage" />
+      <Page
+        class="mar-top page"
+        :total="tableInfo['count']"
+        :page-size="10"
+        @on-change="changePage"
+      />
     </div>
   </div>
 </template>
@@ -71,12 +76,6 @@ export default {
   },
 
   computed: {
-    // getAllCourse() {
-    //   return this.$tools
-    //     .getSessionStorage("formatLesson")
-    //     .map(item => item["courseName"]);
-    // },
-
     uploadUrl() {
       const baseUrl =
         process.env.NODE_ENV === "development"
@@ -102,7 +101,8 @@ export default {
     },
 
     ...mapState({
-      userName: state => state.user.userName
+      userName: state => state.user.userName,
+      tableInfo: state => state.homework.experMangerInfo
     })
   },
 
@@ -115,19 +115,19 @@ export default {
           tip: "学期选择",
           value: this.getCurSchoolYear(),
           list: this.getSchoolYear(),
-          onChange: this.yearChange
+          onChange: this.changeYear
         },
         {
           tip: "课程选择",
           value: "所有课程",
           list: this.getCourseList(),
-          onChange: this.courseChange
+          onChange: this.changeCourse
         },
         {
           tip: "课时选择",
           value: "所有课时",
           list: this.getClassHourList(),
-          onChange: this.classHourChange
+          onChange: this.changeClassHour
         }
       ],
       columns: [
@@ -160,14 +160,18 @@ export default {
             return h("div", [
               this.btnStyle("上传作业", h, () => {
                 this.showModal = true;
-                this.itemInfo = this.tableData[params.index];
+                this.itemInfo = this.tableInfo["tableData"][params.index];
               }),
-              this.btnStyle("下载实验", h, () => console.log("下载"), "success")
+              this.btnStyle(
+                "下载实验",
+                h,
+                () => window.open(params.row.exper_webpath),
+                "success"
+              )
             ]);
           }
         }
-      ],
-      tableData: []
+      ]
     };
   },
 
@@ -231,18 +235,17 @@ export default {
     },
 
     async getTableData() {
-      let res = await this.getStuClassHW({
+      await this.getStuClassHW({
         // TODO: 暂时写死，课程信息由课程接口返回
         obj: this.getAllCourse,
         semester: this.getCurSchoolYear(),
         student: this.userName
       });
-      this.tableData = res;
     },
 
-    async yearChange(value) {
+    async changeYear(value) {
       // TODO: 每次将value存入vuex
-      let res = await this.getStuClassHW({
+      await this.getStuClassHW({
         // TODO: 暂时写死，课程信息由课程接口返回
         obj:
           this.selectList[1]["value"] === "所有课程"
@@ -261,19 +264,20 @@ export default {
             : this.selectList[2]["value"],
         student: this.userName
       });
-      console.log(res);
-      this.tableData = res;
     },
 
-    async courseChange(value) {
-      let res = await this.getStuClassHW({
-        obj: [
-          {
-            course: value,
-            stuclass: "ATM",
-            teacher: "程亮"
-          }
-        ],
+    async changeCourse(value) {
+      await this.getStuClassHW({
+        obj:
+          value === "所有课程"
+            ? this.getAllCourse
+            : [
+                {
+                  course: value,
+                  stuclass: "ATM",
+                  teacher: "程亮"
+                }
+              ],
         semester: this.selectList[0]["value"],
         classHour:
           this.selectList[2]["value"] === "所有课时"
@@ -281,11 +285,10 @@ export default {
             : this.selectList[2]["value"],
         student: this.userName
       });
-      this.tableData = res;
     },
 
-    async classHourChange(value) {
-      let res = await this.getStuClassHW({
+    async changeClassHour(value) {
+      await this.getStuClassHW({
         obj:
           this.selectList[1]["value"] === "所有课程"
             ? this.getAllCourse
@@ -300,7 +303,6 @@ export default {
         classHour: value === "所有课时" ? undefined : value,
         student: this.userName
       });
-      this.tableData = res;
     },
 
     async finishChange(value) {
@@ -308,19 +310,25 @@ export default {
     },
 
     async changePage(page) {
-      let res = await this.getTeaClassHW({
+      await this.getStuClassHW({
         page,
-        course:
+        obj:
           this.selectList[1]["value"] === "所有课程"
-            ? this.allCourse
-            : this.selectList[1]["value"],
+            ? this.getAllCourse
+            : [
+                {
+                  course: this.selectList[1]["value"],
+                  stuclass: "ATM",
+                  teacher: "程亮"
+                }
+              ],
         semester: this.selectList[0]["value"],
-        week:
-          this.selectList[2]["value"] === "所有周数"
+        classHour:
+          this.selectList[2]["value"] === "所有课时"
             ? undefined
-            : this.selectList[2]["value"]
+            : this.selectList[2]["value"],
+        student: this.userName
       });
-      this.tableData = res;
     }
   }
 };

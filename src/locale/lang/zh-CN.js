@@ -21,7 +21,7 @@ export default {
   'student-homework': '作业设计',
   'student-experiment-management': '实验管理',
   'student-online-homework': '在线作业',
-  'student-experimental-state': '实验状态',
+  'student-experimental-state': '作业状态',
 
   // 学生毕设管理
   'student-graduation': '毕业设计',

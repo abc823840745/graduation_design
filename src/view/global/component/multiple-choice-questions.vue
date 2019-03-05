@@ -11,7 +11,7 @@
       </h2>
 
       <!-- 显示题目 -->
-      <p v-if="type !== 'create'">题目：{{ info["subject"] }}</p>
+      <p v-if="type !== 'create'" class="mt-10">题目：{{ info["subject"] }}</p>
 
       <!-- 输入题目 -->
       <Input
@@ -36,8 +36,16 @@
             :label="item['label']"
             :disabled="isDisabled"
           >
-            {{ item["label"] }}
+            <span class="choice-text"> {{ item["label"] }}</span>
+            <span
+              class="choice-text"
+              v-if="type === 'testing' || type === 'score'"
+            >
+              、{{ item["option"] }}
+            </span>
+
             <Input
+              v-if="type === 'create'"
               style="width: 100px"
               size="small"
               v-model="item['option']"
@@ -137,14 +145,16 @@ export default {
     ...mapMutations(["setInputInfo"]),
 
     setChoice() {
-      this.choice = this.info["choice"][0].split(",");
+      if (this.type === "create" || this.type === "check") {
+        this.choice = this.info["choice"][0].split(",");
+      }
     },
 
     setCheckBoxItem() {
-      let optionList = this.checkBoxItem.map((item, index) => {
+      let optionList = this.info["optionList"].map((item, index) => {
         return {
           label: item["label"],
-          option: this.info["optionList"][index]["option"]
+          option: item["option"]
         };
       });
       this.checkBoxItem = optionList;
@@ -210,6 +220,10 @@ export default {
 
     .checkbox-item {
       margin-left: 18px;
+
+      .choice-text {
+        font-size: 14px;
+      }
     }
   }
 

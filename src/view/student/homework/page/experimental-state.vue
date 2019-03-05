@@ -19,7 +19,12 @@
         />
       </div>
 
-      <Table border class="table-con mar-top" :columns="columns" :data="data" />
+      <Table
+        border
+        class="table-con mar-top"
+        :columns="columns"
+        :data="tableData"
+      />
 
       <Page :total="30" class="mar-top page" />
     </div>
@@ -42,6 +47,7 @@
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import HomeworkDetail from "@stuHomework/smart/check-online-homework-detail";
 import myMixin from "@/view/global/mixin";
+import { mapState, mapActions } from "vuex";
 
 export default {
   mixins: [myMixin],
@@ -85,22 +91,22 @@ export default {
       columns: [
         {
           title: "课程名称",
-          key: "courseName"
+          key: "course"
         },
         {
           title: "课时",
-          key: "classHour"
+          key: "week"
         },
         {
           title: "实验名称",
-          key: "experiment"
+          key: "name"
         },
         {
           title: "作业类型",
           key: "homeworkClassify"
         },
         {
-          title: "状态",
+          title: "完成状态",
           key: "status"
         },
         {
@@ -118,72 +124,43 @@ export default {
               ]);
             }
             return h("div", [
-              this.btnStyle("下载", h, () => this.$Message.info("下载中"))
+              this.btnStyle("下载", h, () => {
+                window.open(params.row.webpath);
+              })
             ]);
           }
         }
       ],
-      data: [
-        {
-          courseName: "新媒体实训",
-          classHour: "第一课:程介绍及环境配置安装详解",
-          experiment: "堂上构建简单服务器",
-          grading: 100,
-          status: "已完成",
-          homeworkClassify: "在线作业"
-        },
-        {
-          courseName: "新媒体实训",
-          classHour: "第一课:程介绍及环境配置安装详解",
-          weeksNum: "第二周",
-          experiment: "构建简单服务器",
-          grading: 0,
-          status: "未完成",
-          homeworkClassify: "课时作业"
-        },
-        {
-          courseName: "JavaScript编程",
-          classHour: "第一课:程介绍及环境配置安装详解",
-          experiment: "堂上构建简单服务器",
-          grading: 100,
-          status: "已完成",
-          homeworkClassify: "在线作业"
-        },
-        {
-          courseName: "JavaScript编程",
-          classHour: "第一课:程介绍及环境配置安装详解",
-          experiment: "构建简单服务器",
-          grading: 0,
-          status: "未完成",
-          homeworkClassify: "课时作业"
-        },
-        {
-          courseName: "Vue应用开发",
-          classHour: "第一课:程介绍及环境配置安装详解",
-          experiment: "堂上构建简单服务器",
-          grading: 100,
-          status: "已完成",
-          homeworkClassify: "在线作业"
-        },
-        {
-          courseName: "Vue应用开发",
-          classHour: "第一课:程介绍及环境配置安装详解",
-          experiment: "构建简单服务器",
-          grading: 0,
-          status: "未完成",
-          homeworkClassify: "课时作业"
-        }
-      ]
+      tableData: []
     };
   },
 
+  async mounted() {
+    await this.getTableData();
+  },
+
   methods: {
+    ...mapActions(["getTeaHW"]),
+
     handleOk() {
       this.curDirectory = 1;
     },
 
     handleCancel() {
       this.curDirectory = 1;
+    },
+
+    async getTableData() {
+      // let res = await this.getTeaHW({
+      //   semester: "2018-2019上学期",
+      //   course: "新媒体综合实训",
+      //   teacher: "程亮"
+      // });
+      // res.forEach(item => {
+      //   item["homeworkClassify"] =
+      //     item["type"] === "online" ? "在线作业" : "课时作业";
+      // });
+      // this.tableData = res;
     }
   }
 };

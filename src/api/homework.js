@@ -17,6 +17,17 @@ export function getTeaClassHW(obj) {
   });
 }
 
+// 教师查看问题
+export function getTeaSubject(id) {
+  return axios.request({
+    data: {
+      exper_id: id,
+    },
+    url: '/read/teacher/questions',
+    method: 'post',
+  });
+}
+
 // 查看作业以及问题
 export function getTeaOnlineHW(obj) {
   return axios.request({
@@ -116,15 +127,10 @@ export function updateTeaOnlineHW(obj) {
 }
 
 // 更新在线作业问题
-export function updateTeaOnlineSubject(obj) {
+export function updateTeaOnlineSubject(questions) {
   return axios.request({
     data: {
-      id: obj['id'],
-      context: obj['context'],
-      obj: obj['obj'],
-      qtype: obj['qtype'],
-      grade: obj['grade'],
-      answer: obj['answer'],
+      questions,
     },
     url: '/update/teacher/question',
     method: 'post',
@@ -190,8 +196,8 @@ export function teaScoreHW(id, grade) {
   });
 }
 
-// 获取教师发布的作业列表
-export function getTeaHW(obj) {
+// 获取学生作业列表
+export function getStuHW(obj) {
   return axios.request({
     data: {
       course: obj['course'],
@@ -201,7 +207,7 @@ export function getTeaHW(obj) {
       limit: obj['limit'] || 10,
       page: obj['page'] || 1,
     },
-    url: '/getlist/teacher/exper',
+    url: '/getstulist/teacher/exper',
     method: 'post',
   });
 }
@@ -240,10 +246,10 @@ export function getStuOnlineHW(obj) {
 }
 
 // 查看在线作业详细问题
-export function getStuOnlineSubject(obj) {
+export function getStuOnlineSubject(id) {
   return axios.request({
     data: {
-      exper_id: obj['exper_id'],
+      exper_id: id,
     },
     url: '/read/student/question',
     method: 'post',
@@ -299,8 +305,8 @@ export function stuSubmitOnlineHW(obj) {
   });
 }
 
-// 获取学生作业列表
-export function getStuHW(obj) {
+// 获取教师发布的作业列表
+export function getTeaHW(obj) {
   return axios.request({
     data: {
       course: obj['course'],
@@ -310,7 +316,7 @@ export function getStuHW(obj) {
       limit: obj['limit'] || 10,
       page: obj['page'] || 1,
     },
-    url: '/getlist/student/exper',
+    url: '/getlist/teacher/exper',
     method: 'post',
   });
 }

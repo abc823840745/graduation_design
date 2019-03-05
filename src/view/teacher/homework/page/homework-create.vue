@@ -4,7 +4,7 @@
 
     <MyHomework
       :modalOpen.sync="modalOpen"
-      :sumbitInfo="sumbitInfo"
+      :submitInfo="submitInfo"
       type="create"
     />
   </div>
@@ -26,9 +26,9 @@ export default {
   data() {
     return {
       modalOpen: false,
-      sumbitInfo: {
+      submitInfo: {
         semester: "2018-2019上学期",
-        course: "新媒体综合实训",
+        course: "就业与创业指导",
         course_id: 1,
         // teacher: this.$store.state.user.userName
         teacher: "程亮"

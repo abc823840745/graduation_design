@@ -1,25 +1,25 @@
 <template>
-  <div class="show-subject-different-types-con">
+  <div class="show-subject-different-types-con" v-if="inputInfo.length > 0">
     <RadioItem
-      v-if="inputInfo[index]['subjectType'] === '单选题'"
+      v-if="info['subjectType'] === '单选题'"
       :type="type"
       :index="index"
     />
 
     <CheckBoxItem
-      v-if="inputInfo[index]['subjectType'] === '多选题'"
+      v-if="info['subjectType'] === '多选题'"
       :type="type"
       :index="index"
     />
 
     <EssayQuestion
-      v-if="inputInfo[index]['subjectType'] === '问答题'"
+      v-if="info['subjectType'] === '问答题'"
       :type="type"
       :index="index"
     />
 
     <FillTheQuestion
-      v-if="inputInfo[index]['subjectType'] === '填空题'"
+      v-if="info['subjectType'] === '填空题'"
       @delFillSubject="delFillSubject"
       :type="type"
       :pIndex="index"
@@ -50,7 +50,11 @@ export default {
   computed: {
     ...mapState({
       inputInfo: state => state.homework.inputInfo
-    })
+    }),
+
+    info() {
+      return this.inputInfo[this.index];
+    }
   },
 
   data() {

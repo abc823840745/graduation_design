@@ -31,7 +31,7 @@
         >
       </div>
 
-      <div class="btn-ground">
+      <div class="btn-ground" v-if="type === 'create'">
         <Dropdown @on-click="createSubject">
           <Button type="primary">
             新建题目
@@ -75,16 +75,12 @@ export default {
 
     isShowModal(newVal, oldVal) {
       this.$emit("update:showModal", newVal);
-      if (newVal === true) {
-        this.setSubjectData();
-      }
     }
   },
 
   computed: {
     ...mapState({
-      inputInfo: state => state.homework.inputInfo,
-      subjectList: state => state.homework.subjectList
+      inputInfo: state => state.homework.inputInfo
     })
   },
 
@@ -111,10 +107,6 @@ export default {
         }
       ]
     };
-  },
-
-  mounted() {
-    console.log(this.inputInfo);
   },
 
   methods: {
@@ -210,74 +202,6 @@ export default {
         });
       }
       this.setInputInfo(inputInfo);
-    },
-
-    // 修改模式渲染默认的题目
-    setSubjectData() {
-      if (this.type === "update") {
-        let executeOnce = true;
-        let formatData = this.subjectList.filter(item => {
-          return item["name"] === this.homeworkInfo["name"];
-        });
-        let inputInfo = formatData[0]["questions"].reduce(
-          (arr, item, index) => {
-            let optionList = [
-              {
-                option: item["first_option"]
-              },
-              {
-                option: item["sec_option"]
-              },
-              {
-                option: item["third_option"]
-              },
-              {
-                option: item["fourth_option"]
-              }
-            ];
-            if (item["type"] !== "填空题") {
-              arr.push({
-                subject: item["context"],
-                subjectType: item["type"],
-                title: `${index + 1}、${item["type"]}`,
-                choice:
-                  item["type"] === "多选题" ? [item["answer"]] : item["answer"],
-                optionList,
-                weighting: item["grade"]
-              });
-            } else {
-              if (executeOnce) {
-                // 填空题只有一条大题，所以只执行一次
-                executeOnce = false;
-                let subject = formatData[0]["questions"].reduce((arr, item) => {
-                  if (item["type"] === "填空题") {
-                    arr.push({
-                      subject: item["context"],
-                      answer: "",
-                      referenceAnswer: item["answer"],
-                      showCreSubjectBtn: true
-                    });
-                  }
-                  return arr;
-                }, []);
-                console.log(subject);
-                arr.push({
-                  subject,
-                  subjectType: item["type"],
-                  title: `${index + 1}、${item["type"]}`,
-                  choice: item["answer"],
-                  optionList,
-                  weighting: item["grade"]
-                });
-              }
-            }
-
-            return arr;
-          },
-          []
-        );
-        this.setInputInfo(inputInfo);
-      }
     }
   }
 };

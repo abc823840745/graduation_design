@@ -20,7 +20,9 @@
             <!-- 显示的题目 -->
             <div class="df mb-10 w100">
               <p>({{ index + 1 }})</p>
-              <p v-if="type !== 'create'">{{ item["subject"] }}</p>
+              <p v-if="type !== 'create'">
+                {{ item["subject"] }}
+              </p>
             </div>
 
             <!-- 参考答案和显示的回答 -->
@@ -55,7 +57,7 @@
           <!-- 显示的题目 -->
           <div class="df mb-10 w100">
             <p>({{ index + 1 }})</p>
-            <p v-if="type !== 'create'">{{ item["subject"] }}</p>
+            <p v-if="type !== 'create'" class="ml-10">{{ item["subject"] }}</p>
           </div>
 
           <!-- 输入题目 -->
@@ -184,11 +186,11 @@ export default {
 
     // 添加填空项
     addFillItem(index) {
-      let subjectList = this.subjectList;
-      let strArr = subjectList[index]["subject"].split();
+      let inputInfo = this.inputInfo;
+      let strArr = inputInfo[index]["subject"].split(" ");
       strArr.push(" _____ ");
-      subjectList[index]["subject"] = strArr.join("");
-      this.subjectList = subjectList;
+      inputInfo[index]["subject"] = strArr.join("");
+      this.setInputInfo(inputInfo);
     },
 
     // 添加题目
@@ -239,6 +241,10 @@ export default {
     margin-top: -10px;
     display: flex;
     align-items: center;
+  }
+
+  .show-subject {
+    font-size: 20px;
   }
 
   .fill-the-queation-left-con {

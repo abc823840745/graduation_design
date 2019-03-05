@@ -8,6 +8,7 @@
           :semesterTip="item['tip']"
           :defaultValue.sync="item['value']"
           :semesterList="item['list']"
+          @onChange="item['onChange']"
           class="multiple-choice"
         />
 
@@ -23,15 +24,19 @@
         border
         class="table-con mar-top"
         :columns="columns"
-        :data="tableData"
+        :data="tableInfo['tableData']"
       />
-      <Page :total="30" class="mar-top page" />
+      <Page
+        class="mar-top page"
+        :total="tableInfo['count']"
+        :page-size="10"
+        @on-change="changePage"
+      />
     </div>
 
     <MyHomework
       type="update"
       :modalOpen.sync="modalOpen"
-      :sumbitInfo="submitInfo"
       :info="itemInfo"
       @getTableData="getTableData"
     />
@@ -53,8 +58,13 @@ export default {
   },
 
   computed: {
+    getAllCourse() {
+      return ["新媒体综合实训", "就业与创业指导"];
+    },
+
     ...mapState({
-      userName: state => state.user.userName
+      userName: state => state.user.userName,
+      tableInfo: state => state.homework.taskCenterInfo
     })
   },
 
@@ -74,17 +84,20 @@ export default {
         {
           tip: "学期选择",
           value: this.getCurSchoolYear(),
-          list: this.getSchoolYear()
+          list: this.getSchoolYear(),
+          onChange: this.changeYear
         },
         {
           tip: "课程选择",
           value: "所有课程",
-          list: this.getCourseList()
+          list: this.getCourseList(),
+          onChange: this.changeCourse
         },
         {
-          tip: "作业类型",
-          value: "所有类型",
-          list: this.getClassifyList()
+          tip: "课时选择",
+          value: "所有课时",
+          list: this.getClassHourList(),
+          onChange: this.changeClassHour
         }
       ],
       columns: [
@@ -102,7 +115,8 @@ export default {
         },
         {
           title: "作业类型",
-          key: "classify"
+          key: "classify",
+          sortable: true
         },
         {
           title: "截止时间",
@@ -116,8 +130,8 @@ export default {
             return h("div", [
               this.btnStyle("修改任务信息", h, async () => {
                 this.modalOpen = true;
-                this.itemInfo = this.tableData[params.index];
-                await this.getSubjectData();
+                this.itemInfo = this.tableInfo["tableData"][params.index];
+                await this.getSubjectData(params.row.id);
               }),
               this.btnStyle(
                 "删除",
@@ -137,8 +151,7 @@ export default {
             ]);
           }
         }
-      ],
-      tableData: []
+      ]
     };
   },
 
@@ -152,39 +165,83 @@ export default {
       "delTeaClassHW",
       "delTeaOnlineHW",
       "getTeaHW",
-      "getTeaOnlineHW"
+      "getTeaOnlineHW",
+      "getTeaSubject"
     ]),
 
     async getTableData() {
-      let res = await this.getTeaHW({
-        course: ["新媒体综合实训", "就业与创业指导"],
+      await this.getTeaHW({
+        course: this.getAllCourse,
         teacher: this.userName,
         semester: this.getCurSchoolYear()
       });
-      if (res) {
-        res.forEach(item => {
-          item["classify"] =
-            item["type"] === "offline" ? "课时作业" : "在线作业";
-        });
-      }
-      this.tableData = res;
+    },
+
+    async changeYear(value) {
+      await this.getTeaHW({
+        course:
+          this.selectList[1]["value"] === "所有课程"
+            ? this.getAllCourse
+            : [this.selectList[1]["value"]],
+        semester: value,
+        classHour:
+          this.selectList[2]["value"] === "所有课时"
+            ? undefined
+            : this.selectList[2]["value"],
+        teacher: this.userName
+      });
+    },
+
+    async changeCourse(value) {
+      await this.getTeaHW({
+        course: value === "所有课程" ? this.getAllCourse : [value],
+        semester: this.selectList[0]["value"],
+        classHour:
+          this.selectList[2]["value"] === "所有课时"
+            ? undefined
+            : this.selectList[2]["value"],
+        teacher: this.userName
+      });
+    },
+
+    async changeClassHour(value) {
+      await this.getTeaHW({
+        course:
+          this.selectList[1]["value"] === "所有课程"
+            ? this.getAllCourse
+            : [this.selectList[1]["value"]],
+        semester: this.selectList[0]["value"],
+        classHour: value === "所有课时" ? undefined : value,
+        teacher: this.userName
+      });
+    },
+
+    async changePage(page) {
+      await this.getTeaHW({
+        page,
+        course:
+          this.selectList[1]["value"] === "所有课程"
+            ? this.getAllCourse
+            : [this.selectList[1]["value"]],
+        semester: this.selectList[0]["value"],
+        classHour:
+          this.selectList[2]["value"] === "所有课时"
+            ? undefined
+            : this.selectList[2]["value"],
+        teacher: this.userName
+      });
     },
 
     // 修改模式获取题目数据
-    async getSubjectData() {
+    async getSubjectData(id) {
       if (this.itemInfo["classify"] === "在线作业") {
-        let { semester, course, teacher } = this.submitInfo;
-        await this.getTeaOnlineHW({
-          course,
-          teacher,
-          semester
-        });
+        let res = await this.getTeaSubject(id);
       }
     },
 
     // 删除课时作业
     async delClassHWInfo(index) {
-      let { id } = this.tableData[index];
+      let { id } = this.tableInfo["tableData"][index];
       let res = await this.delTeaClassHW(id);
       if (res["status"] === 1) {
         await this.getTableData();
@@ -196,7 +253,7 @@ export default {
 
     // 删除在线作业
     async delOnlineHWInfo(index) {
-      let { id } = this.tableData[index];
+      let { id } = this.tableInfo["tableData"][index];
       let res = await this.delTeaOnlineHW(id);
       if (res["status"] === 1) {
         await this.getTableData();

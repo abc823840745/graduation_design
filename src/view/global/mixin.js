@@ -85,6 +85,10 @@ const myMixin = {
       if (!formatLesson) {
         return [
           {
+            value: '所有课程',
+            label: '所有课程',
+          },
+          {
             value: '新媒体综合实训',
             label: '新媒体综合实训',
           },
