@@ -28,6 +28,19 @@ export function getCourseClassList (obj) {
   })
 }
 
+// 课程答疑列表
+export function getCourseQusetionsList (obj) {
+  return axios.request({
+    params: {
+      course_id: obj['course_id'],
+      limit: obj['limit'] || 10,
+      offset: obj['offset'] || 1
+    },
+    url: '/get/current/course/question/list',
+    method: 'get'
+  })
+}
+
 /**
  * 教师部分
  */
@@ -102,6 +115,27 @@ export function deleteTeaCourseClass (obj) {
       id: obj['id']
     },
     url: '/delete/course/time',
+    method: 'post'
+  })
+}
+
+// 上传课程介绍
+export function uploadCourseIntro (obj) {
+  return axios.request({
+    headers: {'Content-Type': 'multipart/form-data'},
+    data: obj,
+    url: '/upload/work',
+    method: 'post'
+  })
+}
+
+// 删除答疑接口
+export function deleteCourseQuestion (obj) {
+  return axios.request({
+    data: {
+      id: obj['id']
+    },
+    url: '/delete/course/question',
     method: 'post'
   })
 }
