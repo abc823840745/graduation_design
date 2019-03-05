@@ -79,6 +79,7 @@
   </div>
 </template>
 <script>
+import { getStuCourseList } from '@/api/course'
 export default {
   name: 'my-course',
   data () {
@@ -161,7 +162,15 @@ export default {
       });
     }
   },
-  created () {},
+  created () {
+    getStuCourseList({
+      year: 2018,
+      semester: 1,
+      method: 'update',
+      number: 1540624155,
+      password: 15440111205257
+    })
+  },
   mounted () {}
 }
 </script>

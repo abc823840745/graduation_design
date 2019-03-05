@@ -42,6 +42,27 @@ export function getCourseQusetionsList (obj) {
 }
 
 /**
+ * 学生部分
+ */
+
+//  获取课程列表
+export function getStuCourseList (obj) {
+  return axios.request({
+    data: {
+      year: obj['year'],
+      semester: obj['semester'],
+      limit: obj['limit'] || 10,
+      offset: obj['offset'] || 1,
+      method: obj['method'],
+      number: obj['number'],
+      password: obj['password']
+    },
+    url: '/get/student/course/list',
+    method: 'post'
+  })
+}
+
+/**
  * 教师部分
  */
 
