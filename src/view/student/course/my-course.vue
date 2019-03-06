@@ -52,21 +52,21 @@
   <div>
     <div class="select_bar">
       <span class="st">学年：</span>
-      <Select v-model="year" @on-change="changeYear" placeholder="请选择学年" style="width:80px">
-        <Option v-for="item in year_list" :value="item.value" :key="item.value">{{ item.label }}</Option>
+      <Select v-model="year" @on-change="changeYear" style="width:140px;margin-right:10px;">
+        <Option v-for="(item, index) in year_options" :key="index" :value="item.year" :label="item.label"></Option>
       </Select>
       <span class="st">学期：</span>
-      <Select v-model="term" @on-change="changeTerm" placeholder="请选择学期" style="width:120px;margin-right:10px;">
+      <Select v-model="semester" @on-change="changeSemester" placeholder="请选择学期" style="width:120px;margin-right:10px;">
         <Option value="1">第一学期</Option>
         <Option value="2">第二学期</Option>
       </Select>
-      <Button type="primary" @click.native="refreshCourse">刷新课程</Button>
+      <Button type="primary" @click="openRefreshCourse">刷新课程</Button>
     </div>
     <div class="class_wrap">
       <div class="class_box" v-for="(item,index) in course_list" :key="index">
         <h3 class="class_name">{{item.name}}</h3>
-        <p class="course_code">课程代码：{{item.course_code}}</p>
-        <p class="class_code">教学班：{{item.class_code}}</p>
+        <p class="course_code">教学班：{{item.code}}</p>
+        <p class="class_code">课室：{{item.classes}}</p>
         <ButtonGroup class="course-btn">
           <Button shape="circle" type="info"  @click.native="goCourseDetail(item)">进入课程</Button>
           <Button shape="circle" type="error" @click.native="deleteCourse(item.id)">删除课程</Button>
@@ -76,6 +76,22 @@
     <div class="page_nav">
       <Page :total="total" :current="current" :page-size="page_size" />
     </div>
+    <!-- 刷新课表modal -->
+    <Modal v-model="show_refresh_course" width="360">
+        <p slot="header" style="color:#666;text-align:center;font-size:18px;">
+          <span>刷新课表</span>
+        </p>
+        <div style="text-align:center">
+          <p style="margin: 10px 0;font-size:16px;">Myscse帐号：</p>
+          <Input v-model="myscse_account" placeholder="请输入Myscse帐号" style="width: 300px" />
+          <p style="margin: 10px 0;font-size:16px;">Myscse密码：</p>
+          <Input v-model="myscse_password" type="password" placeholder="请输入Myscse密码" style="width: 300px" />
+        </div>
+        <div slot="footer">
+            <Button type="primary" size="large" long :loading="refresh_loading" @click="refreshCourse()">马上刷新</Button>
+        </div>
+    </Modal>
+    <!-- 刷新课表modal end -->
   </div>
 </template>
 <script>
@@ -86,66 +102,56 @@ export default {
     return {
       current: 1,
       page_size: 10,
-      total: 1,
-      year: '2018',
-      term: '1',
-      year_list: [
-        {
-          value: '2018',
-          label: '2018'
-        },
-        {
-          value: '2017',
-          label: '2017'
-        },
-        {
-          value: '2016',
-          label: '2016'
-        },
-        {
-          value: '2015',
-          label: '2015'
-        }
-      ],
-      course_list: [
-        {
-          id: 1,
-          name: 'Java基础',
-          course_code: 'GS4002',
-          class_code: 'ACM01'
-        },
-        {
-          id: 2,
-          name: 'HTML5网页设计',
-          course_code: 'GS4003',
-          class_code: 'AMT02'
-        }
-      ]
+      total: 0,
+      year: '',
+      semester: "1",
+      year_options: [],
+      course_list: [],
+      show_refresh_course: false,
+      refresh_loading: false,
+      myscse_account: '',
+      myscse_password: ''
     }
   },
   methods: {
+    // 初始化学年列表
+    createYearList(){
+      let cur_year = new Date().getFullYear()
+      const cur_month = new Date().getMonth() + 1
+      if(cur_month < 9){
+        cur_year-=1
+      }
+      for(let i=0;i<4;i++){
+        this.year_options.push({
+          year: cur_year - i,
+          label: `${cur_year - i} - ${cur_year - i + 1} 学年`
+        })
+      }
+      this.year = this.year_options[0].year
+    },
     changeYear (e) {
       console.log(e)
+      this.getCourseList()
     },
-    changeTerm (e) {
+    changeSemester (e) {
       console.log(e)
+      this.getCourseList()
     },
     goCourseDetail (item) {
       console.log(item)
       this.$router.push(`course-detail/${item.id}`)
     },
+    openRefreshCourse(){
+      this.show_refresh_course = true
+    },
     refreshCourse(){
-      this.$Modal.confirm({
-        title: '刷新课表',
-        content: '<p>此操作一般用在退课或者有其他课程调动时使用</p>',
-        loading: true,
-        onOk: () => {
-            setTimeout(() => {
-                this.$Modal.remove();
-                this.$Message.success('刷新成功');
-            }, 2000);
-        }
-      });
+      this.refresh_loading = true
+      this.refreshCourseList(()=>{
+        this.refresh_loading = false
+        this.show_refresh_course = false
+        this.myscse_account = '',
+        this.myscse_password = ''
+      })
     },
     deleteCourse(id){
       this.$Modal.confirm({
@@ -160,16 +166,49 @@ export default {
             }, 2000);
           }
       });
+    },
+    // 获取学生课程列表
+    getCourseList(){
+      getStuCourseList({
+        year: this.year,
+        semester: this.semester,
+        offset: this.current,
+        limit: this.page_size
+      }).then((res)=>{
+        this.course_list = res.data.courseList
+        this.total = res.data.count
+      }).catch((err)=>{
+        console.log(err)
+        this.course_list = []
+        this.total = 0
+        this.$Message.error('获取失败');
+      })
+    },
+    // 刷新课表
+    refreshCourseList(cb = () => {}){
+      getStuCourseList({
+        year: this.year,
+        semester: this.semester,
+        offset: this.current,
+        limit: this.page_size,
+        method: 'update',
+        number: this.myscse_account,
+        password: this.myscse_password
+      }).then((res)=>{
+        this.course_list = res.data.courseList
+        this.total = res.data.count
+        cb()
+      }).catch((err)=>{
+        console.log(err)
+        this.$Message.error('获取失败');
+        cb()
+      })
     }
   },
   created () {
-    getStuCourseList({
-      year: 2018,
-      semester: 1,
-      method: 'update',
-      number: 1540624155,
-      password: 15440111205257
-    })
+    // 初始化学年列表
+    this.createYearList()
+    this.getCourseList()
   },
   mounted () {}
 }

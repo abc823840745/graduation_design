@@ -66,10 +66,10 @@
     <div class="course-detail-top">
       <h2 class="course-title">
         {{course_name}}
-        <span class="title-code">[{{course_code}}]</span>
+        <span class="title-code">[{{course_code}} - {{course_classes}}]</span>
       </h2>
       <p class="course-sub-title">
-        <Button size="small" shape="circle" @click="checkStudentList" type="primary">{{course_classes}}班学生名单</Button>
+        <Button size="small" shape="circle" @click="checkStudentList" type="primary">本班学生名单</Button>
       </p>
     </div>
     <div class="course-detail-navbar">

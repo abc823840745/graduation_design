@@ -50,8 +50,8 @@
     <div class="course-list-wrap">
       <div class="course-item" v-for="(item,index) in course_list" :key="index">
         <h3>{{item.name}}</h3>
-        <p class="course-code">课程代码：{{item.code}}</p>
-        <p class="course-code">教学班：{{item.classes}}</p>
+        <p class="course-code">教学班：{{item.code}}</p>
+        <p class="course-code">课室：{{item.classes}}</p>
         <ButtonGroup class="course-btn">
           <Button shape="circle" type="info" @click.native="goCourse(item.id)">进入课程</Button>
           <Button shape="circle" type="error" @click.native="deleteCourse(item.id)">删除课程</Button>
@@ -68,10 +68,10 @@
       <div style="text-align:center">
         <p style="margin: 10px 0;font-size:16px;">课程名称：</p>
         <Input v-model="course_name" placeholder="请输入课程全称（请确保与Myscse统一）" style="width: 300px" />
-        <p style="margin: 10px 0;font-size:16px;">课程代码：</p>
-        <Input v-model="course_code" placeholder="请输入课程代码" style="width: 300px" />
         <p style="margin: 10px 0;font-size:16px;">教学班：</p>
-        <Input v-model="course_class_code" placeholder="请输入本课程教学班代号" style="width: 300px" />
+        <Input v-model="course_code" placeholder="请输入教学班代码" style="width: 300px" />
+        <p style="margin: 10px 0;font-size:16px;">上课地点：</p>
+        <Input v-model="course_class_code" placeholder="请输入上课课室代码" style="width: 300px" />
       </div>
       <div slot="footer">
           <Button type="primary" size="large" long :loading="create_loading" @click="sendCreateCourse">马上创建</Button>

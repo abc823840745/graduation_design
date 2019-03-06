@@ -279,7 +279,7 @@ export default [
         component: () => import('@/view/student/course/my-course.vue'),
       },
       {
-        path: 'course-detail/:code',
+        path: 'course-detail/:id',
         name: 'student-my-course-detail',
         meta: {
           title: '课程详情',

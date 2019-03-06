@@ -191,11 +191,15 @@ export default {
     },
     changeYear(year){
       console.log(year)
-      this.getCourseList()
+      this.getCourseList(()=>{
+        this.getQusetionsList()
+      })
     },
     changeSemester(semester){
       console.log(semester)
-      this.getCourseList()
+      this.getCourseList(()=>{
+        this.getQusetionsList()
+      })
     },
     changeCourse(name){
       console.log(name)
@@ -226,6 +230,7 @@ export default {
     },
     // 获取答疑列表
     getQusetionsList(cb = () => {}) {
+      this.questions_table_loading = true;
       getQusetionsList({
         year: this.year,
         semester: this.semester,
@@ -234,11 +239,13 @@ export default {
         limit: this.page_size
       }).then((res)=>{
         console.log(res)
+        this.questions_table_loading = false;
         this.total = res.data.count
         this.questions_data = res.data.questionList
         cb()
       }).catch((err)=>{
         console.log(err)
+        this.questions_table_loading = false;
         this.$Message.error('获取答疑列表失败');
         cb()
       })
@@ -262,9 +269,7 @@ export default {
     // 初始化学年列表
     this.createYearList()
     this.getCourseList(()=>{
-      this.getQusetionsList(()=>{
-        this.questions_table_loading = false;
-      })
+      this.getQusetionsList()
     })
   },
   mounted () {
