@@ -41,6 +41,21 @@ export function getCourseQusetionsList (obj) {
   })
 }
 
+// 获取答疑列表
+export function getQusetionsList (obj) {
+  return axios.request({
+    params: {
+      year: obj['year'],
+      semester: obj['semester'],
+      course_name: obj['course_name'] || null,
+      limit: obj['limit'] || 10,
+      offset: obj['offset'] || 1
+    },
+    url: '/get/course/question/list',
+    method: 'get'
+  })
+}
+
 /**
  * 学生部分
  */

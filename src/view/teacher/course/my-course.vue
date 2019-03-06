@@ -37,7 +37,9 @@
   <div class="teacher-my-course">
     <div class="top-btn-wrap">
       <span>学年：</span>
-      <DatePicker type="year" placeholder="请选择学年" @on-change="changeYear" :clearable="false" v-model="year" :value="new Date()" style="width: 120px;margin-right:10px;"></DatePicker>
+      <Select v-model="year" @on-change="changeYear" style="width:140px;margin-right:10px;">
+        <Option v-for="(item, index) in year_options" :key="index" :value="item.year" :label="item.label"></Option>
+      </Select>
       <span>学期：</span>
       <Select v-model="semester" @on-change="changeSemester" style="width:120px;margin-right:10px;">
         <Option :value="1" label="第一学期"></Option>
@@ -86,7 +88,8 @@ export default {
       total: 0,
       page_size: 10,
       current: 1,
-      year: new Date(),
+      year: '',
+      year_options: [],
       semester: 1,
       course_list: [],
       showCreateCourse: false,
@@ -97,6 +100,21 @@ export default {
     }
   },
   methods: {
+    // 初始化学年列表
+    createYearList(){
+      let cur_year = new Date().getFullYear()
+      const cur_month = new Date().getMonth() + 1
+      if(cur_month < 9){
+        cur_year-=1
+      }
+      for(let i=0;i<4;i++){
+        this.year_options.push({
+          year: cur_year - i,
+          label: `${cur_year - i} - ${cur_year - i + 1} 学年`
+        })
+      }
+      this.year = this.year_options[0].year
+    },
     changeYear(year){
       console.log(year)
       this.getCourseList()
@@ -115,7 +133,7 @@ export default {
     // 获取课程列表
     getCourseList() {
       getTeaCourseList({
-        year: this.year.getFullYear(),
+        year: this.year,
         semester: this.semester,
         offset: this.current,
         limit: this.page_size
@@ -141,7 +159,7 @@ export default {
         name: this.course_name,
         code: this.course_code,
         classes: this.course_class_code,
-        year: this.year.getFullYear(),
+        year: this.year,
         semester: this.semester
       }).then((res)=>{
         console.log(res)
@@ -180,6 +198,8 @@ export default {
     }
   },
   created () {
+    // 初始化学年列表
+    this.createYearList()
     this.getCourseList()
   },
   mounted () {
