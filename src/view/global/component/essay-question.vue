@@ -51,20 +51,20 @@
         ></InputNumber>
       </div>
 
-      <!-- 参考答案 -->
-      <div class="mb-20" v-if="type === 'check' || type === 'score'">
-        <span>参考答案：</span>
-        <span class="green">{{ info["referenceAnswer"] }}</span>
-      </div>
-
       <!-- 显示的回答 -->
-      <div class="df-aic">
+      <div class="df-aic mb-20">
         <div class="df-aic" v-if="type === 'check' || type === 'score'">
           <p>
             回答:
             <span class="blue">{{ info["choice"] }}</span>
           </p>
         </div>
+      </div>
+
+      <!-- 参考答案 -->
+      <div class="mb-10" v-if="type === 'check' || type === 'score'">
+        <span>参考答案：</span>
+        <span class="green">{{ info["referenceAnswer"] }}</span>
       </div>
 
       <!-- 评分 -->

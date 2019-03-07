@@ -39,6 +39,7 @@
       type="update"
       :modalOpen.sync="modalOpen"
       :info="itemInfo"
+      :courseId="courseId"
       @getTableData="getTableData"
     />
   </div>
@@ -60,7 +61,7 @@ export default {
 
   computed: {
     getAllCourse() {
-      return ["新媒体综合实训", "就业与创业指导"];
+      return ["新媒体综合实训", "HTML5网页设计"];
     },
 
     ...mapState({
@@ -75,6 +76,7 @@ export default {
       loading: true,
       modalOpen: false,
       curIndex: 0,
+      courseId: 0,
       itemInfo: {},
       selectList: [
         {
@@ -133,10 +135,11 @@ export default {
           title: "操作",
           key: "operation",
           render: (h, params) => {
+            let { startime, course, id, classify } = params.row;
             return h("div", [
               this.btnStyle("修改任务信息", h, async () => {
                 let date = new Date();
-                let stopDate = new Date(params.row.startime);
+                let stopDate = new Date(startime);
                 if (date >= stopDate) {
                   return this.$Notice.warning({
                     title: "已经开始,无法修改"
@@ -144,7 +147,14 @@ export default {
                 }
                 this.modalOpen = true;
                 this.itemInfo = this.tableInfo["tableData"][params.index];
-                await this.getSubjectData(params.row.id);
+                let getId = this.courseList.reduce((arr, item) => {
+                  if (item["name"] === course) {
+                    arr.push(item["id"]);
+                  }
+                  return arr;
+                }, []);
+                this.courseId = getId[0];
+                await this.getSubjectData(id);
               }),
               this.btnStyle(
                 "删除",
@@ -153,7 +163,7 @@ export default {
                   this.$Modal.confirm({
                     title: "确定要删除该任务？",
                     onOk: () => {
-                      if (params.row.classify === "课时作业") {
+                      if (classify === "课时作业") {
                         return this.delClassHWInfo(params.index);
                       }
                       this.delOnlineHWInfo(params.index);
@@ -223,10 +233,13 @@ export default {
     // 课程选择筛选
     async changeCourse(value) {
       this.loading = true;
-      let idList = this.courseList.map(item => {
-        if (item["name"] === value) return item["id"];
-      });
-      await this.setClassHourSelList(idList[0]);
+      let getId = this.courseList.reduce((arr, item) => {
+        if (item["name"] === value) {
+          arr.push(item["id"]);
+        }
+        return arr;
+      }, []);
+      await this.setClassHourSelList(getId[0]);
       await this.getTeaHW({
         course: value === "所有课程" ? this.getAllCourse : [value],
         semester: this.selectList[0]["value"],

@@ -168,7 +168,7 @@ export default {
     },
 
     async courseId(newVal, oldVal) {
-      await this.setClassHourList();
+      await this.setClassHourList(newVal);
     },
 
     showModal(newVal, oldVal) {
@@ -179,6 +179,7 @@ export default {
     },
 
     info(newVal, oldVal) {
+      this.setDefClassHour(newVal);
       this.getCurTaskInfo(newVal);
     }
   },
@@ -232,9 +233,16 @@ export default {
 
     ...mapMutations(["setInputInfo"]),
 
-    async setClassHourList() {
-      let res = await this.getClassHourList(this.courseId);
+    async setClassHourList(id) {
+      let res = await this.getClassHourList(id);
       this.classHourList = res.filter(item => item.value !== "所有课时");
+    },
+
+    // 设置默认的课时选项
+    setDefClassHour(info) {
+      let homeworkInfo = this.homeworkInfo;
+      homeworkInfo["classHour"] = info.week;
+      this.homeworkInfo = homeworkInfo;
     },
 
     // 监听选择时间日期函数

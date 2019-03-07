@@ -30,69 +30,9 @@ export default {
     })
   },
 
-  mounted() {
-    console.log(this.inputInfo);
-  },
-
   data() {
-    return {
-      // inputInfo: [
-      //   {
-      //     subjectType: "单选题",
-      //     subject: "钢铁是怎么炼成的?",
-      //     title: "1、单选题",
-      //     choice: "A",
-      //     referenceAnswer: "A",
-      //     score: 20,
-      //     weighting: 20
-      //   },
-      //   {
-      //     subjectType: "多选题",
-      //     subject: "钢铁是怎么炼成的?",
-      //     title: "2、多选题",
-      //     choice: ["A", "B"],
-      //     referenceAnswer: ["A", "B"],
-      //     score: 20,
-      //     weighting: 20
-      //   },
-      //   {
-      //     subjectType: "填空题",
-      //     subject: [
-      //       {
-      //         subject:
-      //           "《红楼梦》又名_________ ，是中国古典现实主义小说发展的顶峰。全书共置120回，前80回为曹雪芹所作，后40回一般认为是_________ 续写。《红楼梦》又名_________ ，是中国古典现实主义小说发展的顶峰。全书共置120回，前80回为曹雪芹所作，后40回一般认为是_________ 续写。",
-      //         answer:
-      //           "石头记 高鹗我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？",
-      //         showCreSubjectBtn: false
-      //       },
-      //       {
-      //         subject:
-      //           "《红楼梦》又名_________ ，是中国古典现实主义小说发展的顶峰。全书共置120回，前80回为曹雪芹所作，后40回一般认为是_________ 续写。",
-      //         answer:
-      //           "石头记 高鹗我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？",
-      //         showCreSubjectBtn: false
-      //       }
-      //     ],
-      //     title: "3、填空题",
-      //     choice: "填空题回答",
-      //     referenceAnswer: "填空题参考答案",
-      //     score: 0,
-      //     weighting: 20
-      //   },
-      //   {
-      //     subjectType: "问答题",
-      //     subject: "钢铁是怎么炼成的?",
-      //     title: "4、问答题",
-      //     choice: "飞龙在天双龙出海",
-      //     referenceAnswer: "问答题参考答案",
-      //     score: 40,
-      //     weighting: 20
-      //   }
-      // ]
-    };
-  },
-
-  methods: {}
+    return {};
+  }
 };
 </script>
 

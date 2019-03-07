@@ -1,27 +1,6 @@
 <template>
   <div class="containter">
     <div class="containter" v-if="curDirectory !== 2">
-      <Modal v-model="showModal" title="上传" @on-ok="dialogOk">
-        <Alert show-icon
-          >只能上传单个文件或文件夹，如果上传有误，请重新上传即可</Alert
-        >
-
-        <Upload
-          ref="upload"
-          type="drag"
-          action="//jsonplaceholder.typicode.com/posts/"
-        >
-          <div style="padding: 20px 0">
-            <Icon
-              type="ios-cloud-upload"
-              size="52"
-              style="color: #3399ff"
-            ></Icon>
-            <p>点击或者把文件拖拽到这里</p>
-          </div>
-        </Upload>
-      </Modal>
-
       <div class="select-con">
         <MultipleChoice
           v-for="(item, index) in selectList"
@@ -84,12 +63,12 @@ export default {
       return [
         {
           course: "新媒体综合实训",
-          stuclass: "ATM",
+          stuclass: "AND",
           teacher: "程亮"
         },
         {
-          course: "就业与创业指导",
-          stuclass: "ATM",
+          course: "HTML5网页设计",
+          stuclass: "AMT",
           teacher: "程亮"
         }
       ];
@@ -99,6 +78,7 @@ export default {
       userName: state => state.user.userName,
       stuId: state => state.user.stu_nmuber,
       inputInfo: state => state.homework.inputInfo,
+      courseList: state => state.homework.courseList,
       tableInfo: state => state.homework.onlineHWInfo
     })
   },
@@ -108,7 +88,6 @@ export default {
       curDirectory: 1, // 当前的目录
       loading: true,
       stuHomeworkId: 0, // 学生作业id
-      teaHomeworkId: 0, // 老师作业id
       showModal: false,
       showModal2: false,
       selectList: [
@@ -121,13 +100,23 @@ export default {
         {
           tip: "课程选择",
           value: "所有课程",
-          list: this.getCourseList(),
+          list: [
+            {
+              value: "所有课程",
+              label: "所有课程"
+            }
+          ],
           onChange: this.changeCourse
         },
         {
           tip: "课时选择",
           value: "所有课时",
-          list: this.getClassHourList(),
+          list: [
+            {
+              value: "所有课时",
+              label: "所有课时"
+            }
+          ],
           onChange: this.changeClassHour
         }
       ],
@@ -178,7 +167,8 @@ export default {
   },
 
   async mounted() {
-    await this.getTableData(this.tableInfo["page"]);
+    await this.setCourseSelList();
+    await this.getTableData();
   },
 
   methods: {
@@ -190,7 +180,7 @@ export default {
 
     ...mapMutations(["setInputInfo"]),
 
-    async getTableData(page) {
+    async getTableData(page = 1) {
       this.loading = true;
       await this.getStuOnlineHW({
         page,
@@ -242,6 +232,13 @@ export default {
 
     async changeCourse(value) {
       this.loading = true;
+      let getId = this.courseList.reduce((arr, item) => {
+        if (item["name"] === value) {
+          arr.push(item["id"]);
+        }
+        return arr;
+      }, []);
+      await this.setClassHourSelList(getId[0]);
       await this.getStuOnlineHW({
         obj:
           value === "所有课程"
@@ -289,10 +286,6 @@ export default {
       await this.getStuOnlineSubject(id);
     },
 
-    dialogOk() {
-      console.log("上传");
-    },
-
     async handleOk(seconds) {
       this.curDirectory = 1;
       let questions = null;
@@ -304,7 +297,8 @@ export default {
               {
                 root_id: this.stuHomeworkId,
                 quest_id: id,
-                answer: subjectType === "多选题" ? choice.join() : choice
+                answer:
+                  subjectType === "多选题" && choice ? choice.join() : choice
               }
             ];
           } else {
@@ -312,7 +306,7 @@ export default {
               return {
                 root_id: this.stuHomeworkId,
                 quest_id: item["id"],
-                answer: item["answer"]
+                answer: item["referenceAnswer"]
               };
             });
           }

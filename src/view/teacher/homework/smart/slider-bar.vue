@@ -15,7 +15,7 @@
 
 <script>
 import { mapState, mapActions, mapMutations } from "vuex";
-import { getTeaCourseList } from "@/api/course";
+import { getTeaCourseList, getStuCourseList } from "@/api/course";
 import myMixin from "@/view/global/mixin";
 
 export default {
@@ -23,39 +23,47 @@ export default {
 
   computed: {
     ...mapState({
-      userName: state => state.user.userName,
       role: state => state.user.role,
+      userName: state => state.user.userName,
       courseList: state => state.homework.courseList
     })
   },
 
   data() {
-    return {
-      formatLesson: this.$tools.getSessionStorage("formatLesson"),
-      year: new Date()
-    };
+    return {};
   },
 
   async mounted() {
-    // TODO: 获取学生课程列表
     await this.getCourseList();
   },
 
   methods: {
     ...mapMutations(["setCourseList"]),
 
+    // 获取课程列表
     async getCourseList() {
-      if (this.role === "student") return;
+      let res = null;
       let { year, semester } = this.$tools.dateFormat(this.getCurSchoolYear());
-      let res = await getTeaCourseList({
-        year,
-        semester,
-        offset: 1,
-        limit: 999
-      });
+      if (this.role === "student") {
+        res = await getStuCourseList({
+          year,
+          semester,
+          offset: 1,
+          limit: 999
+        });
+        console.log(res);
+      } else {
+        res = await getTeaCourseList({
+          year,
+          semester,
+          offset: 1,
+          limit: 999
+        });
+      }
       this.setCourseList(res.data.courseList);
     },
 
+    // 获取今天的时刻
     getDayType() {
       let date = new Date();
       let hours = date.getHours();
@@ -64,6 +72,7 @@ export default {
       return "晚上好";
     },
 
+    // 获取今天的日期
     getToday() {
       let date = new Date();
       let year = date.getFullYear();

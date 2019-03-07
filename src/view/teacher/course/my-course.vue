@@ -37,7 +37,9 @@
   <div class="teacher-my-course">
     <div class="top-btn-wrap">
       <span>学年：</span>
-      <DatePicker type="year" placeholder="请选择学年" @on-change="changeYear" :clearable="false" v-model="year" :value="new Date()" style="width: 120px;margin-right:10px;"></DatePicker>
+      <Select v-model="year" @on-change="changeYear" style="width:140px;margin-right:10px;">
+        <Option v-for="(item, index) in year_options" :key="index" :value="item.year" :label="item.label"></Option>
+      </Select>
       <span>学期：</span>
       <Select v-model="semester" @on-change="changeSemester" style="width:120px;margin-right:10px;">
         <Option :value="1" label="第一学期"></Option>
@@ -48,8 +50,8 @@
     <div class="course-list-wrap">
       <div class="course-item" v-for="(item,index) in course_list" :key="index">
         <h3>{{item.name}}</h3>
-        <p class="course-code">课程代码：{{item.code}}</p>
-        <p class="course-code">教学班：{{item.classes}}</p>
+        <p class="course-code">教学班：{{item.code}}</p>
+        <p class="course-code">课室：{{item.classes}}</p>
         <ButtonGroup class="course-btn">
           <Button shape="circle" type="info" @click.native="goCourse(item.id)">进入课程</Button>
           <Button shape="circle" type="error" @click.native="deleteCourse(item.id)">删除课程</Button>
@@ -66,10 +68,10 @@
       <div style="text-align:center">
         <p style="margin: 10px 0;font-size:16px;">课程名称：</p>
         <Input v-model="course_name" placeholder="请输入课程全称（请确保与Myscse统一）" style="width: 300px" />
-        <p style="margin: 10px 0;font-size:16px;">课程代码：</p>
-        <Input v-model="course_code" placeholder="请输入课程代码" style="width: 300px" />
         <p style="margin: 10px 0;font-size:16px;">教学班：</p>
-        <Input v-model="course_class_code" placeholder="请输入本课程教学班代号" style="width: 300px" />
+        <Input v-model="course_code" placeholder="请输入教学班代码" style="width: 300px" />
+        <p style="margin: 10px 0;font-size:16px;">上课地点：</p>
+        <Input v-model="course_class_code" placeholder="请输入上课课室代码" style="width: 300px" />
       </div>
       <div slot="footer">
           <Button type="primary" size="large" long :loading="create_loading" @click="sendCreateCourse">马上创建</Button>
@@ -86,7 +88,8 @@ export default {
       total: 0,
       page_size: 10,
       current: 1,
-      year: new Date(),
+      year: '',
+      year_options: [],
       semester: 1,
       course_list: [],
       showCreateCourse: false,
@@ -97,6 +100,21 @@ export default {
     }
   },
   methods: {
+    // 初始化学年列表
+    createYearList(){
+      let cur_year = new Date().getFullYear()
+      const cur_month = new Date().getMonth() + 1
+      if(cur_month < 9){
+        cur_year-=1
+      }
+      for(let i=0;i<4;i++){
+        this.year_options.push({
+          year: cur_year - i,
+          label: `${cur_year - i} - ${cur_year - i + 1} 学年`
+        })
+      }
+      this.year = this.year_options[0].year
+    },
     changeYear(year){
       console.log(year)
       this.getCourseList()
@@ -115,7 +133,7 @@ export default {
     // 获取课程列表
     getCourseList() {
       getTeaCourseList({
-        year: this.year.getFullYear(),
+        year: this.year,
         semester: this.semester,
         offset: this.current,
         limit: this.page_size
@@ -141,7 +159,7 @@ export default {
         name: this.course_name,
         code: this.course_code,
         classes: this.course_class_code,
-        year: this.year.getFullYear(),
+        year: this.year,
         semester: this.semester
       }).then((res)=>{
         console.log(res)
@@ -180,6 +198,8 @@ export default {
     }
   },
   created () {
+    // 初始化学年列表
+    this.createYearList()
     this.getCourseList()
   },
   mounted () {

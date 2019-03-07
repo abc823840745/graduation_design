@@ -25,6 +25,7 @@ import {
   getTeaOnlineHW,
   getStuMyHWlist,
   searchMyHWlist,
+  getStuScoreSubject,
 } from '@/api/homework';
 
 export default {
@@ -358,7 +359,6 @@ export default {
     async getStuOnlineSubject({ commit, state }, id) {
       try {
         let res = await getStuOnlineSubject(id);
-        console.log(res.data.data);
         let data = res.data.data;
         let executeOnce = true;
         let inputInfo = data.reduce((arr, item, index) => {
@@ -414,6 +414,81 @@ export default {
                 choice: item['answer'],
                 optionList,
                 weighting: item['grade'],
+              });
+            }
+          }
+          return arr;
+        }, []);
+        commit('setInputInfo', inputInfo);
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
+    // 查看评分后的作业问题
+    async getStuScoreSubject({ commit, state }, obj) {
+      try {
+        let res = await getStuScoreSubject(obj);
+        console.log(res);
+        let data = res.data.data;
+        let executeOnce = true;
+        let subjectLength = 0;
+        let inputInfo = data.reduce((arr, item, index) => {
+          let optionList = [
+            {
+              label: 'A',
+              option: item['first_option'],
+            },
+            {
+              label: 'B',
+              option: item['sec_option'],
+            },
+            {
+              label: 'C',
+              option: item['third_option'],
+            },
+            {
+              label: 'D',
+              option: item['fourth_option'],
+            },
+          ];
+          if (item['type'] !== '填空题') {
+            arr.push({
+              id: item['id'],
+              subject: item['context'],
+              subjectType: item['type'],
+              title: `${index + 1}、${item['type']}`,
+              choice: item['stuanswer'],
+              optionList,
+              score: item['stugrade'],
+              referenceAnswer: item['answer'],
+              weighting: item['grade'],
+            });
+          } else {
+            if (executeOnce) {
+              // 填空题只有一条大题，所以只执行一次
+              executeOnce = false;
+              subjectLength += 1;
+              let subject = data.reduce((arr, item) => {
+                if (item['type'] === '填空题') {
+                  arr.push({
+                    id: item['id'],
+                    subject: item['context'],
+                    answer: item['stuanswer'],
+                    referenceAnswer: item['answer'],
+                    showCreSubjectBtn: true,
+                  });
+                }
+                return arr;
+              }, []);
+              arr.push({
+                subject,
+                subjectType: item['type'],
+                title: `${index + 1}、${item['type']}`,
+                choice: '',
+                optionList,
+                score: item['stugrade'],
+                weighting: item['grade'] * subjectLength,
               });
             }
           }

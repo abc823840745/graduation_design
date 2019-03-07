@@ -67,16 +67,14 @@
       <!-- 参考答案 -->
       <div class="reference-answer" v-if="type === 'check' || type === 'score'">
         <span>参考答案：</span>
-        <span class="green">{{ inputInfo["referenceAnswer"] }}</span>
+        <span class="green">{{ info["referenceAnswer"] }}</span>
       </div>
 
       <!-- 评分 -->
       <div class="radio-list" v-if="type === 'score' || type === 'check'">
         <span>评分：</span>
 
-        <span class="blue" v-if="type === 'check'">{{
-          inputInfo["score"]
-        }}</span>
+        <span class="blue" v-if="type === 'check'">{{ info["score"] }}</span>
 
         <InputNumber
           v-if="type === 'score'"

@@ -90,12 +90,12 @@ export default {
       return [
         {
           course: "新媒体综合实训",
-          stuclass: "ATM",
+          stuclass: "AND",
           teacher: "程亮"
         },
         {
-          course: "就业与创业指导",
-          stuclass: "ATM",
+          course: "HTML5网页设计",
+          stuclass: "AMT",
           teacher: "程亮"
         }
       ];
@@ -104,7 +104,18 @@ export default {
     ...mapState({
       userName: state => state.user.userName,
       stuId: state => state.user.stu_nmuber,
-      tableInfo: state => state.homework.experMangerInfo
+      courseList: state => state.homework.courseList,
+      tableInfo: state => state.homework.experMangerInfo,
+      allCourse: state => {
+        state.homework.courseList.map(item => {
+          let { name, classes } = item;
+          return {
+            course: name,
+            stuclass: classes,
+            teacher: ""
+          };
+        });
+      }
     })
   },
 
@@ -116,20 +127,30 @@ export default {
       selectList: [
         {
           tip: "学期选择",
-          value: this.getCurSchoolYear,
+          value: this.getCurSchoolYear(),
           list: this.getSchoolYear(),
           onChange: this.changeYear
         },
         {
           tip: "课程选择",
           value: "所有课程",
-          list: this.getCourseList(),
+          list: [
+            {
+              value: "所有课程",
+              label: "所有课程"
+            }
+          ],
           onChange: this.changeCourse
         },
         {
           tip: "课时选择",
           value: "所有课时",
-          list: this.getClassHourList(),
+          list: [
+            {
+              value: "所有课时",
+              label: "所有课时"
+            }
+          ],
           onChange: this.changeClassHour
         }
       ],
@@ -179,7 +200,8 @@ export default {
   },
 
   async mounted() {
-    await this.getTableData(this.tableInfo["page"]);
+    await this.setCourseSelList();
+    await this.getTableData();
   },
 
   methods: {
@@ -189,20 +211,8 @@ export default {
       console.log("上传");
     },
 
-    handleMaxSize(file) {
-      this.$Notice.warning({
-        title: "文件超过大小限制",
-        desc: "文件大小不能查过2M！"
-      });
-    },
-
-    handleFormatErr(file) {
-      this.$Notice.warning({
-        title: "文件格式应该为doc"
-      });
-    },
-
-    async getTableData(page) {
+    // 获取表格数据
+    async getTableData(page = 1) {
       this.loading = true;
       await this.getStuClassHW({
         page,
@@ -221,6 +231,86 @@ export default {
           this.selectList[2]["value"] === "所有课时"
             ? undefined
             : this.selectList[2]["value"],
+        student: this.userName,
+        stuId: this.stuId
+      });
+      this.loading = false;
+    },
+
+    // 选择学年
+    async changeYear(value) {
+      this.loading = true;
+      await this.getStuClassHW({
+        // TODO: 暂时写死，课程信息由课程接口返回
+        obj:
+          this.selectList[1]["value"] === "所有课程"
+            ? this.getAllCourse
+            : [
+                {
+                  course: this.selectList[1]["value"],
+                  stuclass: "ATM",
+                  teacher: "程亮"
+                }
+              ],
+        semester: value,
+        classHour:
+          this.selectList[2]["value"] === "所有课时"
+            ? undefined
+            : this.selectList[2]["value"],
+        student: this.userName,
+        stuId: this.stuId
+      });
+      this.loading = false;
+    },
+
+    // 选择课程
+    async changeCourse(value) {
+      this.loading = true;
+      let getId = this.courseList.reduce((arr, item) => {
+        if (item["name"] === value) {
+          arr.push(item["id"]);
+        }
+        return arr;
+      }, []);
+      await this.setClassHourSelList(getId[0]);
+      await this.getStuClassHW({
+        obj:
+          value === "所有课程"
+            ? this.getAllCourse
+            : [
+                {
+                  course: value,
+                  stuclass: "ATM",
+                  teacher: "程亮"
+                }
+              ],
+        semester: this.selectList[0]["value"],
+        classHour:
+          this.selectList[2]["value"] === "所有课时"
+            ? undefined
+            : this.selectList[2]["value"],
+        student: this.userName,
+        stuId: this.stuId
+      });
+      this.loading = false;
+    },
+
+    // 选择学时
+    async changeClassHour(value) {
+      this.loading = true;
+      await this.getStuClassHW({
+        obj:
+          this.selectList[1]["value"] === "所有课程"
+            ? this.getAllCourse
+            : [
+                {
+                  course: this.selectList[1]["value"],
+                  stuclass: "ATM",
+                  teacher: "程亮"
+                }
+              ],
+        semester: this.selectList[0]["value"],
+        classHour: value === "所有课时" ? undefined : value,
         student: this.userName,
         stuId: this.stuId
       });
@@ -262,74 +352,17 @@ export default {
       await this.getTableData(this.tableInfo["page"]);
     },
 
-    async changeYear(value) {
-      this.loading = true;
-      await this.getStuClassHW({
-        // TODO: 暂时写死，课程信息由课程接口返回
-        obj:
-          this.selectList[1]["value"] === "所有课程"
-            ? this.getAllCourse
-            : [
-                {
-                  course: this.selectList[1]["value"],
-                  stuclass: "ATM",
-                  teacher: "程亮"
-                }
-              ],
-        semester: value,
-        classHour:
-          this.selectList[2]["value"] === "所有课时"
-            ? undefined
-            : this.selectList[2]["value"],
-        student: this.userName,
-        stuId: this.stuId
+    handleMaxSize(file) {
+      this.$Notice.warning({
+        title: "文件超过大小限制",
+        desc: "文件大小不能查过2M！"
       });
-      this.loading = false;
     },
 
-    async changeCourse(value) {
-      this.loading = true;
-      await this.getStuClassHW({
-        obj:
-          value === "所有课程"
-            ? this.getAllCourse
-            : [
-                {
-                  course: value,
-                  stuclass: "ATM",
-                  teacher: "程亮"
-                }
-              ],
-        semester: this.selectList[0]["value"],
-        classHour:
-          this.selectList[2]["value"] === "所有课时"
-            ? undefined
-            : this.selectList[2]["value"],
-        student: this.userName,
-        stuId: this.stuId
+    handleFormatErr(file) {
+      this.$Notice.warning({
+        title: "文件格式应该为doc"
       });
-      this.loading = false;
-    },
-
-    async changeClassHour(value) {
-      this.loading = true;
-      await this.getStuClassHW({
-        obj:
-          this.selectList[1]["value"] === "所有课程"
-            ? this.getAllCourse
-            : [
-                {
-                  course: this.selectList[1]["value"],
-                  stuclass: "ATM",
-                  teacher: "程亮"
-                }
-              ],
-        semester: this.selectList[0]["value"],
-        classHour: value === "所有课时" ? undefined : value,
-        student: this.userName,
-        stuId: this.stuId
-      });
-      this.loading = false;
     }
   }
 };

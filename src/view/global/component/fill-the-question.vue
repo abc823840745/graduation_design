@@ -20,14 +20,21 @@
             <!-- 显示的题目 -->
             <div class="df mb-10 w100">
               <p>({{ index + 1 }})</p>
-              <p v-if="type !== 'create'">
+              <p class="ml-5" v-if="type !== 'create'">
                 {{ item["subject"] }}
               </p>
             </div>
 
             <!-- 参考答案和显示的回答 -->
             <div class="df-fdc">
-              <div class="mb-10" v-if="type === 'check' || type === 'score'">
+              <p class="mb-10">
+                回答：
+                <span class="blue">
+                  {{ item["answer"] }}
+                </span>
+              </p>
+
+              <div v-if="type === 'check' || type === 'score'">
                 <p>
                   参考答案：
                   <span class="green">
@@ -35,13 +42,6 @@
                   </span>
                 </p>
               </div>
-
-              <p>
-                回答：
-                <span class="blue">
-                  {{ item["answer"] }}
-                </span>
-              </p>
             </div>
           </div>
         </div>
@@ -96,7 +96,13 @@
             class="mb-10"
             type="textarea"
             :rows="3"
-            :value="item['referenceAnswer']"
+            :value="
+              type === 'create'
+                ? item['referenceAnswer']
+                : type === 'testing'
+                ? item['answer']
+                : ''
+            "
             @on-change="choiceChange($event, index)"
             placeholder="请输入填空题答案"
             clearable

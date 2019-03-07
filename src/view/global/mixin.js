@@ -1,4 +1,4 @@
-import { getCourseClassList, getTeaCourseList } from '@/api/course';
+import { getCourseClassList, getTeaCourseList, getStuCourseList } from '@/api/course';
 import { dateFormat } from '@tools';
 import { mapState, mapMutations } from 'vuex';
 
@@ -100,27 +100,33 @@ const myMixin = {
       return `${year - 1}-${year}${semester}`;
     },
 
-    // 课程选择列表
-    async getCourseList(curSemester) {
+    // 获取课程选择列表数据
+    async getCourseList(curSemester = this.getCurSchoolYear()) {
       let res = null;
-      if (this.role !== 'student') {
-        // 查询教师课程
-        let { year, semester } = dateFormat(curSemester);
-        res = await getTeaCourseList({
-          year,
-          semester,
-          offset: 1,
-          limit: 999,
-        });
-      } else {
-        // TODO: 查询学生课程
-      }
       let def = [
         {
           value: '所有课程',
           label: '所有课程',
         },
       ];
+      let { year, semester } = dateFormat(curSemester);
+      if (this.role === 'student') {
+        // TODO: 查询学生课程,接口有问题，所以暂时用假数据
+        res = await getStuCourseList({
+          year,
+          semester,
+          offset: 1,
+          limit: 999,
+        });
+      } else {
+        // 查询教师课程
+        res = await getTeaCourseList({
+          year,
+          semester,
+          offset: 1,
+          limit: 999,
+        });
+      }
       let courseList = res.data.courseList;
       let data = courseList.reduce((arr, item) => {
         arr.push({
@@ -150,7 +156,7 @@ const myMixin = {
       return weekList;
     },
 
-    // 课时选择列表
+    // 获取课时选择列表数据
     async getClassHourList(courseId) {
       let res = await getCourseClassList({
         course_id: courseId,

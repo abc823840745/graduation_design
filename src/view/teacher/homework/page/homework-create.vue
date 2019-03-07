@@ -29,18 +29,24 @@ export default {
       modalOpen: false,
       courseId: 0,
       submitInfo: {
-        semester: "2018-2019上学期",
-        course: "就业与创业指导",
-        course_id: 2,
-        // teacher: this.$store.state.user.userName
-        teacher: "程亮"
+        semester: "",
+        course: "",
+        course_id: 0,
+        teacher: this.$store.state.user.userName
       }
     };
   },
 
   methods: {
     goNext(info) {
-      this.courseId = info["id"];
+      let { id, name, semester } = info;
+      let submitInfo = this.submitInfo;
+      submitInfo["semester"] = semester;
+      submitInfo["course"] = name;
+      submitInfo["course_id"] = id;
+      this.submitInfo = submitInfo;
+      this.courseId = id;
+      console.log(this.submitInfo, this.courseId);
       this.modalOpen = true;
     }
   }

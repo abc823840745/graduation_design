@@ -37,7 +37,7 @@
 <script>
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import myMixin from "@/view/global/mixin";
-import { getTeaCourseList } from "@/api/course";
+import { getTeaCourseList, getStuCourseList } from "@/api/course";
 import { mapState } from "vuex";
 
 export default {
@@ -49,6 +49,7 @@ export default {
 
   computed: {
     ...mapState({
+      role: state => state.user.role,
       courseList: state => state.homework.courseList
     })
   },

@@ -293,6 +293,18 @@ export function getStuOnlineSubject(id) {
   });
 }
 
+// 查看评分后的作业问题
+export function getStuScoreSubject(obj) {
+  return axios.request({
+    data: {
+      id: obj['id'],
+      exper_id: obj['exper_id'],
+    },
+    url: '/read/student/scored_question',
+    method: 'post',
+  });
+}
+
 // 重新上传作业
 export function stuUploadAgain(obj) {
   return axios.request({
@@ -380,8 +392,10 @@ export function searchMyHWlist(obj) {
   return axios.request({
     data: {
       condition: obj['condition'],
-      student: obj['student'] || 10,
       stu_id: obj['stuId'],
+      student: obj['student'],
+      page: obj['page'] || 1,
+      limit: obj['limit'] || 10,
     },
     url: '/search/student/exper',
     method: 'post',

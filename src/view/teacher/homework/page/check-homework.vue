@@ -21,8 +21,8 @@
       <Table
         border
         :loading="loading"
-        :columns="showTable('columns', 5)"
-        :data="showTable('data', 5)"
+        :columns="showTable('columns', 6)"
+        :data="showTable('data', 6)"
         class="table-con mar-top"
       />
 
@@ -67,7 +67,7 @@
 import CourseSelect from "@teaHomework/smart/course-select";
 import CheckOnlineHWDetail from "@teaHomework/smart/check-online-homework-detail";
 import myMixin from "@/view/global/mixin";
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapState, mapMutations } from "vuex";
 import { getCourseClassList } from "@/api/course";
 
 export default {
@@ -88,6 +88,7 @@ export default {
       isSelectCourse: true,
       showModal: false,
       loading: false,
+      curClassHour: "",
       curCourseInfo: {},
       curDirectory: 1,
       homeworkList: [], // 作业列表
@@ -102,7 +103,10 @@ export default {
           key: "operation",
           render: (h, params) => {
             return h("div", [
-              this.btnStyle("查看", h, () => (this.curDirectory = 2))
+              this.btnStyle("查看", h, () => {
+                this.curDirectory = 2;
+                this.curClassHour = params.row.name;
+              })
             ]);
           }
         }
@@ -143,15 +147,15 @@ export default {
           key: "operation",
           render: (h, params) => {
             return h("div", [
-              this.btnStyle("查看", h, () => {
+              this.btnStyle("查看", h, async () => {
                 // TODO: 打开实验报告
                 if (!params.row.questions) {
                   // params.questions不存在时为课时作业
                   this.curDirectory = 4;
-                  this.getStuClassHW(params.row.id);
+                  await this.getStuClassHW(params.row.id);
                 } else {
                   this.curDirectory = 5;
-                  this.getStuOnlineHW(params.row.id);
+                  await this.getStuOnlineHW(params.row.id);
                 }
               })
             ]);
@@ -257,9 +261,10 @@ export default {
           render: (h, params) => {
             return h("div", [
               this.btnStyle("查看", h, async () => {
-                await this.getStuSubjectList(params.row.questions);
-                // this.showModal = true;
-                // this.curDirectory = 6;
+                let { questions } = params.row;
+                await this.getStuSubjectList(questions);
+                this.showModal = true;
+                this.curDirectory = 6;
               })
             ]);
           }
@@ -289,6 +294,8 @@ export default {
       "getStuOnlineHWList"
     ]),
 
+    ...mapMutations(["setInputInfo"]),
+
     submit() {
       console.log("submit");
     },
@@ -309,7 +316,6 @@ export default {
     async goNext(info) {
       this.loading = true;
       this.curCourseInfo = info;
-
       // 获取课程的课时列表
       let res = await getCourseClassList({
         course_id: info["id"]
@@ -323,17 +329,11 @@ export default {
     async getClassHW() {
       this.loading = true;
       let { name, semester } = this.curCourseInfo;
-      // console.log({
-      //   course: name,
-      //   teacher: this.userName,
-      //   semester: semester,
-      //   classHour: "第一课：课程介绍及环境配置安装详解"
-      // });
       let res = await this.getTeaClassHW({
-        course: "新媒体综合实训",
+        course: name,
         teacher: this.userName,
-        semester: semester
-        // classHour: "第一课：课程介绍及环境配置安装详解"
+        semester,
+        classHour: this.curClassHour
       });
       this.data3 = res;
       this.loading = false;
@@ -344,10 +344,10 @@ export default {
       this.loading = true;
       let { name, semester } = this.curCourseInfo;
       let res = await this.getTeaOnlineHW({
-        course: "新媒体综合实训",
+        course: name,
         teacher: this.userName,
-        semester: semester
-        // classHour: "第一课：课程介绍及环境配置安装详解"
+        semester,
+        classHour: this.curClassHour
       });
       this.data3 = res;
       this.loading = false;
@@ -359,13 +359,12 @@ export default {
       let { name, semester, classes } = this.curCourseInfo;
       let res = await this.getStuHWList({
         exper_id: id,
-        course: "新媒体综合实训",
+        course: name,
         semester,
         teacher: this.userName,
-        stuclass: "ATM"
-        // course: name,
-        // stuclass: classes
+        stuclass: classes
       });
+      console.log(res);
       this.data4 = res;
       this.loading = false;
     },
@@ -376,20 +375,19 @@ export default {
       let { name, semester, classes } = this.curCourseInfo;
       let res = await this.getStuOnlineHWList({
         exper_id: id,
-        course: "新媒体综合实训",
+        course: name,
         semester,
         teacher: this.userName,
-        stuclass: "ATM"
-        // course: name,
-        // stuclass: classes
+        stuclass: classes
       });
-      console.log(res);
       this.data5 = res;
       this.loading = false;
     },
 
     async getStuSubjectList(questions) {
+      let subjectLength = 0;
       let executeOnce = true;
+      console.log(questions);
       let inputInfo = questions.reduce((arr, item, index) => {
         let optionList = [
           {
@@ -409,27 +407,31 @@ export default {
             option: item["fourth_option"]
           }
         ];
-
         if (item["type"] !== "填空题") {
           arr.push({
             id: item["id"],
             subject: item["context"],
             subjectType: item["type"],
             title: `${index + 1}、${item["type"]}`,
-            choice: item["answer"],
+            choice:
+              item["type"] === "多选题" && item["stuanswer"]["answer"]
+                ? item["stuanswer"]["answer"].split(",")
+                : item["stuanswer"]["answer"],
             optionList,
-            weighting: item["grade"]
+            weighting: item["grade"],
+            referenceAnswer: item["answer"]
           });
         } else {
           if (executeOnce) {
             // 填空题只有一条大题，所以只执行一次
             executeOnce = false;
-            let subject = data.reduce((arr, item) => {
+            let subject = questions.reduce((arr, item) => {
               if (item["type"] === "填空题") {
+                subjectLength += 1;
                 arr.push({
                   id: item["id"],
                   subject: item["context"],
-                  answer: "",
+                  answer: item["stuanswer"]["answer"],
                   referenceAnswer: item["answer"],
                   showCreSubjectBtn: true
                 });
@@ -440,7 +442,7 @@ export default {
               subject,
               subjectType: item["type"],
               title: `${index + 1}、${item["type"]}`,
-              choice: item["answer"],
+              choice: "",
               optionList,
               weighting: item["grade"]
             });
@@ -448,6 +450,7 @@ export default {
         }
         return arr;
       }, []);
+      this.setInputInfo(inputInfo);
       console.log(inputInfo);
     },
 

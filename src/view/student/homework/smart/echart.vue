@@ -1,25 +1,28 @@
 <template>
-  <div
-    ref="main"
-    class="echart-con"
-  ></div>
+  <div ref="main" class="echart-con"></div>
 </template>
 
 <script>
 import echarts from "echarts";
+import { mapState } from "vuex";
 
 export default {
+  computed: {
+    ...mapState({
+      courseList: state => {
+        return state.homework.courseList.map(item => item.name);
+      }
+    })
+  },
+
   data() {
-    return {
-      formatLesson: this.$tools.getSessionStorage("formatLesson")
-    };
+    return {};
   },
 
   mounted() {
-    let xAxisData = this.formatLesson.map((item, index) => item["courseName"]);
-
     // 基于准备好的dom，初始化echarts实例
     let myChart = echarts.init(this.$refs.main);
+    let courseList = this.courseList;
 
     // 指定图表的配置项和数据
     let option = {
@@ -48,7 +51,7 @@ export default {
         {
           type: "category",
           boundaryGap: true,
-          data: xAxisData
+          data: courseList
         }
       ],
       yAxis: [

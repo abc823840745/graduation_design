@@ -12,12 +12,13 @@
           @onChange="item['onChange']"
         />
 
-        <Input
-          class="search-item"
-          search
-          enter-button
-          placeholder="请输入关键词"
-        />
+        <Button
+          type="primary"
+          icon="ios-search"
+          class="search-btn"
+          @click="searchOpen"
+          >Search</Button
+        >
       </div>
 
       <Table
@@ -46,6 +47,10 @@
       </p>
       <HomeworkDetail />
     </Modal>
+
+    <Modal fullscreen title="搜索" v-model="modalOpen" @on-ok="searchOk">
+      <SearchView />
+    </Modal>
   </div>
 </template>
 
@@ -53,34 +58,37 @@
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import HomeworkDetail from "@stuHomework/smart/check-online-homework-detail";
 import myMixin from "@/view/global/mixin";
+import SearchView from "@/view/global/component/search-view";
 import { mapState, mapActions } from "vuex";
-import { stat } from "fs";
 
 export default {
   mixins: [myMixin],
 
   components: {
     MultipleChoice,
-    HomeworkDetail
+    HomeworkDetail,
+    SearchView
   },
 
   computed: {
     ...mapState({
       userName: state => state.user.userName,
       stuId: state => state.user.stu_nmuber,
+      courseList: state => state.homework.courseList,
       tableInfo: state => state.homework.stuMyHWList
     }),
 
     getAllCourse() {
+      // TODO: 改为查询vuex的courseList，处理成这样的数据，如果是查单个课程就筛选这个数组
       return [
         {
           course: "新媒体综合实训",
-          stuclass: "ATM",
+          stuclass: "AND",
           teacher: "程亮"
         },
         {
-          course: "就业与创业指导",
-          stuclass: "ATM",
+          course: "HTML5网页设计",
+          stuclass: "AMT",
           teacher: "程亮"
         }
       ];
@@ -91,6 +99,7 @@ export default {
     return {
       curDirectory: 1, // 当前的目录
       showModal: false,
+      modalOpen: false,
       loading: true,
       selectList: [
         {
@@ -102,13 +111,23 @@ export default {
         {
           tip: "课程选择",
           value: "所有课程",
-          list: this.getCourseList(),
+          list: [
+            {
+              value: "所有课程",
+              label: "所有课程"
+            }
+          ],
           onChange: this.changeCourse
         },
         {
           tip: "课时选择",
           value: "所有课时",
-          list: this.getClassHourList(),
+          list: [
+            {
+              value: "所有课时",
+              label: "所有课时"
+            }
+          ],
           onChange: this.changeClassHour
         }
       ],
@@ -172,7 +191,8 @@ export default {
                 return h("div", [
                   this.btnStyle("查看", h, () => {
                     this.showModal = true;
-                    this.getSubjectList(params.row.exper_id);
+                    let { id, exper_id } = params.row;
+                    this.getSubjectList(id, exper_id);
                   })
                 ]);
               }
@@ -194,11 +214,12 @@ export default {
   },
 
   async mounted() {
-    await this.getTableData(this.tableInfo["page"]);
+    await this.setCourseSelList();
+    await this.getTableData();
   },
 
   methods: {
-    ...mapActions(["getTeaHW", "getStuMyHWlist", "getStuOnlineSubject"]),
+    ...mapActions(["getTeaHW", "getStuMyHWlist", "getStuScoreSubject"]),
 
     handleOk() {
       this.curDirectory = 1;
@@ -208,7 +229,8 @@ export default {
       this.curDirectory = 1;
     },
 
-    async getTableData(page) {
+    // 获取表格数据
+    async getTableData(page = 1) {
       this.loading = true;
       await this.getStuMyHWlist({
         page,
@@ -233,6 +255,7 @@ export default {
       this.loading = false;
     },
 
+    // 学年选择
     async changeYear(value) {
       this.loading = true;
       await this.getStuMyHWlist({
@@ -258,8 +281,16 @@ export default {
       this.loading = false;
     },
 
+    // 课程选择
     async changeCourse(value) {
       this.loading = true;
+      let getId = this.courseList.reduce((arr, item) => {
+        if (item["name"] === value) {
+          arr.push(item["id"]);
+        }
+        return arr;
+      }, []);
+      await this.setClassHourSelList(getId[0]);
       await this.getStuMyHWlist({
         obj:
           value === "所有课程"
@@ -282,6 +313,7 @@ export default {
       this.loading = false;
     },
 
+    // 学时选择
     async changeClassHour(value) {
       this.loading = true;
       await this.getStuMyHWlist({
@@ -303,8 +335,21 @@ export default {
       this.loading = false;
     },
 
-    async getSubjectList(id) {
-      await this.getStuOnlineSubject(id);
+    // 获取在线作业题目
+    async getSubjectList(id, exper_id) {
+      await this.getStuScoreSubject({
+        id,
+        exper_id
+      });
+    },
+
+    // 打开搜索页
+    searchOpen() {
+      this.modalOpen = true;
+    },
+
+    searchOk() {
+      this.modalOpen = false;
     }
   }
 };
@@ -338,6 +383,10 @@ export default {
     align-self: flex-start;
     flex-wrap: wrap;
     width: 100%;
+
+    .search-btn {
+      height: 32px;
+    }
 
     .multiple-choice {
       margin-bottom: 10px;

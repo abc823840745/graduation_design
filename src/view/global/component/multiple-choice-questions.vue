@@ -142,7 +142,11 @@ export default {
     ...mapMutations(["setInputInfo"]),
 
     setChoice() {
-      if (this.type === "create" || this.type === "check") {
+      if (
+        this.type === "create" ||
+        this.type === "check" ||
+        this.type === "score"
+      ) {
         this.choice = this.info["choice"][0].split(",");
       }
     },
