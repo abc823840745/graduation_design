@@ -68,8 +68,7 @@
         <p class="course_code">教学班：{{item.code}}</p>
         <p class="class_code">课室：{{item.classes}}</p>
         <ButtonGroup class="course-btn">
-          <Button shape="circle" type="info"  @click.native="goCourseDetail(item)">进入课程</Button>
-          <Button shape="circle" type="error" @click.native="deleteCourse(item.id)">删除课程</Button>
+          <Button shape="circle" type="info"  @click.native="goCourseDetail(item)">进入课程</Button>\
         </ButtonGroup>
       </div>
     </div>
@@ -152,20 +151,6 @@ export default {
         this.myscse_account = '',
         this.myscse_password = ''
       })
-    },
-    deleteCourse(id){
-      this.$Modal.confirm({
-          title: '确定要删除该课程？',
-          content: '<p>删除后将清空课程所有数据</p>',
-          loading: true,
-          onOk: () => {
-            console.log(id)
-            setTimeout(() => {
-                this.$Modal.remove();
-                this.$Message.success('删除成功');
-            }, 2000);
-          }
-      });
     },
     // 获取学生课程列表
     getCourseList(){

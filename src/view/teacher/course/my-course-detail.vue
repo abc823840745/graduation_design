@@ -22,8 +22,7 @@
   .course-detail-intro {
     position: relative;
     margin: 0 4px 4px 0;
-    padding: 10px;
-    padding-top: 52px;
+    padding: 0 10px 10px 10px;
     border-radius: 10px;
     min-height: 400px;
     background-color: #fff;
@@ -80,19 +79,18 @@
           <div class="course-detail-intro">
             <div class="edit-course-intro">
               <Upload
-                  :disabled="loadingStatus"
                   :before-upload="handleUpload"
+                  accept="application/pdf"
                   action="//jsonplaceholder.typicode.com/posts/">
                   <Button
-                    :loading="loadingStatus"
                     type="dashed"
                     shape="circle"
                     icon="ios-copy-outline"
-                    @click="uploadCourseIntro"
                   >上传 / 修改课程介绍</Button>
               </Upload>
             </div>
-            <my-pdf v-if="intro_pdf_url" :src="intro_pdf_url"></my-pdf>
+            <my-pdf v-if="course_desc_url" :src="course_desc_url"></my-pdf>
+            <Spin size="large" fix v-if="loadingStatus"></Spin>
           </div>
           <div class="course-detail-teacher-talk">
             <Card :bordered="false" :dis-hover="true">
@@ -414,6 +412,11 @@ export default {
     },
     // 上传函数
     handleUpload (file) {
+      if(file.type != 'application/pdf') {
+        this.$Message.error('请选择PDF文件上传')
+        return false;
+      }
+      this.loadingStatus = true
       this.file = file;
       // 创建form对象
       let formData = new FormData();
@@ -425,6 +428,7 @@ export default {
         this.file = null;
         this.loadingStatus = false;
         this.$Message.success('上传成功')
+        this.getCourseDetail()
       }).catch((err)=>{
         console.log(err)
         this.file = null;
@@ -432,10 +436,6 @@ export default {
         this.$Message.error('上传失败')
       })
       return false;
-    },
-    uploadCourseIntro () {
-      this.loadingStatus = true;
-      
     },
     // 获取课程详情
     getCourseDetail() {
@@ -448,7 +448,6 @@ export default {
         this.course_code = detail.code
         this.course_classes = detail.classes
         this.course_desc_url = detail.desc_url
-        this.intro_pdf_url = detail.desc_url
       }).catch((err)=>{
         console.log(err)
         this.$Message.error('获取课程详情失败');

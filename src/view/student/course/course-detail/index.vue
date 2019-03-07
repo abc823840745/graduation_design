@@ -32,6 +32,21 @@
     box-shadow: 2px 2px 2px #eee;
     margin-bottom: 20px;
   }
+  .class_introduce {
+    position: relative;
+    margin: 0 4px 4px 0;
+    padding: 0 10px 10px 10px;
+    border-radius: 10px;
+    min-height: 400px;
+    background-color: #fff;
+    box-shadow: 2px 2px 2px #eee;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 22px;
+    color: #888;
+  }
   .course-detail-page-nav {
     margin-top: 20px;
     text-align: center;
@@ -52,8 +67,7 @@
             </Card>
           </div>
           <div class="class_introduce">
-            <iframe width="100%" height="500" scrolling="no" frameborder="no"
-          :src="`${baseUrl}web/viewer.html?file=${baseUrl}web/intro.pdf`"></iframe>
+            <my-pdf v-if="course_desc_url" :src="course_desc_url"></my-pdf>
           </div>
         </TabPane>
         <TabPane label="课时列表" name="classlist">
@@ -78,13 +92,13 @@
   </div>
 </template>
 <script>
+import myPdf from '@/view/pdf/pdf'
 import { getCourseDetail, getCourseClassList, getCourseQusetionsList } from '@/api/course'
 import { getMyDate } from '@/libs/tools'
 export default {
   name: 'course-index',
   data () {
     return {
-      baseUrl: process.env.BASE_URL,
       // 课程详情
       course_name: '',
       course_code: '',
@@ -274,7 +288,7 @@ export default {
     }
   },
   components: {
-    // pdf
+    myPdf
   },
   methods: {
     goClass (id) {

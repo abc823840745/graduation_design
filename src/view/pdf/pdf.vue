@@ -69,10 +69,12 @@
   width: 100%;
   position: relative;
   .arrow {
-    position: absolute;
-    right: 8px;
-    top: -40px;
+    // position: absolute;
+    // right: 8px;
+    // top: -40px;
+    text-align: center;
     cursor: pointer;
+    margin: 10px 0;
   }
 }
 </style>
