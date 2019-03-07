@@ -22,9 +22,10 @@
   .course-detail-intro {
     position: relative;
     margin: 0 4px 4px 0;
-    padding: 0 20px;
+    padding: 10px;
+    padding-top: 52px;
     border-radius: 10px;
-    height: 400px;
+    min-height: 400px;
     background-color: #fff;
     box-shadow: 2px 2px 2px #eee;
     text-align: center;
@@ -38,6 +39,7 @@
       left: 10px;
       top: 10px;
       cursor: pointer;
+      z-index: 999;
     }
   }
   .course-detail-teacher-talk {
@@ -87,9 +89,10 @@
                     shape="circle"
                     icon="ios-copy-outline"
                     @click="uploadCourseIntro"
-                  >上传 / 修改讲义</Button>
+                  >上传 / 修改课程介绍</Button>
               </Upload>
-            </div>正在从服务器获取课程介绍讲义...
+            </div>
+            <my-pdf v-if="intro_pdf_url" :src="intro_pdf_url"></my-pdf>
           </div>
           <div class="course-detail-teacher-talk">
             <Card :bordered="false" :dis-hover="true">
@@ -139,6 +142,7 @@
   </div>
 </template>
 <script>
+import myPdf from '@/view/pdf/pdf'
 import { getMyDate } from '@/libs/tools'
 import { getCourseDetail, getTeaCourseStudentList, getCourseClassList, createTeaCourseClass, deleteTeaCourseClass, uploadCourseIntro, getCourseQusetionsList, deleteCourseQuestion } from '@/api/course'
 export default {
@@ -151,6 +155,7 @@ export default {
       course_current_number: 2,
       showStudentList: false,
       cur_tab: "course_intro",
+      intro_pdf_url: '',
       // 上传文件
       file: null,
       loadingStatus: false,
@@ -396,6 +401,9 @@ export default {
       questions_data: [],
     };
   },
+  components: {
+    myPdf
+  },
   methods: {
     checkStudentList() {
       console.log("打开进入课程的学生名单");
@@ -411,6 +419,7 @@ export default {
       let formData = new FormData();
       // 通过append向form对象添加数据
       formData.append('file', this.file);
+      formData.append('id', this.$route.params.id);
       uploadCourseIntro(formData).then((res)=> {
         console.log(res);
         this.file = null;
@@ -439,6 +448,7 @@ export default {
         this.course_code = detail.code
         this.course_classes = detail.classes
         this.course_desc_url = detail.desc_url
+        this.intro_pdf_url = detail.desc_url
       }).catch((err)=>{
         console.log(err)
         this.$Message.error('获取课程详情失败');

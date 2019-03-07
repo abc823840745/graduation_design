@@ -160,7 +160,7 @@ export function uploadCourseIntro (obj) {
   return axios.request({
     headers: {'Content-Type': 'multipart/form-data'},
     data: obj,
-    url: '/upload/work',
+    url: '/upload/course/desc',
     method: 'post'
   })
 }

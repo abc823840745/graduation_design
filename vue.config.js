@@ -31,6 +31,7 @@ module.exports = {
       .set('@', resolve('src')) // key,value自行定义，比如.set('@@', resolve('src/components'))
       .set('_c', resolve('src/components'))
       .set('@tools', resolve('src/libs/tools'))
+      .set('@view', resolve('src/view'))
       .set('@stuHomework', resolve('src/view/student/homework'))
       .set('@teaHomework', resolve('src/view/teacher/homework'));
   },
@@ -40,4 +41,5 @@ module.exports = {
   // devServer: {
   //   proxy: 'localhost:3000'
   // }
+  configureWebpack: config => { config.output.globalObject = "this"; }
 };

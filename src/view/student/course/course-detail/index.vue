@@ -355,6 +355,7 @@ export default {
     this.getCourseQusetionsList(()=>{
       this.questions_table_loading = false
     })
+    console.log(this.baseUrl)
   },
   mounted () {
 
