@@ -96,18 +96,6 @@ export default {
   methods: {
     goBack() {
       console.log("goback");
-    },
-
-    onChangeScore(data) {
-      let inputInfo = { ...inputInfo };
-      inputInfo[0]["score"] = data.score;
-      this.inputInfo = inputInfo;
-    },
-
-    onChangeScore2(data) {
-      let inputInfo = { ...inputInfo };
-      inputInfo[1]["score"] = data.score;
-      this.inputInfo = inputInfo;
     }
   }
 };

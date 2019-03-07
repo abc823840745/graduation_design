@@ -321,3 +321,39 @@ export function getCurDate() {
     hours < 10 ? '0' + hours : hours
   }:${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
 }
+
+/**
+ * 获取当前的学年学期
+ */
+export function getCurSchoolYear() {
+  let date = new Date();
+  let year = date.getFullYear();
+  let month = date.getMonth();
+  let semester = null;
+  if (month >= 3 && month <= 7) {
+    semester = '下学期';
+  } else {
+    semester = '上学期';
+  }
+  return `${year - 1}-${year}${semester}`;
+}
+
+/**
+ * 转换2018-2019上学期格式时间为查询课程参数
+ */
+export function dateFormat(curSemester) {
+  let yearReg = /[0-9]{4}/;
+  let semesterReg = /[\u4e00-\u9fa5]{3}/;
+  let formatSemester = null;
+  let formatYear = curSemester.match(yearReg)[0];
+  let semester = curSemester.match(semesterReg)[0];
+  if (semester === '上学期') {
+    formatSemester = 1;
+  } else {
+    formatSemester = 2;
+  }
+  return {
+    year: formatYear,
+    semester: formatSemester,
+  };
+}

@@ -8,7 +8,7 @@ export function getTeaClassHW(obj) {
       course: obj['course'],
       teacher: obj['teacher'],
       semester: obj['semester'],
-      week: obj['week'],
+      week: obj['classHour'],
       limit: obj['limit'] || 10,
       page: obj['page'] || 1,
     },
@@ -40,6 +40,40 @@ export function getTeaOnlineHW(obj) {
       page: obj['page'] || 1,
     },
     url: '/read/teacher/inexper',
+    method: 'post',
+  });
+}
+
+// 获取学生课时作业列表(用于评分)
+export function getStuHWList(obj) {
+  return axios.request({
+    data: {
+      exper_id: obj['exper_id'],
+      course: obj['course'],
+      semester: obj['semester'],
+      teacher: obj['teacher'],
+      stuclass: obj['stuclass'],
+      limit: obj['limit'] || 10,
+      page: obj['page'] || 1,
+    },
+    url: '/getstulist/teacher/outexper',
+    method: 'post',
+  });
+}
+
+// 获取学生在线作业列表(用于评分)
+export function getStuOnlineHWList(obj) {
+  return axios.request({
+    data: {
+      exper_id: obj['exper_id'],
+      course: obj['course'],
+      semester: obj['semester'],
+      teacher: obj['teacher'],
+      stuclass: obj['stuclass'],
+      limit: obj['limit'] || 10,
+      page: obj['page'] || 1,
+    },
+    url: '/getstulist/teacher/inexper',
     method: 'post',
   });
 }
@@ -120,6 +154,7 @@ export function updateTeaOnlineHW(obj) {
       week: obj['classHour'],
       startime: obj['startime'],
       fintime: obj['fintime'],
+      totaltime: obj['totaltime'],
     },
     url: '/update/teacher/inexper',
     method: 'post',
@@ -185,11 +220,11 @@ export function teaUploadAgain(obj) {
 }
 
 // 课时作业评分
-export function teaScoreHW(id, grade) {
+export function teaScoreHW(obj) {
   return axios.request({
     data: {
-      id,
-      grade,
+      id: obj['id'],
+      grade: obj['grade'],
     },
     url: '/registerScore/teacher/outexper',
     method: 'post',
@@ -219,6 +254,7 @@ export function getStuClassHW(obj) {
     data: {
       obj: obj['obj'],
       student: obj['student'],
+      stu_id: obj['stuId'],
       semester: obj['semester'],
       week: obj['classHour'] || undefined,
       limit: obj['limit'] || 10,
@@ -235,6 +271,7 @@ export function getStuOnlineHW(obj) {
     data: {
       obj: obj['obj'],
       student: obj['student'],
+      stu_id: obj['stuId'],
       semester: obj['semester'],
       week: obj['classHour'] || undefined,
       limit: obj['limit'] || 10,
@@ -317,6 +354,36 @@ export function getTeaHW(obj) {
       page: obj['page'] || 1,
     },
     url: '/getlist/teacher/exper',
+    method: 'post',
+  });
+}
+
+// 学生获取自己的作业列表
+export function getStuMyHWlist(obj) {
+  return axios.request({
+    data: {
+      semester: obj['semester'],
+      obj: obj['obj'],
+      student: obj['student'],
+      stu_id: obj['stuId'],
+      week: obj['classHour'] || undefined,
+      page: obj['page'] || 1,
+      limit: obj['limit'] || 10,
+    },
+    url: '/getlist/student/exper',
+    method: 'post',
+  });
+}
+
+// 学生搜索自己的作业
+export function searchMyHWlist(obj) {
+  return axios.request({
+    data: {
+      condition: obj['condition'],
+      student: obj['student'] || 10,
+      stu_id: obj['stuId'],
+    },
+    url: '/search/student/exper',
     method: 'post',
   });
 }

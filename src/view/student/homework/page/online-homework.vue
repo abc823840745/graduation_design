@@ -44,6 +44,7 @@
       <Table
         border
         class="table-con mar-top"
+        :loading="loading"
         :columns="columns"
         :data="tableInfo['tableData']"
       />
@@ -52,7 +53,7 @@
         class="mar-top page"
         :total="tableInfo['count']"
         :page-size="10"
-        @on-change="changePage"
+        @on-change="getTableData"
       />
     </div>
 
@@ -68,7 +69,7 @@
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import WriteOnlineHomework from "@stuHomework/smart/write-online-homework";
 import myMixin from "@/view/global/mixin";
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapState, mapMutations } from "vuex";
 
 export default {
   mixins: [myMixin],
@@ -96,6 +97,7 @@ export default {
 
     ...mapState({
       userName: state => state.user.userName,
+      stuId: state => state.user.stu_nmuber,
       inputInfo: state => state.homework.inputInfo,
       tableInfo: state => state.homework.onlineHWInfo
     })
@@ -104,6 +106,7 @@ export default {
   data() {
     return {
       curDirectory: 1, // 当前的目录
+      loading: true,
       stuHomeworkId: 0, // 学生作业id
       teaHomeworkId: 0, // 老师作业id
       showModal: false,
@@ -148,24 +151,26 @@ export default {
         },
         {
           title: "完成状态",
-          key: "submit_time",
+          key: "status",
           sortable: true
         },
         {
           title: "操作",
           key: "operation",
           render: (h, params) => {
-            return h("div", [
-              this.btnStyle("完成作业", h, async () => {
-                const status = params["row"]["submit_time"];
-                if (status !== "待提交") {
-                  return this.$Message.info("你已完成作业");
-                }
-                this.showModal2 = true;
-                this.stuHomeworkId = params.row.id;
-                await this.getSubjectList(params.row.exper_id);
-              })
-            ]);
+            let { exper_fintime, id, exper_id } = params.row;
+            let curDate = new Date();
+            let finDate = new Date(exper_fintime);
+            if (curDate < finDate) {
+              return h("div", [
+                this.btnStyle("完成作业", h, async () => {
+                  this.showModal2 = true;
+                  this.stuHomeworkId = id;
+                  await this.getSubjectList(exper_id);
+                })
+              ]);
+            }
+            return h("div", [this.disableBtnStyle("完成作业", h)]);
           }
         }
       ]
@@ -173,7 +178,7 @@ export default {
   },
 
   async mounted() {
-    await this.getTabelTable();
+    await this.getTableData(this.tableInfo["page"]);
   },
 
   methods: {
@@ -183,78 +188,10 @@ export default {
       "stuSubmitOnlineHW"
     ]),
 
-    async getTabelTable() {
-      await this.getStuOnlineHW({
-        // TODO: 暂时写死，课程信息由课程接口返回
-        obj: this.getAllCourse,
-        semester: this.getCurSchoolYear(),
-        student: this.userName
-      });
-    },
+    ...mapMutations(["setInputInfo"]),
 
-    async changeYear(value) {
-      // TODO: 每次将value存入vuex
-      await this.getStuOnlineHW({
-        // TODO: 暂时写死，课程信息由课程接口返回
-        obj:
-          this.selectList[1]["value"] === "所有课程"
-            ? this.getAllCourse
-            : [
-                {
-                  course: this.selectList[1]["value"],
-                  stuclass: "ATM",
-                  teacher: "程亮"
-                }
-              ],
-        semester: value,
-        classHour:
-          this.selectList[2]["value"] === "所有课时"
-            ? undefined
-            : this.selectList[2]["value"],
-        student: this.userName
-      });
-    },
-
-    async changeCourse(value) {
-      await this.getStuOnlineHW({
-        obj:
-          value === "所有课程"
-            ? this.getAllCourse
-            : [
-                {
-                  course: value,
-                  stuclass: "ATM",
-                  teacher: "程亮"
-                }
-              ],
-        semester: this.selectList[0]["value"],
-        classHour:
-          this.selectList[2]["value"] === "所有课时"
-            ? undefined
-            : this.selectList[2]["value"],
-        student: this.userName
-      });
-    },
-
-    async changeClassHour(value) {
-      await this.getStuOnlineHW({
-        obj:
-          this.selectList[1]["value"] === "所有课程"
-            ? this.getAllCourse
-            : [
-                {
-                  course: this.selectList[1]["value"],
-                  stuclass: "ATM",
-                  teacher: "程亮"
-                }
-              ],
-        semester: this.selectList[0]["value"],
-        classHour: value === "所有课时" ? undefined : value,
-        student: this.userName
-      });
-    },
-
-    async changePage(page) {
+    async getTableData(page) {
+      this.loading = true;
       await this.getStuOnlineHW({
         page,
         obj:
@@ -272,8 +209,80 @@ export default {
           this.selectList[2]["value"] === "所有课时"
             ? undefined
             : this.selectList[2]["value"],
-        student: this.userName
+        student: this.userName,
+        stuId: this.stuId
       });
+      this.loading = false;
+    },
+
+    async changeYear(value) {
+      this.loading = true;
+      await this.getStuOnlineHW({
+        // TODO: 暂时写死，课程信息由课程接口返回
+        obj:
+          this.selectList[1]["value"] === "所有课程"
+            ? this.getAllCourse
+            : [
+                {
+                  course: this.selectList[1]["value"],
+                  stuclass: "ATM",
+                  teacher: "程亮"
+                }
+              ],
+        semester: value,
+        classHour:
+          this.selectList[2]["value"] === "所有课时"
+            ? undefined
+            : this.selectList[2]["value"],
+        student: this.userName,
+        stuId: this.stuId
+      });
+      this.loading = false;
+    },
+
+    async changeCourse(value) {
+      this.loading = true;
+      await this.getStuOnlineHW({
+        obj:
+          value === "所有课程"
+            ? this.getAllCourse
+            : [
+                {
+                  course: value,
+                  stuclass: "ATM",
+                  teacher: "程亮"
+                }
+              ],
+        semester: this.selectList[0]["value"],
+        classHour:
+          this.selectList[2]["value"] === "所有课时"
+            ? undefined
+            : this.selectList[2]["value"],
+        student: this.userName,
+        stuId: this.stuId
+      });
+      this.loading = false;
+    },
+
+    async changeClassHour(value) {
+      this.loading = true;
+      await this.getStuOnlineHW({
+        obj:
+          this.selectList[1]["value"] === "所有课程"
+            ? this.getAllCourse
+            : [
+                {
+                  course: this.selectList[1]["value"],
+                  stuclass: "ATM",
+                  teacher: "程亮"
+                }
+              ],
+        semester: this.selectList[0]["value"],
+        classHour: value === "所有课时" ? undefined : value,
+        student: this.userName,
+        stuId: this.stuId
+      });
+      this.loading = false;
     },
 
     async getSubjectList(id) {
@@ -295,12 +304,11 @@ export default {
               {
                 root_id: this.stuHomeworkId,
                 quest_id: id,
-                answer: choice
+                answer: subjectType === "多选题" ? choice.join() : choice
               }
             ];
           } else {
             questions = subject.map(item => {
-              console.log(item["id"]);
               return {
                 root_id: this.stuHomeworkId,
                 quest_id: item["id"],
@@ -314,9 +322,10 @@ export default {
             surplus_time: seconds,
             questions
           });
-          console.log(res);
         })
       );
+      this.setInputInfo([]);
+      this.showModal2 = false;
       this.$Notice.success({
         title: "提交作业成功！"
       });

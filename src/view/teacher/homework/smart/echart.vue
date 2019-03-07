@@ -1,20 +1,27 @@
 <template>
-  <div
-    id="main"
-    class="echart-con"
-  ></div>
+  <div id="main" class="echart-con"></div>
 </template>
 
 <script>
 import echarts from "echarts";
+import { mapState } from "vuex";
 
 export default {
+  computed: {
+    ...mapState({
+      courseList: state => {
+        return state.homework.courseList.map(item => item.name);
+      }
+    })
+  },
+
   mounted() {
     // 基于准备好的dom，初始化echarts实例
-    var myChart = echarts.init(document.getElementById("main"));
+    let myChart = echarts.init(document.getElementById("main"));
+    let courseList = this.courseList;
 
     // 指定图表的配置项和数据
-    var option = {
+    let option = {
       title: {
         text: "每周作业汇总图表"
       },
@@ -40,15 +47,7 @@ export default {
         {
           type: "category",
           boundaryGap: true,
-          data: [
-            "新媒体实训",
-            "vue应用程序开发",
-            "新媒体实务",
-            "JavaScript",
-            "Reactjs",
-            "Angularjs",
-            "新媒体概论"
-          ]
+          data: courseList
         }
       ],
       yAxis: [
@@ -75,10 +74,8 @@ export default {
 </script>
 
 <style lang='less' scoped>
-@import "../../../global/public.less";
-
 .echart-con {
-  .w(100%);
+  width: 100%;
   height: 350px;
 }
 </style>

@@ -38,7 +38,7 @@
 <script>
 import { getMyDate } from '@/libs/tools'
 export default {
-  name: 'teacher-my-course-questions',
+  name: 'teacher-question-index',
   data () {
     return {
       total: 20,
@@ -139,7 +139,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.$router.push('/teacher/course/teacher-question-detail/'+params.index)
+                      this.$router.push('/teacher/answering/detail/'+params.index)
                     }
                   }
                 },

@@ -5,6 +5,7 @@
     <MyHomework
       :modalOpen.sync="modalOpen"
       :submitInfo="submitInfo"
+      :courseId="courseId"
       type="create"
     />
   </div>
@@ -26,10 +27,11 @@ export default {
   data() {
     return {
       modalOpen: false,
+      courseId: 0,
       submitInfo: {
         semester: "2018-2019上学期",
         course: "就业与创业指导",
-        course_id: 1,
+        course_id: 2,
         // teacher: this.$store.state.user.userName
         teacher: "程亮"
       }
@@ -37,7 +39,8 @@ export default {
   },
 
   methods: {
-    goNext() {
+    goNext(info) {
+      this.courseId = info["id"];
       this.modalOpen = true;
     }
   }

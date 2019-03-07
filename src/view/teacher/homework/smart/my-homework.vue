@@ -146,6 +146,7 @@ export default {
 
   props: {
     type: String, // 新建状态和修改状态
+    courseId: Number, // 课程id
     submitInfo: Object, // 新建任务需要的信息
     info: {
       type: Object, // 修改任务显示的数据
@@ -166,6 +167,10 @@ export default {
       this.showModal = newVal;
     },
 
+    async courseId(newVal, oldVal) {
+      await this.setClassHourList();
+    },
+
     showModal(newVal, oldVal) {
       this.$emit("update:modalOpen", newVal);
       if (newVal === false) {
@@ -179,10 +184,6 @@ export default {
   },
 
   computed: {
-    classHourList() {
-      return this.getClassHourList().filter(item => item.value !== "所有课时");
-    },
-
     classifyList() {
       return this.getClassifyList().filter(item => item.value !== "所有类型");
     },
@@ -206,6 +207,7 @@ export default {
     return {
       showModal: false,
       showModal2: false,
+      classHourList: [],
       uploadFileInfo: {},
       homeworkInfo: {
         name: "",
@@ -215,10 +217,6 @@ export default {
         stopTimeList: []
       }
     };
-  },
-
-  async mounted() {
-    // TODO: 根据type判断是否为新建模式和修改模式，根据homeworkType获取对应接口的信息
   },
 
   methods: {
@@ -233,6 +231,11 @@ export default {
     ]),
 
     ...mapMutations(["setInputInfo"]),
+
+    async setClassHourList() {
+      let res = await this.getClassHourList(this.courseId);
+      this.classHourList = res.filter(item => item.value !== "所有课时");
+    },
 
     // 监听选择时间日期函数
     timeOnChange(value) {
@@ -444,11 +447,12 @@ export default {
 
     // 更新在线作业信息
     async updateOnlineHWInfo() {
-      let { name, classHour, stopTimeList } = this.homeworkInfo;
+      let { name, classHour, stopTimeList, testingTime } = this.homeworkInfo;
       let res = await this.updateTeaOnlineHW({
         id: this.info.id,
         name,
         classHour,
+        totaltime: testingTime,
         startime: stopTimeList[0],
         fintime: stopTimeList[1]
       });

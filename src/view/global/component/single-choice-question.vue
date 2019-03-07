@@ -39,10 +39,7 @@
             :label="item['label']"
           >
             <span class="choice-text"> {{ item["label"] }}</span>
-            <span
-              class="choice-text"
-              v-if="type === 'testing' || type === 'score'"
-            >
+            <span class="choice-text" v-if="type !== 'create'">
               、{{ item["option"] }}
             </span>
 

@@ -52,17 +52,20 @@
      text-align: center;
      margin-top: 20px;
   }
+  .new-class-btn {
+    margin-bottom: 10px;
+  }
 }
 </style>
 <template>
   <div class="teacher-my-course-detail">
     <div class="course-detail-top">
       <h2 class="course-title">
-        新媒体实训
-        <span class="title-code">[GT2004]</span>
+        {{course_name}}
+        <span class="title-code">[{{course_code}}]</span>
       </h2>
       <p class="course-sub-title">
-        <Button size="small" shape="circle" @click.native="checkStudentList" type="primary">查看学生名单</Button>
+        <Button size="small" shape="circle" @click.native="checkStudentList" type="primary">{{course_classes}}班学生名单</Button>
       </p>
     </div>
     <div class="course-detail-navbar">
@@ -80,7 +83,7 @@
           </div>
           <div class="course-detail-teacher-talk">
             <Card :bordered="false" :dis-hover="true">
-              <p slot="title">教师寄语</p>
+              <p slot="title">课程介绍</p>
               <p>期望老师的关爱能让你愉快畅游在知识的海洋，同学的帮忙能给你带来更多的感动。为你下半学期的进步鼓掌！</p>
             </Card>
           </div>
@@ -107,6 +110,9 @@
           </Modal>
         </TabPane>
         <TabPane label="课时管理" name="class_manage">
+          <!-- 新建课时 -->
+          <Button type="success" class="new-class-btn" @click="showCreateCourseClass()">新建课时</Button>
+          <!-- 新建课时 end -->
           <Table
             size="large"
             :loading="class_table_loading"
@@ -133,6 +139,7 @@
 </template>
 <script>
 import { getMyDate } from '@/libs/tools'
+import { getCourseDetail, getTeaCourseStudentList, getCourseClassList, createTeaCourseClass, deleteTeaCourseClass } from '@/api/course'
 export default {
   name: "teacher-my-course-detail",
   data() {
@@ -145,12 +152,21 @@ export default {
       showUploadCourseIntro: false,
       upload_course_loading: true,
       cur_tab: "course_intro",
+      // 课程详情
+      course_name: '',
+      course_code: '',
+      course_classes: '',
+      course_desc_url: '',
+      // 课时页码
+      course_class_limit: 10,
+      course_class_offset: 1,
+      course_class_total: 0,
       // 课时表格
       class_table_loading: true,
       class_columns: [
         {
           title: "课时名称",
-          key: "class_name",
+          key: "name",
           render: (h, params) => {
             return h("div", [
               h("Icon", {
@@ -158,16 +174,16 @@ export default {
                   type: "person"
                 }
               }),
-              h("strong", params.row.class_name)
+              h("strong", params.row.name)
             ]);
           }
         },
         {
           title: "创建时间",
-          key: "date",
+          key: "created_at",
           width: 160,
           render: (h, params) => {
-            return h("span", getMyDate(params.row.date, "yyyy-MM-dd hh:mm"));
+            return h("span", getMyDate(params.row.created_at, "yyyy-MM-dd hh:mm"));
           }
         },
         {
@@ -211,10 +227,9 @@ export default {
                           loading: true,
                           onOk: () => {
                             console.log(params.index);
-                            setTimeout(() => {
-                                this.$Modal.remove();
-                                this.$Message.success('删除成功');
-                            }, 2000);
+                            this.deleteCourseClass(params.row.id, ()=>{
+                              this.$Modal.remove();
+                            })
                           }
                       });
                     }
@@ -226,14 +241,9 @@ export default {
           }
         }
       ],
-      class_data: [
-        {
-          id: 1,
-          class_name: "课程介绍及环境配置安装详解",
-          date: "1546764772000",
-          address: "New York No. 1 Lake Park"
-        }
-      ],
+      class_data: [],
+      // 创建课时存储姓名
+      create_class_name: '',
       // 学生名单表格
       students_table_loading: true,
       students_columns: [
@@ -354,7 +364,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.$router.push('/teacher/course/teacher-question-detail/'+params.index)
+                      this.$router.push('/teacher/answering/detail/'+params.index)
                     }
                   }
                 },
@@ -422,6 +432,7 @@ export default {
     checkStudentList() {
       console.log("打开进入课程的学生名单");
       this.showStudentList = true;
+      this.getTeaCourseStudentList()
     },
     openUploadCourseIntro() {
       this.showUploadCourseIntro = true;
@@ -440,6 +451,103 @@ export default {
     },
     changePage(page){
       console.log('页码改变'+page)
+    },
+    // 获取课程详情
+    getCourseDetail() {
+      getCourseDetail({
+        id: this.$route.params.id
+      }).then((res)=>{
+        console.log(res)
+        let detail = res.data.courseDetail
+        this.course_name = detail.name
+        this.course_code = detail.code
+        this.course_classes = detail.classes
+        this.course_desc_url = detail.desc_url
+      }).catch((err)=>{
+        console.log(err)
+        this.$Message.error('获取课程详情失败');
+      })
+    },
+    // 获取学生名单
+    getTeaCourseStudentList() {
+      getTeaCourseStudentList({
+        id: this.$route.params.id
+      }).then((res)=>{
+        console.log(res)
+      }).catch((err)=>{
+        console.log(err)
+        this.$Message.error('获取学生名单失败');
+      })
+    },
+    // 获取课时列表
+    getCourseClassList() {
+      getCourseClassList({
+        course_id: this.$route.params.id,
+        offset: this.course_class_offset,
+        limit: this.course_class_limit
+      }).then((res)=>{
+        console.log(res)
+        this.course_class_total = res.data.count
+        this.class_data = res.data.courseTimeList
+      }).catch((err)=>{
+        console.log(err)
+        this.$Message.error('获取课时列表失败');
+      })
+    },
+    // 打开创建窗口
+    showCreateCourseClass() {
+      this.$Modal.confirm({
+        render: (h) => {
+          return h('Input', {
+            props: {
+              value: this.create_class_name,
+              autofocus: true,
+              placeholder: '请输入课时名称'
+            },
+            on: {
+              input: (val) => {
+                  this.create_class_name = val;
+              }
+            }
+          })
+        },
+        onOk: ()=>{
+          this.createCourseClass(this.create_class_name)
+          this.create_class_name = ''
+        },
+        onCancel: ()=>{
+          this.create_class_name = ''
+        }
+      })
+    },
+    // 创建课时
+    createCourseClass(name) {
+      createTeaCourseClass({
+        name,
+        course_id: this.$route.params.id
+      }).then((res)=>{
+        console.log(res)
+        this.$Message.success('创建成功');
+        this.getCourseClassList()
+      }).catch((err)=>{
+        console.log(err)
+        this.$Message.error('创建课时失败');
+      })
+    },
+    // 删除课时
+    deleteCourseClass(id,cb) {
+      deleteTeaCourseClass({
+        id
+      }).then((res)=>{
+        console.log(res)
+        this.$Message.success('删除成功');
+        cb()
+        this.getCourseClassList()
+      }).catch((err)=>{
+        console.log(err)
+        this.$Message.error('删除失败');
+        cb()
+      })
     }
   },
   created() {
@@ -448,6 +556,8 @@ export default {
       this.students_table_loading = false;
       this.questions_table_loading = false;
     }, 3000);
+    this.getCourseDetail()
+    this.getCourseClassList()
   },
   mounted() {}
 };

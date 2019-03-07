@@ -1,6 +1,8 @@
 import {
   getTeaClassHW,
   getTeaSubject,
+  getStuHWList,
+  getStuOnlineHWList,
   addTeaClassHW,
   updateTeaClassHW,
   delTeaClassHW,
@@ -21,10 +23,13 @@ import {
   addTeaOnlineSubject,
   addTeaOnlineHW,
   getTeaOnlineHW,
+  getStuMyHWlist,
+  searchMyHWlist,
 } from '@/api/homework';
 
 export default {
   state: {
+    courseList: [],
     inputInfo: [],
     subjectList: [],
     taskCenterInfo: {
@@ -38,6 +43,11 @@ export default {
       count: 0,
     },
     onlineHWInfo: {
+      tableData: [],
+      page: 1,
+      count: 0,
+    },
+    stuMyHWList: {
       tableData: [],
       page: 1,
       count: 0,
@@ -63,6 +73,12 @@ export default {
     setOnlineHWInfo(state, obj) {
       state.onlineHWInfo = obj;
     },
+    setCourseList(state, arr) {
+      state.courseList = arr;
+    },
+    setStuMyHWList(state, obj) {
+      state.stuMyHWList = obj;
+    },
   },
   actions: {
     // 教师端
@@ -70,6 +86,7 @@ export default {
     async getTeaClassHW({ commit }, obj) {
       try {
         let res = await getTeaClassHW(obj);
+        console.log(res);
         return res.data.data;
       } catch (err) {
         console.error(err);
@@ -116,8 +133,11 @@ export default {
             if (executeOnce) {
               // 填空题只有一条大题，所以只执行一次
               executeOnce = false;
+              let subjectLength = 0;
               let subject = data.reduce((arr, item) => {
                 if (item['type'] === '填空题') {
+                  // 记录填空题的题数
+                  subjectLength += 1;
                   arr.push({
                     id: item['id'],
                     subject: item['context'],
@@ -134,7 +154,7 @@ export default {
                 title: `${index + 1}、${item['type']}`,
                 choice: item['answer'],
                 optionList,
-                weighting: item['grade'],
+                weighting: item['grade'] * subjectLength,
               });
             }
           }
@@ -147,9 +167,30 @@ export default {
     },
 
     // 查看作业以及问题
-    async getTeaOnlineHW({ commit }, object) {
+    async getTeaOnlineHW({ commit }, obj) {
       try {
-        await getTeaOnlineHW(object);
+        let res = await getTeaOnlineHW(obj);
+        return res.data.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
+    // 获取学生课时作业列表(用于评分)
+    async getStuHWList({ commit }, obj) {
+      try {
+        let res = await getStuHWList(obj);
+        return res.data.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
+    // 获取学生在线作业作业列表(用于评分)
+    async getStuOnlineHWList({ commit }, obj) {
+      try {
+        let res = await getStuOnlineHWList(obj);
+        return res.data.data;
       } catch (err) {
         console.error(err);
       }
@@ -256,9 +297,10 @@ export default {
     },
 
     // 课时作业评分
-    async teaScoreHW({ commit }, id, grade) {
+    async teaScoreHW({ commit }, obj) {
       try {
-        let res = await teaScoreHW(id, grade);
+        console.log(obj);
+        let res = await teaScoreHW(obj);
         return res.data;
       } catch (err) {
         console.error(err);
@@ -269,8 +311,7 @@ export default {
     async getTeaHW({ commit }, obj) {
       try {
         let res = await getTeaHW(obj);
-        console.log(res.data.data);
-        let data = res.data.data;
+        let data = res.data.data.filter(item => item !== null);
         data.forEach(item => {
           item['classify'] = item['type'] === 'offline' ? '课时作业' : '在线作业';
         });
@@ -317,8 +358,8 @@ export default {
     async getStuOnlineSubject({ commit, state }, id) {
       try {
         let res = await getStuOnlineSubject(id);
+        console.log(res.data.data);
         let data = res.data.data;
-        console.log(data);
         let executeOnce = true;
         let inputInfo = data.reduce((arr, item, index) => {
           let optionList = [
@@ -418,6 +459,34 @@ export default {
     async getStuHW({ commit }, obj) {
       try {
         let res = await getStuHW(obj);
+        return res.data.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
+    // 学生获取自己的作业列表
+    async getStuMyHWlist({ commit }, obj) {
+      try {
+        let res = await getStuMyHWlist(obj);
+        let data = res.data.data.filter(item => item !== null);
+        data.forEach(item => {
+          item['classify'] = item['type'] === 'offline' ? '课时作业' : '在线作业';
+        });
+        commit('setStuMyHWList', {
+          tableData: data,
+          count: res.data.count,
+          page: obj['page'] || 1,
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
+    // 学生搜索自己的作业
+    async searchMyHWlist({ commit }, obj) {
+      try {
+        let res = await searchMyHWlist(obj);
         return res.data.data;
       } catch (err) {
         console.error(err);

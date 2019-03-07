@@ -49,7 +49,7 @@
       <div class="course-item" v-for="(item,index) in course_list" :key="index">
         <h3>{{item.name}}</h3>
         <p class="course-code">课程代码：{{item.code}}</p>
-        <p class="course-code">教学班：{{item.class_code}}</p>
+        <p class="course-code">教学班：{{item.classes}}</p>
         <ButtonGroup class="course-btn">
           <Button shape="circle" type="info" @click.native="goCourse(item.id)">进入课程</Button>
           <Button shape="circle" type="error" @click.native="deleteCourse(item.id)">删除课程</Button>
@@ -78,48 +78,17 @@
   </div>
 </template>
 <script>
-
+import { getTeaCourseList, createTeaCourse, delTeaCourse } from '@/api/course'
 export default {
   name: 'my-course',
   data () {
     return {
-      total: 20,
+      total: 0,
       page_size: 10,
       current: 1,
-      year: '2019',
+      year: new Date(),
       semester: 1,
-      course_list: [
-        {
-          id: 1,
-          name: '新媒体实训',
-          code: 'GT2004',
-          class_code: 'ACM01'
-        },
-        {
-          id: 2,
-          name: '二维图像处理',
-          code: 'GT2005',
-          class_code: 'ATG02'
-        },
-        {
-          id: 3,
-          name: '中国近现代史',
-          code: 'GT2006',
-          class_code: 'ATH01'
-        },
-        {
-          id: 4,
-          name: '后期剪辑合成',
-          code: 'GT2007',
-          class_code: 'AfM03'
-        },
-        {
-          id: 5,
-          name: '外国文学赏析',
-          code: 'GT2008',
-          class_code: 'ALV01'
-        }
-      ],
+      course_list: [],
       showCreateCourse: false,
       create_loading: false,
       course_name: '',
@@ -130,15 +99,34 @@ export default {
   methods: {
     changeYear(year){
       console.log(year)
+      this.getCourseList()
     },
     changeSemester(semester){
       console.log(semester)
+      this.getCourseList()
     },
     changePage(page){
       console.log(page)
+      this.getCourseList()
     },
     goCourse(id){
       this.$router.push('/teacher/course/my-course-detail/' + id)
+    },
+    // 获取课程列表
+    getCourseList() {
+      getTeaCourseList({
+        year: this.year.getFullYear(),
+        semester: this.semester,
+        offset: this.current,
+        limit: this.page_size
+      }).then((res)=>{
+        console.log(res)
+        this.total = res.data.count
+        this.course_list = res.data.courseList
+      }).catch((err)=>{
+        console.log(err)
+        this.$Message.error('获取课程列表失败');
+      })
     },
     createCourse(){
       this.showCreateCourse = true;
@@ -146,13 +134,27 @@ export default {
       this.course_code = '';
       this.course_class_code = '';
     },
+    // 创建课程
     sendCreateCourse(){
       this.create_loading = true;
-      setTimeout(() => {
+      createTeaCourse({
+        name: this.course_name,
+        code: this.course_code,
+        classes: this.course_class_code,
+        year: this.year.getFullYear(),
+        semester: this.semester
+      }).then((res)=>{
+        console.log(res)
         this.showCreateCourse = false;
         this.create_loading = false;
         this.$Message.success('创建成功');
-      }, 2000);
+        this.getCourseList()
+      }).catch((err)=>{
+        console.log(err)
+        this.showCreateCourse = false;
+        this.create_loading = false;
+        this.$Message.error('创建失败');
+      })
     },
     deleteCourse(id){
       this.$Modal.confirm({
@@ -161,16 +163,24 @@ export default {
           loading: true,
           onOk: () => {
             console.log(id)
-            setTimeout(() => {
-                this.$Modal.remove();
-                this.$Message.success('删除成功');
-            }, 2000);
+            delTeaCourse({
+              id
+            }).then((res)=>{
+              console.log(res)
+              this.$Modal.remove();
+              this.$Message.success('删除成功');
+              this.getCourseList()
+            }).catch((err)=>{
+              console.log(err)
+              this.$Modal.remove();
+              this.$Message.success('删除失败');
+            })
           }
       });
     }
   },
   created () {
-
+    this.getCourseList()
   },
   mounted () {
 

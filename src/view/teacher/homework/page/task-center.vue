@@ -22,6 +22,7 @@
 
       <Table
         border
+        :loading="loading"
         class="table-con mar-top"
         :columns="columns"
         :data="tableInfo['tableData']"
@@ -30,7 +31,7 @@
         class="mar-top page"
         :total="tableInfo['count']"
         :page-size="10"
-        @on-change="changePage"
+        @on-change="getTableData"
       />
     </div>
 
@@ -64,21 +65,16 @@ export default {
 
     ...mapState({
       userName: state => state.user.userName,
-      tableInfo: state => state.homework.taskCenterInfo
+      tableInfo: state => state.homework.taskCenterInfo,
+      courseList: state => state.homework.courseList
     })
   },
 
   data() {
     return {
+      loading: true,
       modalOpen: false,
       curIndex: 0,
-      submitInfo: {
-        semester: "2018-2019上学期",
-        course: "新媒体综合实训",
-        course_id: 1,
-        // teacher: this.$store.state.user.userName
-        teacher: "程亮"
-      },
       itemInfo: {},
       selectList: [
         {
@@ -90,13 +86,23 @@ export default {
         {
           tip: "课程选择",
           value: "所有课程",
-          list: this.getCourseList(),
+          list: [
+            {
+              value: "所有课程",
+              label: "所有课程"
+            }
+          ],
           onChange: this.changeCourse
         },
         {
           tip: "课时选择",
           value: "所有课时",
-          list: this.getClassHourList(),
+          list: [
+            {
+              value: "所有课时",
+              label: "所有课时"
+            }
+          ],
           onChange: this.changeClassHour
         }
       ],
@@ -129,6 +135,13 @@ export default {
           render: (h, params) => {
             return h("div", [
               this.btnStyle("修改任务信息", h, async () => {
+                let date = new Date();
+                let stopDate = new Date(params.row.startime);
+                if (date >= stopDate) {
+                  return this.$Notice.warning({
+                    title: "已经开始,无法修改"
+                  });
+                }
                 this.modalOpen = true;
                 this.itemInfo = this.tableInfo["tableData"][params.index];
                 await this.getSubjectData(params.row.id);
@@ -156,12 +169,12 @@ export default {
   },
 
   async mounted() {
+    await this.setCourseSelList(this.getCurSchoolYear());
     await this.getTableData();
   },
 
   methods: {
     ...mapActions([
-      "getTeaClassHW",
       "delTeaClassHW",
       "delTeaOnlineHW",
       "getTeaHW",
@@ -169,54 +182,9 @@ export default {
       "getTeaSubject"
     ]),
 
-    async getTableData() {
-      await this.getTeaHW({
-        course: this.getAllCourse,
-        teacher: this.userName,
-        semester: this.getCurSchoolYear()
-      });
-    },
-
-    async changeYear(value) {
-      await this.getTeaHW({
-        course:
-          this.selectList[1]["value"] === "所有课程"
-            ? this.getAllCourse
-            : [this.selectList[1]["value"]],
-        semester: value,
-        classHour:
-          this.selectList[2]["value"] === "所有课时"
-            ? undefined
-            : this.selectList[2]["value"],
-        teacher: this.userName
-      });
-    },
-
-    async changeCourse(value) {
-      await this.getTeaHW({
-        course: value === "所有课程" ? this.getAllCourse : [value],
-        semester: this.selectList[0]["value"],
-        classHour:
-          this.selectList[2]["value"] === "所有课时"
-            ? undefined
-            : this.selectList[2]["value"],
-        teacher: this.userName
-      });
-    },
-
-    async changeClassHour(value) {
-      await this.getTeaHW({
-        course:
-          this.selectList[1]["value"] === "所有课程"
-            ? this.getAllCourse
-            : [this.selectList[1]["value"]],
-        semester: this.selectList[0]["value"],
-        classHour: value === "所有课时" ? undefined : value,
-        teacher: this.userName
-      });
-    },
-
-    async changePage(page) {
+    // 获取表格信息
+    async getTableData(page) {
+      this.loading = true;
       await this.getTeaHW({
         page,
         course:
@@ -230,6 +198,60 @@ export default {
             : this.selectList[2]["value"],
         teacher: this.userName
       });
+      this.loading = false;
+    },
+
+    // 学年选择筛选
+    async changeYear(value) {
+      this.loading = true;
+      await this.setCourseSelList(value);
+      await this.getTeaHW({
+        course:
+          this.selectList[1]["value"] === "所有课程"
+            ? this.getAllCourse
+            : [this.selectList[1]["value"]],
+        semester: value,
+        classHour:
+          this.selectList[2]["value"] === "所有课时"
+            ? undefined
+            : this.selectList[2]["value"],
+        teacher: this.userName
+      });
+      this.loading = false;
+    },
+
+    // 课程选择筛选
+    async changeCourse(value) {
+      this.loading = true;
+      let idList = this.courseList.map(item => {
+        if (item["name"] === value) return item["id"];
+      });
+      await this.setClassHourSelList(idList[0]);
+      await this.getTeaHW({
+        course: value === "所有课程" ? this.getAllCourse : [value],
+        semester: this.selectList[0]["value"],
+        classHour:
+          this.selectList[2]["value"] === "所有课时"
+            ? undefined
+            : this.selectList[2]["value"],
+        teacher: this.userName
+      });
+      this.loading = false;
+    },
+
+    // 课时选择筛选
+    async changeClassHour(value) {
+      this.loading = true;
+      await this.getTeaHW({
+        course:
+          this.selectList[1]["value"] === "所有课程"
+            ? this.getAllCourse
+            : [this.selectList[1]["value"]],
+        semester: this.selectList[0]["value"],
+        classHour: value === "所有课时" ? undefined : value,
+        teacher: this.userName
+      });
+      this.loading = false;
     },
 
     // 修改模式获取题目数据

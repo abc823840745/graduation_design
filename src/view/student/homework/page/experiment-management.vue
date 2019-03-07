@@ -47,6 +47,7 @@
 
       <Table
         border
+        :loading="loading"
         class="table-con mar-top"
         :columns="columns"
         :data="tableInfo['tableData']"
@@ -56,7 +57,7 @@
         class="mar-top page"
         :total="tableInfo['count']"
         :page-size="10"
-        @on-change="changePage"
+        @on-change="getTableData"
       />
     </div>
   </div>
@@ -102,6 +103,7 @@ export default {
 
     ...mapState({
       userName: state => state.user.userName,
+      stuId: state => state.user.stu_nmuber,
       tableInfo: state => state.homework.experMangerInfo
     })
   },
@@ -109,11 +111,12 @@ export default {
   data() {
     return {
       curDirectory: 1, // 当前的目录
+      loading: true,
       showModal: false,
       selectList: [
         {
           tip: "学期选择",
-          value: this.getCurSchoolYear(),
+          value: this.getCurSchoolYear,
           list: this.getSchoolYear(),
           onChange: this.changeYear
         },
@@ -176,7 +179,7 @@ export default {
   },
 
   async mounted() {
-    await this.getTableData();
+    await this.getTableData(this.tableInfo["page"]);
   },
 
   methods: {
@@ -197,6 +200,31 @@ export default {
       this.$Notice.warning({
         title: "文件格式应该为doc"
       });
+    },
+
+    async getTableData(page) {
+      this.loading = true;
+      await this.getStuClassHW({
+        page,
+        obj:
+          this.selectList[1]["value"] === "所有课程"
+            ? this.getAllCourse
+            : [
+                {
+                  course: this.selectList[1]["value"],
+                  stuclass: "ATM",
+                  teacher: "程亮"
+                }
+              ],
+        semester: this.selectList[0]["value"],
+        classHour:
+          this.selectList[2]["value"] === "所有课时"
+            ? undefined
+            : this.selectList[2]["value"],
+        student: this.userName,
+        stuId: this.stuId
+      });
+      this.loading = false;
     },
 
     async handleSuccess(result) {
@@ -231,20 +259,11 @@ export default {
           });
         }
       }
-      await this.getTableData();
-    },
-
-    async getTableData() {
-      await this.getStuClassHW({
-        // TODO: 暂时写死，课程信息由课程接口返回
-        obj: this.getAllCourse,
-        semester: this.getCurSchoolYear(),
-        student: this.userName
-      });
+      await this.getTableData(this.tableInfo["page"]);
     },
 
     async changeYear(value) {
-      // TODO: 每次将value存入vuex
+      this.loading = true;
       await this.getStuClassHW({
         // TODO: 暂时写死，课程信息由课程接口返回
         obj:
@@ -262,11 +281,14 @@ export default {
           this.selectList[2]["value"] === "所有课时"
             ? undefined
             : this.selectList[2]["value"],
-        student: this.userName
+        student: this.userName,
+        stuId: this.stuId
       });
+      this.loading = false;
     },
 
     async changeCourse(value) {
+      this.loading = true;
       await this.getStuClassHW({
         obj:
           value === "所有课程"
@@ -283,11 +305,14 @@ export default {
           this.selectList[2]["value"] === "所有课时"
             ? undefined
             : this.selectList[2]["value"],
-        student: this.userName
+        student: this.userName,
+        stuId: this.stuId
       });
+      this.loading = false;
     },
 
     async changeClassHour(value) {
+      this.loading = true;
       await this.getStuClassHW({
         obj:
           this.selectList[1]["value"] === "所有课程"
@@ -301,34 +326,10 @@ export default {
               ],
         semester: this.selectList[0]["value"],
         classHour: value === "所有课时" ? undefined : value,
-        student: this.userName
+        student: this.userName,
+        stuId: this.stuId
       });
-    },
-
-    async finishChange(value) {
-      // TODO:完成状态
-    },
-
-    async changePage(page) {
-      await this.getStuClassHW({
-        page,
-        obj:
-          this.selectList[1]["value"] === "所有课程"
-            ? this.getAllCourse
-            : [
-                {
-                  course: this.selectList[1]["value"],
-                  stuclass: "ATM",
-                  teacher: "程亮"
-                }
-              ],
-        semester: this.selectList[0]["value"],
-        classHour:
-          this.selectList[2]["value"] === "所有课时"
-            ? undefined
-            : this.selectList[2]["value"],
-        student: this.userName
-      });
+      this.loading = false;
     }
   }
 };
