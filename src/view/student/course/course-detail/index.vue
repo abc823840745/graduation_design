@@ -51,6 +51,9 @@
     margin-top: 20px;
     text-align: center;
   }
+  .course-add-question-btn {
+    margin-bottom: 10px;
+  }
 </style>
 <template>
   <div class="course_detail">
@@ -76,6 +79,9 @@
           </div>
         </TabPane>
         <TabPane label="课程答疑" name="question">
+          <div class="course-add-question-btn">
+            <Button type="primary" @click="show_my_askquestion = true">我要提问</Button>
+          </div>
           <Table
             size="large"
             :loading="questions_table_loading"
@@ -88,10 +94,31 @@
           </div>
         </TabPane>
     </Tabs>
+    <!-- 提问modal -->
+    <Modal
+        :fullscreen="true"
+        v-model="show_my_askquestion"
+        title="我要提问"
+        :mask-closable="false"
+        @on-ok="askQusetion"
+        @on-cancel="cancelAskQuestion">
+        <Form label-position="top">
+          <FormItem label="提问标题">
+            <Input v-model="ask_question_data.title" placeholder="请输入提问的标题"></Input>
+          </FormItem>
+          <FormItem label="问题描述">
+            <!-- <Input type="textarea" v-model="ask_question_data.content"></Input> -->
+            <mavon-editor style="height: 400px" v-model="ask_question_data.content"></mavon-editor>
+          </FormItem>
+        </Form>
+    </Modal>
+    <!-- 提问modal end -->
   </div>
 </template>
 <script>
 import myPdf from '@/view/pdf/pdf'
+import { mavonEditor } from 'mavon-editor'
+import 'mavon-editor/dist/css/index.css'
 import { getCourseDetail, getCourseClassList, getCourseQusetionsList } from '@/api/course'
 import { getMyDate } from '@/libs/tools'
 export default {
@@ -284,10 +311,17 @@ export default {
         }
       ],
       questions_data: [],
+      // 提问
+      show_my_askquestion: false,
+      ask_question_data: {
+        title: '',
+        content: ''
+      }
     }
   },
   components: {
-    myPdf
+    myPdf,
+    mavonEditor
   },
   methods: {
     goClass (id) {
@@ -358,6 +392,14 @@ export default {
       this.getCourseQusetionsList(()=>{
         this.questions_table_loading = false
       })
+    },
+    // 提问
+    askQusetion() {
+      console.log(this.ask_question_data.content)
+    },
+    // 取消提问
+    cancelAskQuestion() {
+
     },
   },
   created () {

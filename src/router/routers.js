@@ -230,7 +230,7 @@ export default [
     path: '/student/personal',
     name: 'student-personal',
     meta: {
-      icon: 'logo-buffer',
+      icon: 'md-contact',
       title: '个人中心',
       access: ['student'],
     },
@@ -240,8 +240,8 @@ export default [
         path: 'student-my-info',
         name: 'student-my-info',
         meta: {
-          icon: 'logo-markdown',
-          title: '我的课程',
+          icon: 'md-list',
+          title: '我的资料',
           access: ['student'],
         },
         component: () => import('@/view/student/personal/my-info.vue'),
@@ -250,8 +250,8 @@ export default [
         path: 'student-my-message',
         name: 'student-my-message',
         meta: {
-          icon: 'ios-create',
-          title: '其他',
+          icon: 'ios-mail-open',
+          title: '我的私信',
           access: ['student'],
         },
         component: () => import('@/view/student/personal/my-message.vue'),
@@ -262,7 +262,7 @@ export default [
     path: '/student/course',
     name: 'student-course',
     meta: {
-      icon: 'logo-buffer',
+      icon: 'ios-book',
       title: '课程管理',
       access: ['student'],
     },
@@ -272,7 +272,7 @@ export default [
         path: 'my-course',
         name: 'student-my-course',
         meta: {
-          icon: 'logo-markdown',
+          icon: 'md-bookmarks',
           title: '我的课程',
           access: ['student'],
         },
@@ -301,14 +301,25 @@ export default [
         component: () => import('@/view/student/course/course-detail/class-detail.vue'),
       },
       {
-        path: 'other',
-        name: 'student-else',
+        path: 'answering/answer-index',
+        name: 'student-answer-index',
         meta: {
-          icon: 'ios-create',
-          title: '其他',
+          icon: 'ios-text',
+          title: '课程答疑',
           access: ['student'],
         },
-        component: () => import('@/view/student/course/else.vue'),
+        component: () => import('@/view/answering/answer-index.vue'),
+      },
+      {
+        path: 'answering/answer-detail/:id',
+        name: 'student-answer-detail',
+        meta: {
+          title: '答疑详情',
+          access: ['student'],
+          hideInMenu: true,
+          notCache: true,
+        },
+        component: () => import('@/view/answering/answer-detail.vue'),
       },
     ],
   },
@@ -316,7 +327,7 @@ export default [
     path: '/student/homework',
     name: 'student-homework',
     meta: {
-      icon: 'logo-buffer',
+      icon: 'ios-paper',
       title: '作业设计',
       access: ['student'],
     },
@@ -435,28 +446,6 @@ export default [
           access: ['student'],
         },
         component: () => import('@/view/student/graduation/practice-week.vue'),
-      },
-    ],
-  },
-  {
-    path: '/student/answering',
-    name: 'student-answering',
-    meta: {
-      icon: 'logo-buffer',
-      title: '答疑管理',
-      access: ['student'],
-    },
-    component: Main,
-    children: [
-      {
-        path: '',
-        name: 'student-answer-questions',
-        meta: {
-          icon: 'md-contacts',
-          title: '解答问题',
-          access: ['student'],
-        },
-        component: () => import('@/view/student/answering/answer-questions.vue'),
       },
     ],
   },

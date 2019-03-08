@@ -8,11 +8,15 @@ export default {
   'student-personal': '个人中心',
   'student-my-info': '我的资料',
   'student-my-message': '我的私信',
-  //学生课程管理
+
+  // 学生课程管理
+
   'student-course': '课程管理',
   'student-my-course': '我的课程',
   'student-my-course-detail': '课程详情',
   'student-my-course-class-detail': '课时详情',
+  'student-answer-index': '课程答疑',
+  'student-answer-detail': '答疑详情',
   'student-other': '其他',
   'student-else': '其他',
 

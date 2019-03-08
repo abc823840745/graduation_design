@@ -92,7 +92,6 @@ export function getStuCourseList (obj) {
       semester: obj['semester'],
       limit: obj['limit'] || 10,
       offset: obj['offset'] || 1,
-      method: obj['method'] || null,
       number: obj['number'] || null,
       password: obj['password'] || null
     },
