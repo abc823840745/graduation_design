@@ -68,7 +68,7 @@
         <span class="title-code">{{course_name}}</span>
       </h2>
       <p class="course-sub-title">
-        <Button size="small" shape="circle" @click.native="returnPrevPage" type="primary">返回上一级</Button>
+        <Button size="small" shape="circle" @click="returnCourse" type="primary">返回课程</Button>
       </p>
     </div>
     <div class="course-detail-navbar">
@@ -94,6 +94,7 @@
           <div class="course-detail-teacher-talk">
             <Card :bordered="false" :dis-hover="true">
               <p slot="title">本课简介</p>
+              <Button shape="circle" slot="extra" type="primary" size="small" @click.prevent="openClassIntro" icon="ios-create-outline"></Button>
               <p>{{ course_desc_text || '教师尚未修改本课介绍' }}</p>
             </Card>
           </div>
@@ -110,7 +111,7 @@
             :data="download_file_data"
           ></Table>
           <div class="class-file-page-nav">
-            <Page :current="current" :total="total" :page-size="page_size" @on-change="changePage" />
+            <Page :current="course_class_offset" :total="course_class_total" :page-size="course_class_limit" @on-change="changeCourseClassPage" />
           </div>
         </TabPane>
         <TabPane label="作业区" name="homework"></TabPane>
@@ -121,6 +122,8 @@
         title="上传附件"
         :loading="upload_class_file_loading"
         @on-ok="saveUpload"
+        @on-cancel="cancelUpload"
+        :mask-closable="false"
         okText="保存"
         >
         <Upload
@@ -133,13 +136,17 @@
             <p>可选多个文件，也可以拖拽文件到此上传</p>
         </div>
       </Upload>
+      <div class="show-class-upload-list">
+        <p v-for="(item, index) in class_upload_file_list" :key="index">{{item.name}}</p>
+      </div>
+      <Spin size="large" fix v-if="loadingFileStatus"></Spin>
     </Modal>
   </div>
 </template>
 <script>
 import { getMyDate } from '@/libs/tools'
 import myPdf from '@/view/pdf/pdf'
-import { getCourseClassDetail, uploadCourseClassIntro, getCourseClassFileList, uploadCourseClassFile } from '@/api/course'
+import { getCourseClassDetail, uploadCourseClassIntro, getCourseClassFileList, uploadCourseClassFile, deleteCourseClassFile, editCourseClassIntroText } from '@/api/course'
 export default {
   name: "my-course-class",
   data() {
@@ -156,13 +163,15 @@ export default {
       loadingStatus: false,
       // 上传课时附件
       class_upload_file: null,
+      class_upload_file_list: [],
+      loadingFileStatus: false,
       // 课时详情
       course_name: '',
       course_code: '',
       course_time_name: '',
       course_desc_url: '',
       course_desc_text: '',
-      // 课时页码
+      // 课时附件页码
       course_class_limit: 10,
       course_class_offset: 1,
       course_class_total: 0,
@@ -171,7 +180,7 @@ export default {
       download_file_columns: [
         {
           title: "文件名",
-          key: "filename",
+          key: "file_name",
           render: (h, params) => {
             return h("div", [
               h("Icon", {
@@ -179,16 +188,16 @@ export default {
                   type: "person"
                 }
               }),
-              h("strong", params.row.filename)
+              h("strong", params.row.file_name)
             ]);
           }
         },
         {
           title: "上传时间",
-          key: "date",
+          key: "created_at",
           width: 160,
           render: (h, params) => {
-            return h("span", getMyDate(params.row.date, "yyyy-MM-dd hh:mm"));
+            return h("span", getMyDate(new Date(params.row.created_at).getTime(), "yyyy-MM-dd hh:mm"));
           }
         },
         {
@@ -203,15 +212,12 @@ export default {
                 {
                   props: {
                     type: "primary",
-                    shape: "circle"
+                    shape: "circle",
+                    to: params.row.file_url,
+                    target: "_blank"
                   },
                   style: {
                     marginRight: "5px"
-                  },
-                  on: {
-                    click: () => {
-                      this.show(params.index);
-                    }
                   }
                 },
                 "下载"
@@ -231,10 +237,9 @@ export default {
                           loading: true,
                           onOk: () => {
                             console.log(params.index);
-                            setTimeout(() => {
-                                this.$Modal.remove();
-                                this.$Message.success('删除成功');
-                            }, 2000);
+                            this.deleteClassFile(params.row.id, () => {
+                                this.$Modal.remove()
+                            })
                           }
                       });
                     }
@@ -246,23 +251,7 @@ export default {
           }
         }
       ],
-      download_file_data: [
-        {
-          id: 1,
-          filename: "集成开发环境.zip",
-          date: "1546764772000"
-        },
-        {
-          id: 2,
-          filename: "实验报告.docx",
-          date: "1546764772000"
-        },
-        {
-          id: 3,
-          filename: "参考资料.pdf",
-          date: "1546764772000"
-        }
-      ]
+      download_file_data: []
     };
   },
   components: {
@@ -316,70 +305,43 @@ export default {
     // 上传课时附件
     handleUploadClassFileBegin(file) {
       console.log(file)
-      if(this.class_upload_file){
-        this.class_upload_file.append('file', file);
-        return false
-      }else{
-        this.class_upload_file = new FormData();
-        this.class_upload_file.append('file', file);
-      }
-      
-
-      // this.class_upload_file = file;
-      // this.class_upload_file.push(file);
-      // console.log(this.class_upload_file)
-      
-      // if(file.type != 'application/pdf') {
-      //   this.$Message.error('请选择PDF文件上传')
-      //   return false;
-      // }
-      // this.loadingStatus = true
-      // this.file = file;
-      // // 创建form对象
-      // let formData = new FormData();
-      // // 通过append向form对象添加数据
-      // formData.append('file', this.file);
-      // formData.append('id', this.$route.params.class_id);
-      // uploadCourseClassIntro(formData).then((res)=> {
-      //   console.log(res);
-      //   this.file = null;
-      //   this.loadingStatus = false;
-      //   this.$Message.success('上传成功')
-      //   this.getCourseClassDetail()
-      // }).catch((err)=>{
-      //   console.log(err)
-      //   this.file = null;
-      //   this.loadingStatus = false;
-      //   this.$Message.error('上传失败')
-      // })
+      this.class_upload_file_list.push(file)
       return false;
     },
     // 附件上传触发
     handleUploadClassFile(){
-      // 创建form对象
-      // let formData = new FormData();
-      // 通过append向form对象添加数据
-      // formData.append('file', this.class_upload_file);
+      this.loadingFileStatus = true
+      this.class_upload_file = new FormData();
+      for(let k in this.class_upload_file_list){
+        this.class_upload_file.append('file', this.class_upload_file_list[k])
+      }
       this.class_upload_file.append('course_time_id', this.$route.params.class_id);
       uploadCourseClassFile(this.class_upload_file).then((res)=> {
         console.log(res);
         this.class_upload_file = null;
         this.$Message.success('上传成功')
+        this.loadingFileStatus = false;
+        this.showUploadPanel = false;
         this.getClassFileList(() => {
           this.download_file_table_loading = false;
         })
       }).catch((err)=>{
         console.log(err)
         this.class_upload_file = null;
+        this.loadingFileStatus = false;
+        this.showUploadPanel = false;
         this.$Message.error('上传失败')
       })
     },
     // 获取课时附件列表
     getClassFileList(cb = ()=>{}, to_id){
       getCourseClassFileList({
-        course_time_id: to_id || this.$route.params.class_id
+        course_time_id: to_id || this.$route.params.class_id,
+        offset: this.course_class_offset,
+        limit: this.course_class_limit
       }).then((res)=> {
         console.log(res);
+        this.course_class_total = res.data.count
         this.download_file_data = res.data.courseTimeFileList
         cb();
       }).catch((err)=>{
@@ -387,23 +349,102 @@ export default {
         this.$Message.error('获取附件列表失败')
       })
     },
-    returnPrevPage(){
-      this.$router.go(-1)
+    // 返回课程
+    returnCourse(){
+      this.$router.push(`/teacher/course/my-course-detail/${this.$route.params.id}`)
     },
+    // 打开上传附件modal
     openUploadPanel(){
       this.showUploadPanel = true;
     },
+    // 保存并开始上传附件
     saveUpload(){
       this.handleUploadClassFile()
     },
+    // 取消上传附件
+    cancelUpload() {
+      this.class_upload_file_list = []
+      this.class_upload_file = null
+    },
+    // 删除上传附件
+    deleteClassFile(file_id, cb = () => {}) {
+      deleteCourseClassFile({
+        id: file_id
+      }).then((res)=> {
+        console.log(res);
+        this.$Message.success('删除成功')
+        this.getClassFileList()
+        cb()
+      }).catch((err)=>{
+        console.log(err)
+        this.$Message.error('删除失败')
+        cb()
+      })
+    },
+    // 更改课时列表页码
+    changeCourseClassPage(page) {
+      this.course_class_offset = page
+      this.getClassFileList()
+    },
+    // 修改课时介绍
+    editClassIntro() {
+      editCourseClassIntroText({
+        id: this.$route.params.class_id,
+        content: this.edit_class_intro
+      }).then((res)=> {
+        console.log(res);
+        this.$Message.success('修改成功')
+        this.getCourseClassDetail()
+      }).catch((err)=>{
+        console.log(err)
+        this.$Message.error('修改失败')
+      })
+    },
+    // 打开修改课时介绍modal
+    openClassIntro() {
+      this.$Modal.confirm({
+        render: (h) => {
+          return h('div', [
+            h('p', {
+              style: {
+                textAlign: 'center',
+                fontSize: '16px',
+                fontWeight: '700',
+                marginBottom: '10px'
+              }
+            }, '请输入本课介绍'),
+            h('Input', {
+              props: {
+                type: "textarea",
+                rows: 4,
+                value: this.edit_class_intro,
+                autofocus: true,
+                placeholder: '请输入本课时介绍',
+                size: 'large'
+              },
+              on: {
+                input: (val) => {
+                    this.edit_class_intro = val;
+                }
+              }
+            })
+          ])
+        },
+        onOk: ()=>{
+          this.editClassIntro()
+          this.edit_class_intro = ''
+        },
+        onCancel: ()=>{
+          this.edit_class_intro = ''
+        }
+      })
+    },
+    // 本课时作业页面跳转
     changeTab(name){
       if(name == 'homework'){
         this.$router.push('/teacher/homework/my-homework')
       }
     },
-    changePage(page){
-      console.log('页码改变'+page)
-    }
   },
   created() {
     this.getCourseClassDetail()

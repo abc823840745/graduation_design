@@ -220,6 +220,18 @@ export function uploadCourseClassIntro (obj) {
   })
 }
 
+// 修改课时介绍文字
+export function editCourseClassIntroText (obj) {
+  return axios.request({
+    data: {
+      id: obj['id'],
+      content: obj['content']
+    },
+    url: '/change/course/time/desc/text',
+    method: 'post'
+  })
+}
+
 // 删除答疑接口
 export function deleteCourseQuestion (obj) {
   return axios.request({
