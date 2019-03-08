@@ -43,6 +43,13 @@
     }
   }
 }
+.none-course {
+  font-size: 16px;
+  font-weight: 700;
+  color: #888;
+  text-align: center;
+  padding-top: 40px;
+}
 .page_nav {
   text-align: center;
   margin-top: 20px;
@@ -72,8 +79,11 @@
         </ButtonGroup>
       </div>
     </div>
-    <div class="page_nav">
-      <Page :total="total" :current="current" :page-size="page_size" />
+    <div class="none-course" v-if="total == 0">
+      您选择的学期找不到课程信息哦，尝试一下刷新课表吧~
+    </div>
+    <div class="page_nav" v-else>
+      <Page :total="total" :current="current" :page-size="page_size" @on-change="changePage"/>
     </div>
     <!-- 刷新课表modal -->
     <Modal v-model="show_refresh_course" width="360">
@@ -134,6 +144,10 @@ export default {
     },
     changeSemester (e) {
       console.log(e)
+      this.getCourseList()
+    },
+    changePage(page){
+      console.log(page)
       this.getCourseList()
     },
     goCourseDetail (item) {

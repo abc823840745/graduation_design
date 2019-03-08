@@ -58,7 +58,10 @@
         </ButtonGroup>
       </div>
     </div>
-    <div class="course-page-nav">
+    <div class="none-course" v-if="total == 0">
+      本学期您还未新建课程哦~
+    </div>
+    <div class="course-page-nav" v-else>
       <Page :current="current" :total="total" :page-size="page_size" @on-change="changePage" />
     </div>
     <Modal v-model="showCreateCourse" width="360">
