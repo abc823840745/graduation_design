@@ -3,7 +3,7 @@
     <Modal
       fullscreen
       v-model="isShowModal"
-      title="新建题目"
+      :title="type === 'create' ? '新建题目信息' : '修改题目信息'"
       @on-ok="$emit('modalOk')"
     >
       <Alert show-icon v-if="inputInfo.length === 0">
@@ -18,7 +18,7 @@
         <SubjectType
           class="mb-10 subject-type"
           type="create"
-          :inputInfo="item"
+          :index="index"
           @delFillSubject="delFillSubject($event, index)"
         />
 
@@ -31,7 +31,7 @@
         >
       </div>
 
-      <div class="btn-ground">
+      <div class="btn-ground" v-if="type === 'create'">
         <Dropdown @on-click="createSubject">
           <Button type="primary">
             新建题目
@@ -52,11 +52,13 @@
 <script>
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import SubjectType from "@/view/global/component/show-subject-different-types";
+import { mapMutations, mapState } from "vuex";
 
 export default {
   name: "create-subject",
 
   props: {
+    type: String, // 新建状态和编辑状态
     homeworkInfo: Object,
     showModal: Boolean
   },
@@ -76,9 +78,14 @@ export default {
     }
   },
 
+  computed: {
+    ...mapState({
+      inputInfo: state => state.homework.inputInfo
+    })
+  },
+
   data() {
     return {
-      inputInfo: [],
       isShowModal: false,
       subjectClassify: "单选题",
       subjectClassifyList: [
@@ -103,6 +110,8 @@ export default {
   },
 
   methods: {
+    ...mapMutations(["setInputInfo"]),
+
     submit() {
       if (
         !this.firstSubject ||
@@ -134,16 +143,33 @@ export default {
               {
                 subject: "",
                 answer: "",
+                referenceAnswer: "",
                 showCreSubjectBtn: true
               }
             ];
+      let optionList = [
+        {
+          option: ""
+        },
+        {
+          option: ""
+        },
+        {
+          option: ""
+        },
+        {
+          option: ""
+        }
+      ];
       inputInfo.push({
         subject,
         subjectType: name,
         title: `${inputInfo.length + 1}、${name}`,
-        choice: name === "多选题" ? [] : ""
+        choice: name === "多选题" ? [] : "",
+        optionList,
+        weighting: 10
       });
-      this.inputInfo = inputInfo;
+      this.setInputInfo(inputInfo);
     },
 
     // 删除题目
@@ -153,7 +179,7 @@ export default {
       inputInfo.forEach((item, index) => {
         item["title"] = `${index + 1}、${item["subjectType"]}`;
       });
-      this.inputInfo = inputInfo;
+      this.setInputInfo(inputInfo);
     },
 
     // 删除填空题小题
@@ -175,7 +201,7 @@ export default {
           item["title"] = `${index + 1}、${item["subjectType"]}`;
         });
       }
-      this.inputInfo = inputInfo;
+      this.setInputInfo(inputInfo);
     }
   }
 };

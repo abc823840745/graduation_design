@@ -2,21 +2,22 @@
   <div class="containter">
     <MultipleChoice
       semesterTip="学期选择"
-      :defaultValue.sync="semester"
-      :semesterList="semesterList"
+      :defaultValue.sync="semesterList['value']"
+      :semesterList="semesterList['list']"
+      @onChange="semesterList['onChange']"
       class="flex-start"
     />
 
-    <div class="course-list-wrap">
+    <div class="course-list-wrap" v-show="courseList.length > 0">
       <div class="course-item" v-for="(item, index) in courseList" :key="index">
         <h3>{{ item.name }}</h3>
         <p class="course-code">课程代码：{{ item.code }}</p>
-        <p class="course-code">教学班：{{ item.classCode }}</p>
+        <p class="course-code">教学班：{{ item.classes }}</p>
         <ButtonGroup class="course-btn">
           <Button
             shape="circle"
             type="info"
-            @click.native="goNext()"
+            @click.native="goNext(index)"
             class="select-course-btn"
           >
             选择课程
@@ -25,13 +26,19 @@
       </div>
     </div>
 
-    <Page :total="30" class="mar-top page" />
+    <div v-show="courseList.length === 0" class="none-data">
+      <p>暂无数据</p>
+    </div>
+
+    <Page class="mar-top page" :total="totalCount" @on-change="changePage" />
   </div>
 </template>
 
 <script>
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import myMixin from "@/view/global/mixin";
+import { getTeaCourseList, getStuCourseList } from "@/api/course";
+import { mapState } from "vuex";
 
 export default {
   mixins: [myMixin],
@@ -40,85 +47,56 @@ export default {
     MultipleChoice
   },
 
+  computed: {
+    ...mapState({
+      role: state => state.user.role,
+      courseList: state => state.homework.courseList
+    })
+  },
+
   data() {
     return {
-      semester: "2017-2018第二学期",
-      semesterList: [
-        {
-          value: "2016-2017第一学期",
-          label: "2016-2017第一学期"
-        },
-        {
-          value: "2016-2017第二学期",
-          label: "2016-2017第二学期"
-        },
-        {
-          value: "2017-2018第一学期",
-          label: "2017-2018第一学期"
-        },
-        {
-          value: "2017-2018第二学期",
-          label: "2017-2018第二学期"
-        }
-      ],
-      courseList: [
-        {
-          name: "新媒体实训",
-          code: "GT2004",
-          classCode: "ACM01"
-        },
-        {
-          name: "JavaScript编程",
-          code: "GT2004",
-          classCode: "ACM01"
-        },
-        {
-          name: "vue应用程序开发",
-          code: "GT2004",
-          classCode: "ACM01"
-        },
-        {
-          name: "新媒体概论",
-          code: "GT2004",
-          classCode: "ACM01"
-        },
-        {
-          name: "PhotoShop",
-          code: "GT2004",
-          classCode: "ACM01"
-        },
-        {
-          name: "Java",
-          code: "GT2004",
-          classCode: "ACM01"
-        },
-        {
-          name: "Flash",
-          code: "GT2004",
-          classCode: "ACM01"
-        },
-        {
-          name: "html5",
-          code: "GT2004",
-          classCode: "ACM01"
-        },
-        {
-          name: "React",
-          code: "GT2004",
-          classCode: "ACM01"
-        },
-        {
-          name: "Angular",
-          code: "GT2004",
-          classCode: "ACM01"
-        }
-      ]
+      totalCount: 0,
+      semesterList: {
+        value: this.getCurSchoolYear(),
+        list: this.getSchoolYear(),
+        onChange: this.changeYear
+      }
     };
   },
 
+  async mounted() {
+    await this.getCourseList(this.semesterList["value"]);
+  },
+
   methods: {
-    goNext() {
-      this.$emit("goNext");
+    goNext(index) {
+      let obj = this.courseList[index];
+      obj["semester"] = this.semesterList["value"];
+      this.$emit("goNext", obj);
+    },
+
+    // 获取课程列表
+    async getCourseList(curSemester, page) {
+      let { year, semester } = this.$tools.dateFormat(curSemester);
+      let res = await getTeaCourseList({
+        year,
+        semester,
+        offset: page,
+        limit: 10
+      });
+      this.totalCount = res.data.count;
+      this.setCourseList(res.data.courseList);
+    },
+
+    // 切换页数
+    async changePage(page) {
+      await getCourseList(this.semesterList["value"], page);
+    },
+
+    // 学年选择筛选
+    async changeYear(value) {
+      await this.getCourseList(value);
     }
   }
 };
@@ -137,9 +115,19 @@ export default {
     padding-right: 0.5%;
   }
 
+  .none-data {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 400px;
+  }
+
   .course-list-wrap {
     display: flex;
     flex-wrap: wrap;
+    width: 100%;
+    height: auto;
     margin: 0;
 
     .course-item {

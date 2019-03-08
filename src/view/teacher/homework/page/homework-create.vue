@@ -4,8 +4,9 @@
 
     <MyHomework
       :modalOpen.sync="modalOpen"
+      :submitInfo="submitInfo"
+      :courseId="courseId"
       type="create"
-      :sumbitInfo="sumbitInfo"
     />
   </div>
 </template>
@@ -26,17 +27,26 @@ export default {
   data() {
     return {
       modalOpen: false,
-      sumbitInfo: {
-        semester: "2018-2019上学期",
-        course: "新媒体综合实训",
-        course_id: 1,
+      courseId: 0,
+      submitInfo: {
+        semester: "",
+        course: "",
+        course_id: 0,
         teacher: this.$store.state.user.userName
       }
     };
   },
 
   methods: {
-    goNext() {
+    goNext(info) {
+      let { id, name, semester } = info;
+      let submitInfo = this.submitInfo;
+      submitInfo["semester"] = semester;
+      submitInfo["course"] = name;
+      submitInfo["course_id"] = id;
+      this.submitInfo = submitInfo;
+      this.courseId = id;
+      console.log(this.submitInfo, this.courseId);
       this.modalOpen = true;
     }
   }

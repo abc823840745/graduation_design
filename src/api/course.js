@@ -182,7 +182,7 @@ export function deleteTeaCourseClass (obj) {
 // 上传课程介绍
 export function uploadCourseIntro (obj) {
   return axios.request({
-    headers: {'Content-Type': 'multipart/form-data'},
+    headers: { 'Content-Type': 'multipart/form-data' },
     data: obj,
     url: '/upload/course/desc',
     method: 'post'

@@ -1,118 +1,96 @@
 <template>
-  <div class="containter">
-    <div class="header-bar">
-      <div class="homework-info">
-        <span>课程：nodejs实验</span>
-        <span>实验：堂上构建简单服务器</span>
-        <span>时间：20分钟</span>
+  <Modal
+    fullscreen
+    title="完成在线作业"
+    v-model="showModal"
+    @on-ok="handleOk"
+    @on-cancel="$emit('handleCancel')"
+  >
+    <div class="containter">
+      <div class="header-bar">
+        <Alert
+          ><span class="alert-text">课程：nodejs实验</span>
+          <span class="alert-text">实验：堂上构建简单服务器</span>
+          <span class="alert-text">时间：20分钟</span></Alert
+        >
+
+        <div class="count-down-con">
+          <P class="count-down-text">倒计时：</P>
+          <P class="count-down-text primary-color">
+            <CountDown
+              ref="countDown"
+              :isStartTimer="isStartTimer"
+              :initialTime="1200"
+              @callBack="endTimeDoing"
+            >
+              <h2 slot-scope="{ remainingTime }">
+                {{ $tools.formatSeconds(remainingTime) }}
+              </h2>
+            </CountDown>
+          </P>
+        </div>
       </div>
 
-      <div class="count-down-con">
-        <P class="count-down-text">倒计时：</P>
-        <P class="count-down-text primary-color">
-          <CountDown
-            :isStartTimer="isStartTimer"
-            :initialTime="1200"
-            @callBack="endTimeDoing"
-          >
-            <h2 slot-scope="{ remainingTime }">
-              {{ $tools.formatSeconds(remainingTime) }}
-            </h2>
-          </CountDown>
-        </P>
-      </div>
+      <SubjectType
+        class="mb-30"
+        v-for="(item, index) in inputInfo"
+        type="testing"
+        :index="index"
+        :key="index"
+      />
     </div>
-
-    <Divider />
-
-    <SubjectType
-      class="mb-30"
-      v-for="(item, index) in inputInfo"
-      type="testing"
-      :key="index"
-      :inputInfo="item"
-    />
-  </div>
+  </Modal>
 </template>
 
 <script>
 import SubjectType from "@/view/global/component/show-subject-different-types";
 import CountDown from "@stuHomework/smart/count-down";
+import { mapState } from "vuex";
 
 export default {
   name: "online-homework",
+
+  props: {
+    modalOpen: Boolean
+  },
 
   components: {
     SubjectType,
     CountDown
   },
 
+  watch: {
+    modalOpen(newVal, oldVal) {
+      this.showModal = newVal;
+    },
+
+    showModal(newVal, oldVal) {
+      this.$emit("update:modalOpen", newVal);
+    }
+  },
+
+  computed: {
+    ...mapState({
+      inputInfo: state => state.homework.inputInfo
+    })
+  },
+
   data() {
     return {
-      inputInfo: [
-        {
-          subjectType: "单选题",
-          subject: "钢铁是怎么炼成的?",
-          title: "1、单选题",
-          choice: "",
-          referenceAnswer: "",
-          weighting: 5
-        },
-        {
-          subjectType: "多选题",
-          subject: "钢铁是怎么炼成的?",
-          title: "2、多选题",
-          choice: [],
-          referenceAnswer: "",
-          weighting: 5
-        },
-        {
-          subjectType: "填空题",
-          subject: [
-            {
-              subject:
-                "《红楼梦》又名_________ ，是中国古典现实主义小说发展的顶峰。全书共置120回，前80回为曹雪芹所作，后40回一般认为是_________ 续写。",
-              answer: "",
-              showCreSubjectBtn: false
-            },
-            {
-              subject:
-                "《红楼梦》又名_________ ，是中国古典现实主义小说发展的顶峰。全书共置120回，前80回为曹雪芹所作，后40回一般认为是_________ 续写。",
-              answer: "",
-              showCreSubjectBtn: false
-            }
-          ],
-          title: "3、填空题",
-          choice: "",
-          referenceAnswer: "",
-          weighting: 20
-        },
-        {
-          subjectType: "问答题",
-          subject: "钢铁是怎么炼成的?",
-          title: "4、主观题",
-          choice: "",
-          referenceAnswer: "",
-          weighting: 20
-        }
-      ],
-      isStartTimer: true // 是否开启定时器
+      isStartTimer: true, // 是否开启定时器
+      showModal: false
     };
   },
 
   methods: {
-    // 监听子组件传过来的radio值
-    onChangeRadio(data) {
-      this.inputInfo[0]["choice"] = data.radioChoice;
-    },
-
-    onChangeRadio2(data) {
-      this.inputInfo[1]["choice"] = data.radioChoice;
-    },
-
     endTimeDoing() {
       this.isStartTimer = false;
       console.log("结束后的回调");
+    },
+
+    handleOk() {
+      let remainingTime = this.$refs.countDown.remainingTime;
+      this.$emit("handleOk", remainingTime);
     }
   }
 };
@@ -128,13 +106,23 @@ export default {
 
   .header-bar {
     width: 100%;
+    margin-bottom: 10px;
 
     .homework-info {
-      span {
-        font-size: 15px;
+      display: flex;
+      margin-bottom: 20px;
+
+      h2 {
+        font-size: 16px;
         margin-right: 3%;
       }
     }
+  }
+
+  .alert-text {
+    font-size: 15px;
+    font-weight: bold;
+    margin-right: 20px;
   }
 
   p,

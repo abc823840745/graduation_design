@@ -1,6 +1,12 @@
 <template>
   <div class="containter">
-    <CreateSubject :showModal.sync="showModal2" @modalOk="submitSubject" />
+    <CreateSubject
+      ref="subject"
+      :type="type"
+      :homeworkInfo="homeworkInfo"
+      :showModal.sync="showModal2"
+      @modalOk="type === 'create' ? submitSubject() : updateSubject()"
+    />
 
     <Modal v-model="showModal" title="新建任务">
       <p slot="header" style="color:#666;text-align:center;font-size:18px;">
@@ -61,7 +67,13 @@
           ></DatePicker>
         </div>
 
-        <div class="df-aic">
+        <div
+          class="df-aic"
+          v-if="
+            (type === 'create' && homeworkInfo['classify'] === '课时作业') ||
+              (type === 'update' && info['classify'] === '课时作业')
+          "
+        >
           <h3>上传课件：</h3>
           <Upload
             class="upload-con"
@@ -98,13 +110,22 @@
           type="primary"
           v-if="type === 'update'"
           @click="
-            info['classify'] === '在线作业' ? addSubject() : updateHWInfo()
+            info['classify'] === '在线作业'
+              ? updateSubjectInfo()
+              : updateClassHWInfo()
           "
-          long
         >
           {{
             info["classify"] === "在线作业" ? "修改题目信息" : "修改作业信息"
           }}
+        </Button>
+
+        <Button
+          type="primary"
+          v-if="type === 'update' && info['classify'] === '在线作业'"
+          @click="updateOnlineHWInfo"
+        >
+          修改
         </Button>
       </div>
     </Modal>
@@ -116,7 +137,7 @@ import CreateSubject from "@teaHomework/smart/create-subject";
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import myMixin from "@/view/global/mixin";
 import config from "@/config";
-import { mapActions } from "vuex";
+import { mapActions, mapState, mapMutations } from "vuex";
 
 export default {
   name: "my-homework",
@@ -124,9 +145,15 @@ export default {
   mixins: [myMixin],
 
   props: {
-    type: String, // 新建状态和编辑状态
-    sumbitInfo: Object, // 新建任务需要的信息
-    info: Object, // 编辑任务显示的数据
+    type: String, // 新建状态和修改状态
+    courseId: Number, // 课程id
+    submitInfo: Object, // 新建任务需要的信息
+    info: {
+      type: Object, // 修改任务显示的数据
+      default() {
+        return {};
+      }
+    },
     modalOpen: Boolean
   },
 
@@ -140,20 +167,24 @@ export default {
       this.showModal = newVal;
     },
 
+    async courseId(newVal, oldVal) {
+      await this.setClassHourList(newVal);
+    },
+
     showModal(newVal, oldVal) {
       this.$emit("update:modalOpen", newVal);
+      if (newVal === false) {
+        this.setInputInfo([]);
+      }
     },
 
     info(newVal, oldVal) {
+      this.setDefClassHour(newVal);
       this.getCurTaskInfo(newVal);
     }
   },
 
   computed: {
-    classHourList() {
-      return this.getClassHourList().filter(item => item.value !== "所有课时");
-    },
-
     classifyList() {
       return this.getClassifyList().filter(item => item.value !== "所有类型");
     },
@@ -165,13 +196,19 @@ export default {
           : config.baseUrl.pro;
       const uploadUrl = baseUrl + "/upload/teacher/exper";
       return uploadUrl;
-    }
+    },
+
+    ...mapState({
+      inputInfo: state => state.homework.inputInfo,
+      subjectList: state => state.homework.subjectList
+    })
   },
 
   data() {
     return {
       showModal: false,
       showModal2: false,
+      classHourList: [],
       uploadFileInfo: {},
       homeworkInfo: {
         name: "",
@@ -183,12 +220,30 @@ export default {
     };
   },
 
-  mounted() {
-    // TODO: 根据type判断是否为新建模式和修改模式，根据homeworkType获取对应接口的信息
-  },
-
   methods: {
-    ...mapActions(["addTeaClassHW", "updateTeaClassHW"]),
+    ...mapActions([
+      "addTeaClassHW",
+      "updateTeaClassHW",
+      "updateTeaOnlineHW",
+      "teaUploadAgain",
+      "addTeaOnlineHW",
+      "addTeaOnlineSubject",
+      "updateTeaOnlineSubject"
+    ]),
+
+    ...mapMutations(["setInputInfo"]),
+
+    async setClassHourList(id) {
+      let res = await this.getClassHourList(id);
+      this.classHourList = res.filter(item => item.value !== "所有课时");
+    },
+
+    // 设置默认的课时选项
+    setDefClassHour(info) {
+      let homeworkInfo = this.homeworkInfo;
+      homeworkInfo["classHour"] = info.week;
+      this.homeworkInfo = homeworkInfo;
+    },
 
     // 监听选择时间日期函数
     timeOnChange(value) {
@@ -198,27 +253,20 @@ export default {
     },
 
     getCurTaskInfo(val) {
-      let { name, week, startime, fintime, classify } = val;
+      let { name, week, startime, fintime, classify, totaltime } = val;
       if (this.type === "create") return;
-      if (classify === "课时作业") {
-        let info = this.homeworkInfo;
-        info["name"] = name;
-        info["classify"] = classify;
-        info["classHour"] = week;
-        info["stopTimeList"] = [startime, fintime];
-        this.homeworkInfo = info;
-      }
+      let info = this.homeworkInfo;
+      info["name"] = name;
+      info["classify"] = classify;
+      info["classHour"] = week;
+      info["testingTime"] = classify === "课时作业" ? 0 : totaltime;
+      info["stopTimeList"] = [startime, fintime];
+      this.homeworkInfo = info;
     },
 
     // 新建作业任务
     async addHWInfo() {
-      let {
-        name,
-        classify,
-        classHour,
-        testingTime,
-        stopTimeList
-      } = this.homeworkInfo;
+      let { name, classify, classHour, stopTimeList } = this.homeworkInfo;
       let { filename, localpath, url } = this.uploadFileInfo;
 
       if (!name || !classify || !classHour || stopTimeList.length === 0) {
@@ -228,16 +276,17 @@ export default {
         return this.$Message.error("请上传课件");
       }
       if (classify === "课时作业") {
+        let { semester, course, course_id, teacher } = this.submitInfo;
         let res = await this.addTeaClassHW({
           name,
           classHour,
           localpath,
           localname: filename,
           webpath: url,
-          semester: this.sumbitInfo["semester"],
-          course: this.sumbitInfo["course"],
-          course_id: this.sumbitInfo["course_id"],
-          teacher: this.sumbitInfo["teacher"],
+          semester,
+          course,
+          course_id,
+          teacher,
           startime: stopTimeList[0],
           fintime: stopTimeList[1]
         });
@@ -251,8 +300,142 @@ export default {
       }
     },
 
+    // 提交题目Modal确定事件
+    async submitSubject() {
+      let { name, classHour, testingTime, stopTimeList } = this.homeworkInfo;
+      let { semester, course, course_id, teacher } = this.submitInfo;
+      let res = await this.addTeaOnlineHW({
+        name,
+        classHour,
+        semester,
+        course,
+        teacher,
+        totaltime: testingTime,
+        fintime: stopTimeList[0],
+        startime: stopTimeList[1]
+      });
+      if (res["status"] === 1) {
+        let questions = null;
+        let root_id = res["id"];
+        await Promise.all(
+          this.inputInfo.map(async item => {
+            let grade = item["weighting"];
+            let subject = item["subject"];
+
+            if (item["subjectType"] !== "填空题") {
+              questions = [
+                {
+                  context: subject,
+                  obj: {
+                    first_option: item["optionList"][0]["option"],
+                    sec_option: item["optionList"][1]["option"],
+                    third_option: item["optionList"][2]["option"],
+                    fourth_option: item["optionList"][3]["option"]
+                  },
+                  qtype: item["subjectType"],
+                  answer:
+                    item["subjectType"] === "多选题"
+                      ? item["choice"].join()
+                      : item["choice"],
+                  grade
+                }
+              ];
+            } else {
+              // 处理填空题格式
+              questions = subject.map((item, index, arr) => {
+                return {
+                  context: item["subject"],
+                  obj: {
+                    first_option: "",
+                    sec_option: "",
+                    third_option: "",
+                    fourth_option: ""
+                  },
+                  qtype: "填空题",
+                  answer: item["referenceAnswer"],
+                  grade: grade / arr.length
+                };
+              });
+            }
+
+            // 新建题目
+            let res = await this.addTeaOnlineSubject({
+              root_id,
+              root_name: name,
+              questions
+            });
+          })
+        );
+        this.homeworkInfo = {};
+        this.setInputInfo([]);
+        this.$Notice.success({
+          title: "新建成功！"
+        });
+      }
+      this.showModal = false;
+    },
+
+    // 修改在线作业题目
+    async updateSubject() {
+      let questions = [];
+      await Promise.all(
+        this.inputInfo.map(async item => {
+          let [first, second, third, fourth] = item["optionList"];
+          let { subject, choice, weighting, subjectType, id } = item;
+          let answer = subjectType === "多选题" ? choice.join() : choice;
+
+          if (subjectType !== "填空题") {
+            questions = [
+              {
+                id,
+                context: subject,
+                obj: {
+                  first_option: first["option"],
+                  sec_option: second["option"],
+                  third_option: third["option"],
+                  fourth_option: fourth["option"]
+                },
+                qtype: subjectType,
+                answer,
+                grade: weighting
+              }
+            ];
+          } else {
+            // 处理填空题格式
+            questions = item["subject"].map((item, index, arr) => {
+              let { id, subject, referenceAnswer } = item;
+              return {
+                id,
+                context: subject,
+                obj: {
+                  first_option: "",
+                  sec_option: "",
+                  third_option: "",
+                  fourth_option: ""
+                },
+                qtype: "填空题",
+                answer: referenceAnswer,
+                grade: weighting / arr.length
+              };
+            });
+          }
+          await this.updateTeaOnlineSubject(questions);
+        })
+      );
+      this.showModal = false;
+      this.setInputInfo([]);
+      this.$Notice.success({
+        title: "修改成功！"
+      });
+    },
+
+    // 点击修改在线作业题目按钮事件
+    updateSubjectInfo() {
+      this.showModal2 = true;
+    },
+
     // 更新课时作业信息
-    async updateHWInfo() {
+    async updateClassHWInfo() {
       let { name, classHour, stopTimeList } = this.homeworkInfo;
       let res = await this.updateTeaClassHW({
         id: this.info.id,
@@ -270,10 +453,42 @@ export default {
       }
     },
 
+    // 更新在线作业信息
+    async updateOnlineHWInfo() {
+      let { name, classHour, stopTimeList, testingTime } = this.homeworkInfo;
+      let res = await this.updateTeaOnlineHW({
+        id: this.info.id,
+        name,
+        classHour,
+        totaltime: testingTime,
+        startime: stopTimeList[0],
+        fintime: stopTimeList[1]
+      });
+      if (res["status"] === 1) {
+        this.$Notice.success({
+          title: "修改成功！"
+        });
+        this.$emit("getTableData");
+        this.showModal = false;
+      }
+    },
+
     // 新建在线作业题目
     addSubject() {
-      let { name, classify, stopTimeList } = this.homeworkInfo;
-      if (!name || !classify || stopTimeList.length === 0) {
+      let {
+        name,
+        classify,
+        classHour,
+        testingTime,
+        stopTimeList
+      } = this.homeworkInfo;
+      if (
+        !name ||
+        !classify ||
+        !classify ||
+        testingTime === 0 ||
+        stopTimeList.length === 0
+      ) {
         return this.$Message.error("缺少必填信息");
       }
       this.showModal2 = true;
@@ -288,23 +503,31 @@ export default {
 
     handleFormatErr(file) {
       this.$Notice.warning({
-        title: "文件格式应该为doc",
-        desc: ""
+        title: "文件格式应该为doc"
       });
     },
 
-    handleSuccess(res, file) {
-      this.uploadFileInfo = res;
-      this.$Notice.success({
-        title: "上传成功！",
-        desc: ""
+    async handleSuccess(result, file) {
+      if (this.type === "create") {
+        this.uploadFileInfo = result;
+        this.$Notice.success({
+          title: "上传成功！"
+        });
+        return;
+      }
+      let { id } = this.info;
+      let { localpath, url, filename } = result;
+      let res = await this.teaUploadAgain({
+        id,
+        localpath,
+        webpath: url,
+        localname: filename
       });
-    },
-
-    // 提交题目Modal确定事件
-    submitSubject() {
-      // TODO:提交题目
-      this.showModal = false;
+      if (res["status"] === 1) {
+        this.$Notice.success({
+          title: "重新上传成功！"
+        });
+      }
     }
   }
 };

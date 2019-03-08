@@ -1,5 +1,17 @@
+import { getCourseClassList, getTeaCourseList, getStuCourseList } from '@/api/course';
+import { dateFormat } from '@tools';
+import { mapState, mapMutations } from 'vuex';
+
 const myMixin = {
+  computed: {
+    ...mapState({
+      role: state => state.user.role,
+    }),
+  },
+
   methods: {
+    ...mapMutations(['setCourseList']),
+
     btnStyle(btnTitle, h, onclick, color = 'primary') {
       return h(
         'Button',
@@ -13,6 +25,20 @@ const myMixin = {
           },
           on: {
             click: onclick,
+          },
+        },
+        btnTitle
+      );
+    },
+
+    disableBtnStyle(btnTitle, h, color = 'primary') {
+      return h(
+        'Button',
+        {
+          props: {
+            type: color,
+            shape: 'circle',
+            disabled: true,
           },
         },
         btnTitle
@@ -74,30 +100,43 @@ const myMixin = {
       return `${year - 1}-${year}${semester}`;
     },
 
-    // 课程选择列表
-    getCourseList() {
-      let def = {
-        value: '所有课程',
-        label: '所有课程',
-      };
-      let formatLesson = this.$tools.getSessionStorage('formatLesson');
-      if (!formatLesson) {
-        return [
-          {
-            value: '新媒体综合实训',
-            label: '新媒体综合实训',
-          },
-          {
-            value: '就业与创业指导',
-            label: '就业与创业指导',
-          },
-        ];
+    // 获取课程选择列表数据
+    async getCourseList(curSemester = this.getCurSchoolYear()) {
+      let res = null;
+      let def = [
+        {
+          value: '所有课程',
+          label: '所有课程',
+        },
+      ];
+      let { year, semester } = dateFormat(curSemester);
+      if (this.role === 'student') {
+        // TODO: 查询学生课程,接口有问题，所以暂时用假数据
+        res = await getStuCourseList({
+          year,
+          semester,
+          offset: 1,
+          limit: 999,
+        });
+      } else {
+        // 查询教师课程
+        res = await getTeaCourseList({
+          year,
+          semester,
+          offset: 1,
+          limit: 999,
+        });
       }
-      let couseList = formatLesson.map(item => ({
-        value: item['courseName'],
-        label: item['courseName'],
-      }));
-      return [def, ...couseList];
+      let courseList = res.data.courseList;
+      let data = courseList.reduce((arr, item) => {
+        arr.push({
+          value: item['name'],
+          label: item['name'],
+        });
+        return arr;
+      }, def);
+      this.setCourseList(courseList);
+      return data;
     },
 
     // 周数选择列表
@@ -117,18 +156,26 @@ const myMixin = {
       return weekList;
     },
 
-    // 课时选择列表
-    getClassHourList() {
-      return [
+    // 获取课时选择列表数据
+    async getClassHourList(courseId) {
+      let res = await getCourseClassList({
+        course_id: courseId,
+      });
+      let def = [
         {
           value: '所有课时',
           label: '所有课时',
         },
-        {
-          value: '第一课：课程介绍及环境配置安装详解',
-          label: '第一课：课程介绍及环境配置安装详解',
-        },
       ];
+      let courseTimeList = res.data.courseTimeList;
+      let data = courseTimeList.reduce((arr, item) => {
+        arr.push({
+          value: item['name'],
+          label: item['name'],
+        });
+        return arr;
+      }, def);
+      return data;
     },
 
     // 作业完成状态选择列表
@@ -169,6 +216,22 @@ const myMixin = {
           label: '在线作业',
         },
       ];
+    },
+
+    // 获取课程选择列表
+    async setCourseSelList(value) {
+      let res = await this.getCourseList(value);
+      let selectList = this.selectList;
+      selectList[1]['list'] = res;
+      this.selectList = selectList;
+    },
+
+    // 获取课时选择列表
+    async setClassHourSelList(courseId) {
+      let res = await this.getClassHourList(courseId);
+      let selectList = this.selectList;
+      selectList[2]['list'] = res;
+      this.selectList = selectList;
     },
   },
 };

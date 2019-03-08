@@ -21,8 +21,9 @@
         v-if="type === 'create'"
         type="textarea"
         :rows="3"
-        v-model="subject"
         :placeholder="`第${info['title'].slice(0, 1)}题题目`"
+        :value="info['subject']"
+        @on-change="subjectChange"
         clearable
         style="width: 400px"
       />
@@ -30,11 +31,12 @@
       <!-- 输入答案 -->
       <Input
         class="mb-10"
+        :rows="3"
         v-if="type === 'create' || type === 'testing'"
         type="textarea"
-        :rows="3"
-        v-model="choice"
         placeholder="请输入问答题答案"
+        :value="info['choice']"
+        @on-change="choiceChange"
         clearable
         style="width: 400px"
       />
@@ -42,26 +44,27 @@
       <div class="df-aic" v-if="type === 'create'">
         <span>分值：</span>
         <InputNumber
-          :max="10"
+          :max="100"
           :min="1"
-          v-model="info['weighting']"
+          :value="info['weighting']"
+          @on-change="weightingChange"
         ></InputNumber>
       </div>
 
-      <!-- 参考答案 -->
-      <div class="mb-20" v-if="type === 'check' || type === 'score'">
-        <span>参考答案：</span>
-        <span class="green">{{ info["referenceAnswer"] }}</span>
-      </div>
-
       <!-- 显示的回答 -->
-      <div class="df-aic">
+      <div class="df-aic mb-20">
         <div class="df-aic" v-if="type === 'check' || type === 'score'">
           <p>
             回答:
             <span class="blue">{{ info["choice"] }}</span>
           </p>
         </div>
+      </div>
+
+      <!-- 参考答案 -->
+      <div class="mb-10" v-if="type === 'check' || type === 'score'">
+        <span>参考答案：</span>
+        <span class="green">{{ info["referenceAnswer"] }}</span>
       </div>
 
       <!-- 评分 -->
@@ -75,7 +78,8 @@
           :max="100"
           :min="0"
           :step="10"
-          v-model="score"
+          :value="info['score']"
+          @on-change="scoreChange"
         ></InputNumber>
       </div>
     </div>
@@ -83,33 +87,55 @@
 </template>
 
 <script>
+import { mapState, mapMutations } from "vuex";
+
 export default {
   props: {
-    info: Object,
+    index: Number, // 题目索引
     type: String
   },
 
-  watch: {
-    info(newVal, oldVal) {
-      this.subject = this.info["subject"];
-      this.chocie = this.info["choice"];
-    },
+  computed: {
+    ...mapState({
+      inputInfo: state => state.homework.inputInfo
+    }),
 
-    subject(newVal, oldVal) {
-      this.$emit("update:subject", newVal);
-    },
-
-    chocie(newVal, oldVal) {
-      this.$emit("update:chocie", newVal);
+    info() {
+      return this.inputInfo[this.index];
     }
   },
 
   data() {
-    return {
-      subject: this.info["subject"],
-      choice: this.info["choice"],
-      score: 60
-    };
+    return {};
+  },
+
+  methods: {
+    ...mapMutations(["setInputInfo"]),
+
+    // 更新vuex的inputInfo最新值
+    subjectChange(e) {
+      let inputInfo = this.inputInfo;
+      inputInfo[this.index]["subject"] = e.target.value;
+      this.setInputInfo(inputInfo);
+    },
+
+    choiceChange(e) {
+      let inputInfo = this.inputInfo;
+      inputInfo[this.index]["choice"] = e.target.value;
+      this.setInputInfo(inputInfo);
+    },
+
+    weightingChange(value) {
+      let inputInfo = this.inputInfo;
+      inputInfo[this.index]["weighting"] = value;
+      this.setInputInfo(inputInfo);
+    },
+
+    scoreChange(value) {
+      let inputInfo = this.inputInfo;
+      inputInfo[this.index]["score"] = value;
+      this.setInputInfo(inputInfo);
+    }
   }
 };
 </script>
