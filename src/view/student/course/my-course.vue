@@ -68,7 +68,7 @@
         <p class="course_code">教学班：{{item.code}}</p>
         <p class="class_code">课室：{{item.classes}}</p>
         <ButtonGroup class="course-btn">
-          <Button shape="circle" type="info"  @click.native="goCourseDetail(item)">进入课程</Button>\
+          <Button shape="circle" type="info"  @click.native="goCourseDetail(item)">进入课程</Button>
         </ButtonGroup>
       </div>
     </div>

@@ -56,7 +56,6 @@
   <div class="course_detail">
     <div class="top_title">
       <h2 class="class_title">{{course_name}} <span class="course-code">[{{course_code}} - {{course_classes}}]</span></h2>
-      <Button class="return_btn" type="primary" shape="circle" @click="$router.go(-1)" icon="md-arrow-back">返回</Button>
     </div>
     <Tabs value="intro">
         <TabPane label="课程介绍" name="intro">
@@ -295,9 +294,9 @@ export default {
       this.$router.push(`${this.$route.params.id}/${id}`)
     },
     // 获取课程详情
-    getCourseDetail() {
+    getCourseDetail(to_id) {
       getCourseDetail({
-        id: this.$route.params.id
+        id: to_id || this.$route.params.id
       }).then((res)=>{
         console.log(res)
         let detail = res.data.courseDetail
@@ -311,10 +310,10 @@ export default {
       })
     },
     // 获取课时列表
-    getCourseClassList(cb = ()=>{}) {
+    getCourseClassList(cb = ()=>{}, to_id) {
       this.class_table_loading = true
       getCourseClassList({
-        course_id: this.$route.params.id,
+        course_id: to_id || this.$route.params.id,
         offset: this.course_class_offset,
         limit: this.course_class_limit
       }).then((res)=>{
@@ -336,10 +335,10 @@ export default {
       })
     },
     // 获取该课程答疑列表
-    getCourseQusetionsList(cb = ()=>{}) {
+    getCourseQusetionsList(cb = ()=>{}, to_id) {
       this.questions_table_loading = true
       getCourseQusetionsList({
-        course_id: this.$route.params.id,
+        course_id: to_id || this.$route.params.id,
         offset: this.course_question_offset,
         limit: this.course_question_limit
       }).then((res)=>{
@@ -369,10 +368,22 @@ export default {
     this.getCourseQusetionsList(()=>{
       this.questions_table_loading = false
     })
-    console.log(this.baseUrl)
   },
   mounted () {
 
-  }
+  },
+  beforeRouteUpdate(to, from, next) {
+    console.log('update')
+    this.getCourseDetail(to.params.id)
+    this.getCourseClassList(()=>{
+      this.class_table_loading = false
+    }, to.params.id)
+    this.getCourseQusetionsList(()=>{
+      this.questions_table_loading = false
+    }, to.params.id)
+    next(vm => {
+      
+    });
+  },
 }
 </script>
