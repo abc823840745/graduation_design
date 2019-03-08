@@ -57,7 +57,7 @@
   .class-file-page-nav {
      text-align: center;
      margin-top: 20px;
-   }
+  }
 }
 </style>
 <template>
@@ -137,7 +137,10 @@
         </div>
       </Upload>
       <div class="show-class-upload-list">
-        <p v-for="(item, index) in class_upload_file_list" :key="index">{{item.name}}</p>
+        <p v-for="(item, index) in class_upload_file_list" :key="index">
+          <span>{{item.name}}</span>
+          <Button @click="delClassUploadList(index)" type="text">删除</Button>
+        </p>
       </div>
       <Spin size="large" fix v-if="loadingFileStatus"></Spin>
     </Modal>
@@ -307,6 +310,10 @@ export default {
       console.log(file)
       this.class_upload_file_list.push(file)
       return false;
+    },
+    // 删除待上传列表附件
+    delClassUploadList(i) {
+      this.class_upload_file_list.splice(i,1)
     },
     // 附件上传触发
     handleUploadClassFile(){
