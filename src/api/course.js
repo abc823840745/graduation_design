@@ -15,6 +15,17 @@ export function getCourseDetail (obj) {
   })
 }
 
+// 查询课时详情
+export function getCourseClassDetail (obj) {
+  return axios.request({
+    params: {
+      id: obj['id']
+    },
+    url: '/get/course/time/detail',
+    method: 'get'
+  })
+}
+
 // 查看课时列表
 export function getCourseClassList (obj) {
   return axios.request({
@@ -52,6 +63,19 @@ export function getQusetionsList (obj) {
       offset: obj['offset'] || 1
     },
     url: '/get/course/question/list',
+    method: 'get'
+  })
+}
+
+// 获取课时附件列表
+export function getCourseClassFileList (obj) {
+  return axios.request({
+    params: {
+      course_time_id: obj['course_time_id'],
+      limit: obj['limit'] || 10,
+      offset: obj['offset'] || 1
+    },
+    url: '/get/course/time/file/list',
     method: 'get'
   })
 }
@@ -161,6 +185,37 @@ export function uploadCourseIntro (obj) {
     headers: {'Content-Type': 'multipart/form-data'},
     data: obj,
     url: '/upload/course/desc',
+    method: 'post'
+  })
+}
+
+// 上传课时附件
+export function uploadCourseClassFile (obj) {
+  return axios.request({
+    headers: {'Content-Type': 'multipart/form-data'},
+    data: obj,
+    url: '/upload/course/time/file',
+    method: 'post'
+  })
+}
+
+// 删除上传附件
+export function deleteCourseClassFile (obj) {
+  return axios.request({
+    data: {
+      id: obj['id']
+    },
+    url: '/delete/course/time/file',
+    method: 'post'
+  })
+}
+
+// 上传课时介绍
+export function uploadCourseClassIntro (obj) {
+  return axios.request({
+    headers: {'Content-Type': 'multipart/form-data'},
+    data: obj,
+    url: '/uplad/course/time/desc',
     method: 'post'
   })
 }

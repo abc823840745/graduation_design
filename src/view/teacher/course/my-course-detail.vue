@@ -90,6 +90,7 @@
               </Upload>
             </div>
             <my-pdf v-if="course_desc_url" :src="course_desc_url"></my-pdf>
+            <span v-else>教师尚未上传课程介绍</span>
             <Spin size="large" fix v-if="loadingStatus"></Spin>
           </div>
           <div class="course-detail-teacher-talk">
@@ -215,7 +216,7 @@ export default {
                   on: {
                     click: () => {
                       console.log(params.index);
-                      this.$router.push('./'+this.$route.params.id+'/'+params.index)
+                      this.$router.push('./'+this.$route.params.id+'/'+params.row.id)
                     }
                   }
                 },
@@ -438,9 +439,9 @@ export default {
       return false;
     },
     // 获取课程详情
-    getCourseDetail() {
+    getCourseDetail(to_id) {
       getCourseDetail({
-        id: this.$route.params.id
+        id: to_id || this.$route.params.id
       }).then((res)=>{
         console.log(res)
         let detail = res.data.courseDetail
@@ -454,9 +455,9 @@ export default {
       })
     },
     // 获取学生名单
-    getTeaCourseStudentList(cb = ()=>{}) {
+    getTeaCourseStudentList(cb = ()=>{}, to_id) {
       getTeaCourseStudentList({
-        id: this.$route.params.id
+        id: to_id || this.$route.params.id
       }).then((res)=>{
         console.log(res)
         this.students_data = res.data.studentList
@@ -468,9 +469,9 @@ export default {
       })
     },
     // 获取课时列表
-    getCourseClassList(cb = ()=>{}) {
+    getCourseClassList(cb = ()=>{}, to_id) {
       getCourseClassList({
-        course_id: this.$route.params.id,
+        course_id: to_id || this.$route.params.id,
         offset: this.course_class_offset,
         limit: this.course_class_limit
       }).then((res)=>{
@@ -600,6 +601,19 @@ export default {
       this.questions_table_loading = false;
     })
   },
-  mounted() {}
+  mounted() {},
+  beforeRouteUpdate(to, from, next) {
+    console.log('update')
+    this.getCourseDetail(to.params.id)
+    this.getCourseClassList(()=>{
+      this.class_table_loading = false;
+    }, to.params.id)
+    this.getCourseQusetionsList(()=>{
+      this.questions_table_loading = false;
+    }, to.params.id)
+    next(vm => {
+      
+    });
+  },
 };
 </script>

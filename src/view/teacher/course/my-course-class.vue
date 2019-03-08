@@ -24,9 +24,9 @@
   .course-detail-intro {
     position: relative;
     margin: 0 4px 4px 0;
-    padding: 0 20px;
+    padding: 0 10px 10px 10px;
     border-radius: 10px;
-    height: 400px;
+    min-height: 400px;
     background-color: #fff;
     box-shadow: 2px 2px 2px #eee;
     text-align: center;
@@ -40,6 +40,7 @@
       left: 10px;
       top: 10px;
       cursor: pointer;
+      z-index: 999;
     }
   }
   .course-detail-teacher-talk {
@@ -63,8 +64,8 @@
   <div class="teacher-my-course-class">
     <div class="course-detail-top">
       <h2 class="course-title">
-        <span>课程介绍及环境配置安装详解 </span>
-        <span class="title-code">新媒体实训</span>
+        <span>{{course_time_name}} </span>
+        <span class="title-code">{{course_name}}</span>
       </h2>
       <p class="course-sub-title">
         <Button size="small" shape="circle" @click.native="returnPrevPage" type="primary">返回上一级</Button>
@@ -75,32 +76,27 @@
         <TabPane label="课程介绍" name="keynote">
           <div class="course-detail-intro">
             <div class="edit-course-intro">
-              <Button
-                type="dashed"
-                shape="circle"
-                icon="ios-copy-outline"
-                @click.native="openUploadClassKeynote"
-              >上传 / 修改讲义</Button>
-            </div>正在从服务器获取本课时讲义...
+              <Upload
+                  :before-upload="handleUpload"
+                  accept="application/pdf"
+                  action="//jsonplaceholder.typicode.com/posts/">
+                  <Button
+                    type="dashed"
+                    shape="circle"
+                    icon="ios-copy-outline"
+                  >上传 / 修改本课讲义</Button>
+              </Upload>
+            </div>
+            <my-pdf v-if="course_desc_url" :src="course_desc_url"></my-pdf>
+            <span v-else>教师尚未上传本课讲义</span>
+            <Spin size="large" fix v-if="loadingStatus"></Spin>
           </div>
           <div class="course-detail-teacher-talk">
             <Card :bordered="false" :dis-hover="true">
               <p slot="title">本课简介</p>
-              <p>本课主要讲解本学期的任务以及初始安装环境的搭建与配置，请同学们认真听讲！</p>
+              <p>{{ course_desc_text || '教师尚未修改本课介绍' }}</p>
             </Card>
           </div>
-          <Modal
-            v-model="showUploadClassKeynote"
-            title="上传本课讲义"
-            :loading="upload_class_keynote_loading"
-            ok-text="保存"
-            @on-ok="uploadClassKeynote"
-            @on-cancel="cancelUploadClassKeynote"
-          >
-            <Upload action="//jsonplaceholder.typicode.com/posts/">
-              <Button icon="ios-cloud-upload-outline">点此上传本课讲义</Button>
-            </Upload>
-          </Modal>
         </TabPane>
         <TabPane label="附件区" name="download">
           <div class="down-top-btn">
@@ -128,6 +124,7 @@
         okText="保存"
         >
         <Upload
+        :before-upload="handleUploadClassFileBegin"
         multiple
         type="drag"
         action="//jsonplaceholder.typicode.com/posts/">
@@ -141,6 +138,8 @@
 </template>
 <script>
 import { getMyDate } from '@/libs/tools'
+import myPdf from '@/view/pdf/pdf'
+import { getCourseClassDetail, uploadCourseClassIntro, getCourseClassFileList, uploadCourseClassFile } from '@/api/course'
 export default {
   name: "my-course-class",
   data() {
@@ -149,10 +148,24 @@ export default {
       total: 20,
       page_size: 10,
       cur_tab: 'keynote',
-      showUploadClassKeynote: false,
-      upload_class_keynote_loading: true,
       showUploadPanel: false,
       upload_class_file_loading: true,
+      intro_pdf_url: '',
+      // 上传课程介绍文件
+      file: null,
+      loadingStatus: false,
+      // 上传课时附件
+      class_upload_file: null,
+      // 课时详情
+      course_name: '',
+      course_code: '',
+      course_time_name: '',
+      course_desc_url: '',
+      course_desc_text: '',
+      // 课时页码
+      course_class_limit: 10,
+      course_class_offset: 1,
+      course_class_total: 0,
       // 附件区表格
       download_file_table_loading: true,
       download_file_columns: [
@@ -252,21 +265,127 @@ export default {
       ]
     };
   },
+  components: {
+    myPdf
+  },
   methods: {
-    openUploadClassKeynote() {
-      this.showUploadClassKeynote = true;
+    // 获取课时详情
+    getCourseClassDetail(to_id) {
+      getCourseClassDetail({
+        id: to_id || this.$route.params.class_id
+      }).then((res)=>{
+        console.log(res)
+        let detail = res.data.courseTimeDetail
+        this.course_name = detail.course_name
+        this.course_code = detail.course_code
+        this.course_time_name = detail.course_time_name
+        this.course_desc_url = detail.desc_url
+        this.course_desc_text = detail.desc_text
+      }).catch((err)=>{
+        console.log(err)
+        this.$Message.error('获取课程详情失败');
+      })
     },
-    uploadClassKeynote() {
-      console.log("开始上传");
-      setTimeout(() => {
-        this.$Modal.remove();
-        this.showUploadClassKeynote = false;
-        this.$Message.success("保存成功");
-      }, 2000);
+    // 上传课程介绍函数
+    handleUpload (file) {
+      if(file.type != 'application/pdf') {
+        this.$Message.error('请选择PDF文件上传')
+        return false;
+      }
+      this.loadingStatus = true
+      this.file = file;
+      // 创建form对象
+      let formData = new FormData();
+      // 通过append向form对象添加数据
+      formData.append('file', this.file);
+      formData.append('id', this.$route.params.class_id);
+      uploadCourseClassIntro(formData).then((res)=> {
+        console.log(res);
+        this.file = null;
+        this.loadingStatus = false;
+        this.$Message.success('上传成功')
+        this.getCourseClassDetail()
+      }).catch((err)=>{
+        console.log(err)
+        this.file = null;
+        this.loadingStatus = false;
+        this.$Message.error('上传失败')
+      })
+      return false;
     },
-    cancelUploadClassKeynote() {
-      console.log("取消上传");
-      this.showUploadClassKeynote = false;
+    // 上传课时附件
+    handleUploadClassFileBegin(file) {
+      console.log(file)
+      if(this.class_upload_file){
+        this.class_upload_file.append('file', file);
+        return false
+      }else{
+        this.class_upload_file = new FormData();
+        this.class_upload_file.append('file', file);
+      }
+      
+
+      // this.class_upload_file = file;
+      // this.class_upload_file.push(file);
+      // console.log(this.class_upload_file)
+      
+      // if(file.type != 'application/pdf') {
+      //   this.$Message.error('请选择PDF文件上传')
+      //   return false;
+      // }
+      // this.loadingStatus = true
+      // this.file = file;
+      // // 创建form对象
+      // let formData = new FormData();
+      // // 通过append向form对象添加数据
+      // formData.append('file', this.file);
+      // formData.append('id', this.$route.params.class_id);
+      // uploadCourseClassIntro(formData).then((res)=> {
+      //   console.log(res);
+      //   this.file = null;
+      //   this.loadingStatus = false;
+      //   this.$Message.success('上传成功')
+      //   this.getCourseClassDetail()
+      // }).catch((err)=>{
+      //   console.log(err)
+      //   this.file = null;
+      //   this.loadingStatus = false;
+      //   this.$Message.error('上传失败')
+      // })
+      return false;
+    },
+    // 附件上传触发
+    handleUploadClassFile(){
+      // 创建form对象
+      // let formData = new FormData();
+      // 通过append向form对象添加数据
+      // formData.append('file', this.class_upload_file);
+      this.class_upload_file.append('course_time_id', this.$route.params.class_id);
+      uploadCourseClassFile(this.class_upload_file).then((res)=> {
+        console.log(res);
+        this.class_upload_file = null;
+        this.$Message.success('上传成功')
+        this.getClassFileList(() => {
+          this.download_file_table_loading = false;
+        })
+      }).catch((err)=>{
+        console.log(err)
+        this.class_upload_file = null;
+        this.$Message.error('上传失败')
+      })
+    },
+    // 获取课时附件列表
+    getClassFileList(cb = ()=>{}, to_id){
+      getCourseClassFileList({
+        course_time_id: to_id || this.$route.params.class_id
+      }).then((res)=> {
+        console.log(res);
+        this.download_file_data = res.data.courseTimeFileList
+        cb();
+      }).catch((err)=>{
+        console.log(err)
+        this.$Message.error('获取附件列表失败')
+      })
     },
     returnPrevPage(){
       this.$router.go(-1)
@@ -275,11 +394,7 @@ export default {
       this.showUploadPanel = true;
     },
     saveUpload(){
-      setTimeout(() => {
-        this.$Modal.remove();
-        this.showUploadPanel = false;
-        this.$Message.success("保存成功");
-      }, 2000);
+      this.handleUploadClassFile()
     },
     changeTab(name){
       if(name == 'homework'){
@@ -291,10 +406,19 @@ export default {
     }
   },
   created() {
-    setTimeout(() => {
+    this.getCourseClassDetail()
+    this.getClassFileList(() => {
       this.download_file_table_loading = false;
-    }, 3000);
+    })
   },
-  mounted() {}
+  mounted() {},
+  beforeRouteUpdate(to, from, next) {
+    console.log(to,from)
+    this.getCourseClassDetail(to.params.class_id)
+    this.getClassFileList(() => {
+      this.download_file_table_loading = false;
+    }, to.params.class_id)
+    next(vm => {});
+  },
 };
 </script>
