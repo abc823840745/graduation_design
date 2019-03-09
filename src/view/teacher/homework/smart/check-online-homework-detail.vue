@@ -10,12 +10,12 @@
         :inputInfo="item"
       />
 
-      <div class="bottom-bar">
+      <!-- <div class="bottom-bar">
         <p class="total-score">
           总评分:
           <span class="total-score score">80</span>
         </p>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>

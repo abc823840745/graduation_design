@@ -79,7 +79,8 @@ export default {
 
   computed: {
     ...mapState({
-      userName: state => state.user.userName
+      userName: state => state.user.userName,
+      inputInfo: state => state.homework.inputInfo
     })
   },
 
@@ -88,11 +89,12 @@ export default {
       isSelectCourse: true,
       showModal: false,
       loading: false,
+      subjectList: [],
       curClassHour: "",
       curCourseInfo: {},
       curDirectory: 1,
-      homeworkList: [], // 作业列表
-      hwType: "", //作业类型
+      stuHwInfo: {},
+      stuHWId: 0,
       columns1: [
         {
           title: "课时名称",
@@ -148,14 +150,15 @@ export default {
           render: (h, params) => {
             return h("div", [
               this.btnStyle("查看", h, async () => {
-                // TODO: 打开实验报告
-                if (!params.row.questions) {
+                let { id, questions } = params.row;
+                this.stuHWId = id;
+                if (!questions) {
                   // params.questions不存在时为课时作业
                   this.curDirectory = 4;
-                  await this.getStuClassHW(params.row.id);
+                  await this.getStuClassHW(id);
                 } else {
                   this.curDirectory = 5;
-                  await this.getStuOnlineHW(params.row.id);
+                  await this.getStuOnlineHW(id);
                 }
               })
             ]);
@@ -242,29 +245,29 @@ export default {
           key: "status",
           render: (h, params) => {
             let text = params.row.status;
-            let btnColor = text === "已完成" ? "success" : "error";
+            let btnColor = text === "已评分" ? "success" : "error";
             return h("div", [this.statusBtnStyle(text, h, btnColor)]);
           }
         },
         {
           title: "评分",
-          key: "grade",
-          render: (h, params) => {
-            if (!params.row.score) {
-              return h("p", {}, "未评分");
-            }
-          }
+          key: "grade"
         },
         {
           title: "操作",
           key: "operation",
           render: (h, params) => {
+            let { status, questions, id } = params.row;
+            if (status === "待上传") {
+              return h("div", [this.disableBtnStyle("查看", h)]);
+            }
             return h("div", [
               this.btnStyle("查看", h, async () => {
-                let { questions } = params.row;
-                await this.getStuSubjectList(questions);
+                this.stuHwInfo = params.row;
                 this.showModal = true;
                 this.curDirectory = 6;
+                console.log(questions);
+                await this.getStuSubjectList(questions);
               })
             ]);
           }
@@ -291,7 +294,8 @@ export default {
       "getTeaClassHW",
       "getTeaOnlineHW",
       "getStuHWList",
-      "getStuOnlineHWList"
+      "getStuOnlineHWList",
+      "scoreOnlineHW"
     ]),
 
     ...mapMutations(["setInputInfo"]),
@@ -364,7 +368,6 @@ export default {
         teacher: this.userName,
         stuclass: classes
       });
-      console.log(res);
       this.data4 = res;
       this.loading = false;
     },
@@ -387,7 +390,6 @@ export default {
     async getStuSubjectList(questions) {
       let subjectLength = 0;
       let executeOnce = true;
-      console.log(questions);
       let inputInfo = questions.reduce((arr, item, index) => {
         let optionList = [
           {
@@ -450,13 +452,54 @@ export default {
         }
         return arr;
       }, []);
+      this.subjectList = questions;
       this.setInputInfo(inputInfo);
-      console.log(inputInfo);
     },
 
-    handleOk() {
+    // 教师对在线作业评分
+    async scoreSubject() {
+      let obj = [];
+      let { id } = this.stuHwInfo;
+      this.inputInfo.map(item => {
+        if (item["subjectType"] !== "填空题") {
+          obj.push({
+            id: item["id"],
+            grade: item["score"] || 1
+          });
+        } else {
+          let score = item["score"];
+          item["subject"].forEach((item, index, arr) => {
+            obj.push({
+              id: item["id"],
+              grade: score / arr.length || 1
+            });
+          });
+        }
+      });
+      let grade = obj.reduce((num, item) => {
+        num += item["grade"];
+        return num;
+      }, 0);
+      if (grade > 100) {
+        return this.$Notice.error({
+          title: "总分不能超过100"
+        });
+      }
+      let res = await this.scoreOnlineHW({
+        id,
+        grade,
+        obj
+      });
+      await this.getStuOnlineHW(this.stuHWId);
+      this.$Notice.success({
+        title: "评分成功！"
+      });
+    },
+
+    async handleOk() {
       // TODO:提交评分
       this.curDirectory = 5;
+      await this.scoreSubject();
     },
 
     handleCancel() {

@@ -3,7 +3,7 @@
     <CreateSubject
       ref="subject"
       :type="type"
-      :homeworkInfo="homeworkInfo"
+      :homeworkInfo="info"
       :showModal.sync="showModal2"
       @modalOk="type === 'create' ? submitSubject() : updateSubject()"
     />
@@ -185,6 +185,14 @@ export default {
   },
 
   computed: {
+    ...mapState({
+      inputInfo: state => state.homework.inputInfo,
+      subjectList: state => state.homework.subjectList,
+      optionList: state => state.homework.optionList,
+      originalInfo: state => state.homework.originalInfo,
+      originInputInfo: state => state.homework.originInputInfo
+    }),
+
     classifyList() {
       return this.getClassifyList().filter(item => item.value !== "所有类型");
     },
@@ -196,12 +204,7 @@ export default {
           : config.baseUrl.pro;
       const uploadUrl = baseUrl + "/upload/teacher/exper";
       return uploadUrl;
-    },
-
-    ...mapState({
-      inputInfo: state => state.homework.inputInfo,
-      subjectList: state => state.homework.subjectList
-    })
+    }
   },
 
   data() {
@@ -228,7 +231,8 @@ export default {
       "teaUploadAgain",
       "addTeaOnlineHW",
       "addTeaOnlineSubject",
-      "updateTeaOnlineSubject"
+      "updateTeaOnlineSubject",
+      "changeSubject"
     ]),
 
     ...mapMutations(["setInputInfo"]),
@@ -247,7 +251,7 @@ export default {
 
     // 监听选择时间日期函数
     timeOnChange(value) {
-      let homeworkInfo = { ...this.homeworkInfo };
+      let homeworkInfo = this.homeworkInfo;
       homeworkInfo["stopTimeList"] = value;
       this.homeworkInfo = homeworkInfo;
     },
@@ -377,13 +381,186 @@ export default {
 
     // 修改在线作业题目
     async updateSubject() {
+      let executeOne = true;
+      let notFillSubject = this.originInputInfo.filter(
+        item => item["subjectType"] !== "填空题"
+      );
+      let fillSubject = this.originInputInfo.filter(
+        item => item["subjectType"] === "填空题"
+      );
+      let fillSubject2 = this.inputInfo.filter(
+        item => item["subjectType"] === "填空题" && item["key"] === ""
+      );
+
+      // 判断数组长度是否变化，没有变化，则全部为更新操作
+      if (this.optionList.length === 0) {
+        await this.updateOnlineSubject();
+        return;
+      }
+
+      let data = this.optionList.reduce((arr, item, index) => {
+        let { key, type, subjectType } = item;
+        if (item["subjectType"] !== "填空题") {
+          if (type === "delete") {
+            arr.push({
+              id: item["key"],
+              type: "delete"
+            });
+          } else if (type === "update") {
+            // 获取该题具体数据
+            arr.push(this.update(key, notFillSubject));
+          } else if (type === "add") {
+            arr.push(this.add(key));
+          }
+        } else {
+          let key = item["key"];
+          let subject = item["subject"];
+          if (type === "delete") {
+            let subjectInfo = fillSubject[0]["subject"].filter(
+              item => item["id"] === key
+            );
+            arr.push({
+              id: subjectInfo[0]["id"],
+              type: "delete"
+            });
+          } else if (type === "update") {
+            // 获取该题具体数据
+            arr.push(this.update2(key, fillSubject));
+          } else if (type === "add") {
+            let weighting = fillSubject[0]["weighting"];
+            if (executeOne) {
+              executeOne = false;
+              arr.push(this.add2(fillSubject2, weighting));
+            }
+          }
+        }
+        return arr;
+      }, []);
+      let res = await this.changeSubject({
+        id: this.info["id"],
+        arr: data
+      });
+      console.log(res);
+      this.showModal = false;
+      this.showModal2 = false;
+      this.setInputInfo([]);
+      this.$Notice.success({
+        title: "修改成功！"
+      });
+    },
+
+    // 非填空题添加题目逻辑
+    add(key) {
+      let subjectInfo = this.inputInfo.filter(item => item["key"] === key);
+      let {
+        id,
+        subject,
+        optionList,
+        type,
+        subjectType,
+        choice,
+        weighting
+      } = subjectInfo[0];
+      return {
+        type: "add",
+        context: subject,
+        root_name: this.info["name"],
+        root_id: this.info["id"],
+        obj: {
+          first_option: optionList[0]["option"],
+          sec_option: optionList[1]["option"],
+          third_option: optionList[2]["option"],
+          fourth_option: optionList[3]["option"]
+        },
+        qtype: subjectType,
+        answer: choice,
+        grade: weighting
+      };
+    },
+
+    // 填空题添加逻辑
+    add2(fillSubject, weighting) {
+      fillSubject[0]["subject"].forEach((item, index, array) => {
+        let { subject, referenceAnswer } = item;
+        return {
+          type: "add",
+          context: subject,
+          root_name: this.info["name"],
+          root_id: this.info["id"],
+          obj: {
+            first_option: "",
+            sec_option: "",
+            third_option: "",
+            fourth_option: ""
+          },
+          qtype: "填空题",
+          answer: referenceAnswer,
+          grade: weighting / array.length
+        };
+      });
+    },
+
+    // 非填空题更新题目逻辑
+    update(key, notFillSubject) {
+      let subjectInfo = notFillSubject.filter(item => item["id"] === key);
+      let {
+        id,
+        subject,
+        optionList,
+        type,
+        subjectType,
+        choice,
+        weighting
+      } = subjectInfo[0];
+      return {
+        id,
+        type: "update",
+        context: subject,
+        obj: {
+          first_option: optionList[0]["option"],
+          sec_option: optionList[1]["option"],
+          third_option: optionList[2]["option"],
+          fourth_option: optionList[3]["option"]
+        },
+        qtype: subjectType,
+        answer: subjectType === "多选题" ? choice.join() : choice,
+        grade: weighting
+      };
+    },
+
+    // 非填空题更新题目逻辑
+    update2(key, fillSubject) {
+      let fillSubjectLen = 0;
+      let weighting = fillSubject[0]["weighting"];
+      let subjectInfo = fillSubject[0]["subject"].filter(item => {
+        fillSubjectLen += 1;
+        return item["id"] === key;
+      });
+      let { id, subject, referenceAnswer } = subjectInfo[0];
+      return {
+        id,
+        type: "update",
+        context: subject,
+        obj: {
+          first_option: "",
+          sec_option: "",
+          third_option: "",
+          fourth_option: ""
+        },
+        qtype: "填空题",
+        answer: referenceAnswer,
+        grade: weighting / fillSubjectLen
+      };
+    },
+
+    // 对题目只执行更新操作
+    async updateOnlineSubject() {
       let questions = [];
       await Promise.all(
         this.inputInfo.map(async item => {
           let [first, second, third, fourth] = item["optionList"];
           let { subject, choice, weighting, subjectType, id } = item;
           let answer = subjectType === "多选题" ? choice.join() : choice;
-
           if (subjectType !== "填空题") {
             questions = [
               {
@@ -423,6 +600,7 @@ export default {
         })
       );
       this.showModal = false;
+      this.showModal2 = false;
       this.setInputInfo([]);
       this.$Notice.success({
         title: "修改成功！"

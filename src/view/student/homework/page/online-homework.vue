@@ -38,6 +38,7 @@
 
     <WriteOnlineHomework
       :modalOpen.sync="showModal2"
+      @endTimeDoing="endTimeDoing"
       @handleOk="handleOk"
       @handleCancel="handleCancel"
     />
@@ -48,6 +49,7 @@
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import WriteOnlineHomework from "@stuHomework/smart/write-online-homework";
 import myMixin from "@/view/global/mixin";
+import { getlocalStorage, getCurDate } from "@tools";
 import { mapActions, mapState, mapMutations } from "vuex";
 
 export default {
@@ -59,27 +61,13 @@ export default {
   },
 
   computed: {
-    getAllCourse() {
-      return [
-        {
-          course: "新媒体综合实训",
-          stuclass: "AND",
-          teacher: "程亮"
-        },
-        {
-          course: "HTML5网页设计",
-          stuclass: "AMT",
-          teacher: "程亮"
-        }
-      ];
-    },
-
     ...mapState({
       userName: state => state.user.userName,
       stuId: state => state.user.stu_nmuber,
       inputInfo: state => state.homework.inputInfo,
       courseList: state => state.homework.courseList,
-      tableInfo: state => state.homework.onlineHWInfo
+      tableInfo: state => state.homework.onlineHWInfo,
+      remainTime: state => state.homework.remainTime
     })
   },
 
@@ -169,6 +157,7 @@ export default {
   async mounted() {
     await this.setCourseSelList();
     await this.getTableData();
+    await this.autoSubmit();
   },
 
   methods: {
@@ -180,114 +169,44 @@ export default {
 
     ...mapMutations(["setInputInfo"]),
 
+    // 掉线下次再进来就自动提交题目
+    async autoSubmit() {
+      let inputInfo = getlocalStorage("inputInfo");
+      let seconds = getlocalStorage("remainTime");
+      if (inputInfo && seconds) {
+        await this.submitOnlineHW(seconds);
+        this.setInputInfo([]);
+        localStorage.removeItem("inputInfo");
+      }
+    },
+
+    // 获取表格数据
     async getTableData(page = 1) {
-      this.loading = true;
-      await this.getStuOnlineHW({
-        page,
-        obj:
-          this.selectList[1]["value"] === "所有课程"
-            ? this.getAllCourse
-            : [
-                {
-                  course: this.selectList[1]["value"],
-                  stuclass: "ATM",
-                  teacher: "程亮"
-                }
-              ],
-        semester: this.selectList[0]["value"],
-        classHour:
-          this.selectList[2]["value"] === "所有课时"
-            ? undefined
-            : this.selectList[2]["value"],
-        student: this.userName,
-        stuId: this.stuId
-      });
-      this.loading = false;
+      await this.getTableList("getStuOnlineHW", page);
     },
 
+    // 选择学年
     async changeYear(value) {
-      this.loading = true;
-      await this.getStuOnlineHW({
-        // TODO: 暂时写死，课程信息由课程接口返回
-        obj:
-          this.selectList[1]["value"] === "所有课程"
-            ? this.getAllCourse
-            : [
-                {
-                  course: this.selectList[1]["value"],
-                  stuclass: "ATM",
-                  teacher: "程亮"
-                }
-              ],
-        semester: value,
-        classHour:
-          this.selectList[2]["value"] === "所有课时"
-            ? undefined
-            : this.selectList[2]["value"],
-        student: this.userName,
-        stuId: this.stuId
-      });
-      this.loading = false;
+      await this.yearChange("getStuOnlineHW", value);
     },
 
+    // 课程选择
     async changeCourse(value) {
-      this.loading = true;
-      let getId = this.courseList.reduce((arr, item) => {
-        if (item["name"] === value) {
-          arr.push(item["id"]);
-        }
-        return arr;
-      }, []);
-      await this.setClassHourSelList(getId[0]);
-      await this.getStuOnlineHW({
-        obj:
-          value === "所有课程"
-            ? this.getAllCourse
-            : [
-                {
-                  course: value,
-                  stuclass: "ATM",
-                  teacher: "程亮"
-                }
-              ],
-        semester: this.selectList[0]["value"],
-        classHour:
-          this.selectList[2]["value"] === "所有课时"
-            ? undefined
-            : this.selectList[2]["value"],
-        student: this.userName,
-        stuId: this.stuId
-      });
-      this.loading = false;
+      await this.courseChange("getStuOnlineHW", value);
     },
 
+    // 课时选择
     async changeClassHour(value) {
-      this.loading = true;
-      await this.getStuOnlineHW({
-        obj:
-          this.selectList[1]["value"] === "所有课程"
-            ? this.getAllCourse
-            : [
-                {
-                  course: this.selectList[1]["value"],
-                  stuclass: "ATM",
-                  teacher: "程亮"
-                }
-              ],
-        semester: this.selectList[0]["value"],
-        classHour: value === "所有课时" ? undefined : value,
-        student: this.userName,
-        stuId: this.stuId
-      });
-      this.loading = false;
+      await this.classHourChange("getStuOnlineHW", value);
     },
 
+    // 获取在线作业题目信息
     async getSubjectList(id) {
       await this.getStuOnlineSubject(id);
     },
 
-    async handleOk(seconds) {
-      this.curDirectory = 1;
+    // 提交作业
+    async submitOnlineHW(seconds) {
       let questions = null;
       await Promise.all(
         this.inputInfo.map(async (item, index) => {
@@ -312,12 +231,29 @@ export default {
           }
           let res = await this.stuSubmitOnlineHW({
             id: this.stuHomeworkId,
-            submit_time: this.$tools.getCurDate(),
+            submit_time: getCurDate(),
             surplus_time: seconds,
             questions
           });
         })
       );
+    },
+
+    // 时间为 0 时的回调
+    async endTimeDoing(seconds) {
+      await this.submitOnlineHW(seconds);
+      this.curDirectory = 1;
+      this.setInputInfo([]);
+      this.showModal2 = false;
+      this.$Notice.success({
+        title: "没有剩余时间自动提交作业成功"
+      });
+    },
+
+    // 点击 modal 确定按钮提交作业
+    async handleOk(seconds) {
+      await this.submitOnlineHW(seconds);
+      this.curDirectory = 1;
       this.setInputInfo([]);
       this.showModal2 = false;
       this.$Notice.success({

@@ -6,7 +6,25 @@ const myMixin = {
   computed: {
     ...mapState({
       role: state => state.user.role,
+      courseList: state => state.homework.courseList,
     }),
+
+    allCourseList() {
+      return this.courseList.map(item => {
+        let { name, classes, teacher } = item;
+        return {
+          course: name,
+          stuclass: classes,
+          teacher,
+        };
+      });
+    },
+
+    selectCourse() {
+      return value => {
+        return this.allCourseList.filter(item => item['course'] === value);
+      };
+    },
   },
 
   methods: {
@@ -231,6 +249,114 @@ const myMixin = {
       let res = await this.getClassHourList(courseId);
       let selectList = this.selectList;
       selectList[2]['list'] = res;
+      this.selectList = selectList;
+    },
+
+    // 获取表格数据
+    async getTableList(apiName, page = 1) {
+      this.loading = true;
+      let semester = this.selectList[0]['value'];
+      let course = this.selectList[1]['value'];
+      let classHour = this.selectList[2]['value'];
+      await this[apiName]({
+        page,
+        obj: course === '所有课程' ? this.allCourseList : this.selectCourse(course),
+        semester,
+        classHour: classHour === '所有课时' ? undefined : classHour,
+        student: this.userName,
+        stuId: this.stuId,
+      });
+      this.loading = false;
+    },
+
+    // 选择学年
+    async yearChange(apiName, value) {
+      this.loading = true;
+      this.resetSelList();
+      let semester = value;
+      let course = this.selectList[1]['value'];
+      let classHour = this.selectList[2]['value'];
+      await this.setCourseSelList(semester);
+      await this[apiName]({
+        obj: course === '所有课程' ? this.allCourseList : this.selectCourse(course),
+        semester,
+        classHour: classHour === '所有课时' ? undefined : classHour,
+        student: this.userName,
+        stuId: this.stuId,
+      });
+      this.loading = false;
+    },
+
+    // 选择课程
+    async courseChange(apiName, value) {
+      this.loading = true;
+      this.resetClassHour();
+      let semester = this.selectList[0]['value'];
+      let course = value;
+      let classHour = this.selectList[2]['value'];
+      let getId = this.courseList.reduce((arr, item) => {
+        if (item['name'] === value) {
+          arr.push(item['id']);
+        }
+        return arr;
+      }, []);
+      await this.setClassHourSelList(getId[0]);
+      await this[apiName]({
+        obj: course === '所有课程' ? this.allCourseList : this.selectCourse(course),
+        semester,
+        classHour: classHour === '所有课时' ? undefined : classHour,
+        student: this.userName,
+        stuId: this.stuId,
+      });
+      this.loading = false;
+    },
+
+    // 选择学时
+    async classHourChange(apiName, value) {
+      this.loading = true;
+      let semester = this.selectList[0]['value'];
+      let course = this.selectList[1]['value'];
+      let classHour = value;
+      await this[apiName]({
+        obj: course === '所有课程' ? this.allCourseList : this.selectCourse(course),
+        semester,
+        classHour: classHour === '所有课时' ? undefined : classHour,
+        student: this.userName,
+        stuId: this.stuId,
+      });
+      this.loading = false;
+    },
+
+    // 重置所有选项
+    resetSelList() {
+      let selectList = this.selectList;
+      selectList[1]['value'] = '所有课程';
+      selectList[1]['list'] = [
+        {
+          value: '所有课程',
+          label: '所有课程',
+        },
+      ];
+      selectList[2]['value'] = '所有课时';
+      selectList[2]['list'] = [
+        {
+          value: '所有课时',
+          label: '所有课时',
+        },
+      ];
+      this.selectList = selectList;
+    },
+
+    // 重置所有课时
+    resetClassHour() {
+      let selectList = this.selectList;
+      selectList[2]['value'] = '所有课时';
+      selectList[2]['list'] = [
+        {
+          value: '所有课时',
+          label: '所有课时',
+        },
+      ];
       this.selectList = selectList;
     },
   },

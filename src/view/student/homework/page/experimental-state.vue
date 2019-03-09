@@ -76,23 +76,7 @@ export default {
       stuId: state => state.user.stu_nmuber,
       courseList: state => state.homework.courseList,
       tableInfo: state => state.homework.stuMyHWList
-    }),
-
-    getAllCourse() {
-      // TODO: 改为查询vuex的courseList，处理成这样的数据，如果是查单个课程就筛选这个数组
-      return [
-        {
-          course: "新媒体综合实训",
-          stuclass: "AND",
-          teacher: "程亮"
-        },
-        {
-          course: "HTML5网页设计",
-          stuclass: "AMT",
-          teacher: "程亮"
-        }
-      ];
-    }
+    })
   },
 
   data() {
@@ -231,108 +215,22 @@ export default {
 
     // 获取表格数据
     async getTableData(page = 1) {
-      this.loading = true;
-      await this.getStuMyHWlist({
-        page,
-        obj:
-          this.selectList[1]["value"] === "所有课程"
-            ? this.getAllCourse
-            : [
-                {
-                  course: this.selectList[1]["value"],
-                  stuclass: "ATM",
-                  teacher: "程亮"
-                }
-              ],
-        semester: this.selectList[0]["value"],
-        classHour:
-          this.selectList[2]["value"] === "所有课时"
-            ? undefined
-            : this.selectList[2]["value"],
-        student: this.userName,
-        stuId: this.stuId
-      });
-      this.loading = false;
+      await this.getTableList("getStuMyHWlist", page);
     },
 
     // 学年选择
     async changeYear(value) {
-      this.loading = true;
-      await this.getStuMyHWlist({
-        // TODO: 暂时写死，课程信息由课程接口返回
-        obj:
-          this.selectList[1]["value"] === "所有课程"
-            ? this.getAllCourse
-            : [
-                {
-                  course: this.selectList[1]["value"],
-                  stuclass: "ATM",
-                  teacher: "程亮"
-                }
-              ],
-        semester: value,
-        classHour:
-          this.selectList[2]["value"] === "所有课时"
-            ? undefined
-            : this.selectList[2]["value"],
-        student: this.userName,
-        stuId: this.stuId
-      });
-      this.loading = false;
+      await this.yearChange("getStuMyHWlist", value);
     },
 
     // 课程选择
     async changeCourse(value) {
-      this.loading = true;
-      let getId = this.courseList.reduce((arr, item) => {
-        if (item["name"] === value) {
-          arr.push(item["id"]);
-        }
-        return arr;
-      }, []);
-      await this.setClassHourSelList(getId[0]);
-      await this.getStuMyHWlist({
-        obj:
-          value === "所有课程"
-            ? this.getAllCourse
-            : [
-                {
-                  course: value,
-                  stuclass: "ATM",
-                  teacher: "程亮"
-                }
-              ],
-        semester: this.selectList[0]["value"],
-        classHour:
-          this.selectList[2]["value"] === "所有课时"
-            ? undefined
-            : this.selectList[2]["value"],
-        student: this.userName,
-        stuId: this.stuId
-      });
-      this.loading = false;
+      await this.courseChange("getStuMyHWlist", value);
     },
 
     // 学时选择
     async changeClassHour(value) {
-      this.loading = true;
-      await this.getStuMyHWlist({
-        obj:
-          this.selectList[1]["value"] === "所有课程"
-            ? this.getAllCourse
-            : [
-                {
-                  course: this.selectList[1]["value"],
-                  stuclass: "ATM",
-                  teacher: "程亮"
-                }
-              ],
-        semester: this.selectList[0]["value"],
-        classHour: value === "所有课时" ? undefined : value,
-        student: this.userName,
-        stuId: this.stuId
-      });
-      this.loading = false;
+      await this.classHourChange("getStuMyHWlist", value);
     },
 
     // 获取在线作业题目

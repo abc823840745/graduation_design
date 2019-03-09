@@ -49,7 +49,7 @@
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import MyHomework from "@teaHomework/smart/my-homework";
 import myMixin from "@/view/global/mixin";
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapState, mapMutations } from "vuex";
 
 export default {
   mixins: [myMixin],
@@ -60,15 +60,21 @@ export default {
   },
 
   computed: {
-    getAllCourse() {
-      return ["新媒体综合实训", "HTML5网页设计"];
-    },
-
     ...mapState({
       userName: state => state.user.userName,
       tableInfo: state => state.homework.taskCenterInfo,
       courseList: state => state.homework.courseList
-    })
+    }),
+
+    allCourseList() {
+      return this.courseList.map(item => item.name);
+    },
+
+    selectCourse() {
+      return value => {
+        return this.allCourseList.filter(item => item === value);
+      };
+    }
   },
 
   data() {
@@ -179,7 +185,7 @@ export default {
   },
 
   async mounted() {
-    await this.setCourseSelList(this.getCurSchoolYear());
+    await this.setCourseSelList();
     await this.getTableData();
   },
 
@@ -192,20 +198,22 @@ export default {
       "getTeaSubject"
     ]),
 
+    ...mapMutations(["setOriginInputInfo"]),
+
     // 获取表格信息
-    async getTableData(page) {
+    async getTableData(page = 1) {
       this.loading = true;
+      let semester = this.selectList[0]["value"];
+      let course = this.selectList[1]["value"];
+      let classHour = this.selectList[2]["value"];
       await this.getTeaHW({
         page,
         course:
-          this.selectList[1]["value"] === "所有课程"
-            ? this.getAllCourse
-            : [this.selectList[1]["value"]],
-        semester: this.selectList[0]["value"],
-        classHour:
-          this.selectList[2]["value"] === "所有课时"
-            ? undefined
-            : this.selectList[2]["value"],
+          course === "所有课程"
+            ? this.allCourseList
+            : this.selectCourse(course),
+        semester,
+        classHour: classHour === "所有课时" ? undefined : classHour,
         teacher: this.userName
       });
       this.loading = false;
@@ -214,17 +222,18 @@ export default {
     // 学年选择筛选
     async changeYear(value) {
       this.loading = true;
+      this.resetSelList();
+      let semester = value;
+      let course = this.selectList[1]["value"];
+      let classHour = this.selectList[2]["value"];
       await this.setCourseSelList(value);
       await this.getTeaHW({
         course:
-          this.selectList[1]["value"] === "所有课程"
-            ? this.getAllCourse
-            : [this.selectList[1]["value"]],
-        semester: value,
-        classHour:
-          this.selectList[2]["value"] === "所有课时"
-            ? undefined
-            : this.selectList[2]["value"],
+          course === "所有课程"
+            ? this.allCourseList
+            : this.selectCourse(course),
+        semester,
+        classHour: classHour === "所有课时" ? undefined : classHour,
         teacher: this.userName
       });
       this.loading = false;
@@ -233,6 +242,10 @@ export default {
     // 课程选择筛选
     async changeCourse(value) {
       this.loading = true;
+      this.resetClassHour();
+      let semester = this.selectList[0]["value"];
+      let course = value;
+      let classHour = this.selectList[2]["value"];
       let getId = this.courseList.reduce((arr, item) => {
         if (item["name"] === value) {
           arr.push(item["id"]);
@@ -241,12 +254,12 @@ export default {
       }, []);
       await this.setClassHourSelList(getId[0]);
       await this.getTeaHW({
-        course: value === "所有课程" ? this.getAllCourse : [value],
-        semester: this.selectList[0]["value"],
-        classHour:
-          this.selectList[2]["value"] === "所有课时"
-            ? undefined
-            : this.selectList[2]["value"],
+        course:
+          course === "所有课程"
+            ? this.allCourseList
+            : this.selectCourse(course),
+        semester,
+        classHour: classHour === "所有课时" ? undefined : classHour,
         teacher: this.userName
       });
       this.loading = false;
@@ -255,22 +268,125 @@ export default {
     // 课时选择筛选
     async changeClassHour(value) {
       this.loading = true;
+      let semester = this.selectList[0]["value"];
+      let course = this.selectList[1]["value"];
+      let classHour = value;
       await this.getTeaHW({
         course:
-          this.selectList[1]["value"] === "所有课程"
-            ? this.getAllCourse
-            : [this.selectList[1]["value"]],
-        semester: this.selectList[0]["value"],
-        classHour: value === "所有课时" ? undefined : value,
+          course === "所有课程"
+            ? this.allCourseList
+            : this.selectCourse(course),
+        semester,
+        classHour: classHour === "所有课时" ? undefined : classHour,
         teacher: this.userName
       });
       this.loading = false;
+    },
+
+    // 重置所有选项
+    resetSelList() {
+      let selectList = this.selectList;
+      selectList[1]["value"] = "所有课程";
+      selectList[1]["list"] = [
+        {
+          value: "所有课程",
+          label: "所有课程"
+        }
+      ];
+      selectList[2]["value"] = "所有课时";
+      selectList[2]["list"] = [
+        {
+          value: "所有课时",
+          label: "所有课时"
+        }
+      ];
+      this.selectList = selectList;
+    },
+
+    // 重置所有课时
+    resetClassHour() {
+      let selectList = this.selectList;
+      selectList[2]["value"] = "所有课时";
+      selectList[2]["list"] = [
+        {
+          value: "所有课时",
+          label: "所有课时"
+        }
+      ];
+      this.selectList = selectList;
     },
 
     // 修改模式获取题目数据
     async getSubjectData(id) {
       if (this.itemInfo["classify"] === "在线作业") {
         let res = await this.getTeaSubject(id);
+        let executeOnce = true;
+        let data = res.data.data;
+        let inputInfo = data.reduce((arr, item, index) => {
+          let optionList = [
+            {
+              label: "A",
+              option: item["first_option"]
+            },
+            {
+              label: "B",
+              option: item["sec_option"]
+            },
+            {
+              label: "C",
+              option: item["third_option"]
+            },
+            {
+              label: "D",
+              option: item["fourth_option"]
+            }
+          ];
+
+          if (item["type"] !== "填空题") {
+            arr.push({
+              id: item["id"],
+              subject: item["context"],
+              subjectType: item["type"],
+              title: `${index + 1}、${item["type"]}`,
+              choice:
+                item["type"] === "多选题"
+                  ? item["answer"].split(",")
+                  : item["answer"],
+              optionList,
+              weighting: item["grade"]
+            });
+          } else {
+            if (executeOnce) {
+              // 填空题只有一条大题，所以只执行一次
+              executeOnce = false;
+              let subjectLength = 0;
+              let subject = data.reduce((arr, item) => {
+                if (item["type"] === "填空题") {
+                  // 记录填空题的题数
+                  subjectLength += 1;
+                  arr.push({
+                    id: item["id"],
+                    subject: item["context"],
+                    answer: "",
+                    referenceAnswer: item["answer"],
+                    showCreSubjectBtn: true
+                  });
+                }
+                return arr;
+              }, []);
+              arr.push({
+                subject,
+                subjectType: item["type"],
+                title: `${index + 1}、${item["type"]}`,
+                choice: item["answer"],
+                optionList,
+                weighting: item["grade"] * subjectLength
+              });
+            }
+          }
+          return arr;
+        }, []);
+        this.setOriginInputInfo(inputInfo);
       }
     },
 

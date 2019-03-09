@@ -77,7 +77,7 @@
         <InputNumber
           v-if="type === 'score'"
           :max="100"
-          :min="0"
+          :min="5"
           :step="10"
           @on-change="scoreChange"
         ></InputNumber>
@@ -88,6 +88,7 @@
 
 <script>
 import { mapState, mapMutations } from "vuex";
+import { setlocalStorage } from "@tools";
 
 export default {
   props: {
@@ -142,11 +143,7 @@ export default {
     ...mapMutations(["setInputInfo"]),
 
     setChoice() {
-      if (
-        this.type === "create" ||
-        this.type === "check" ||
-        this.type === "score"
-      ) {
+      if (this.type !== "testing") {
         this.choice = this.info["choice"][0].split(",");
       }
     },
@@ -171,6 +168,7 @@ export default {
     choiceChange(value) {
       let inputInfo = this.inputInfo;
       inputInfo[this.index]["choice"] = this.choice;
+      setlocalStorage("inputInfo", inputInfo);
       this.setInputInfo(inputInfo);
     },
 

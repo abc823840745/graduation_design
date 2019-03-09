@@ -85,7 +85,8 @@ export default {
   methods: {
     endTimeDoing() {
       this.isStartTimer = false;
-      console.log("结束后的回调");
+      let remainingTime = this.$refs.countDown.remainingTime;
+      this.$emit("endTimeDoing", remainingTime);
     },
 
     handleOk() {

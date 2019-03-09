@@ -77,6 +77,13 @@ export default {
   },
 
   computed: {
+    ...mapState({
+      userName: state => state.user.userName,
+      stuId: state => state.user.stu_nmuber,
+      courseList: state => state.homework.courseList,
+      tableInfo: state => state.homework.experMangerInfo
+    }),
+
     uploadUrl() {
       const baseUrl =
         process.env.NODE_ENV === "development"
@@ -84,39 +91,7 @@ export default {
           : config.baseUrl.pro;
       const uploadUrl = baseUrl + "/upload/teacher/exper";
       return uploadUrl;
-    },
-
-    getAllCourse() {
-      return [
-        {
-          course: "新媒体综合实训",
-          stuclass: "AND",
-          teacher: "程亮"
-        },
-        {
-          course: "HTML5网页设计",
-          stuclass: "AMT",
-          teacher: "程亮"
-        }
-      ];
-    },
-
-    ...mapState({
-      userName: state => state.user.userName,
-      stuId: state => state.user.stu_nmuber,
-      courseList: state => state.homework.courseList,
-      tableInfo: state => state.homework.experMangerInfo,
-      allCourse: state => {
-        state.homework.courseList.map(item => {
-          let { name, classes } = item;
-          return {
-            course: name,
-            stuclass: classes,
-            teacher: ""
-          };
-        });
-      }
-    })
+    }
   },
 
   data() {
@@ -213,108 +188,22 @@ export default {
 
     // 获取表格数据
     async getTableData(page = 1) {
-      this.loading = true;
-      await this.getStuClassHW({
-        page,
-        obj:
-          this.selectList[1]["value"] === "所有课程"
-            ? this.getAllCourse
-            : [
-                {
-                  course: this.selectList[1]["value"],
-                  stuclass: "ATM",
-                  teacher: "程亮"
-                }
-              ],
-        semester: this.selectList[0]["value"],
-        classHour:
-          this.selectList[2]["value"] === "所有课时"
-            ? undefined
-            : this.selectList[2]["value"],
-        student: this.userName,
-        stuId: this.stuId
-      });
-      this.loading = false;
+      await this.getTableList("getStuClassHW", page);
     },
 
     // 选择学年
     async changeYear(value) {
-      this.loading = true;
-      await this.getStuClassHW({
-        // TODO: 暂时写死，课程信息由课程接口返回
-        obj:
-          this.selectList[1]["value"] === "所有课程"
-            ? this.getAllCourse
-            : [
-                {
-                  course: this.selectList[1]["value"],
-                  stuclass: "ATM",
-                  teacher: "程亮"
-                }
-              ],
-        semester: value,
-        classHour:
-          this.selectList[2]["value"] === "所有课时"
-            ? undefined
-            : this.selectList[2]["value"],
-        student: this.userName,
-        stuId: this.stuId
-      });
-      this.loading = false;
+      await this.yearChange("getStuClassHW", value);
     },
 
     // 选择课程
     async changeCourse(value) {
-      this.loading = true;
-      let getId = this.courseList.reduce((arr, item) => {
-        if (item["name"] === value) {
-          arr.push(item["id"]);
-        }
-        return arr;
-      }, []);
-      await this.setClassHourSelList(getId[0]);
-      await this.getStuClassHW({
-        obj:
-          value === "所有课程"
-            ? this.getAllCourse
-            : [
-                {
-                  course: value,
-                  stuclass: "ATM",
-                  teacher: "程亮"
-                }
-              ],
-        semester: this.selectList[0]["value"],
-        classHour:
-          this.selectList[2]["value"] === "所有课时"
-            ? undefined
-            : this.selectList[2]["value"],
-        student: this.userName,
-        stuId: this.stuId
-      });
-      this.loading = false;
+      await this.courseChange("getStuClassHW", value);
     },
 
     // 选择学时
     async changeClassHour(value) {
-      this.loading = true;
-      await this.getStuClassHW({
-        obj:
-          this.selectList[1]["value"] === "所有课程"
-            ? this.getAllCourse
-            : [
-                {
-                  course: this.selectList[1]["value"],
-                  stuclass: "ATM",
-                  teacher: "程亮"
-                }
-              ],
-        semester: this.selectList[0]["value"],
-        classHour: value === "所有课时" ? undefined : value,
-        student: this.userName,
-        stuId: this.stuId
-      });
-      this.loading = false;
+      await this.classHourChange("getStuClassHW", value);
     },
 
     async handleSuccess(result) {

@@ -1,12 +1,14 @@
 <template>
   <div>
-    <slot :remainingTime='remainingTime'>
-      {{remainingTime}}
+    <slot :remainingTime="remainingTime">
+      {{ remainingTime }}
     </slot>
   </div>
 </template>
 
 <script>
+import { setlocalStorage } from "@tools";
+
 export default {
   props: {
     isStartTimer: {
@@ -64,6 +66,7 @@ export default {
         this.isStopTimer = true;
       }
       this.remainingTime = this.remainingTime - 1;
+      setlocalStorage("remainTime", this.remainingTime);
       this.timer = setTimeout(this.startTimer, this.timeTnterval * 1000);
     },
 

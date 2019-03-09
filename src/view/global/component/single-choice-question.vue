@@ -79,7 +79,7 @@
         <InputNumber
           v-if="type === 'score'"
           :max="100"
-          :min="0"
+          :min="5"
           :step="10"
           @on-change="scoreChange"
         ></InputNumber>
@@ -90,6 +90,7 @@
 
 <script>
 import { mapState, mapMutations } from "vuex";
+import { setlocalStorage } from "@tools";
 
 export default {
   props: {
@@ -161,6 +162,7 @@ export default {
     choiceChange(value) {
       let inputInfo = this.inputInfo;
       inputInfo[this.index]["choice"] = value;
+      setlocalStorage("inputInfo", inputInfo);
       this.setInputInfo(inputInfo);
     },
 

@@ -31,7 +31,7 @@
         >
       </div>
 
-      <div class="btn-ground" v-if="type === 'create'">
+      <div class="btn-ground">
         <Dropdown @on-click="createSubject">
           <Button type="primary">
             新建题目
@@ -53,6 +53,7 @@
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import SubjectType from "@/view/global/component/show-subject-different-types";
 import { mapMutations, mapState } from "vuex";
+import { type } from "os";
 
 export default {
   name: "create-subject",
@@ -80,7 +81,9 @@ export default {
 
   computed: {
     ...mapState({
-      inputInfo: state => state.homework.inputInfo
+      inputInfo: state => state.homework.inputInfo,
+      optionList: state => state.homework.optionList,
+      originalInfo: state => state.homework.originalInfo
     })
   },
 
@@ -88,6 +91,7 @@ export default {
     return {
       isShowModal: false,
       subjectClassify: "单选题",
+
       subjectClassifyList: [
         {
           value: "单选题",
@@ -110,7 +114,7 @@ export default {
   },
 
   methods: {
-    ...mapMutations(["setInputInfo"]),
+    ...mapMutations(["setInputInfo", "setOptionList"]),
 
     submit() {
       if (
@@ -127,7 +131,7 @@ export default {
     },
 
     // 新建题目
-    createSubject(name) {
+    createSubject(type) {
       /**
        * @subjectType 标题类型
        * @subject 作业题目
@@ -135,12 +139,15 @@ export default {
        * @placeholder 输入框提示
        * @choice 选择的答案
        */
+      let index = 0;
       let inputInfo = this.inputInfo;
+      let key = Math.round(new Date().getTime() / 1000).toString();
       let subject =
-        name !== "填空题"
+        type !== "填空题"
           ? ""
           : [
               {
+                key,
                 subject: "",
                 answer: "",
                 referenceAnswer: "",
@@ -161,31 +168,91 @@ export default {
           option: ""
         }
       ];
-      inputInfo.push({
+      let length = inputInfo.push({
+        key: type === "填空题" ? "" : key,
         subject,
-        subjectType: name,
-        title: `${inputInfo.length + 1}、${name}`,
-        choice: name === "多选题" ? [] : "",
+        subjectType: type,
+        title: `${inputInfo.length + 1}、${type}`,
+        choice: type === "多选题" ? [] : "",
         optionList,
         weighting: 10
       });
+      index = length - 1;
       this.setInputInfo(inputInfo);
+
+      // 编辑状态存一个题目索引用来记录题目修改情况
+      if (this.type !== "create") {
+        let optionList = this.optionList;
+        optionList.push({
+          key,
+          subjectType: type,
+          type: "add"
+        });
+        let filterData = this.reduceData(optionList);
+        this.setOptionList(filterData);
+      }
     },
 
     // 删除题目
     delSubject(index) {
       let inputInfo = this.inputInfo;
+      let { key, id, subjectType } = inputInfo[index];
+      let keys = key || id;
       inputInfo.splice(index, 1);
       inputInfo.forEach((item, index) => {
         item["title"] = `${index + 1}、${item["subjectType"]}`;
       });
       this.setInputInfo(inputInfo);
+      if (this.type !== "create") {
+        // 查询create数组是否有删除题目的索引，有就删除，没就添加到delete数组
+        let optionList = this.optionList;
+        let flag = optionList.some(
+          item => item["key"] === keys && item["type"] === "add"
+        );
+        if (flag) {
+          optionList = optionList.filter(item => item["key"] !== keys);
+        } else {
+          // 先过滤相同数组对象
+          optionList = optionList.filter(item => item["key"] !== keys);
+          optionList.push({
+            type: "delete",
+            subjectType,
+            key: keys
+          });
+        }
+        let filterData = this.reduceData(optionList);
+        this.setOptionList(filterData);
+      }
     },
 
     // 删除填空题小题
     delFillSubject($event, index) {
       let inputInfo = this.inputInfo;
       let fillindex = $event;
+      let { key, subjectType } = inputInfo[index];
+      let { id } = inputInfo[index]["subject"][fillindex];
+      let keys = key || id;
+
+      // 查询create数组是否有删除题目的索引，有就删除，没就添加到delete数组
+      if (this.type !== "create") {
+        let optionList = this.optionList;
+        let flag = optionList.some(
+          item => item["key"] === keys && item["type"] === "add"
+        );
+        if (flag) {
+          optionList = optionList.filter(item => item["key"] !== keys);
+        } else {
+          // 先过滤相同数组对象
+          optionList = optionList.filter(item => item["key"] !== keys);
+          optionList.push({
+            type: "delete",
+            subjectType,
+            key: keys
+          });
+        }
+        let filterData = this.reduceData(optionList);
+        this.setOptionList(filterData);
+      }
       inputInfo[index]["subject"].splice(fillindex, 1);
       let subjectListLength = inputInfo[index]["subject"].length;
 
@@ -202,6 +269,35 @@ export default {
         });
       }
       this.setInputInfo(inputInfo);
+    },
+
+    // 筛选需要update的题目，并对concat后的数组对象进行去重
+    reduceData(optionList) {
+      let list = optionList;
+      let newArr = this.originalInfo.reduce((arr, item, index) => {
+        if (!list[index] || item["id"] !== list[index]["key"]) {
+          arr.push({
+            type: "update",
+            subjectType: item["type"],
+            key: item["id"]
+          });
+        }
+        return arr;
+      }, []);
+      list = list.concat(newArr);
+      let obj = {};
+      let filterData = list.reduce((arr, item) => {
+        if (!obj[item["key"]]) {
+          obj[item["key"]] = true;
+          arr.push({
+            key: item["key"],
+            subjectType: item["subjectType"],
+            type: item["type"]
+          });
+        }
+        return arr;
+      }, []);
+      return filterData;
     }
   }
 };

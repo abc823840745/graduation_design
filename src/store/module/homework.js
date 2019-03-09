@@ -26,13 +26,18 @@ import {
   getStuMyHWlist,
   searchMyHWlist,
   getStuScoreSubject,
+  scoreOnlineHW,
+  changeSubject,
 } from '@/api/homework';
 
 export default {
   state: {
     courseList: [],
     inputInfo: [],
+    originalInfo: [],
     subjectList: [],
+    optionList: [],
+    originInputInfo: [],
     taskCenterInfo: {
       tableData: [],
       page: 1,
@@ -80,6 +85,15 @@ export default {
     setStuMyHWList(state, obj) {
       state.stuMyHWList = obj;
     },
+    setOptionList(state, arr) {
+      state.optionList = arr;
+    },
+    setOriginalInfo(state, arr) {
+      state.originalInfo = arr;
+    },
+    setOriginInputInfo(state, arr) {
+      state.originInputInfo = arr;
+    },
   },
   actions: {
     // 教师端
@@ -87,7 +101,6 @@ export default {
     async getTeaClassHW({ commit }, obj) {
       try {
         let res = await getTeaClassHW(obj);
-        console.log(res);
         return res.data.data;
       } catch (err) {
         console.error(err);
@@ -161,7 +174,9 @@ export default {
           }
           return arr;
         }, []);
+        commit('setOriginalInfo', res.data.data);
         commit('setInputInfo', inputInfo);
+        return res;
       } catch (err) {
         console.error(err);
       }
@@ -300,7 +315,6 @@ export default {
     // 课时作业评分
     async teaScoreHW({ commit }, obj) {
       try {
-        console.log(obj);
         let res = await teaScoreHW(obj);
         return res.data;
       } catch (err) {
@@ -321,6 +335,26 @@ export default {
           count: res.data.count,
           page: obj['page'] || 1,
         });
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
+    // 在线作业-教师-作业评分
+    async scoreOnlineHW({ commit }, obj) {
+      try {
+        let res = await scoreOnlineHW(obj);
+        return res.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
+    // 在线作业-老师-问题操作（增删改一体）
+    async changeSubject({ commit }, obj) {
+      try {
+        let res = await changeSubject(obj);
+        return res.data;
       } catch (err) {
         console.error(err);
       }
@@ -426,10 +460,9 @@ export default {
     },
 
     // 查看评分后的作业问题
-    async getStuScoreSubject({ commit, state }, obj) {
+    async getStuScoreSubject({ commit }, obj) {
       try {
         let res = await getStuScoreSubject(obj);
-        console.log(res);
         let data = res.data.data;
         let executeOnce = true;
         let subjectLength = 0;

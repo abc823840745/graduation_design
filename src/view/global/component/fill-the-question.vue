@@ -128,7 +128,7 @@
         <InputNumber
           v-if="type === 'score'"
           :max="100"
-          :min="0"
+          :min="5"
           :step="10"
           :value="info['score']"
           @on-change="scoreChange"
@@ -140,6 +140,7 @@
 
 <script>
 import { mapState, mapMutations } from "vuex";
+import { setlocalStorage } from "@tools";
 
 export default {
   props: {
@@ -175,6 +176,7 @@ export default {
       let inputInfo = this.inputInfo;
       inputInfo[this.pIndex]["subject"][index]["referenceAnswer"] =
         e.target.value;
+      setlocalStorage("inputInfo", inputInfo);
       this.setInputInfo(inputInfo);
     },
 

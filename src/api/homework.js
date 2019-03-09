@@ -247,6 +247,31 @@ export function getStuHW(obj) {
   });
 }
 
+// 在线作业-教师-作业评分
+export function scoreOnlineHW(obj) {
+  return axios.request({
+    data: {
+      id: obj['id'],
+      grade: obj['grade'],
+      obj: obj['obj'],
+    },
+    url: '/registerScore/teacher/inexper',
+    method: 'post',
+  });
+}
+
+// 在线作业-老师-问题操作（增删改一体）
+export function changeSubject(obj) {
+  return axios.request({
+    data: {
+      id: obj['id'],
+      arr: obj['arr'],
+    },
+    url: 'operation/teacher/question',
+    method: 'post',
+  });
+}
+
 // 学生部分
 // 查看课时作业
 export function getStuClassHW(obj) {
