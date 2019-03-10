@@ -149,15 +149,24 @@ export default {
           title: "操作",
           key: "operation",
           render: (h, params) => {
+            let { exper_startime, exper_webpath } = params.row;
+            let curDate = new Date();
+            let startDate = new Date(exper_startime);
             return h("div", [
               this.btnStyle("上传作业", h, () => {
-                this.showModal = true;
-                this.itemInfo = this.tableInfo["tableData"][params.index];
+                if (curDate >= startDate) {
+                  this.showModal = true;
+                  this.itemInfo = this.tableInfo["tableData"][params.index];
+                } else {
+                  this.$Notice.warning({
+                    title: "还没到开始时间！"
+                  });
+                }
               }),
               this.btnStyle(
                 "下载实验",
                 h,
-                () => window.open(params.row.exper_webpath),
+                () => window.open(exper_webpath),
                 "success"
               )
             ]);

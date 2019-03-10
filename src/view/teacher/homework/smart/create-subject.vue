@@ -5,6 +5,7 @@
       v-model="isShowModal"
       :title="type === 'create' ? '新建题目信息' : '修改题目信息'"
       @on-ok="$emit('modalOk')"
+      @on-cancel="$emit('modalCancel')"
     >
       <Alert show-icon v-if="inputInfo.length === 0">
         请点击新建作业按钮快点新建作业吧！
@@ -40,7 +41,9 @@
           <DropdownMenu slot="list">
             <DropdownItem name="单选题">单选题</DropdownItem>
             <DropdownItem name="多选题">多选题</DropdownItem>
-            <DropdownItem name="填空题">填空题</DropdownItem>
+            <DropdownItem name="填空题" :disabled="hasFillSub"
+              >填空题</DropdownItem
+            >
             <DropdownItem name="问答题">问答题</DropdownItem>
           </DropdownMenu>
         </Dropdown>
@@ -53,7 +56,6 @@
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import SubjectType from "@/view/global/component/show-subject-different-types";
 import { mapMutations, mapState } from "vuex";
-import { type } from "os";
 
 export default {
   name: "create-subject",
@@ -76,6 +78,9 @@ export default {
 
     isShowModal(newVal, oldVal) {
       this.$emit("update:showModal", newVal);
+      this.hasFillSub = this.inputInfo.some(
+        item => item["subjectType"] === "填空题"
+      );
     }
   },
 
@@ -91,7 +96,7 @@ export default {
     return {
       isShowModal: false,
       subjectClassify: "单选题",
-
+      hasFillSub: false,
       subjectClassifyList: [
         {
           value: "单选题",
@@ -191,6 +196,10 @@ export default {
         let filterData = this.reduceData(optionList);
         this.setOptionList(filterData);
       }
+
+      this.hasFillSub = this.inputInfo.some(
+        item => item["subjectType"] === "填空题"
+      );
     },
 
     // 删除题目
@@ -221,6 +230,7 @@ export default {
           });
         }
         let filterData = this.reduceData(optionList);
+        console.log(filterData);
         this.setOptionList(filterData);
       }
     },

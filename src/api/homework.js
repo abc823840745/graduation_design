@@ -107,6 +107,7 @@ export function addTeaOnlineHW(obj) {
       name: obj['name'],
       course: obj['course'],
       teacher: obj['teacher'],
+      teach_id: obj['teach_id'],
       semester: obj['semester'],
       week: obj['classHour'],
       totaltime: obj['totaltime'],

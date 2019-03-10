@@ -150,7 +150,9 @@ export default {
 
   computed: {
     ...mapState({
-      inputInfo: state => state.homework.inputInfo
+      inputInfo: state => state.homework.inputInfo,
+      originalInfo: state => state.homework.originalInfo,
+      optionList: state => state.homework.optionList
     }),
 
     info() {
@@ -163,7 +165,7 @@ export default {
   },
 
   methods: {
-    ...mapMutations(["setInputInfo"]),
+    ...mapMutations(["setInputInfo", "setOptionList"]),
 
     // 更新vuex的inputInfo最新值
     subjectChange(e, index) {
@@ -208,17 +210,31 @@ export default {
     // 添加题目
     addNewSubject() {
       let inputInfo = this.inputInfo;
+      let key = Math.round(new Date().getTime() / 1000).toString();
       inputInfo[this.pIndex]["subject"].forEach((item, index) => {
         if (item["showCreSubjectBtn"]) {
           item["showCreSubjectBtn"] = false;
         }
       });
       inputInfo[this.pIndex]["subject"].push({
+        key,
         subject: "",
         answer: "",
         showCreSubjectBtn: true
       });
       this.setInputInfo(inputInfo);
+
+      // 编辑状态存一个题目索引用来记录题目修改情况
+      if (this.type === "create") {
+        let optionList = this.optionList;
+        optionList.push({
+          key,
+          subjectType: "填空题",
+          type: "add"
+        });
+        let filterData = this.reduceData(optionList);
+        this.setOptionList(filterData);
+      }
     },
 
     // 删除题目
@@ -226,6 +242,35 @@ export default {
       let inputInfo = this.inputInfo;
       inputInfo[this.pIndex]["subject"].splice(index, 1);
       this.setInputInfo(inputInfo);
+    },
+
+    // 筛选需要update的题目，并对concat后的数组对象进行去重
+    reduceData(optionList) {
+      let list = optionList;
+      let newArr = this.originalInfo.reduce((arr, item, index) => {
+        if (!list[index] || item["id"] !== list[index]["key"]) {
+          arr.push({
+            type: "update",
+            subjectType: item["type"],
+            key: item["id"]
+          });
+        }
+        return arr;
+      }, []);
+      list = list.concat(newArr);
+      let obj = {};
+      let filterData = list.reduce((arr, item) => {
+        if (!obj[item["key"]]) {
+          obj[item["key"]] = true;
+          arr.push({
+            key: item["key"],
+            subjectType: item["subjectType"],
+            type: item["type"]
+          });
+        }
+        return arr;
+      }, []);
+      return filterData;
     }
   }
 };

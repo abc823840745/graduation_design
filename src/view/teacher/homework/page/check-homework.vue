@@ -31,22 +31,12 @@
       <div class="btn-ground">
         <Button
           v-show="curDirectory === 4"
-          @click="submit"
+          @click="allDownload"
           type="primary"
           class="mar-top"
           size="large"
           icon="ios-download-outline"
           >全部下载</Button
-        >
-
-        <Button
-          v-show="curDirectory === 4"
-          @click="submit"
-          type="primary"
-          class="mar-top"
-          size="large"
-          icon="ios-download-outline"
-          >提交评分</Button
         >
       </div>
     </div>
@@ -266,7 +256,7 @@ export default {
                 this.stuHwInfo = params.row;
                 this.showModal = true;
                 this.curDirectory = 6;
-                console.log(questions);
+                // console.log(questions);
                 await this.getStuSubjectList(questions);
               })
             ]);
@@ -300,8 +290,9 @@ export default {
 
     ...mapMutations(["setInputInfo"]),
 
-    submit() {
-      console.log("submit");
+    // 全部下载
+    allDownload() {
+      // TODO: 全部下载
     },
 
     // 评分

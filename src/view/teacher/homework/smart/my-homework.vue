@@ -6,6 +6,7 @@
       :homeworkInfo="info"
       :showModal.sync="showModal2"
       @modalOk="type === 'create' ? submitSubject() : updateSubject()"
+      @modalCancel="modalCancel"
     />
 
     <Modal v-model="showModal" title="新建任务">
@@ -236,7 +237,7 @@ export default {
       "changeSubject"
     ]),
 
-    ...mapMutations(["setInputInfo"]),
+    ...mapMutations(["setInputInfo", "setOptionList"]),
 
     async setClassHourList(id) {
       let res = await this.getClassHourList(id);
@@ -316,6 +317,7 @@ export default {
         semester,
         course,
         teacher,
+        teach_id: this.stu_number,
         totaltime: testingTime,
         fintime: stopTimeList[0],
         startime: stopTimeList[1]
@@ -388,15 +390,22 @@ export default {
       let notFillSubject = this.originInputInfo.filter(
         item => item["subjectType"] !== "填空题"
       );
+      let notFillSubject2 = this.inputInfo.filter(
+        item => item["subjectType"] !== "填空题"
+      );
       let fillSubject = this.originInputInfo.filter(
         item => item["subjectType"] === "填空题"
       );
       let fillSubject2 = this.inputInfo.filter(
-        item => item["subjectType"] === "填空题" && item["key"] === ""
+        item => item["subjectType"] === "填空题"
       );
+      let beforeFillSubLen =
+        fillSubject["length"] > 0 ? fillSubject[0]["subject"]["length"] : 0;
+      let curFillSubLen =
+        fillSubject2["length"] > 0 ? fillSubject2[0]["subject"]["length"] : 0;
 
-      // 判断数组长度是否变化，没有变化，则全部为更新操作
-      if (this.optionList.length === 0) {
+      // 判断数组长度和填空题小题数量是否变化，没有变化，则全部为更新操作
+      if (this.optionList.length === 0 && beforeFillSubLen === curFillSubLen) {
         await this.updateOnlineSubject();
         return;
       }
@@ -404,6 +413,7 @@ export default {
       let data = this.optionList.reduce((arr, item, index) => {
         let { key, type, subjectType } = item;
         if (item["subjectType"] !== "填空题") {
+          // 处理非填空题的逻辑
           if (type === "delete") {
             arr.push({
               id: item["key"],
@@ -411,11 +421,12 @@ export default {
             });
           } else if (type === "update") {
             // 获取该题具体数据
-            arr.push(this.update(key, notFillSubject));
+            arr.push(this.update(key, notFillSubject2));
           } else if (type === "add") {
             arr.push(this.add(key));
           }
         } else {
+          // 处理填空题的逻辑
           let key = item["key"];
           let subject = item["subject"];
           if (type === "delete") {
@@ -428,12 +439,17 @@ export default {
             });
           } else if (type === "update") {
             // 获取该题具体数据
-            arr.push(this.update2(key, fillSubject));
+            arr.push(this.update2(key, fillSubject2));
           } else if (type === "add") {
-            let weighting = fillSubject[0]["weighting"];
+            // 只执行一次，因为只有一道填空题
             if (executeOne) {
               executeOne = false;
-              arr.push(this.add2(fillSubject2, weighting));
+              let weighting = fillSubject2[0]["weighting"];
+              fillSubject2[0]["subject"].forEach((item, index, array) => {
+                // 剔除不需要添加的填空题
+                if (item["id"]) return;
+                arr.push(this.add2(item, weighting, array));
+              });
             }
           }
         }
@@ -443,10 +459,10 @@ export default {
         id: this.info["id"],
         arr: data
       });
-      console.log(res);
       this.showModal = false;
       this.showModal2 = false;
       this.setInputInfo([]);
+      this.setOptionList([]);
       this.$Notice.success({
         title: "修改成功！"
       });
@@ -476,31 +492,29 @@ export default {
           fourth_option: optionList[3]["option"]
         },
         qtype: subjectType,
-        answer: choice,
+        answer: subjectType === "多选题" ? choice.join() : choice,
         grade: weighting
       };
     },
 
     // 填空题添加逻辑
-    add2(fillSubject, weighting) {
-      fillSubject[0]["subject"].forEach((item, index, array) => {
-        let { subject, referenceAnswer } = item;
-        return {
-          type: "add",
-          context: subject,
-          root_name: this.info["name"],
-          root_id: this.info["id"],
-          obj: {
-            first_option: "",
-            sec_option: "",
-            third_option: "",
-            fourth_option: ""
-          },
-          qtype: "填空题",
-          answer: referenceAnswer,
-          grade: weighting / array.length
-        };
-      });
+    add2(item, weighting, array) {
+      let { subject, referenceAnswer } = item;
+      return {
+        type: "add",
+        context: subject,
+        root_name: this.info["name"],
+        root_id: this.info["id"],
+        obj: {
+          first_option: "",
+          sec_option: "",
+          third_option: "",
+          fourth_option: ""
+        },
+        qtype: "填空题",
+        answer: referenceAnswer,
+        grade: weighting / array.length
+      };
     },
 
     // 非填空题更新题目逻辑
@@ -531,7 +545,7 @@ export default {
       };
     },
 
-    // 非填空题更新题目逻辑
+    // 填空题更新题目逻辑
     update2(key, fillSubject) {
       let fillSubjectLen = 0;
       let weighting = fillSubject[0]["weighting"];
@@ -615,6 +629,12 @@ export default {
       this.showModal2 = true;
     },
 
+    // 取消modal事件
+    modalCancel() {
+      this.showModal = false;
+      this.showModal2 = false;
+    },
+
     // 更新课时作业信息
     async updateClassHWInfo() {
       let { name, classHour, stopTimeList } = this.homeworkInfo;
@@ -673,6 +693,7 @@ export default {
         return this.$Message.error("缺少必填信息");
       }
       this.showModal2 = true;
+      this.setInputInfo([]);
     },
 
     handleMaxSize(file) {

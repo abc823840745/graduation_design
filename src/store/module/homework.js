@@ -145,7 +145,6 @@ export default {
               id: item['id'],
               subject: item['context'],
               subjectType: item['type'],
-              title: `${index + 1}、${item['type']}`,
               choice: item['type'] === '多选题' ? item['answer'].split(',') : item['answer'],
               optionList,
               weighting: item['grade'],
@@ -172,7 +171,7 @@ export default {
               arr.push({
                 subject,
                 subjectType: item['type'],
-                title: `${index + 1}、${item['type']}`,
+
                 choice: item['answer'],
                 optionList,
                 weighting: item['grade'] * subjectLength,
@@ -181,6 +180,9 @@ export default {
           }
           return arr;
         }, []);
+        inputInfo.forEach((item, index) => {
+          item['title'] = `${index + 1}、${item['subjectType']}`;
+        });
         commit('setOriginalInfo', res.data.data);
         commit('setInputInfo', inputInfo);
         return res;
@@ -470,7 +472,6 @@ export default {
               id: item['id'],
               subject: item['context'],
               subjectType: item['type'],
-              title: `${index + 1}、${item['type']}`,
               choice: item['answer'],
               optionList,
               weighting: item['grade'],
@@ -494,7 +495,6 @@ export default {
               arr.push({
                 subject,
                 subjectType: item['type'],
-                title: `${index + 1}、${item['type']}`,
                 choice: item['answer'],
                 optionList,
                 weighting: item['grade'],
@@ -503,6 +503,9 @@ export default {
           }
           return arr;
         }, []);
+        inputInfo.forEach((item, index) => {
+          item['title'] = `${index + 1}、${item['subjectType']}`;
+        });
         commit('setInputInfo', inputInfo);
       } catch (err) {
         console.error(err);
@@ -540,7 +543,6 @@ export default {
               id: item['id'],
               subject: item['context'],
               subjectType: item['type'],
-              title: `${index + 1}、${item['type']}`,
               choice: item['stuanswer'],
               optionList,
               score: item['stugrade'],
@@ -567,7 +569,6 @@ export default {
               arr.push({
                 subject,
                 subjectType: item['type'],
-                title: `${index + 1}、${item['type']}`,
                 choice: '',
                 optionList,
                 score: item['stugrade'],
@@ -577,6 +578,9 @@ export default {
           }
           return arr;
         }, []);
+        inputInfo.forEach((item, index) => {
+          item['title'] = `${index + 1}、${item['subjectType']}`;
+        });
         commit('setInputInfo', inputInfo);
       } catch (err) {
         console.error(err);
