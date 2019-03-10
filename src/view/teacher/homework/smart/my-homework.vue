@@ -190,7 +190,8 @@ export default {
       subjectList: state => state.homework.subjectList,
       optionList: state => state.homework.optionList,
       originalInfo: state => state.homework.originalInfo,
-      originInputInfo: state => state.homework.originInputInfo
+      originInputInfo: state => state.homework.originInputInfo,
+      stu_number: state => state.user.stu_nmuber
     }),
 
     classifyList() {
@@ -291,6 +292,7 @@ export default {
           course,
           course_id,
           teacher,
+          teach_id: this.stu_number,
           startime: stopTimeList[0],
           fintime: stopTimeList[1]
         });
@@ -366,7 +368,8 @@ export default {
             let res = await this.addTeaOnlineSubject({
               root_id,
               root_name: name,
-              questions
+              questions,
+              teach_id: this.stu_number
             });
           })
         );

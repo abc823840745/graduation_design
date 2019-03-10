@@ -12,12 +12,13 @@
           class="multiple-choice"
         />
 
-        <Input
-          class="search-item"
-          search
-          enter-button
-          placeholder="请输入关键词"
-        />
+        <Button
+          type="primary"
+          icon="ios-search"
+          class="search-btn"
+          @click="searchOpen"
+          >Search</Button
+        >
       </div>
 
       <Table
@@ -42,12 +43,24 @@
       :courseId="courseId"
       @getTableData="getTableData"
     />
+
+    <Modal fullscreen title="搜索" v-model="showModal" @on-ok="searchOk">
+      <SearchView
+        :columns="columns"
+        :tableData="tableData"
+        :total="searchCount"
+        :searchLoading="searchLoading"
+        @search="getSearchResult($event)"
+        @changePage="changePage"
+      />
+    </Modal>
   </div>
 </template>
 
 <script>
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import MyHomework from "@teaHomework/smart/my-homework";
+import SearchView from "@/view/global/component/search-view";
 import myMixin from "@/view/global/mixin";
 import { mapActions, mapState, mapMutations } from "vuex";
 
@@ -56,14 +69,16 @@ export default {
 
   components: {
     MultipleChoice,
-    MyHomework
+    MyHomework,
+    SearchView
   },
 
   computed: {
     ...mapState({
       userName: state => state.user.userName,
       tableInfo: state => state.homework.taskCenterInfo,
-      courseList: state => state.homework.courseList
+      courseList: state => state.homework.courseList,
+      teaId: state => state.user.stu_nmuber
     }),
 
     allCourseList() {
@@ -81,9 +96,13 @@ export default {
     return {
       loading: true,
       modalOpen: false,
+      showModal: false,
       curIndex: 0,
       courseId: 0,
+      searchLoading: false,
+      searchCount: 0,
       itemInfo: {},
+      tableData: [],
       selectList: [
         {
           tip: "学期选择",
@@ -130,7 +149,13 @@ export default {
         {
           title: "作业类型",
           key: "classify",
-          sortable: true
+          sortable: true,
+          render: (h, params) => {
+            if (params.row.type === "online") {
+              return h("p", {}, "在线作业");
+            }
+            return h("p", {}, "课时作业");
+          }
         },
         {
           title: "截止时间",
@@ -141,7 +166,7 @@ export default {
           title: "操作",
           key: "operation",
           render: (h, params) => {
-            let { startime, course, id, classify } = params.row;
+            let { startime, course, id, type } = params.row;
             return h("div", [
               this.btnStyle("修改任务信息", h, async () => {
                 let date = new Date();
@@ -169,7 +194,7 @@ export default {
                   this.$Modal.confirm({
                     title: "确定要删除该任务？",
                     onOk: () => {
-                      if (classify === "课时作业") {
+                      if (type === "offline") {
                         return this.delClassHWInfo(params.index);
                       }
                       this.delOnlineHWInfo(params.index);
@@ -195,7 +220,8 @@ export default {
       "delTeaOnlineHW",
       "getTeaHW",
       "getTeaOnlineHW",
-      "getTeaSubject"
+      "getTeaSubject",
+      "searchMyHW"
     ]),
 
     ...mapMutations(["setOriginInputInfo"]),
@@ -412,6 +438,36 @@ export default {
           title: "删除成功！"
         });
       }
+    },
+
+    // 打开搜索页
+    searchOpen() {
+      this.showModal = true;
+    },
+
+    searchOk() {
+      this.showModal = false;
+    },
+
+    // 获取搜索结果
+    async getSearchResult(searchText, page = 1) {
+      this.searchLoading = true;
+      this.searchText = searchText;
+      let res = await this.searchMyHW({
+        page,
+        condition: searchText,
+        teach_id: this.teaId,
+        teacher: this.userName
+      });
+      console.log(res);
+      this.searchCount = res.count;
+      this.tableData = res.data;
+      this.searchLoading = false;
+    },
+
+    // 搜索表格分页
+    async changePage(page) {
+      await this.getSearchResult(this.searchText, page);
     }
   }
 };
@@ -430,6 +486,10 @@ export default {
     align-self: flex-start;
     flex-wrap: wrap;
     width: 100%;
+
+    .search-btn {
+      height: 32px;
+    }
 
     .multiple-choice {
       margin-bottom: 10px;

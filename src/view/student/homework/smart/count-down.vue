@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import { setlocalStorage } from "@tools";
+import { getlocalStorage, setlocalStorage } from "@tools";
 
 export default {
   props: {
@@ -27,6 +27,12 @@ export default {
       // 时间间隔(单位秒)
       type: Number,
       default: 1
+    }
+  },
+
+  watch: {
+    initialTime(newVal, oldVal) {
+      this.remainingTime = newVal;
     }
   },
 
@@ -60,13 +66,14 @@ export default {
     _countDown() {
       if (this.isStopTimer || this.remainingTime <= 0) {
         this.stopTimer();
+        localStorage.removeItem("remainTime");
         return this.$emit("callBack");
       }
       if (this.remainingTime - 1 <= 0) {
         this.isStopTimer = true;
       }
       this.remainingTime = this.remainingTime - 1;
-      setlocalStorage("remainTime", this.remainingTime);
+      // setlocalStorage("remainTime", this.remainingTime);
       this.timer = setTimeout(this.startTimer, this.timeTnterval * 1000);
     },
 

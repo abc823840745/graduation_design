@@ -36,13 +36,6 @@
           @onChange="item['onChange']"
           class="multiple-choice"
         />
-
-        <Input
-          class="search-item"
-          search
-          enter-button
-          placeholder="请输入关键词"
-        />
       </div>
 
       <Table

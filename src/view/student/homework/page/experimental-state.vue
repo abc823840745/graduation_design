@@ -49,7 +49,14 @@
     </Modal>
 
     <Modal fullscreen title="搜索" v-model="modalOpen" @on-ok="searchOk">
-      <SearchView />
+      <SearchView
+        :columns="columns"
+        :tableData="tableData"
+        :total="searchCount"
+        :searchLoading="searchLoading"
+        @search="getSearchResult($event)"
+        @changePage="changePage"
+      />
     </Modal>
   </div>
 </template>
@@ -60,6 +67,7 @@ import HomeworkDetail from "@stuHomework/smart/check-online-homework-detail";
 import myMixin from "@/view/global/mixin";
 import SearchView from "@/view/global/component/search-view";
 import { mapState, mapActions } from "vuex";
+import { types } from "util";
 
 export default {
   mixins: [myMixin],
@@ -85,6 +93,9 @@ export default {
       showModal: false,
       modalOpen: false,
       loading: true,
+      searchText: "",
+      searchCount: 1,
+      searchLoading: false,
       selectList: [
         {
           tip: "学期选择",
@@ -131,7 +142,13 @@ export default {
         {
           title: "作业类型",
           key: "classify",
-          sortable: true
+          sortable: true,
+          render: (h, params) => {
+            if (params.row.type === "online") {
+              return h("p", {}, "在线作业");
+            }
+            return h("p", {}, "课时作业");
+          }
         },
         {
           title: "完成状态",
@@ -169,13 +186,12 @@ export default {
           title: "操作",
           key: "operation",
           render: (h, params) => {
-            let { classify, status } = params.row;
-            if (classify === "在线作业") {
+            let { status, type, id, exper_id, webpath } = params.row;
+            if (type === "online") {
               if (status === "已完成") {
                 return h("div", [
                   this.btnStyle("查看", h, () => {
                     this.showModal = true;
-                    let { id, exper_id } = params.row;
                     this.getSubjectList(id, exper_id);
                   })
                 ]);
@@ -185,7 +201,7 @@ export default {
               if (status === "已完成") {
                 return h("div", [
                   this.btnStyle("下载", h, () => {
-                    window.open(params.row.webpath);
+                    window.open(webpath);
                   })
                 ]);
               }
@@ -193,7 +209,9 @@ export default {
             }
           }
         }
-      ]
+      ],
+
+      tableData: []
     };
   },
 
@@ -203,7 +221,12 @@ export default {
   },
 
   methods: {
-    ...mapActions(["getTeaHW", "getStuMyHWlist", "getStuScoreSubject"]),
+    ...mapActions([
+      "getTeaHW",
+      "getStuMyHWlist",
+      "getStuScoreSubject",
+      "searchMyHWlist"
+    ]),
 
     handleOk() {
       this.curDirectory = 1;
@@ -248,6 +271,26 @@ export default {
 
     searchOk() {
       this.modalOpen = false;
+    },
+
+    // 获取搜索结果
+    async getSearchResult(searchText, page = 1) {
+      this.searchLoading = true;
+      this.searchText = searchText;
+      let res = await this.searchMyHWlist({
+        page,
+        condition: searchText,
+        stuId: this.stuId,
+        student: this.userName
+      });
+      this.searchCount = res.count;
+      this.tableData = res.data;
+      this.searchLoading = false;
+    },
+
+    // 搜索表格分页
+    async changePage(page) {
+      await this.getSearchResult(this.searchText, page);
     }
   }
 };

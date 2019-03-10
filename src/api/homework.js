@@ -91,6 +91,7 @@ export function addTeaClassHW(obj) {
       course: obj['course'],
       course_id: obj['course_id'],
       teacher: obj['teacher'],
+      teach_id: obj['teach_id'],
       fintime: obj['fintime'],
       startime: obj['startime'],
     },
@@ -124,6 +125,7 @@ export function addTeaOnlineSubject(obj) {
       root_id: obj['root_id'],
       root_name: obj['root_name'],
       questions: obj['questions'],
+      teach_id: obj['teach_id'],
     },
     url: '/add/teacher/question',
     method: 'post',
@@ -272,7 +274,66 @@ export function changeSubject(obj) {
   });
 }
 
-// 学生部分
+// 教师搜索学生作业
+export function searchStuHW(obj) {
+  return axios.request({
+    data: {
+      condition: obj['condition'],
+      teacher: obj['teacher'],
+      teach_id: obj['teach_id'],
+      limit: obj['limit'] || 10,
+      page: obj['page'] || 1,
+    },
+    url: '/search/teacher/stuexper',
+    method: 'post',
+  });
+}
+
+// 教师搜索自己发布的作业
+export function searchMyHW(obj) {
+  return axios.request({
+    data: {
+      condition: obj['condition'],
+      teacher: obj['teacher'],
+      teach_id: obj['teach_id'],
+      limit: obj['limit'] || 10,
+      page: obj['page'] || 1,
+    },
+    url: '/search/teacher/exper',
+    method: 'post',
+  });
+}
+
+// 教师首页
+export function getTeaMainInfo(obj) {
+  return axios.request({
+    data: {
+      teach_id: obj['teach_id'],
+      semester: obj['semester'],
+      obj: obj['obj'],
+    },
+    url: '/get/teacher/index',
+    method: 'post',
+  });
+}
+
+/**
+ * 学生部分
+ */
+
+// 学生首页
+export function getStuMainInfo(obj) {
+  return axios.request({
+    data: {
+      stu_id: obj['stu_id'],
+      semester: obj['semester'],
+      obj: obj['obj'],
+    },
+    url: '/get/student/index',
+    method: 'post',
+  });
+}
+
 // 查看课时作业
 export function getStuClassHW(obj) {
   return axios.request({
@@ -373,6 +434,7 @@ export function stuSubmitOnlineHW(obj) {
       root_id: obj['root_id'],
       quest_id: obj['quest_id'],
       answer: obj['answer'],
+      status: obj['status'],
     },
     url: '/submit/student/inexper',
     method: 'post',

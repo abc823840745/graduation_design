@@ -174,8 +174,12 @@ export default {
 
     choiceChange(e, index) {
       let inputInfo = this.inputInfo;
-      inputInfo[this.pIndex]["subject"][index]["referenceAnswer"] =
-        e.target.value;
+      if (this.type === "create") {
+        inputInfo[this.pIndex]["subject"][index]["referenceAnswer"] =
+          e.target.value;
+      } else if (this.type === "testing") {
+        inputInfo[this.pIndex]["subject"][index]["answer"] = e.target.value;
+      }
       setlocalStorage("inputInfo", inputInfo);
       this.setInputInfo(inputInfo);
     },

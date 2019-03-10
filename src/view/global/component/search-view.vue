@@ -9,9 +9,15 @@
       @on-search="getSearchResult"
     />
 
-    <Table class="mb-10 w100" border :columns="columns" :data="tabledata" />
+    <Table
+      class="mb-10 w100"
+      border
+      :loading="searchLoading"
+      :columns="columns"
+      :data="tableData"
+    />
 
-    <Page :total="30" class="page" @on-change="changePage" />
+    <Page :total="total" class="page" @on-change="changePage" />
 
     <Modal fullscreen v-model="showModal">
       <p slot="header" style="text-align:center">
@@ -34,6 +40,13 @@ export default {
     HomeworkDetail
   },
 
+  props: {
+    tableData: Array,
+    columns: Array,
+    searchLoading: Boolean,
+    total: Number
+  },
+
   computed: {
     ...mapState({
       userName: state => state.user.userName,
@@ -44,62 +57,7 @@ export default {
   data() {
     return {
       searchText: "",
-      showModal: false,
-      columns: [
-        {
-          title: "课程名称",
-          key: "course"
-        },
-        {
-          title: "课时",
-          key: "week"
-        },
-        {
-          title: "实验名称",
-          key: "exper_name"
-        },
-        {
-          title: "作业类型",
-          key: "type"
-        },
-        {
-          title: "完成状态",
-          key: "status"
-        },
-        {
-          title: "评分",
-          key: "grade"
-        },
-        {
-          title: "操作",
-          key: "operation",
-          render: (h, params) => {
-            let { classify, status } = params.row;
-            if (classify === "在线作业") {
-              if (status === "已完成") {
-                return h("div", [
-                  this.btnStyle("查看", h, () => {
-                    this.showModal = true;
-                    let { id, exper_id } = params.row;
-                    this.getSubjectList(id, exper_id);
-                  })
-                ]);
-              }
-              return h("div", [this.disableBtnStyle("查看", h)]);
-            } else {
-              if (status === "已完成") {
-                return h("div", [
-                  this.btnStyle("下载", h, () => {
-                    window.open(params.row.webpath);
-                  })
-                ]);
-              }
-              return h("div", [this.disableBtnStyle("下载", h)]);
-            }
-          }
-        }
-      ],
-      tabledata: []
+      showModal: false
     };
   },
 
@@ -107,36 +65,14 @@ export default {
     ...mapActions(["searchMyHWlist"]),
 
     // 获取搜索结果
-    async getSearchResult(page = 1) {
-      let res = await this.searchMyHWlist({
-        page,
-        condition: this.searchText,
-        stuId: this.stuId,
-        student: this.userName
-      });
-      this.tabledata = res;
+    async getSearchResult() {
+      this.$emit("search", this.searchText);
     },
 
     // 获取分页数据
     async changePage(page) {
-      await this.getSearchResult(page);
-    },
-
-    // 获取在线作业题目
-    async getSubjectList(id, exper_id) {
-      await this.getStuScoreSubject({
-        id,
-        exper_id
-      });
+      this.$emit("changePage", page);
     }
-
-    // handleOk() {
-    //   this.curDirectory = 1;
-    // },
-
-    // handleCancel() {
-    //   this.curDirectory = 1;
-    // }
   }
 };
 </script>

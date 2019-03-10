@@ -28,6 +28,10 @@ import {
   getStuScoreSubject,
   scoreOnlineHW,
   changeSubject,
+  searchStuHW,
+  searchMyHW,
+  getTeaMainInfo,
+  getStuMainInfo,
 } from '@/api/homework';
 
 export default {
@@ -96,7 +100,10 @@ export default {
     },
   },
   actions: {
-    // 教师端
+    /**
+     *  教师端
+     */
+
     // 查看课时作业
     async getTeaClassHW({ commit }, obj) {
       try {
@@ -360,7 +367,50 @@ export default {
       }
     },
 
-    // 学生端
+    // 教师搜索学生作业
+    async searchStuHW({ commit }, obj) {
+      try {
+        let res = await searchStuHW(obj);
+        return res.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
+    // 教师搜索自己的作业
+    async searchMyHW({ commit }, obj) {
+      try {
+        let res = await searchMyHW(obj);
+        return res.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
+    // 教师首页
+    async getTeaMainInfo({ commit }, obj) {
+      try {
+        let res = await getTeaMainInfo(obj);
+        return res.data.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
+    /**
+     * 学生端
+     */
+
+    // 学生首页
+    async getStuMainInfo({ commit }, obj) {
+      try {
+        let res = await getStuMainInfo(obj);
+        return res.data.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
     // 查询课时作业
     async getStuClassHW({ commit }, obj) {
       try {
@@ -595,7 +645,7 @@ export default {
     async searchMyHWlist({ commit }, obj) {
       try {
         let res = await searchMyHWlist(obj);
-        return res.data.data;
+        return res.data;
       } catch (err) {
         console.error(err);
       }

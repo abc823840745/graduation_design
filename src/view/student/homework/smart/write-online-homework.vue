@@ -9,9 +9,9 @@
     <div class="containter">
       <div class="header-bar">
         <Alert
-          ><span class="alert-text">课程：nodejs实验</span>
-          <span class="alert-text">实验：堂上构建简单服务器</span>
-          <span class="alert-text">时间：20分钟</span></Alert
+          ><span class="alert-text">课程：{{ stuHWInfo["course"] }}</span>
+          <span class="alert-text">实验：{{ stuHWInfo["exper_name"] }}</span>
+          <span class="alert-text">时间：{{ formatMinute }}分钟</span></Alert
         >
 
         <div class="count-down-con">
@@ -20,7 +20,7 @@
             <CountDown
               ref="countDown"
               :isStartTimer="isStartTimer"
-              :initialTime="1200"
+              :initialTime="seconds"
               @callBack="endTimeDoing"
             >
               <h2 slot-scope="{ remainingTime }">
@@ -51,7 +51,8 @@ export default {
   name: "online-homework",
 
   props: {
-    modalOpen: Boolean
+    modalOpen: Boolean,
+    stuHWInfo: Object
   },
 
   components: {
@@ -66,18 +67,27 @@ export default {
 
     showModal(newVal, oldVal) {
       this.$emit("update:modalOpen", newVal);
+    },
+
+    stuHWInfo(newVal, oldVal) {
+      this.seconds = newVal["surplus_time"];
     }
   },
 
   computed: {
     ...mapState({
       inputInfo: state => state.homework.inputInfo
-    })
+    }),
+
+    formatMinute() {
+      return parseInt(this.stuHWInfo["surplus_time"] / 60, 10);
+    }
   },
 
   data() {
     return {
       isStartTimer: true, // 是否开启定时器
+      seconds: 10,
       showModal: false
     };
   },

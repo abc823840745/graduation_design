@@ -7,88 +7,93 @@ import echarts from "echarts";
 import { mapState } from "vuex";
 
 export default {
+  props: {
+    data: Array
+  },
+
   computed: {
     ...mapState({
       courseList: state => {
         return state.homework.courseList.map(item => item.name);
+      },
+
+      unfinishedData() {
+        return this.data.map(item => item["unfinished"]);
+      },
+
+      totalData() {
+        return this.data.map(item => item["count"]);
       }
     })
   },
 
-  data() {
-    return {};
+  watch: {
+    data(newVal, oldVal) {
+      this.setChartOption();
+    }
   },
 
-  mounted() {
-    // 基于准备好的dom，初始化echarts实例
-    let myChart = echarts.init(this.$refs.main);
-    let courseList = this.courseList;
-
-    // 指定图表的配置项和数据
-    let option = {
-      title: {
-        text: "每周作业汇总图表"
-      },
-      tooltip: {
-        trigger: "axis",
-        axisPointer: {
-          type: "cross",
-          label: {
-            backgroundColor: "#6a7985"
-          }
-        }
-      },
-      legend: {
-        data: ["未完成作业数量", "作业总数"]
-      },
-      grid: {
-        left: "3%",
-        right: "4%",
-        bottom: "3%",
-        containLabel: true
-      },
-      xAxis: [
-        {
-          type: "category",
-          boundaryGap: true,
-          data: courseList
-        }
-      ],
-      yAxis: [
-        {
-          type: "value",
-          max: "dataMax"
-        }
-      ],
-      series: [
-        {
-          name: "未完成作业数量",
-          type: "line",
-          stack: "总量",
-          areaStyle: {},
-          data: [120, 132, 101, 134, 90, 230, 210]
+  methods: {
+    setChartOption() {
+      // 基于准备好的dom，初始化echarts实例
+      let myChart = echarts.init(this.$refs.main);
+      let courseList = this.courseList;
+      let option = {
+        title: {
+          text: "作业汇总图表"
         },
-        {
-          name: "作业总数",
-          type: "line",
-          stack: "总量",
-          areaStyle: {},
-          data: [220, 182, 191, 234, 290, 330, 310]
-        }
-      ]
-    };
+        tooltip: {
+          trigger: "axis",
+          axisPointer: {
+            // 坐标轴指示器，坐标轴触发有效
+            type: "shadow" // 默认为直线，可选为：'line' | 'shadow'
+          }
+        },
+        legend: {
+          data: ["未完成作业数", "作业总数"]
+        },
+        grid: {
+          left: "3%",
+          right: "4%",
+          bottom: "3%",
+          containLabel: true
+        },
+        xAxis: [
+          {
+            type: "category",
+            data: courseList
+          }
+        ],
+        yAxis: [
+          {
+            type: "value",
+            max: 100
+          }
+        ],
+        series: [
+          {
+            name: "未完成作业数",
+            type: "bar",
+            data: this.unfinishedData
+          },
+          {
+            name: "作业总数",
+            type: "bar",
+            data: this.totalData
+          }
+        ]
+      };
 
-    // 使用刚指定的配置项和数据显示图表。
-    myChart.setOption(option);
+      // 使用刚指定的配置项和数据显示图表。
+      myChart.setOption(option);
+    }
   }
 };
 </script>
 
 <style lang='less' scoped>
-@import "../../../global/public.less";
-
 .echart-con {
-  .w(100%);
+  width: 100%;
   height: 350px;
 }
 </style>

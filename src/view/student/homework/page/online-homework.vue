@@ -11,13 +11,6 @@
           @onChange="item['onChange']"
           class="multiple-choice"
         />
-
-        <Input
-          class="search-item"
-          search
-          enter-button
-          placeholder="请输入关键词"
-        />
       </div>
 
       <Table
@@ -37,6 +30,7 @@
     </div>
 
     <WriteOnlineHomework
+      :stuHWInfo="stuHWInfo"
       :modalOpen.sync="showModal2"
       @endTimeDoing="endTimeDoing"
       @handleOk="handleOk"
@@ -76,6 +70,7 @@ export default {
       curDirectory: 1, // 当前的目录
       loading: true,
       stuHomeworkId: 0, // 学生作业id
+      stuHWInfo: {}, // 学生在线作业item信息
       showModal: false,
       showModal2: false,
       selectList: [
@@ -135,15 +130,17 @@ export default {
           title: "操作",
           key: "operation",
           render: (h, params) => {
-            let { exper_fintime, id, exper_id } = params.row;
+            let { exper_fintime, id, exper_id, status } = params.row;
             let curDate = new Date();
             let finDate = new Date(exper_fintime);
-            if (curDate < finDate) {
+            if (curDate < finDate && status === "未完成") {
               return h("div", [
                 this.btnStyle("完成作业", h, async () => {
                   this.showModal2 = true;
                   this.stuHomeworkId = id;
+                  this.stuHWInfo = params.row;
                   await this.getSubjectList(exper_id);
+                  await this.autoSubmit();
                 })
               ]);
             }
@@ -157,7 +154,6 @@ export default {
   async mounted() {
     await this.setCourseSelList();
     await this.getTableData();
-    await this.autoSubmit();
   },
 
   methods: {
@@ -172,11 +168,13 @@ export default {
     // 掉线下次再进来就自动提交题目
     async autoSubmit() {
       let inputInfo = getlocalStorage("inputInfo");
-      let seconds = getlocalStorage("remainTime");
-      if (inputInfo && seconds) {
-        await this.submitOnlineHW(seconds);
-        this.setInputInfo([]);
-        localStorage.removeItem("inputInfo");
+      // let seconds = getlocalStorage("remainTime");
+      if (inputInfo) {
+        this.setInputInfo(inputInfo);
+        await this.submitOnlineHW(seconds, "未完成");
+        this.$Notice.success({
+          title: "检测到你中途离开考试，已为你恢复回答"
+        });
       }
     },
 
@@ -206,7 +204,7 @@ export default {
     },
 
     // 提交作业
-    async submitOnlineHW(seconds) {
+    async submitOnlineHW(seconds, status) {
       let questions = null;
       await Promise.all(
         this.inputInfo.map(async (item, index) => {
@@ -231,6 +229,7 @@ export default {
           }
           let res = await this.stuSubmitOnlineHW({
             id: this.stuHomeworkId,
+            status,
             submit_time: getCurDate(),
             surplus_time: seconds,
             questions
@@ -241,7 +240,8 @@ export default {
 
     // 时间为 0 时的回调
     async endTimeDoing(seconds) {
-      await this.submitOnlineHW(seconds);
+      return;
+      await this.submitOnlineHW(seconds, "已完成");
       this.curDirectory = 1;
       this.setInputInfo([]);
       this.showModal2 = false;
@@ -252,13 +252,14 @@ export default {
 
     // 点击 modal 确定按钮提交作业
     async handleOk(seconds) {
-      await this.submitOnlineHW(seconds);
+      await this.submitOnlineHW(seconds, "已完成");
       this.curDirectory = 1;
       this.setInputInfo([]);
       this.showModal2 = false;
       this.$Notice.success({
         title: "提交作业成功！"
       });
+      localStorage.removeItem("inputInfo");
     },
 
     handleCancel() {

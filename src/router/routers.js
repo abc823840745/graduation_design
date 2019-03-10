@@ -326,6 +326,7 @@ export default [
         meta: {
           icon: 'ios-home',
           title: '首页',
+          notCache: true,
           access: ['student'],
         },
         component: () => import('@stuHomework/page/homework-main.vue'),
@@ -500,6 +501,7 @@ export default [
         meta: {
           icon: 'md-contacts',
           title: '首页',
+          notCache: true,
           access: ['teacher', 'admin'],
         },
         component: () => import('@teaHomework/page/homework-main.vue'),
