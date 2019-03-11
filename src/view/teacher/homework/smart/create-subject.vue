@@ -47,7 +47,34 @@
             <DropdownItem name="问答题">问答题</DropdownItem>
           </DropdownMenu>
         </Dropdown>
+
+        <Dropdown
+          trigger="click"
+          @on-click="subWarehouseOpen"
+          style="margin-left: 20px"
+        >
+          <Button type="primary">
+            从题库中选择
+            <Icon type="ios-arrow-down"></Icon>
+          </Button>
+          <DropdownMenu slot="list">
+            <DropdownItem name="单选题">
+              单选题
+            </DropdownItem>
+            <DropdownItem name="多选题">
+              多选题
+            </DropdownItem>
+            <DropdownItem name="填空题" :disabled="hasFillSub">
+              填空题
+            </DropdownItem>
+            <DropdownItem name="问答题">问答题</DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
       </div>
+    </Modal>
+
+    <Modal v-model="modalOpen" fullscreen title="题库选择">
+      <SubWarehouse />
     </Modal>
   </div>
 </template>
@@ -55,6 +82,7 @@
 <script>
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import SubjectType from "@/view/global/component/show-subject-different-types";
+import SubWarehouse from "@teaHomework/smart/subject-warehouse";
 import { mapMutations, mapState } from "vuex";
 
 export default {
@@ -68,7 +96,8 @@ export default {
 
   components: {
     MultipleChoice,
-    SubjectType
+    SubjectType,
+    SubWarehouse
   },
 
   watch: {
@@ -95,6 +124,7 @@ export default {
   data() {
     return {
       isShowModal: false,
+      modalOpen: false,
       subjectClassify: "单选题",
       hasFillSub: false,
       subjectClassifyList: [
@@ -308,6 +338,11 @@ export default {
         return arr;
       }, []);
       return filterData;
+    },
+
+    // 打开题库
+    subWarehouseOpen(subType) {
+      this.modalOpen = true;
     }
   }
 };

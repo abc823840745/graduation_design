@@ -19,18 +19,18 @@
 
     <Page :total="total" class="page" @on-change="changePage" />
 
-    <Modal fullscreen v-model="showModal">
+    <!-- <Modal fullscreen v-model="showModal">
       <p slot="header" style="text-align:center">
         搜索
       </p>
       <HomeworkDetail />
-    </Modal>
+    </Modal> -->
   </div>
 </template>
 
 <script>
 import HomeworkDetail from "@stuHomework/smart/check-online-homework-detail";
-import { mapActions, mapState } from "vuex";
+import { mapState } from "vuex";
 import myMixin from "@/view/global/mixin";
 
 export default {
@@ -62,8 +62,6 @@ export default {
   },
 
   methods: {
-    ...mapActions(["searchMyHWlist"]),
-
     // 获取搜索结果
     async getSearchResult() {
       this.$emit("search", this.searchText);
@@ -79,6 +77,7 @@ export default {
 
 <style lang='less' scoped>
 @import "../public.less";
+
 .search-con {
   display: flex;
   flex-direction: column;
