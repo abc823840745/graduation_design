@@ -133,7 +133,7 @@ export default {
             let { exper_fintime, id, exper_id, status } = params.row;
             let curDate = new Date();
             let finDate = new Date(exper_fintime);
-            if (curDate < finDate && status === "未完成") {
+            if (status === "未完成") {
               return h("div", [
                 this.btnStyle("完成作业", h, async () => {
                   this.showModal2 = true;
@@ -223,7 +223,7 @@ export default {
               return {
                 root_id: this.stuHomeworkId,
                 quest_id: item["id"],
-                answer: item["referenceAnswer"]
+                answer: item["answer"]
               };
             });
           }
@@ -240,7 +240,6 @@ export default {
 
     // 时间为 0 时的回调
     async endTimeDoing(seconds) {
-      return;
       await this.submitOnlineHW(seconds, "已完成");
       this.curDirectory = 1;
       this.setInputInfo([]);
@@ -260,6 +259,7 @@ export default {
         title: "提交作业成功！"
       });
       localStorage.removeItem("inputInfo");
+      await this.getTableData(this.tableInfo["page"]);
     },
 
     handleCancel() {

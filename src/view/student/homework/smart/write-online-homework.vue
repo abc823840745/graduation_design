@@ -20,7 +20,7 @@
             <CountDown
               ref="countDown"
               :isStartTimer="isStartTimer"
-              :initialTime="seconds"
+              :initialTime="1875"
               @callBack="endTimeDoing"
             >
               <h2 slot-scope="{ remainingTime }">

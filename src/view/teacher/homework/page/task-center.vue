@@ -168,14 +168,14 @@ export default {
           render: (h, params) => {
             let { startime, course, id, type } = params.row;
             return h("div", [
-              this.btnStyle("修改任务信息", h, async () => {
+              this.btnStyle("修改任务", h, async () => {
                 let date = new Date();
                 let stopDate = new Date(startime);
-                if (date >= stopDate) {
-                  return this.$Notice.warning({
-                    title: "已经开始,无法修改"
-                  });
-                }
+                // if (date >= stopDate) {
+                //   return this.$Notice.warning({
+                //     title: "已经开始,无法修改"
+                //   });
+                // }
                 this.modalOpen = true;
                 this.itemInfo = this.tableInfo["tableData"][params.index];
                 let getId = this.courseList.reduce((arr, item) => {

@@ -36,15 +36,13 @@
       />
     </div>
 
-    <Modal
-      fullscreen
-      v-model="showModal"
-      @on-ok="handleOk"
-      @on-cancel="handleCancel"
-    >
+    <Modal fullscreen v-model="showModal" @on-cancel="handleCancel">
       <p slot="header" style="text-align:center">
-        在线作业：堂上构建简单服务器
+        查看在线作业
       </p>
+      <div slot="footer">
+        <Button type="primary" size="large" @click="handleOk">返回</Button>
+      </div>
       <HomeworkDetail />
     </Modal>
 
@@ -159,25 +157,29 @@ export default {
           title: "评分",
           key: "grade",
           render: (h, params) => {
-            let grade = null;
-            switch (params.row.grade) {
-              case "1":
-                grade = "不及格";
-                break;
-              case "2":
-                grade = "及格";
-                break;
-              case "3":
-                grade = "中";
-                break;
-              case "4":
-                grade = "良";
-                break;
-              case "5":
-                grade = "优";
-                break;
-              default:
-                grade = "待评分";
+            let { type, grade } = params.row;
+            if (type === "offline") {
+              let grade = null;
+              switch (params.row.grade) {
+                case "1":
+                  grade = "不及格";
+                  break;
+                case "2":
+                  grade = "及格";
+                  break;
+                case "3":
+                  grade = "中";
+                  break;
+                case "4":
+                  grade = "良";
+                  break;
+                case "5":
+                  grade = "优";
+                  break;
+                default:
+                  grade = "待评分";
+              }
+              return h("p", {}, grade);
             }
             return h("p", {}, grade);
           }
@@ -229,6 +231,7 @@ export default {
     ]),
 
     handleOk() {
+      this.showModal = false;
       this.curDirectory = 1;
     },
 

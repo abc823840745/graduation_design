@@ -37,6 +37,7 @@ const myMixin = {
           props: {
             type: color,
             shape: 'circle',
+            size: 'small',
           },
           style: {
             marginRight: '5px',
@@ -56,6 +57,7 @@ const myMixin = {
           props: {
             type: color,
             shape: 'circle',
+            size: 'small',
             disabled: true,
           },
         },

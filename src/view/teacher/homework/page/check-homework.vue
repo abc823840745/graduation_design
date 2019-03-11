@@ -45,10 +45,18 @@
       fullscreen
       title="作业评分"
       v-model="showModal"
-      @on-ok="handleOk"
       @on-cancel="handleCancel"
     >
       <CheckOnlineHWDetail />
+      <div slot="footer">
+        <Button
+          type="primary"
+          size="large"
+          :loading="modalLoading"
+          @click="handleOk"
+          >确定评分</Button
+        >
+      </div>
     </Modal>
   </div>
 </template>
@@ -80,6 +88,7 @@ export default {
       showModal: false,
       loading: false,
       subjectList: [],
+      modalLoading: false,
       curClassHour: "",
       curCourseInfo: {},
       curDirectory: 1,
@@ -256,7 +265,6 @@ export default {
                 this.stuHwInfo = params.row;
                 this.showModal = true;
                 this.curDirectory = 6;
-                // console.log(questions);
                 await this.getStuSubjectList(questions);
               })
             ]);
@@ -285,7 +293,8 @@ export default {
       "getTeaOnlineHW",
       "getStuHWList",
       "getStuOnlineHWList",
-      "scoreOnlineHW"
+      "scoreOnlineHW",
+      "setInputInfo"
     ]),
 
     ...mapMutations(["setInputInfo"]),
@@ -402,7 +411,7 @@ export default {
         ];
         if (item["type"] !== "填空题") {
           arr.push({
-            id: item["id"],
+            id: item["stuanswer"]["id"],
             subject: item["context"],
             subjectType: item["type"],
             title: `${index + 1}、${item["type"]}`,
@@ -422,7 +431,7 @@ export default {
               if (item["type"] === "填空题") {
                 subjectLength += 1;
                 arr.push({
-                  id: item["id"],
+                  id: item["stuanswer"]["id"],
                   subject: item["context"],
                   answer: item["stuanswer"]["answer"],
                   referenceAnswer: item["answer"],
@@ -448,7 +457,8 @@ export default {
     },
 
     // 教师对在线作业评分
-    async scoreSubject() {
+    async handleOk() {
+      this.modalLoading = true;
       let obj = [];
       let { id } = this.stuHwInfo;
       this.inputInfo.map(item => {
@@ -462,7 +472,7 @@ export default {
           item["subject"].forEach((item, index, arr) => {
             obj.push({
               id: item["id"],
-              grade: score / arr.length || 1
+              grade: score || 1
             });
           });
         }
@@ -472,9 +482,11 @@ export default {
         return num;
       }, 0);
       if (grade > 100) {
-        return this.$Notice.error({
+        this.$Notice.error({
           title: "总分不能超过100"
         });
+        this.modalLoading = false;
+        return;
       }
       let res = await this.scoreOnlineHW({
         id,
@@ -482,15 +494,13 @@ export default {
         obj
       });
       await this.getStuOnlineHW(this.stuHWId);
+      this.curDirectory = 5;
+      this.setInputInfo([]);
       this.$Notice.success({
         title: "评分成功！"
       });
-    },
-
-    async handleOk() {
-      // TODO:提交评分
-      this.curDirectory = 5;
-      await this.scoreSubject();
+      this.showModal = false;
+      this.modalLoading = false;
     },
 
     handleCancel() {

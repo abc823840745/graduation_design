@@ -21,7 +21,7 @@
 
     <Modal fullscreen v-model="showModal">
       <p slot="header" style="text-align:center">
-        在线作业：堂上构建简单服务器
+        搜索
       </p>
       <HomeworkDetail />
     </Modal>
