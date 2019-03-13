@@ -3,9 +3,11 @@
     <Modal
       fullscreen
       v-model="isShowModal"
+      :ok-text="type === 'create' ? '确认新建' : '确认修改'"
+      :loading="loading"
       :title="type === 'create' ? '新建题目信息' : '修改题目信息'"
-      @on-ok="$emit('modalOk')"
-      @on-cancel="$emit('modalCancel')"
+      @on-ok="modalOk"
+      @on-cancel="modalCancel"
     >
       <Alert show-icon v-if="inputInfo.length === 0">
         请点击新建作业按钮快点新建作业吧！
@@ -125,6 +127,7 @@ export default {
     return {
       isShowModal: false,
       modalOpen: false,
+      loading: false,
       subjectClassify: "单选题",
       hasFillSub: false,
       subjectClassifyList: [
@@ -343,6 +346,18 @@ export default {
     // 打开题库
     subWarehouseOpen(subType) {
       this.modalOpen = true;
+    },
+
+    modalOk() {
+      this.loading = true;
+      this.$emit("modalOk");
+      this.loading = false;
+    },
+
+    modalCancel() {
+      this.loading = true;
+      this.$emit("modalCancel");
+      this.loading = false;
     }
   }
 };

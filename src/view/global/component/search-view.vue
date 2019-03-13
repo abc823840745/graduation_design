@@ -18,13 +18,6 @@
     />
 
     <Page :total="total" class="page" @on-change="changePage" />
-
-    <!-- <Modal fullscreen v-model="showModal">
-      <p slot="header" style="text-align:center">
-        搜索
-      </p>
-      <HomeworkDetail />
-    </Modal> -->
   </div>
 </template>
 

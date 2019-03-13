@@ -67,6 +67,7 @@ import CheckOnlineHWDetail from "@teaHomework/smart/check-online-homework-detail
 import myMixin from "@/view/global/mixin";
 import { mapActions, mapState, mapMutations } from "vuex";
 import { getCourseClassList } from "@/api/course";
+import { debounce } from "@tools";
 
 export default {
   name: "check-homework",
@@ -89,6 +90,7 @@ export default {
       loading: false,
       subjectList: [],
       modalLoading: false,
+      score: 0,
       curClassHour: "",
       curCourseInfo: {},
       curDirectory: 1,
@@ -190,25 +192,32 @@ export default {
             let _this = this;
             let { webpath, grade, id } = params.row;
             if (webpath === "待上传") {
-              return h("div", [
-                h("Rate", {
-                  props: {
-                    value: 3,
-                    disabled: true
-                  },
-                  style: {
-                    marginRight: "5px"
-                  }
-                })
-              ]);
+              return h("InputNumber", {
+                props: {
+                  max: 100,
+                  min: 1,
+                  disabled: true
+                },
+                style: {
+                  marginRight: "5px"
+                }
+              });
             }
-            return h("Rate", {
+            return h("InputNumber", {
               props: {
-                value: grade === "待评分" ? 3 : parseInt(grade, 10)
+                max: 100,
+                min: 1,
+                value: parseInt(grade, 10)
+              },
+              style: {
+                marginRight: "5px"
               },
               on: {
-                async input(value) {
-                  await _this.scoreHw(id, value);
+                input(value) {
+                  _this.score = value;
+                },
+                async "on-blur"() {
+                  await _this.scoreHw(id, _this.score);
                 }
               }
             });
@@ -244,7 +253,7 @@ export default {
           key: "status",
           render: (h, params) => {
             let text = params.row.status;
-            let btnColor = text === "已评分" ? "success" : "error";
+            let btnColor = text === "已完成" ? "success" : "error";
             return h("div", [this.statusBtnStyle(text, h, btnColor)]);
           }
         },
@@ -265,6 +274,8 @@ export default {
                 this.stuHwInfo = params.row;
                 this.showModal = true;
                 this.curDirectory = 6;
+                localStorage.removeItem("inputInfo");
+                localStorage.removeItem("remainTime");
                 await this.getStuSubjectList(questions);
               })
             ]);
@@ -366,7 +377,8 @@ export default {
         course: name,
         semester,
         teacher: this.userName,
-        stuclass: classes
+        stuclass: classes,
+        classHour: this.curClassHour
       });
       this.data4 = res;
       this.loading = false;
@@ -381,7 +393,8 @@ export default {
         course: name,
         semester,
         teacher: this.userName,
-        stuclass: classes
+        stuclass: classes,
+        classHour: this.curClassHour
       });
       this.data5 = res;
       this.loading = false;
@@ -391,6 +404,8 @@ export default {
       let subjectLength = 0;
       let executeOnce = true;
       let inputInfo = questions.reduce((arr, item, index) => {
+        console.log(item["stuanswer"]["grade"]);
+        let { grade, answer, id } = item["stuanswer"];
         let optionList = [
           {
             label: "A",
@@ -411,17 +426,16 @@ export default {
         ];
         if (item["type"] !== "填空题") {
           arr.push({
-            id: item["stuanswer"]["id"],
+            id: id,
             subject: item["context"],
             subjectType: item["type"],
             title: `${index + 1}、${item["type"]}`,
             choice:
-              item["type"] === "多选题" && item["stuanswer"]["answer"]
-                ? item["stuanswer"]["answer"].split(",")
-                : item["stuanswer"]["answer"],
+              item["type"] === "多选题" && answer ? answer.split(",") : answer,
             optionList,
             weighting: item["grade"],
-            referenceAnswer: item["answer"]
+            referenceAnswer: item["answer"],
+            score: grade === "未评分" ? 1 : grade
           });
         } else {
           if (executeOnce) {
@@ -431,9 +445,9 @@ export default {
               if (item["type"] === "填空题") {
                 subjectLength += 1;
                 arr.push({
-                  id: item["stuanswer"]["id"],
+                  id: id,
                   subject: item["context"],
-                  answer: item["stuanswer"]["answer"],
+                  answer: answer,
                   referenceAnswer: item["answer"],
                   showCreSubjectBtn: true
                 });
@@ -446,7 +460,8 @@ export default {
               title: `${index + 1}、${item["type"]}`,
               choice: "",
               optionList,
-              weighting: item["grade"]
+              weighting: item["grade"],
+              score: grade === "未评分" ? 1 : grade
             });
           }
         }

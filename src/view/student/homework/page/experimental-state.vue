@@ -55,6 +55,11 @@
         @search="getSearchResult($event)"
         @changePage="changePage"
       />
+      <div slot="footer">
+        <Button type="primary" size="large" @click="goBack">
+          返回
+        </Button>
+      </div>
     </Modal>
   </div>
 </template>
@@ -151,38 +156,16 @@ export default {
         {
           title: "完成状态",
           key: "status",
-          sortable: true
+          sortable: true,
+          render: (h, params) => {
+            let text = params.row.status;
+            let btnColor = text === "已完成" ? "success" : "error";
+            return h("div", [this.statusBtnStyle(text, h, btnColor)]);
+          }
         },
         {
           title: "评分",
-          key: "grade",
-          render: (h, params) => {
-            let { type, grade } = params.row;
-            if (type === "offline") {
-              let grade = null;
-              switch (params.row.grade) {
-                case "1":
-                  grade = "不及格";
-                  break;
-                case "2":
-                  grade = "及格";
-                  break;
-                case "3":
-                  grade = "中";
-                  break;
-                case "4":
-                  grade = "良";
-                  break;
-                case "5":
-                  grade = "优";
-                  break;
-                default:
-                  grade = "待评分";
-              }
-              return h("p", {}, grade);
-            }
-            return h("p", {}, grade);
-          }
+          key: "grade"
         },
         {
           title: "操作",
@@ -194,6 +177,8 @@ export default {
                 return h("div", [
                   this.btnStyle("查看", h, () => {
                     this.showModal = true;
+                    // localStorage.removeItem("inputInfo");
+                    // localStorage.removeItem("remainTime");
                     this.getSubjectList(id, exper_id);
                   })
                 ]);
@@ -282,6 +267,7 @@ export default {
       this.searchText = searchText;
       let res = await this.searchMyHWlist({
         page,
+        semester: this.selectList[0]["value"],
         condition: searchText,
         stuId: this.stuId,
         student: this.userName
@@ -294,6 +280,11 @@ export default {
     // 搜索表格分页
     async changePage(page) {
       await this.getSearchResult(this.searchText, page);
+    },
+
+    // 关闭modal
+    goBack() {
+      this.modalOpen = false;
     }
   }
 };

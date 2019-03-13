@@ -79,6 +79,7 @@
           :max="100"
           :min="5"
           :step="10"
+          :value="parseInt(info['score'], 10)"
           @on-change="scoreChange"
         ></InputNumber>
       </div>

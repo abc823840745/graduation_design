@@ -7,7 +7,6 @@
         type="score"
         :key="index"
         :index="index"
-        :inputInfo="item"
       />
 
       <!-- <div class="bottom-bar">

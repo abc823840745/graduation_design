@@ -3,7 +3,6 @@
     fullscreen
     title="完成在线作业"
     v-model="showModal"
-    @on-ok="handleOk"
     @on-cancel="$emit('handleCancel')"
   >
     <div class="containter">
@@ -20,7 +19,7 @@
             <CountDown
               ref="countDown"
               :isStartTimer="isStartTimer"
-              :initialTime="1875"
+              :initialTime="seconds"
               @callBack="endTimeDoing"
             >
               <h2 slot-scope="{ remainingTime }">
@@ -39,6 +38,12 @@
         :key="index"
       />
     </div>
+
+    <div slot="footer">
+      <Button type="primary" size="large" @click="instance('warning')"
+        >提交作业</Button
+      >
+    </div>
   </Modal>
 </template>
 
@@ -46,6 +51,7 @@
 import SubjectType from "@/view/global/component/show-subject-different-types";
 import CountDown from "@stuHomework/smart/count-down";
 import { mapState } from "vuex";
+import { getlocalStorage } from "@tools";
 
 export default {
   name: "online-homework",
@@ -71,6 +77,7 @@ export default {
 
     stuHWInfo(newVal, oldVal) {
       this.seconds = newVal["surplus_time"];
+      this.isStartTimer = true;
     }
   },
 
@@ -86,7 +93,7 @@ export default {
 
   data() {
     return {
-      isStartTimer: true, // 是否开启定时器
+      isStartTimer: false, // 是否开启定时器
       seconds: 10,
       showModal: false
     };
@@ -100,8 +107,25 @@ export default {
     },
 
     handleOk() {
+      this.isStartTimer = false;
       let remainingTime = this.$refs.countDown.remainingTime;
       this.$emit("handleOk", remainingTime);
+    },
+
+    instance(type) {
+      const title = "确定提交";
+      const content = "<p>认真检查所有题目是否完成</p><p>提交后将不能修改</p>";
+      if (type === "warning") {
+        this.$Modal.confirm({
+          title,
+          content,
+          loading: true,
+          onOk: async () => {
+            await this.handleOk();
+            this.$Modal.remove();
+          }
+        });
+      }
     }
   }
 };

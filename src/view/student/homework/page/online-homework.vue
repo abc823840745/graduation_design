@@ -43,7 +43,7 @@
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import WriteOnlineHomework from "@stuHomework/smart/write-online-homework";
 import myMixin from "@/view/global/mixin";
-import { getlocalStorage, getCurDate } from "@tools";
+import { getlocalStorage, getCurDate, setlocalStorage } from "@tools";
 import { mapActions, mapState, mapMutations } from "vuex";
 
 export default {
@@ -117,23 +117,57 @@ export default {
           key: "exper_name"
         },
         {
-          title: "完成时间",
+          title: "开始时间",
+          key: "exper_startime",
+          sortable: true
+        },
+        {
+          title: "截止时间",
           key: "exper_fintime",
           sortable: true
         },
         {
           title: "完成状态",
           key: "status",
-          sortable: true
+          sortable: true,
+          render: (h, params) => {
+            let text = params.row.status;
+            let btnColor = null;
+            switch (text) {
+              case "已完成":
+                btnColor = "success";
+                break;
+              case "未完成":
+                btnColor = "error";
+                break;
+              case "进行中":
+                btnColor = "warning";
+                break;
+            }
+            return h("div", [this.statusBtnStyle(text, h, btnColor)]);
+          }
         },
         {
           title: "操作",
           key: "operation",
           render: (h, params) => {
-            let { exper_fintime, id, exper_id, status } = params.row;
+            let {
+              exper_fintime,
+              exper_startime,
+              id,
+              exper_id,
+              status
+            } = params.row;
             let curDate = new Date();
+            let startTime = new Date(exper_startime);
             let finDate = new Date(exper_fintime);
-            if (status === "未完成") {
+
+            // 作业状态为未完成和当前时间少于等于完成时间和当前时间大于开始时间
+            if (
+              status !== "已完成" &&
+              curDate <= finDate &&
+              curDate > startTime
+            ) {
               return h("div", [
                 this.btnStyle("完成作业", h, async () => {
                   this.showModal2 = true;
@@ -168,10 +202,10 @@ export default {
     // 掉线下次再进来就自动提交题目
     async autoSubmit() {
       let inputInfo = getlocalStorage("inputInfo");
-      // let seconds = getlocalStorage("remainTime");
-      if (inputInfo) {
+      let seconds = getlocalStorage("remainTime");
+      if (inputInfo && seconds) {
         this.setInputInfo(inputInfo);
-        await this.submitOnlineHW(seconds, "未完成");
+        await this.submitOnlineHW(seconds, "进行中");
         this.$Notice.success({
           title: "检测到你中途离开考试，已为你恢复回答"
         });
@@ -229,6 +263,7 @@ export default {
           }
           let res = await this.stuSubmitOnlineHW({
             id: this.stuHomeworkId,
+            status: this.stuHWInfo["status"],
             status,
             submit_time: getCurDate(),
             surplus_time: seconds,
@@ -244,12 +279,15 @@ export default {
       this.curDirectory = 1;
       this.setInputInfo([]);
       this.showModal2 = false;
+      localStorage.removeItem("inputInfo");
+      localStorage.removeItem("remainTime");
+      localStorage.removeItem("onlineHWStatus");
       this.$Notice.success({
         title: "没有剩余时间自动提交作业成功"
       });
     },
 
-    // 点击 modal 确定按钮提交作业
+    // 点击 modal 确定按钮手动提交作业
     async handleOk(seconds) {
       await this.submitOnlineHW(seconds, "已完成");
       this.curDirectory = 1;
@@ -258,7 +296,10 @@ export default {
       this.$Notice.success({
         title: "提交作业成功！"
       });
+      this.is;
       localStorage.removeItem("inputInfo");
+      localStorage.removeItem("remainTime");
+      localStorage.removeItem("onlineHWStatus");
       await this.getTableData(this.tableInfo["page"]);
     },
 

@@ -116,9 +116,7 @@
               : updateClassHWInfo()
           "
         >
-          {{
-            info["classify"] === "在线作业" ? "修改题目信息" : "修改作业信息"
-          }}
+          {{ info["classify"] === "在线作业" ? "修改题目信息" : "确认修改" }}
         </Button>
 
         <Button
@@ -126,7 +124,7 @@
           v-if="type === 'update' && info['classify'] === '在线作业'"
           @click="updateOnlineHWInfo"
         >
-          修改
+          确认修改
         </Button>
       </div>
     </Modal>
@@ -265,7 +263,7 @@ export default {
       info["name"] = name;
       info["classify"] = classify;
       info["classHour"] = week;
-      info["testingTime"] = classify === "课时作业" ? 0 : totaltime;
+      info["testingTime"] = classify === "课时作业" ? 0 : totaltime / 60; // 将秒数转换成分钟显示
       info["stopTimeList"] = [startime, fintime];
       this.homeworkInfo = info;
     },
@@ -318,9 +316,9 @@ export default {
         course,
         teacher,
         teach_id: this.stu_number,
-        totaltime: testingTime,
-        fintime: stopTimeList[0],
-        startime: stopTimeList[1]
+        totaltime: testingTime * 60, // 转换成秒数提交
+        startime: stopTimeList[0],
+        fintime: stopTimeList[1]
       });
       if (res["status"] === 1) {
         let questions = null;
@@ -378,6 +376,7 @@ export default {
         this.homeworkInfo = {};
         this.setInputInfo([]);
         localStorage.removeItem("inputInfo");
+        localStorage.removeItem("remainTime");
         this.$Notice.success({
           title: "新建成功！"
         });
@@ -465,6 +464,7 @@ export default {
       this.setInputInfo([]);
       this.setOptionList([]);
       localStorage.removeItem("inputInfo");
+      localStorage.removeItem("remainTime");
       this.$Notice.success({
         title: "修改成功！"
       });

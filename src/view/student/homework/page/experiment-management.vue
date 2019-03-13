@@ -136,18 +136,31 @@ export default {
           key: "exper_name"
         },
         {
-          title: "完成时间",
+          title: "开始时间",
+          key: "exper_startime",
+          sortable: true,
+          minWidth: 10
+        },
+        {
+          title: "截止时间",
           key: "exper_fintime",
-          sortable: true
+          sortable: true,
+          minWidth: 10
         },
         {
           title: "完成状态",
           key: "status",
-          sortable: true
+          sortable: true,
+          render: (h, params) => {
+            let text = params.row.status;
+            let btnColor = text === "已完成" ? "success" : "error";
+            return h("div", [this.statusBtnStyle(text, h, btnColor)]);
+          }
         },
         {
           title: "操作",
           key: "operation",
+          minWidth: 50,
           render: (h, params) => {
             let { exper_startime, exper_webpath } = params.row;
             let curDate = new Date();

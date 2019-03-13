@@ -53,6 +53,11 @@
         @search="getSearchResult($event)"
         @changePage="changePage"
       />
+      <div slot="footer">
+        <Button type="primary" size="large" @click="goBack">
+          返回
+        </Button>
+      </div>
     </Modal>
   </div>
 </template>
@@ -171,11 +176,9 @@ export default {
               this.btnStyle("修改任务", h, async () => {
                 let date = new Date();
                 let stopDate = new Date(startime);
-                // if (date >= stopDate) {
-                //   return this.$Notice.warning({
-                //     title: "已经开始,无法修改"
-                //   });
-                // }
+
+                // TODO: 获取该任务是否有学生提交，有就不能修改了
+                console.log(params.row);
                 this.modalOpen = true;
                 this.itemInfo = this.tableInfo["tableData"][params.index];
                 let getId = this.courseList.reduce((arr, item) => {
@@ -455,11 +458,11 @@ export default {
       this.searchText = searchText;
       let res = await this.searchMyHW({
         page,
+        semester: this.selectList[0]["value"],
         condition: searchText,
         teach_id: this.teaId,
         teacher: this.userName
       });
-      console.log(res);
       this.searchCount = res.count;
       this.tableData = res.data;
       this.searchLoading = false;
@@ -468,6 +471,11 @@ export default {
     // 搜索表格分页
     async changePage(page) {
       await this.getSearchResult(this.searchText, page);
+    },
+
+    // 关闭modal
+    goBack() {
+      this.showModal = false;
     }
   }
 };
