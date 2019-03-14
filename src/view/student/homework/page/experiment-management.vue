@@ -61,6 +61,7 @@ import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import myMixin from "@/view/global/mixin";
 import config from "@/config";
 import { mapActions, mapState } from "vuex";
+import { getCurSchoolYear } from "@tools";
 
 export default {
   mixins: [myMixin],
@@ -95,7 +96,7 @@ export default {
       selectList: [
         {
           tip: "学期选择",
-          value: this.getCurSchoolYear(),
+          value: getCurSchoolYear(),
           list: this.getSchoolYear(),
           onChange: this.changeYear
         },

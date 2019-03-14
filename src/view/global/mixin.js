@@ -1,5 +1,5 @@
 import { getCourseClassList, getTeaCourseList, getStuCourseList } from '@/api/course';
-import { dateFormat } from '@tools';
+import { dateFormat, getCurSchoolYear } from '@tools';
 import { mapState, mapMutations } from 'vuex';
 
 const myMixin = {
@@ -106,22 +106,22 @@ const myMixin = {
       return schoolYearList;
     },
 
-    // 获取当前的学年学期
-    getCurSchoolYear() {
-      let date = new Date();
-      let year = date.getFullYear();
-      let month = date.getMonth();
-      let semester = null;
-      if (month >= 3 && month <= 7) {
-        semester = '下学期';
-      } else {
-        semester = '上学期';
-      }
-      return `${year - 1}-${year}${semester}`;
-    },
+    // // 获取当前的学年学期
+    // getCurSchoolYear() {
+    //   let date = new Date();
+    //   let year = date.getFullYear();
+    //   let month = date.getMonth();
+    //   let semester = null;
+    //   if (month >= 3 && month <= 7) {
+    //     semester = '下学期';
+    //   } else {
+    //     semester = '上学期';
+    //   }
+    //   return `${year - 1}-${year}${semester}`;
+    // },
 
     // 获取课程选择列表数据
-    async getCourseList(curSemester = this.getCurSchoolYear()) {
+    async getCourseList(curSemester = getCurSchoolYear()) {
       let res = null;
       let def = [
         {
@@ -131,7 +131,6 @@ const myMixin = {
       ];
       let { year, semester } = dateFormat(curSemester);
       if (this.role === 'student') {
-        // TODO: 查询学生课程,接口有问题，所以暂时用假数据
         res = await getStuCourseList({
           year,
           semester,

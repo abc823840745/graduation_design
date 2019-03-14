@@ -19,6 +19,7 @@ import Echart from "@stuHomework/smart/echart";
 import SliderBar from "@teaHomework/smart/slider-bar";
 import { mapActions, mapState } from "vuex";
 import myMixin from "@/view/global/mixin";
+import { getCurSchoolYear } from "@tools";
 
 export default {
   mixins: [myMixin],
@@ -74,7 +75,7 @@ export default {
     async getMainData() {
       let res = await this.getStuMainInfo({
         stu_id: this.stuId,
-        semester: this.getCurSchoolYear(),
+        semester: getCurSchoolYear(),
         obj: this.params
       });
       this.mainData = res;

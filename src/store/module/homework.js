@@ -32,10 +32,12 @@ import {
   searchMyHW,
   getTeaMainInfo,
   getStuMainInfo,
+  searchStudentHW,
 } from '@/api/homework';
 
 export default {
   state: {
+    remainTime: 0,
     courseList: [],
     inputInfo: [],
     originalInfo: [],
@@ -97,6 +99,9 @@ export default {
     },
     setOriginInputInfo(state, arr) {
       state.originInputInfo = arr;
+    },
+    setRemainTime(state, seconds) {
+      state.remainTime = seconds;
     },
   },
   actions: {
@@ -383,6 +388,16 @@ export default {
     async searchMyHW({ commit }, obj) {
       try {
         let res = await searchMyHW(obj);
+        return res.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
+    // 教师搜索学生不同类型作业
+    async searchStudentHW({ commit }, obj) {
+      try {
+        let res = await searchStudentHW(obj);
         return res.data;
       } catch (err) {
         console.error(err);

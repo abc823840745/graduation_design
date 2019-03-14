@@ -10,8 +10,6 @@ import config from '@/config';
 import * as myTools from '@tools';
 import importDirective from '@/directive';
 import installPlugin from '@/plugin';
-import VueSocketio from 'vue-socket.io';
-import socketio from 'socket.io-client';
 import 'iview/dist/styles/iview.css';
 import './index.less';
 import '@/assets/icons/iconfont.css';
@@ -23,9 +21,6 @@ Vue.use(VideoPlayer);
 Vue.use(iView, {
   i18n: (key, value) => i18n.t(key, value),
 });
-
-// 配置socket服务地址
-// Vue.use(VueSocketio, socketio('xxx:80'));
 
 /**
  * @description 注册admin内置插件

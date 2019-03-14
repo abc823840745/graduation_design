@@ -8,14 +8,27 @@
           {{ curCourseInfo["name"] }}
           <span class="course-code">[{{ curCourseInfo["code"] }}]</span>
         </h2>
-        <Button
-          class="return_btn"
-          type="primary"
-          shape="circle"
-          @click="headerGoBack"
-          icon="md-arrow-back"
-          >返回</Button
-        >
+
+        <div class="return_btn">
+          <Button
+            v-show="curDirectory === 4 || curDirectory === 5"
+            type="primary"
+            shape="circle"
+            @click="searchOpen"
+            icon="ios-search"
+          >
+            搜索</Button
+          >
+
+          <Button
+            class="ml-10"
+            type="primary"
+            shape="circle"
+            @click="headerGoBack"
+            icon="md-arrow-back"
+            >返回</Button
+          >
+        </div>
       </div>
 
       <Table
@@ -58,12 +71,28 @@
         >
       </div>
     </Modal>
+
+    <Modal fullscreen title="搜索" v-model="modalOpen" @on-ok="searchClose">
+      <SearchView
+        :columns="curDirectory === 4 ? columns4 : columns5"
+        :tableData="searchTableData"
+        :total="searchCount"
+        @search="getSearchResult"
+        @changePage="changePage"
+      />
+      <div slot="footer">
+        <Button type="primary" size="large" @click="searchClose">
+          返回
+        </Button>
+      </div>
+    </Modal>
   </div>
 </template>
 
 <script>
 import CourseSelect from "@teaHomework/smart/course-select";
 import CheckOnlineHWDetail from "@teaHomework/smart/check-online-homework-detail";
+import SearchView from "@/view/global/component/search-view";
 import myMixin from "@/view/global/mixin";
 import { mapActions, mapState, mapMutations } from "vuex";
 import { getCourseClassList } from "@/api/course";
@@ -74,19 +103,24 @@ export default {
 
   mixins: [myMixin],
 
-  components: { CheckOnlineHWDetail, CourseSelect },
+  components: { CheckOnlineHWDetail, CourseSelect, SearchView },
 
   computed: {
     ...mapState({
       userName: state => state.user.userName,
-      inputInfo: state => state.homework.inputInfo
+      inputInfo: state => state.homework.inputInfo,
+      teaId: state => state.user.stu_nmuber
     })
   },
 
   data() {
     return {
+      // searchColumns: [],
+      searchCount: 1,
+      searchTableData: [],
       isSelectCourse: true,
       showModal: false,
+      modalOpen: false,
       loading: false,
       subjectList: [],
       modalLoading: false,
@@ -94,6 +128,7 @@ export default {
       curClassHour: "",
       curCourseInfo: {},
       curDirectory: 1,
+      curHWtype: "",
       stuHwInfo: {},
       stuHWId: 0,
       columns1: [
@@ -125,10 +160,9 @@ export default {
           render: (h, params) => {
             return h("div", [
               this.btnStyle("查看", h, () => {
-                // TODO: 打开实验报告
                 let { index } = params;
+                this.curHWtype = params.row.hwType;
                 if (index === 0) {
-                  // index = 0时为课时作业
                   this.curDirectory = 3;
                   this.getClassHW();
                 } else {
@@ -275,7 +309,7 @@ export default {
                 this.showModal = true;
                 this.curDirectory = 6;
                 localStorage.removeItem("inputInfo");
-                localStorage.removeItem("remainTime");
+                // localStorage.removeItem("remainTime");
                 await this.getStuSubjectList(questions);
               })
             ]);
@@ -305,7 +339,8 @@ export default {
       "getStuHWList",
       "getStuOnlineHWList",
       "scoreOnlineHW",
-      "setInputInfo"
+      "setInputInfo",
+      "searchStudentHW"
     ]),
 
     ...mapMutations(["setInputInfo"]),
@@ -400,11 +435,10 @@ export default {
       this.loading = false;
     },
 
-    async getStuSubjectList(questions) {
+    async getStuSubjectList(questions = []) {
       let subjectLength = 0;
       let executeOnce = true;
       let inputInfo = questions.reduce((arr, item, index) => {
-        console.log(item["stuanswer"]["grade"]);
         let { grade, answer, id } = item["stuanswer"];
         let optionList = [
           {
@@ -530,12 +564,55 @@ export default {
         return (this.curDirectory = 3);
       }
       this.curDirectory -= 1;
+    },
+
+    searchOpen() {
+      this.modalOpen = true;
+      this.searchTableData = [];
+    },
+
+    searchClose() {
+      this.modalOpen = false;
+      this.searchTableData = [];
+    },
+
+    // 搜索结果
+    async searchResult(searchText, page = 1) {
+      this.searchText = searchText;
+      let { name, classes, semester } = this.curCourseInfo;
+      let type = this.curHWtype === "课时作业" ? "offline" : "online";
+      let res = await this.searchStudentHW({
+        page,
+        semester,
+        condition: searchText,
+        teach_id: this.teaId,
+        teacher: this.userName,
+        type,
+        week: this.curClassHour,
+        exper_id: this.stuHWId,
+        course: name,
+        stuclass: classes
+      });
+      this.searchCount = res.count;
+      this.searchTableData = res.data;
+    },
+
+    // 获取搜索结果
+    async getSearchResult(searchText) {
+      await this.searchResult(searchText);
+    },
+
+    // 搜索表格分页
+    async changePage(page) {
+      await this.searchResult(this.searchText, page);
     }
   }
 };
 </script>
 
 <style lang="less" scoped>
+@import "../../../global/public.less";
+
 .containter {
   width: 100%;
   height: auto;

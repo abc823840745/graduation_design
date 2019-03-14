@@ -322,6 +322,27 @@ export function getTeaMainInfo(obj) {
   });
 }
 
+// 教师搜索学生不同类型作业
+export function searchStudentHW(obj) {
+  return axios.request({
+    data: {
+      condition: obj['condition'],
+      type: obj['type'],
+      week: obj['week'],
+      exper_id: obj['exper_id'],
+      semester: obj['semester'],
+      course: obj['course'],
+      stuclass: obj['stuclass'],
+      teacher: obj['teacher'],
+      teach_id: obj['teach_id'],
+      limit: obj['limit'] || 10,
+      page: obj['page'] || 1,
+    },
+    url: '/search/teacher/stuexper',
+    method: 'post',
+  });
+}
+
 /**
  * 学生部分
  */

@@ -37,8 +37,9 @@
 <script>
 import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import myMixin from "@/view/global/mixin";
-import { getTeaCourseList, getStuCourseList } from "@/api/course";
+import { getTeaCourseList } from "@/api/course";
 import { mapState } from "vuex";
+import { getCurSchoolYear, dateFormat } from "@tools";
 
 export default {
   mixins: [myMixin],
@@ -58,7 +59,7 @@ export default {
     return {
       totalCount: 0,
       semesterList: {
-        value: this.getCurSchoolYear(),
+        value: getCurSchoolYear(),
         list: this.getSchoolYear(),
         onChange: this.changeYear
       }
@@ -78,7 +79,7 @@ export default {
 
     // 获取课程列表
     async getCourseList(curSemester, page) {
-      let { year, semester } = this.$tools.dateFormat(curSemester);
+      let { year, semester } = dateFormat(curSemester);
       let res = await getTeaCourseList({
         year,
         semester,

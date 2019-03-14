@@ -77,6 +77,12 @@
 
     <Modal v-model="modalOpen" fullscreen title="题库选择">
       <SubWarehouse />
+
+      <div slot="footer">
+        <Button type="primary" size="large" @click="subWarehouseClose">
+          返回
+        </Button>
+      </div>
     </Modal>
   </div>
 </template>
@@ -346,6 +352,11 @@ export default {
     // 打开题库
     subWarehouseOpen(subType) {
       this.modalOpen = true;
+    },
+
+    // 关闭题目选择
+    subWarehouseClose() {
+      this.modalOpen = false;
     },
 
     modalOk() {

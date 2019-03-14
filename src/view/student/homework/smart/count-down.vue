@@ -8,6 +8,7 @@
 
 <script>
 import { getlocalStorage, setlocalStorage } from "@tools";
+import { mapMutations } from "vuex";
 
 export default {
   props: {
@@ -33,6 +34,11 @@ export default {
   watch: {
     initialTime(newVal, oldVal) {
       this.remainingTime = newVal;
+    },
+
+    isStartTimer(newVal, oldVal) {
+      this.timer && clearTimeout(this.timer);
+      this.isStartTimer && this.startTimer();
     }
   },
 
@@ -50,8 +56,8 @@ export default {
   },
 
   mounted() {
-    this.timer && clearTimeout(this.timer);
-    this.isStartTimer && this.startTimer();
+    // this.timer && clearTimeout(this.timer);
+    // this.isStartTimer && this.startTimer();
   },
 
   beforeDestroy() {
@@ -59,6 +65,8 @@ export default {
   },
 
   methods: {
+    ...mapMutations(["setRemainTime"]),
+
     startTimer() {
       this._countDown();
     },
@@ -66,14 +74,16 @@ export default {
     _countDown() {
       if (this.isStopTimer || this.remainingTime <= 0) {
         this.stopTimer();
-        localStorage.removeItem("remainTime");
+        // localStorage.removeItem("remainTime");
+        this.setRemainTime(0);
         return this.$emit("callBack");
       }
       if (this.remainingTime - 1 <= 0) {
         this.isStopTimer = true;
       }
       this.remainingTime = this.remainingTime - 1;
-      setlocalStorage("remainTime", this.remainingTime);
+      this.setRemainTime(this.remainingTime);
+      // setlocalStorage("remainTime", this.remainingTime);
       this.timer = setTimeout(this.startTimer, this.timeTnterval * 1000);
     },
 

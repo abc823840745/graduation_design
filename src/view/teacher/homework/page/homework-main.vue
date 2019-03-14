@@ -19,6 +19,7 @@ import Echart from "@teaHomework/smart/echart";
 import SliderBar from "@teaHomework/smart/slider-bar";
 import { mapActions, mapState } from "vuex";
 import { getTeaCourseStudentList } from "@/api/course";
+import { getCurSchoolYear } from "@tools";
 import myMixin from "@/view/global/mixin";
 
 export default {
@@ -70,7 +71,7 @@ export default {
     async getMainData() {
       let res = await this.getTeaMainInfo({
         teach_id: this.teaId,
-        semester: this.getCurSchoolYear(),
+        semester: getCurSchoolYear(),
         obj: this.arr
       });
       this.mainData = res;

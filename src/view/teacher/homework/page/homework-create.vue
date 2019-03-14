@@ -46,7 +46,6 @@ export default {
       submitInfo["course_id"] = id;
       this.submitInfo = submitInfo;
       this.courseId = id;
-      console.log(this.submitInfo, this.courseId);
       this.modalOpen = true;
     }
   }

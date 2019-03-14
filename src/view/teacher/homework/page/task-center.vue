@@ -44,13 +44,12 @@
       @getTableData="getTableData"
     />
 
-    <Modal fullscreen title="搜索" v-model="showModal" @on-ok="searchOk">
+    <Modal fullscreen title="搜索" v-model="showModal" @on-ok="searchClose">
       <SearchView
         :columns="columns"
         :tableData="tableData"
         :total="searchCount"
-        :searchLoading="searchLoading"
-        @search="getSearchResult($event)"
+        @search="getSearchResult"
         @changePage="changePage"
       />
       <div slot="footer">
@@ -68,6 +67,7 @@ import MyHomework from "@teaHomework/smart/my-homework";
 import SearchView from "@/view/global/component/search-view";
 import myMixin from "@/view/global/mixin";
 import { mapActions, mapState, mapMutations } from "vuex";
+import { getCurSchoolYear } from "@tools";
 
 export default {
   mixins: [myMixin],
@@ -104,14 +104,13 @@ export default {
       showModal: false,
       curIndex: 0,
       courseId: 0,
-      searchLoading: false,
       searchCount: 0,
       itemInfo: {},
       tableData: [],
       selectList: [
         {
           tip: "学期选择",
-          value: this.getCurSchoolYear(),
+          value: getCurSchoolYear(),
           list: this.getSchoolYear(),
           onChange: this.changeYear
         },
@@ -171,14 +170,14 @@ export default {
           title: "操作",
           key: "operation",
           render: (h, params) => {
-            let { startime, course, id, type } = params.row;
+            let { startime, course, id, type, submitterStatus } = params.row;
             return h("div", [
               this.btnStyle("修改任务", h, async () => {
-                let date = new Date();
-                let stopDate = new Date(startime);
-
-                // TODO: 获取该任务是否有学生提交，有就不能修改了
-                console.log(params.row);
+                if (submitterStatus["isOperate"] === 0) {
+                  return this.$Notice.warning({
+                    title: "已经有学生提交，不能修改！"
+                  });
+                }
                 this.modalOpen = true;
                 this.itemInfo = this.tableInfo["tableData"][params.index];
                 let getId = this.courseList.reduce((arr, item) => {
@@ -448,13 +447,12 @@ export default {
       this.showModal = true;
     },
 
-    searchOk() {
+    searchClose() {
       this.showModal = false;
     },
 
-    // 获取搜索结果
-    async getSearchResult(searchText, page = 1) {
-      this.searchLoading = true;
+    // 搜索结果
+    async searchResult(searchText, page = 1) {
       this.searchText = searchText;
       let res = await this.searchMyHW({
         page,
@@ -465,12 +463,16 @@ export default {
       });
       this.searchCount = res.count;
       this.tableData = res.data;
-      this.searchLoading = false;
+    },
+
+    // 获取搜索结果
+    async getSearchResult(searchText) {
+      await this.searchResult(searchText);
     },
 
     // 搜索表格分页
     async changePage(page) {
-      await this.getSearchResult(this.searchText, page);
+      await this.searchResult(this.searchText, page);
     },
 
     // 关闭modal

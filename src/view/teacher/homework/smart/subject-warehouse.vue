@@ -43,6 +43,12 @@ export default {
       loading: false,
       columns: [
         {
+          type: "selection",
+          width: 60,
+          align: "center"
+        },
+        {
+          title: "...",
           type: "expand",
           width: 50,
           render: (h, params) => {

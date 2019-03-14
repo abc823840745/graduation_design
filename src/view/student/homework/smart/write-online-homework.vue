@@ -3,6 +3,7 @@
     fullscreen
     title="完成在线作业"
     v-model="showModal"
+    :closable="false"
     @on-cancel="$emit('handleCancel')"
   >
     <div class="containter">
@@ -78,6 +79,7 @@ export default {
     stuHWInfo(newVal, oldVal) {
       this.seconds = newVal["surplus_time"];
       this.isStartTimer = true;
+      console.log(this.seconds, this.isStartTimer);
     }
   },
 

@@ -376,7 +376,7 @@ export default {
         this.homeworkInfo = {};
         this.setInputInfo([]);
         localStorage.removeItem("inputInfo");
-        localStorage.removeItem("remainTime");
+        // localStorage.removeItem("remainTime");
         this.$Notice.success({
           title: "新建成功！"
         });
@@ -464,7 +464,7 @@ export default {
       this.setInputInfo([]);
       this.setOptionList([]);
       localStorage.removeItem("inputInfo");
-      localStorage.removeItem("remainTime");
+      // localStorage.removeItem("remainTime");
       this.$Notice.success({
         title: "修改成功！"
       });

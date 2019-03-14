@@ -46,13 +46,12 @@
       <HomeworkDetail />
     </Modal>
 
-    <Modal fullscreen title="搜索" v-model="modalOpen" @on-ok="searchOk">
+    <Modal fullscreen title="搜索" v-model="modalOpen" @on-ok="searchClose">
       <SearchView
         :columns="columns"
         :tableData="tableData"
         :total="searchCount"
-        :searchLoading="searchLoading"
-        @search="getSearchResult($event)"
+        @search="getSearchResult"
         @changePage="changePage"
       />
       <div slot="footer">
@@ -70,6 +69,7 @@ import HomeworkDetail from "@stuHomework/smart/check-online-homework-detail";
 import myMixin from "@/view/global/mixin";
 import SearchView from "@/view/global/component/search-view";
 import { mapState, mapActions } from "vuex";
+import { getCurSchoolYear } from "@tools";
 import { types } from "util";
 
 export default {
@@ -98,11 +98,10 @@ export default {
       loading: true,
       searchText: "",
       searchCount: 1,
-      searchLoading: false,
       selectList: [
         {
           tip: "学期选择",
-          value: this.getCurSchoolYear(),
+          value: getCurSchoolYear(),
           list: this.getSchoolYear(),
           onChange: this.changeYear
         },
@@ -257,13 +256,12 @@ export default {
       this.modalOpen = true;
     },
 
-    searchOk() {
+    searchClose() {
       this.modalOpen = false;
     },
 
-    // 获取搜索结果
-    async getSearchResult(searchText, page = 1) {
-      this.searchLoading = true;
+    // 搜索结果
+    async searchResult(searchText, page = 1) {
       this.searchText = searchText;
       let res = await this.searchMyHWlist({
         page,
@@ -274,12 +272,16 @@ export default {
       });
       this.searchCount = res.count;
       this.tableData = res.data;
-      this.searchLoading = false;
+    },
+
+    // 获取搜索结果
+    async getSearchResult(searchText) {
+      await this.searchResult(searchText);
     },
 
     // 搜索表格分页
     async changePage(page) {
-      await this.getSearchResult(this.searchText, page);
+      await this.searchResult(this.searchText, page);
     },
 
     // 关闭modal

@@ -12,7 +12,7 @@
     <Table
       class="mb-10 w100"
       border
-      :loading="searchLoading"
+      :loading="loading"
       :columns="columns"
       :data="tableData"
     />
@@ -36,7 +36,6 @@ export default {
   props: {
     tableData: Array,
     columns: Array,
-    searchLoading: Boolean,
     total: Number
   },
 
@@ -50,6 +49,7 @@ export default {
   data() {
     return {
       searchText: "",
+      loading: false,
       showModal: false
     };
   },
@@ -57,12 +57,16 @@ export default {
   methods: {
     // 获取搜索结果
     async getSearchResult() {
+      this.loading = true;
       this.$emit("search", this.searchText);
+      this.loading = false;
     },
 
     // 获取分页数据
     async changePage(page) {
+      this.loading = true;
       this.$emit("changePage", page);
+      this.loading = false;
     }
   }
 };
