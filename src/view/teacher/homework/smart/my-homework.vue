@@ -50,7 +50,7 @@
           <h3>考试时间：</h3>
           <InputNumber
             :max="80"
-            :min="5"
+            :min="1"
             v-model="homeworkInfo['testingTime']"
           />
           <span class="ml-5">分钟</span>

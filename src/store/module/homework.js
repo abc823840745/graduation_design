@@ -38,6 +38,7 @@ import {
 export default {
   state: {
     remainTime: 0,
+    surplusTime: 0, // 后端传的剩余时间
     courseList: [],
     inputInfo: [],
     originalInfo: [],
@@ -102,6 +103,9 @@ export default {
     },
     setRemainTime(state, seconds) {
       state.remainTime = seconds;
+    },
+    setSurplusTime(state, seconds) {
+      state.surplusTime = seconds;
     },
   },
   actions: {

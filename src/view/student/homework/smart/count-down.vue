@@ -74,7 +74,6 @@ export default {
     _countDown() {
       if (this.isStopTimer || this.remainingTime <= 0) {
         this.stopTimer();
-        // localStorage.removeItem("remainTime");
         this.setRemainTime(0);
         return this.$emit("callBack");
       }
@@ -83,7 +82,6 @@ export default {
       }
       this.remainingTime = this.remainingTime - 1;
       this.setRemainTime(this.remainingTime);
-      // setlocalStorage("remainTime", this.remainingTime);
       this.timer = setTimeout(this.startTimer, this.timeTnterval * 1000);
     },
 

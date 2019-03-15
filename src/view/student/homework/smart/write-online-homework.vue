@@ -20,7 +20,7 @@
             <CountDown
               ref="countDown"
               :isStartTimer="isStartTimer"
-              :initialTime="seconds"
+              :initialTime="surplusTime"
               @callBack="endTimeDoing"
             >
               <h2 slot-scope="{ remainingTime }">
@@ -76,16 +76,21 @@ export default {
       this.$emit("update:modalOpen", newVal);
     },
 
-    stuHWInfo(newVal, oldVal) {
-      this.seconds = newVal["surplus_time"];
+    surplusTime(newVal, oldVal) {
       this.isStartTimer = true;
-      console.log(this.seconds, this.isStartTimer);
     }
+
+    // stuHWInfo(newVal, oldVal) {
+    //   this.seconds = newVal["surplus_time"];
+    //   this.isStartTimer = true;
+    //   console.log(this.seconds, this.isStartTimer);
+    // }
   },
 
   computed: {
     ...mapState({
-      inputInfo: state => state.homework.inputInfo
+      inputInfo: state => state.homework.inputInfo,
+      surplusTime: state => state.homework.surplusTime
     }),
 
     formatMinute() {
