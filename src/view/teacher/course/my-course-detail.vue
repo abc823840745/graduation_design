@@ -89,7 +89,7 @@
                   >上传 / 修改课程介绍</Button>
               </Upload>
             </div>
-            <my-pdf v-if="course_desc_url" :src="course_desc_url"></my-pdf>
+            <my-pdf v-if="course_desc_url" :src="course_desc_url" :click_change="true" :full_screen="true"></my-pdf>
             <span v-else>教师尚未上传课程介绍</span>
             <Spin size="large" fix v-if="loadingStatus"></Spin>
           </div>

@@ -76,7 +76,7 @@
             </Card>
           </div>
           <div class="class-introduce">
-            <my-pdf v-if="course_desc_url" :src="course_desc_url"></my-pdf>
+            <my-pdf v-if="course_desc_url" :src="course_desc_url" :click_change="true" :full_screen="true" :show_notes="true"></my-pdf>
             <span v-else>教师尚未上传本课讲义</span>
           </div>
         </TabPane>

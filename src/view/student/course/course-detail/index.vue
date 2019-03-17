@@ -69,7 +69,7 @@
             </Card>
           </div>
           <div class="class_introduce">
-            <my-pdf v-if="course_desc_url" :src="course_desc_url"></my-pdf>
+            <my-pdf v-if="course_desc_url" :src="course_desc_url" :click_change="true" :full_screen="true"></my-pdf>
           </div>
         </TabPane>
         <TabPane label="课时列表" name="classlist">
