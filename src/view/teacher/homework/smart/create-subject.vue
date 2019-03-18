@@ -13,6 +13,10 @@
         请点击新建作业按钮快点新建作业吧！
       </Alert>
 
+      <Alert show-icon v-if="type !== 'create'">
+        修改模式下出现如&lt;p&gt;、&lt;pre&gt;、&amp;lt;等html代码是正常现象，请勿随意删改html代码
+      </Alert>
+
       <div
         v-for="(item, index) in inputInfo"
         :key="index"

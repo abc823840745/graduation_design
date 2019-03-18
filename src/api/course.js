@@ -15,6 +15,17 @@ export function getCourseDetail(obj) {
   });
 }
 
+// 查询课时详情
+export function getCourseClassDetail(obj) {
+  return axios.request({
+    params: {
+      id: obj['id'],
+    },
+    url: '/get/course/time/detail',
+    method: 'get',
+  });
+}
+
 // 查看课时列表
 export function getCourseClassList(obj) {
   return axios.request({
@@ -56,6 +67,19 @@ export function getQusetionsList(obj) {
   });
 }
 
+// 获取课时附件列表
+export function getCourseClassFileList(obj) {
+  return axios.request({
+    params: {
+      course_time_id: obj['course_time_id'],
+      limit: obj['limit'] || 10,
+      offset: obj['offset'] || 1,
+    },
+    url: '/get/course/time/file/list',
+    method: 'get',
+  });
+}
+
 /**
  * 学生部分
  */
@@ -68,7 +92,6 @@ export function getStuCourseList(obj) {
       semester: obj['semester'],
       limit: obj['limit'] || 10,
       offset: obj['offset'] || 1,
-      method: obj['method'] || null,
       number: obj['number'] || null,
       password: obj['password'] || null,
     },
@@ -160,7 +183,50 @@ export function uploadCourseIntro(obj) {
   return axios.request({
     headers: { 'Content-Type': 'multipart/form-data' },
     data: obj,
-    url: '/upload/work',
+    url: '/upload/course/desc',
+    method: 'post',
+  });
+}
+
+// 上传课时附件
+export function uploadCourseClassFile(obj) {
+  return axios.request({
+    headers: { 'Content-Type': 'multipart/form-data' },
+    data: obj,
+    url: '/upload/course/time/file',
+    method: 'post',
+  });
+}
+
+// 删除上传附件
+export function deleteCourseClassFile(obj) {
+  return axios.request({
+    data: {
+      id: obj['id'],
+    },
+    url: '/delete/course/time/file',
+    method: 'post',
+  });
+}
+
+// 上传课时介绍
+export function uploadCourseClassIntro(obj) {
+  return axios.request({
+    headers: { 'Content-Type': 'multipart/form-data' },
+    data: obj,
+    url: '/uplad/course/time/desc',
+    method: 'post',
+  });
+}
+
+// 修改课时介绍文字
+export function editCourseClassIntroText(obj) {
+  return axios.request({
+    data: {
+      id: obj['id'],
+      content: obj['content'],
+    },
+    url: '/change/course/time/desc/text',
     method: 'post',
   });
 }

@@ -344,6 +344,64 @@ export function searchStudentHW(obj) {
 }
 
 /**
+ * 题库
+ */
+
+// 删除题库
+export function delSubHouse(id) {
+  return axios.request({
+    data: {
+      id,
+    },
+    url: '/delete/exper/question',
+    method: 'post',
+  });
+}
+
+// 更新题目
+export function updateSubHouse(obj) {
+  return axios.request({
+    data: {
+      id: obj['id'],
+      course: obj['course'],
+      Category: obj['category'],
+      context: obj['context'],
+      obj: obj['obj'],
+      answer: obj['answer'],
+      grade: obj['grade'],
+    },
+    url: '/update/exper/question',
+    method: 'post',
+  });
+}
+
+// 查看题目
+export function getSubHouse(obj) {
+  return axios.request({
+    data: {
+      course: obj['course'],
+      Category: obj['category'],
+      type: obj['type'],
+      limit: obj['limit'] || 10,
+      page: obj['page'] || 1,
+    },
+    url: '/read/exper/question',
+    method: 'post',
+  });
+}
+
+// 新增题目
+export function createSubHouse(obj) {
+  return axios.request({
+    data: {
+      arr: obj['arr'],
+    },
+    url: '/add/exper/question',
+    method: 'post',
+  });
+}
+
+/**
  * 学生部分
  */
 

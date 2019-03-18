@@ -33,12 +33,18 @@ import {
   getTeaMainInfo,
   getStuMainInfo,
   searchStudentHW,
+  delSubHouse,
+  updateSubHouse,
+  getSubHouse,
+  createSubHouse,
 } from '@/api/homework';
 
 export default {
   state: {
+    experId: 0, // 老师发布的任务id
     remainTime: 0,
     surplusTime: 0, // 后端传的剩余时间
+    fintime: 0, // 老师规定的截止时间
     courseList: [],
     inputInfo: [],
     originalInfo: [],
@@ -106,6 +112,12 @@ export default {
     },
     setSurplusTime(state, seconds) {
       state.surplusTime = seconds;
+    },
+    setExperId(state, id) {
+      state.experId = id;
+    },
+    setFintime(state, seconds) {
+      state.fintime = seconds;
     },
   },
   actions: {
@@ -214,7 +226,7 @@ export default {
     async getStuHWList({ commit }, obj) {
       try {
         let res = await getStuHWList(obj);
-        return res.data.data;
+        return res.data;
       } catch (err) {
         console.error(err);
       }
@@ -413,6 +425,50 @@ export default {
       try {
         let res = await getTeaMainInfo(obj);
         return res.data.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
+    /**
+     * 题库
+     */
+
+    // 删除题库
+    async delSubHouse({ commit }, id) {
+      try {
+        let res = await delSubHouse(id);
+        return res.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
+    // 更新题目
+    async updateSubHouse({ commit }, obj) {
+      try {
+        let res = await updateSubHouse(obj);
+        return res.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
+    // 查看题目
+    async getSubHouse({ commit }, obj) {
+      try {
+        let res = await getSubHouse(obj);
+        return res.data.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
+    // 新增题目
+    async createSubHouse({ commit }, obj) {
+      try {
+        let res = await createSubHouse(obj);
+        return res.data;
       } catch (err) {
         console.error(err);
       }

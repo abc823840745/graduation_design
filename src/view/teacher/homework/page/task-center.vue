@@ -226,7 +226,7 @@ export default {
       "searchMyHW"
     ]),
 
-    ...mapMutations(["setOriginInputInfo"]),
+    ...mapMutations(["setOriginInputInfo", "setInputInfo"]),
 
     // 获取表格信息
     async getTableData(page = 1) {
@@ -414,6 +414,8 @@ export default {
           }
           return arr;
         }, []);
+        // console.log(inputInfo);
+        // this.setInputInfo(inputInfo);
         this.setOriginInputInfo(inputInfo);
       }
     },

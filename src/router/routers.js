@@ -314,7 +314,7 @@ export default [
     path: '/student/homework',
     name: 'student-homework',
     meta: {
-      icon: 'logo-buffer',
+      icon: 'ios-paper',
       title: '作业设计',
       access: ['student'],
     },
@@ -434,28 +434,6 @@ export default [
           access: ['student'],
         },
         component: () => import('@/view/student/graduation/practice-week.vue'),
-      },
-    ],
-  },
-  {
-    path: '/student/answering',
-    name: 'student-answering',
-    meta: {
-      icon: 'logo-buffer',
-      title: '答疑管理',
-      access: ['student'],
-    },
-    component: Main,
-    children: [
-      {
-        path: '',
-        name: 'student-answer-questions',
-        meta: {
-          icon: 'md-contacts',
-          title: '解答问题',
-          access: ['student'],
-        },
-        component: () => import('@/view/student/answering/answer-questions.vue'),
       },
     ],
   },
@@ -740,6 +718,16 @@ export default [
           access: ['teacher', 'admin'],
         },
         component: () => import('@teaHomework/page/task-center.vue'),
+      },
+      {
+        path: 'item-bank-management',
+        name: 'teacher-item-bank-management',
+        meta: {
+          icon: 'ios-list-box',
+          title: '题库管理',
+          access: ['teacher', 'admin'],
+        },
+        component: () => import('@teaHomework/page/item-bank-management.vue'),
       },
     ],
   },

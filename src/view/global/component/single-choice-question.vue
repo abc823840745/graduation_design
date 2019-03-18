@@ -11,20 +11,25 @@
       </h2>
 
       <!-- 显示题目 -->
-      <p v-if="type !== 'create'" class="mt-10">题目：{{ info["subject"] }}</p>
+      <div v-if="type !== 'create'" class="df-aic">
+        <div><span>题目：</span></div>
+        <div>
+          <span v-html="info['subject']">
+            {{ info["subject"] }}
+          </span>
+        </div>
+      </div>
 
       <!-- 输入题目 -->
-      <div class="df-aic" v-if="type === 'create'">
-        <Input
-          type="textarea"
-          :rows="3"
-          :placeholder="`第${info['title'].slice(0, 1)}题题目`"
-          :value="info['subject']"
-          @on-change="subjectChange"
-          clearable
-          style="width: 650px"
-        />
-      </div>
+      <mavon-editor
+        class="mavonEditor"
+        v-if="type === 'create'"
+        :subfield="false"
+        :placeholder="`第${info['title'].slice(0, 1)}题题目`"
+        :toolbars="toolbars"
+        :value="info['subject']"
+        @change="subjectChange"
+      />
 
       <!-- 按钮组 -->
       <div class="radio-list mb-10">
@@ -79,7 +84,7 @@
         <InputNumber
           v-if="type === 'score'"
           :max="100"
-          :min="5"
+          :min="0"
           :step="10"
           :value="parseInt(info['score'], 10)"
           @on-change="scoreChange"
@@ -91,7 +96,9 @@
 
 <script>
 import { mapState, mapMutations } from "vuex";
-import { setlocalStorage } from "@tools";
+import { setlocalStorage, getlocalStorage } from "@tools";
+import { mavonEditor } from "mavon-editor";
+import "mavon-editor/dist/css/index.css";
 
 export default {
   props: {
@@ -99,9 +106,15 @@ export default {
     type: String
   },
 
+  components: {
+    mavonEditor
+  },
+
   computed: {
     ...mapState({
-      inputInfo: state => state.homework.inputInfo
+      inputInfo: state => state.homework.inputInfo,
+      experId: state => state.homework.experId,
+      originInputInfo: state => state.homework.originInputInfo
     }),
 
     isDisabled() {
@@ -112,6 +125,15 @@ export default {
       return this.inputInfo[this.index];
     }
   },
+
+  // watch: {
+  //   originInputInfo(newVal, oldVal) {
+  //     this.subject = newVal[this.index]["subject"];
+  //   },
+  //   inputInfo(newVal, oldVal) {
+  //     this.subject = newVal[this.index]["subject"];
+  //   }
+  // },
 
   data() {
     return {
@@ -132,7 +154,43 @@ export default {
           label: "D",
           option: ""
         }
-      ]
+      ],
+      toolbars: {
+        bold: true, // 粗体
+        italic: true, // 斜体
+        header: true, // 标题
+        underline: true, // 下划线
+        strikethrough: true, // 中划线
+        mark: true, // 标记
+        superscript: false, // 上角标
+        subscript: false, // 下角标
+        quote: false, // 引用
+        ol: false, // 有序列表
+        ul: false, // 无序列表
+        link: false, // 链接
+        imagelink: false, // 图片链接
+        code: true, // code
+        table: false, // 表格
+        fullscreen: true, // 全屏编辑
+        readmodel: false, // 沉浸式阅读
+        htmlcode: false, // 展示html源码
+        help: true, // 帮助
+        /* 1.3.5 */
+        undo: true, // 上一步
+        redo: true, // 下一步
+        trash: true, // 清空
+        save: false, // 保存（触发events中的save事件）
+        /* 1.4.2 */
+        navigation: false, // 导航目录
+        /* 2.1.8 */
+        alignleft: true, // 左对齐
+        aligncenter: true, // 居中
+        alignright: true, // 右对齐
+        /* 2.2.1 */
+        subfield: false, // 单双栏模式
+        preview: false // 预览
+      }
+      // subject: ""
     };
   },
 
@@ -154,16 +212,15 @@ export default {
     },
 
     // 更新vuex的inputInfo最新值
-    subjectChange(e) {
+    subjectChange(value, render) {
       let inputInfo = this.inputInfo;
-      inputInfo[this.index]["subject"] = e.target.value;
+      inputInfo[this.index]["subject"] = value;
       this.setInputInfo(inputInfo);
     },
 
     choiceChange(value) {
       let inputInfo = this.inputInfo;
       inputInfo[this.index]["choice"] = value;
-      setlocalStorage("inputInfo", inputInfo);
       this.setInputInfo(inputInfo);
     },
 
@@ -197,6 +254,13 @@ export default {
   p,
   span {
     font-size: 15px;
+  }
+
+  .mavonEditor {
+    width: 650px;
+    min-height: 200px;
+    min-width: 300px;
+    z-index: 1;
   }
 
   .radio-left-con {

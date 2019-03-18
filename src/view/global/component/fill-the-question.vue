@@ -62,19 +62,14 @@
 
           <!-- 输入题目 -->
           <div class="df-aic mb-10" v-if="type === 'create'">
-            <Input
-              type="textarea"
-              :rows="3"
-              :value="item['subject']"
-              @on-change="subjectChange($event, index)"
+            <mavon-editor
+              class="mavonEditor"
+              :subfield="false"
               :placeholder="`请输入题目`"
-              clearable
-              style="width: 400px"
+              :toolbars="toolbars"
+              :value="item['subject']"
+              @change="subjectChange($event, index)"
             />
-
-            <Button class="add-fill-item-btn" @click="addFillItem(index)"
-              >添加填空项</Button
-            >
 
             <Button
               v-if="item['showCreSubjectBtn']"
@@ -92,10 +87,11 @@
           </div>
 
           <!-- 填写填空题答案 -->
-          <Input
-            class="mb-10"
-            type="textarea"
-            :rows="3"
+          <mavon-editor
+            class="mb-10 mavonEditor"
+            :subfield="false"
+            placeholder="请输入填空题答案"
+            :toolbars="toolbars"
             :value="
               type === 'create'
                 ? item['referenceAnswer']
@@ -103,10 +99,7 @@
                 ? item['answer']
                 : ''
             "
-            @on-change="choiceChange($event, index)"
-            placeholder="请输入填空题答案"
-            clearable
-            style="width: 400px"
+            @change="choiceChange($event, index)"
           />
         </div>
       </div>
@@ -128,7 +121,7 @@
         <InputNumber
           v-if="type === 'score'"
           :max="100"
-          :min="5"
+          :min="0"
           :step="10"
           :value="parseInt(info['score'], 10)"
           @on-change="scoreChange"
@@ -140,7 +133,8 @@
 
 <script>
 import { mapState, mapMutations } from "vuex";
-import { setlocalStorage } from "@tools";
+import { setlocalStorage, getlocalStorage } from "@tools";
+import { mavonEditor } from "mavon-editor";
 
 export default {
   props: {
@@ -148,11 +142,16 @@ export default {
     type: String
   },
 
+  components: {
+    mavonEditor
+  },
+
   computed: {
     ...mapState({
       inputInfo: state => state.homework.inputInfo,
       originalInfo: state => state.homework.originalInfo,
-      optionList: state => state.homework.optionList
+      optionList: state => state.homework.optionList,
+      experId: state => state.homework.experId
     }),
 
     info() {
@@ -161,28 +160,62 @@ export default {
   },
 
   data() {
-    return {};
+    return {
+      toolbars: {
+        bold: true, // 粗体
+        italic: true, // 斜体
+        header: true, // 标题
+        underline: true, // 下划线
+        strikethrough: true, // 中划线
+        mark: true, // 标记
+        superscript: false, // 上角标
+        subscript: false, // 下角标
+        quote: false, // 引用
+        ol: false, // 有序列表
+        ul: false, // 无序列表
+        link: false, // 链接
+        imagelink: false, // 图片链接
+        code: true, // code
+        table: false, // 表格
+        fullscreen: true, // 全屏编辑
+        readmodel: false, // 沉浸式阅读
+        htmlcode: false, // 展示html源码
+        help: true, // 帮助
+        /* 1.3.5 */
+        undo: true, // 上一步
+        redo: true, // 下一步
+        trash: true, // 清空
+        save: false, // 保存（触发events中的save事件）
+        /* 1.4.2 */
+        navigation: false, // 导航目录
+        /* 2.1.8 */
+        alignleft: true, // 左对齐
+        aligncenter: true, // 居中
+        alignright: true, // 右对齐
+        /* 2.2.1 */
+        subfield: false, // 单双栏模式
+        preview: false // 预览
+      }
+    };
   },
 
   methods: {
     ...mapMutations(["setInputInfo", "setOptionList"]),
 
     // 更新vuex的inputInfo最新值
-    subjectChange(e, index) {
+    subjectChange(value, index) {
       let inputInfo = this.inputInfo;
-      inputInfo[this.pIndex]["subject"][index]["subject"] = e.target.value;
+      inputInfo[this.pIndex]["subject"][index]["subject"] = value;
       this.setInputInfo(inputInfo);
     },
 
-    choiceChange(e, index) {
+    choiceChange(value, index) {
       let inputInfo = this.inputInfo;
       if (this.type === "create") {
-        inputInfo[this.pIndex]["subject"][index]["referenceAnswer"] =
-          e.target.value;
+        inputInfo[this.pIndex]["subject"][index]["referenceAnswer"] = value;
       } else if (this.type === "testing") {
-        inputInfo[this.pIndex]["subject"][index]["answer"] = e.target.value;
+        inputInfo[this.pIndex]["subject"][index]["answer"] = value;
       }
-      setlocalStorage("inputInfo", inputInfo);
       this.setInputInfo(inputInfo);
     },
 
@@ -195,15 +228,6 @@ export default {
     scoreChange(value) {
       let inputInfo = this.inputInfo;
       inputInfo[this.pIndex]["score"] = value;
-      this.setInputInfo(inputInfo);
-    },
-
-    // 添加填空项
-    addFillItem(index) {
-      let inputInfo = this.inputInfo;
-      let strArr = inputInfo[index]["subject"].split(" ");
-      strArr.push(" _____ ");
-      inputInfo[index]["subject"] = strArr.join("");
       this.setInputInfo(inputInfo);
     },
 
@@ -287,6 +311,13 @@ export default {
   span {
     font-size: 15px;
     line-height: 27px;
+  }
+
+  .mavonEditor {
+    width: 650px;
+    min-height: 200px;
+    min-width: 300px;
+    z-index: 1;
   }
 
   .add-fill-item-btn {

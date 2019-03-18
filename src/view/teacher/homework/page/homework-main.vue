@@ -96,7 +96,7 @@ export default {
 };
 </script>
 
-<style lang='less' >
+<style lang='less' scoped>
 @import "../../../global/public.less";
 
 .teacher-homework-main {

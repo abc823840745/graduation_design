@@ -1,13 +1,15 @@
 <template>
   <div class="subject-warehouse">
-    <Input
-      class="mb-30"
-      search
-      enter-button
-      placeholder="请输入搜索内容"
-      v-model="searchText"
-      @on-search="getSearchResult"
-    />
+    <div class="search-bar df">
+      <Input
+        class="mb-20 search-item"
+        search
+        enter-button
+        placeholder="请输入搜索内容"
+        v-model="searchText"
+        @on-search="getSearchResult"
+      />
+    </div>
 
     <Table
       class="mb-10 w100"
@@ -18,6 +20,15 @@
     />
 
     <Page :total="total" class="page" @on-change="changePage" />
+
+    <Modal title="添加题库">
+      <div class="modal-con df-fdc">
+        <div class="df-aic mb-20">
+          <h3>作业名称：</h3>
+          <Input placeholder="输入内容" clearable style="width: 250px" />
+        </div>
+      </div>
+    </Modal>
   </div>
 </template>
 
@@ -122,6 +133,18 @@ export default {
   .page {
     align-self: flex-end;
   }
+}
+
+.search-bar {
+  width: 100%;
+
+  .search-item {
+    width: 30%;
+  }
+}
+
+.modal-con {
+  width: 100%;
 }
 
 .ivu-table td.demo-table-info-column {

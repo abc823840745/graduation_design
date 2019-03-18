@@ -1,0 +1,13 @@
+diff a/src/view/teacher/course/my-course-class.vue b/src/view/teacher/course/my-course-class.vue	(rejected hunks)
+@@ -137,7 +137,10 @@
+         </div>
+       </Upload>
+       <div class="show-class-upload-list">
+-        <p v-for="(item, index) in class_upload_file_list" :key="index">{{item.name}}</p>
++        <p v-for="(item, index) in class_upload_file_list" :key="index">
++          <span>{{item.name}}</span>
++          <Button @click="delClassUploadList(index)" type="text">删除</Button>
++        </p>
+       </div>
+       <Spin size="large" fix v-if="loadingFileStatus"></Spin>
+     </Modal>

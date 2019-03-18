@@ -8,11 +8,14 @@
   >
     <div class="containter">
       <div class="header-bar">
-        <Alert
-          ><span class="alert-text">课程：{{ stuHWInfo["course"] }}</span>
+        <Alert>
+          <span class="alert-text">课程：{{ stuHWInfo["course"] }}</span>
           <span class="alert-text">实验：{{ stuHWInfo["exper_name"] }}</span>
-          <span class="alert-text">时间：{{ formatMinute }}分钟</span></Alert
-        >
+          <span class="alert-text">时间：{{ formatMinute }}分钟</span>
+          <span class="alert-text"
+            >截止时间：{{ stuHWInfo["exper_fintime"] }}</span
+          >
+        </Alert>
 
         <div class="count-down-con">
           <P class="count-down-text">倒计时：</P>
@@ -81,9 +84,10 @@ export default {
     }
 
     // stuHWInfo(newVal, oldVal) {
-    //   this.seconds = newVal["surplus_time"];
-    //   this.isStartTimer = true;
-    //   console.log(this.seconds, this.isStartTimer);
+    //   console.log(newVal);
+    //   // this.seconds = newVal["surplus_time"];
+    //   // this.isStartTimer = true;
+    //   // console.log(this.seconds, this.isStartTimer);
     // }
   },
 
@@ -104,6 +108,10 @@ export default {
       seconds: 10,
       showModal: false
     };
+  },
+
+  mounted() {
+    console.log(this.inputInfo);
   },
 
   methods: {

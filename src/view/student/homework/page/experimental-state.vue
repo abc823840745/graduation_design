@@ -176,8 +176,6 @@ export default {
                 return h("div", [
                   this.btnStyle("查看", h, () => {
                     this.showModal = true;
-                    // localStorage.removeItem("inputInfo");
-                    // localStorage.removeItem("remainTime");
                     this.getSubjectList(id, exper_id);
                   })
                 ]);

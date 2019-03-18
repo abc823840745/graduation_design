@@ -41,17 +41,17 @@
 
       <Page :total="30" class="mar-top page" />
 
-      <div class="btn-ground">
-        <Button
-          v-show="curDirectory === 4"
-          @click="allDownload"
-          type="primary"
-          class="mar-top"
-          size="large"
-          icon="ios-download-outline"
-          >全部下载</Button
-        >
-      </div>
+      <!-- <div class="btn-ground"> -->
+      <Button
+        v-show="curDirectory === 4"
+        @click="allDownload"
+        type="primary"
+        class="mar-top"
+        size="large"
+        icon="ios-download-outline"
+        >全部下载</Button
+      >
+      <!-- </div> -->
     </div>
 
     <Modal
@@ -97,6 +97,13 @@ import myMixin from "@/view/global/mixin";
 import { mapActions, mapState, mapMutations } from "vuex";
 import { getCourseClassList } from "@/api/course";
 import { debounce } from "@tools";
+import axios from "axios";
+import config from "@/config";
+
+const baseUrl =
+  process.env.NODE_ENV === "development"
+    ? config.baseUrl.dev
+    : config.baseUrl.pro;
 
 export default {
   name: "check-homework",
@@ -131,6 +138,7 @@ export default {
       curHWtype: "",
       stuHwInfo: {},
       stuHWId: 0,
+      allStuClassHW: [],
       columns1: [
         {
           title: "课时名称",
@@ -188,9 +196,9 @@ export default {
                 let { id, questions } = params.row;
                 this.stuHWId = id;
                 if (!questions) {
-                  // params.questions不存在时为课时作业
+                  // 课时作业
                   this.curDirectory = 4;
-                  await this.getStuClassHW(id);
+                  await this.getStuClassHW();
                 } else {
                   this.curDirectory = 5;
                   await this.getStuOnlineHW(id);
@@ -241,7 +249,7 @@ export default {
               props: {
                 max: 100,
                 min: 1,
-                value: parseInt(grade, 10)
+                value: grade !== "待评分" ? parseInt(grade, 10) : 1
               },
               style: {
                 marginRight: "5px"
@@ -308,7 +316,7 @@ export default {
                 this.stuHwInfo = params.row;
                 this.showModal = true;
                 this.curDirectory = 6;
-                localStorage.removeItem("inputInfo");
+                localStorage.removeItem("subjectList");
                 // localStorage.removeItem("remainTime");
                 await this.getStuSubjectList(questions);
               })
@@ -340,14 +348,37 @@ export default {
       "getStuOnlineHWList",
       "scoreOnlineHW",
       "setInputInfo",
-      "searchStudentHW"
+      "searchStudentHW",
+      "downloadAllHW"
     ]),
 
     ...mapMutations(["setInputInfo"]),
 
     // 全部下载
-    allDownload() {
-      // TODO: 全部下载
+    async allDownload() {
+      let res = await axios({
+        url: `${baseUrl}/download/teacher/stuexperStream`,
+        method: "post",
+        data: {
+          arr: this.allStuClassHW
+        },
+        responseType: "blob"
+      });
+      let blob = new Blob([res.data], {
+        type: "application/octet-stream;charset=utf-8"
+      });
+      const elink = document.createElement("a");
+      const filename = res.headers["content-disposition"].substring(
+        22,
+        res.headers["content-disposition"].length - 1
+      );
+      elink.download = filename;
+      elink.style.display = "none";
+      elink.href = URL.createObjectURL(blob);
+      document.body.appendChild(elink);
+      elink.click();
+      URL.revokeObjectURL(elink.href);
+      document.body.removeChild(elink);
     },
 
     // 评分
@@ -404,18 +435,24 @@ export default {
     },
 
     // 获取学生课时作业列表(用于评分)
-    async getStuClassHW(id) {
+    async getStuClassHW() {
       this.loading = true;
       let { name, semester, classes } = this.curCourseInfo;
       let res = await this.getStuHWList({
-        exper_id: id,
+        exper_id: this.stuHWId,
         course: name,
         semester,
         teacher: this.userName,
         stuclass: classes,
         classHour: this.curClassHour
       });
-      this.data4 = res;
+      this.data4 = res.data;
+      this.allStuClassHW = res.alldata.map(item => {
+        return {
+          localname: item["localname"],
+          name: `${item["name"]}.docx`
+        };
+      });
       this.loading = false;
     },
 
@@ -514,20 +551,20 @@ export default {
         if (item["subjectType"] !== "填空题") {
           obj.push({
             id: item["id"],
-            grade: item["score"] || 1
+            grade: item["score"] || 0
           });
         } else {
           let score = item["score"];
           item["subject"].forEach((item, index, arr) => {
             obj.push({
               id: item["id"],
-              grade: score || 1
+              grade: score || 0
             });
           });
         }
       });
       let grade = obj.reduce((num, item) => {
-        num += item["grade"];
+        num += parseInt(item["grade"], 10);
         return num;
       }, 0);
       if (grade > 100) {

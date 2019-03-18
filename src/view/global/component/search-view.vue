@@ -1,13 +1,15 @@
 <template>
   <div class="search-con">
-    <Input
-      class="mb-30"
-      search
-      enter-button
-      placeholder="请输入搜索内容"
-      v-model="searchText"
-      @on-search="getSearchResult"
-    />
+    <div class="search-bar df">
+      <Input
+        class="mb-30 search-item"
+        search
+        enter-button
+        placeholder="请输入搜索内容"
+        v-model="searchText"
+        @on-search="getSearchResult"
+      />
+    </div>
 
     <Table
       class="mb-10 w100"
@@ -82,6 +84,14 @@ export default {
   align-items: center;
   width: 100%;
   height: auto;
+
+  .search-bar {
+    width: 100%;
+
+    .search-item {
+      width: 30%;
+    }
+  }
 
   .page {
     align-self: flex-end;

@@ -8,7 +8,7 @@
 
 <script>
 import { getlocalStorage, setlocalStorage } from "@tools";
-import { mapMutations } from "vuex";
+import { mapMutations, mapState } from "vuex";
 
 export default {
   props: {
@@ -42,6 +42,12 @@ export default {
     }
   },
 
+  computed: {
+    ...mapState({
+      fintime: state => state.homework.fintime
+    })
+  },
+
   data() {
     return {
       remainingTime:
@@ -53,11 +59,6 @@ export default {
       timer: null, // 定时器
       isStopTimer: false // 是否停止定时器
     };
-  },
-
-  mounted() {
-    // this.timer && clearTimeout(this.timer);
-    // this.isStartTimer && this.startTimer();
   },
 
   beforeDestroy() {
@@ -74,7 +75,7 @@ export default {
     _countDown() {
       if (this.isStopTimer || this.remainingTime <= 0) {
         this.stopTimer();
-        this.setRemainTime(0);
+        this.setRemainTime(this.remainingTime);
         return this.$emit("callBack");
       }
       if (this.remainingTime - 1 <= 0) {
@@ -82,6 +83,13 @@ export default {
       }
       this.remainingTime = this.remainingTime - 1;
       this.setRemainTime(this.remainingTime);
+      let curDate = new Date();
+      let fintime = new Date(fintime);
+
+      // 判断是否超过老师规定的完成时间
+      if (curDate >= fintime) {
+        this.stopTimer();
+      }
       this.timer = setTimeout(this.startTimer, this.timeTnterval * 1000);
     },
 

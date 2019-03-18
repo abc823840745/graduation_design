@@ -47,19 +47,14 @@ import {
   getlocalStorage,
   getCurDate,
   setlocalStorage,
-  getCurSchoolYear
+  getCurSchoolYear,
+  isEmptyObject
 } from "@tools";
 import { mapActions, mapState, mapMutations } from "vuex";
 import Vue from "vue";
 import VueSocketio from "vue-socket.io";
 import socketio from "socket.io-client";
 import config from "@/config";
-
-// let ioInstance = socketio("${baseUrl}/online", {
-//   reconnection: true,
-//   reconnectionDelay: 500,
-//   maxReconnectionAttempts: Infinity
-// });
 
 const baseUrl =
   process.env.NODE_ENV === "development"
@@ -90,7 +85,8 @@ export default {
       courseList: state => state.homework.courseList,
       tableInfo: state => state.homework.onlineHWInfo,
       remainTime: state => state.homework.remainTime,
-      surplusTime: state => state.homework.surplusTime
+      surplusTime: state => state.homework.surplusTime,
+      experId: state => state.homework.experId
     })
   },
 
@@ -203,19 +199,29 @@ export default {
             ) {
               return h("div", [
                 this.btnStyle("完成作业", h, async () => {
+                  // let filterData = this.tableInfo["tableData"].filter(
+                  //   item => item["status"] === "进行中"
+                  // );
+                  // if (filterData["length"] > 1) {
+                  //   return this.$Notice.success({
+                  //     title: "请先完成当前的在线测试"
+                  //   });
+                  // }
+                  this.setRemainTime(0);
                   this.showModal2 = true;
                   this.stuHomeworkId = id;
                   this.stuHWInfo = params.row;
-                  let { status, surplus_time } = params.row;
+                  this.setFintime(exper_fintime);
+                  this.setExperId(exper_id);
                   await this.getSubjectList(exper_id);
                   this.joinRoom();
                   if (status === "进行中") {
                     this.senSocketData(this.surplusTime);
+                    await this.autoRecovery(exper_id);
                   } else {
                     this.setSurplusTime(surplus_time);
                     this.senSocketData(surplus_time);
                   }
-                  await this.autoSubmit();
                 })
               ]);
             }
@@ -236,11 +242,6 @@ export default {
     }, 1500);
   },
 
-  // beforeDestroy() {
-  //   this.closeSocket();
-  //   // clearInterval(this.timer);
-  // },
-
   beforeRouteLeave(to, from, next) {
     this.closeSocket();
     this.timer && clearInterval(this.timer);
@@ -248,18 +249,21 @@ export default {
   },
 
   methods: {
-    ...mapActions([
-      "getStuOnlineHW",
-      "getStuOnlineSubject",
-      "stuSubmitOnlineHW"
+    ...mapActions(["getStuOnlineHW", "getStuOnlineSubject"]),
+
+    ...mapMutations([
+      "setInputInfo",
+      "setSurplusTime",
+      "setExperId",
+      "setFintime",
+      "setRemainTime"
     ]),
 
-    ...mapMutations(["setInputInfo", "setSurplusTime"]),
-
-    // 掉线下次再进来就自动提交题目
-    async autoSubmit() {
-      let inputInfo = getlocalStorage("inputInfo");
-      if (inputInfo) {
+    // 掉线下次再进来就恢复学生之前的回答
+    async autoRecovery(exper_id) {
+      let subjectList = getlocalStorage("subjectList");
+      if (!isEmptyObject(subjectList)) {
+        let inputInfo = subjectList[exper_id];
         this.setInputInfo(inputInfo);
         this.$Notice.success({
           title: "检测到你中途离开考试，已为你恢复回答"
@@ -292,43 +296,7 @@ export default {
       await this.getStuOnlineSubject(id);
     },
 
-    // 提交作业
-    async submitOnlineHW(seconds, status) {
-      let questions = null;
-      await Promise.all(
-        this.inputInfo.map(async (item, index) => {
-          let { choice, subjectType, subject, id } = item;
-          if (subjectType !== "填空题") {
-            questions = [
-              {
-                root_id: this.stuHomeworkId,
-                quest_id: id,
-                answer:
-                  subjectType === "多选题" && choice ? choice.join() : choice
-              }
-            ];
-          } else {
-            questions = subject.map(item => {
-              return {
-                root_id: this.stuHomeworkId,
-                quest_id: item["id"],
-                answer: item["answer"]
-              };
-            });
-          }
-          let res = await this.stuSubmitOnlineHW({
-            id: this.stuHomeworkId,
-            // status: this.stuHWInfo["status"],
-            status,
-            submit_time: getCurDate(),
-            surplus_time: seconds,
-            questions
-          });
-        })
-      );
-    },
-
-    // 时间为 0 时的回调
+    // 时间为 0 或者超过老师设置的完成时间的回调
     async endTimeDoing(seconds) {
       this.submitSubjectAfter(seconds, "没有剩余时间自动提交作业成功");
     },
@@ -366,17 +334,23 @@ export default {
       return questions;
     },
 
+    // 处理后端返回的questions格式
+    // getFilterQuestion() {
+
+    // },
+
     // 提交题目数据后的事件
     async submitSubjectAfter(seconds, title) {
       this.leaveRoom(seconds);
       this.curDirectory = 1;
       this.setInputInfo([]);
       this.showModal2 = false;
-      localStorage.removeItem("inputInfo");
+
+      // 提交后清空保存的题目组
+      localStorage.removeItem("subjectList");
+      this.setExperId(0);
+      this.$Notice.success({ title });
       await this.getTableData(this.tableInfo["page"]);
-      this.$Notice.success({
-        title
-      });
     },
 
     // 查看房间
@@ -400,7 +374,6 @@ export default {
 
     // 离开房间
     leaveRoom(seconds) {
-      // console.log(seconds);
       this.timer && clearInterval(this.timer);
       this.$socket.emit("LeaveRoom", {
         payload: {
@@ -413,10 +386,9 @@ export default {
       });
     },
 
-    // 房间内发送数据,每隔5秒发送一次
+    // 房间内发送数据,每隔1秒发送一次
     senSocketData(seconds) {
       if (this.timer) clearInterval(this.timer);
-      // console.log(this.roomId);
       this.timer = setInterval(() => {
         this.$socket.emit("senData", {
           room: this.roomId,
@@ -425,7 +397,7 @@ export default {
             status: "进行中",
             submit_time: getCurDate(),
             surplus_time: seconds,
-            questions: this.getQuestions()
+            inputInfo: this.inputInfo
           }
         });
       }, 1000);
@@ -450,10 +422,14 @@ export default {
     },
 
     joinRes(value) {
-      // console.log(value);
-      this.roomId = value["room"];
-      if (value["surplus_time"]) {
-        this.setSurplusTime(value["surplus_time"]);
+      console.log(value);
+      let { room, data } = value;
+      this.roomId = room;
+      if (data && data["surplus_time"]) {
+        this.setSurplusTime(data["surplus_time"]);
+      }
+      if (data && data["inputInfo"]) {
+        this.setInputInfo(data["inputInfo"]);
       }
     },
 
@@ -462,14 +438,13 @@ export default {
     },
 
     senDataRes(value) {
-      // console.log(value);
       if (value["status"] !== 0) {
         this.senSocketData(this.remainTime);
       }
     },
 
     closeRes(value) {
-      // console.log(value);
+      console.log(value);
     }
   }
 };
