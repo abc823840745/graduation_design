@@ -72,13 +72,14 @@
             />
 
             <Button
-              v-if="item['showCreSubjectBtn']"
+              v-if="!disabled && item['showCreSubjectBtn']"
               class="add-fill-item-btn"
               @click="addNewSubject"
               >添加填空题</Button
             >
 
             <Button
+              v-if="!disabled"
               type="error"
               class="add-fill-item-btn"
               @click="$emit('delFillSubject', index)"
@@ -139,7 +140,11 @@ import { mavonEditor } from "mavon-editor";
 export default {
   props: {
     pIndex: Number, // 题目索引
-    type: String
+    type: String,
+    disabled: {
+      type: Boolean,
+      default: false
+    }
   },
 
   components: {

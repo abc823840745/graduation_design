@@ -1,7 +1,11 @@
 <template>
   <div class="containter">
     <CourseSelect @goNext="goNext" v-show="!showSubHouse" />
-    <SubjectHouse v-show="showSubHouse" />
+    <SubjectHouse
+      v-show="showSubHouse"
+      :courseInfo="courseInfo"
+      @backCourse="backCourse"
+    />
   </div>
 </template>
 
@@ -17,14 +21,19 @@ export default {
 
   data() {
     return {
-      showSubHouse: false
+      showSubHouse: false,
+      courseInfo: {}
     };
   },
 
   methods: {
     goNext(info) {
-      console.log(info);
       this.showSubHouse = true;
+      this.courseInfo = info;
+    },
+
+    backCourse() {
+      this.showSubHouse = false;
     }
   }
 };

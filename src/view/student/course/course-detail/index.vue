@@ -154,7 +154,6 @@ export default {
   name: "course-index",
   data() {
     return {
-      baseUrl: process.env.BASE_URL,
       // 课程详情
       course_name: "",
       course_code: "",
@@ -380,14 +379,15 @@ export default {
     };
   },
   components: {
-    // pdf
+    myPdf,
+    mavonEditor
   },
   methods: {
     goClass(id) {
       this.$router.push(`${this.$route.params.id}/${id}`);
     },
     // 获取课程详情
-    getCourseDetail() {
+    getCourseDetail(to_id) {
       getCourseDetail({
         id: to_id || this.$route.params.id
       })
@@ -420,7 +420,7 @@ export default {
     getCourseClassList(cb = () => {}, to_id) {
       this.class_table_loading = true;
       getCourseClassList({
-        course_id: this.$route.params.id,
+        course_id: to_id || this.$route.params.id,
         offset: this.course_class_offset,
         limit: this.course_class_limit
       })
@@ -447,7 +447,7 @@ export default {
     getCourseQusetionsList(cb = () => {}, to_id) {
       this.questions_table_loading = true;
       getCourseQusetionsList({
-        course_id: this.$route.params.id,
+        course_id: to_id || this.$route.params.id,
         offset: this.course_question_offset,
         limit: this.course_question_limit
       })

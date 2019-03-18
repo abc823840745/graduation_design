@@ -37,6 +37,7 @@ import {
   updateSubHouse,
   getSubHouse,
   createSubHouse,
+  searchSubHouse,
 } from '@/api/homework';
 
 export default {
@@ -192,7 +193,6 @@ export default {
               arr.push({
                 subject,
                 subjectType: item['type'],
-
                 choice: item['answer'],
                 optionList,
                 weighting: item['grade'] * subjectLength,
@@ -435,9 +435,9 @@ export default {
      */
 
     // 删除题库
-    async delSubHouse({ commit }, id) {
+    async delSubHouse({ commit }, obj) {
       try {
-        let res = await delSubHouse(id);
+        let res = await delSubHouse(obj);
         return res.data;
       } catch (err) {
         console.error(err);
@@ -458,7 +458,7 @@ export default {
     async getSubHouse({ commit }, obj) {
       try {
         let res = await getSubHouse(obj);
-        return res.data.data;
+        return res.data;
       } catch (err) {
         console.error(err);
       }
@@ -474,6 +474,15 @@ export default {
       }
     },
 
+    // 搜索题目
+    async searchSubHouse({ commit }, obj) {
+      try {
+        let res = await searchSubHouse(obj);
+        return res.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
     /**
      * 学生端
      */

@@ -1,43 +1,77 @@
 <template>
   <div class="subject-warehouse">
-    <div class="search-bar df mb-20">
-      <Input
-        class="search-item"
-        search
-        enter-button
-        placeholder="请输入搜索内容"
-        v-model="searchText"
-        @on-search="getSearchResult"
-      />
-      <Button
-        type="primary"
-        class="add-sub-btn ml-10"
-        icon="ios-add"
-        @click="addSub"
-        >添加题目</Button
-      >
+    <div class="top_title mb-20">
+      <h2 class="class_title">
+        {{ courseInfo["name"] }}
+        <!-- <span class="course-code">[{{ courseInfo["code"] }}]</span> -->
+      </h2>
+
+      <div class="return_btn">
+        <!-- <Button
+          type="primary"
+          shape="circle"
+          @click="searchOpen"
+          icon="ios-search"
+        >
+          搜索</Button
+        > -->
+
+        <Button type="primary" shape="circle" @click="openModal" icon="ios-add">
+          添加题目</Button
+        >
+
+        <Button
+          class="ml-10"
+          type="primary"
+          shape="circle"
+          @click="headerGoBack"
+          icon="md-arrow-back"
+          >返回</Button
+        >
+      </div>
     </div>
 
-    <Table
-      class="mb-10 w100"
-      border
-      :loading="loading"
-      :columns="columns"
-      :data="tableData"
-    />
-
-    <Page :total="total" class="page" @on-change="changePage" />
-
-    <Modal title="添加题库" v-model="showSubHourse" fullscreen>
-      <!-- <div class="modal-con df-fdc">
-        <div class="df-aic mb-20">
-          <h3>题目类型：</h3>
-          <Input placeholder="输入内容" clearable style="width: 250px" />
+    <Tabs v-model="subType" @on-click="tabsClick">
+      <TabPane
+        v-for="(item, index) in table"
+        :key="index"
+        :label="item['label']"
+        :name="item['name']"
+        class="df-fdc"
+      >
+        <div class="search-bar df mb-20">
+          <!-- <Input
+            class="search-item"
+            search
+            enter-button
+            placeholder="请输入搜索内容"
+            v-model="searchText"
+            @on-search="onSearch"
+          /> -->
         </div>
-      </div> -->
+        <Table
+          class="mb-10 w100"
+          border
+          :loading="loading"
+          :columns="columns"
+          :data="item['data']"
+        />
+        <Page
+          :total="item['total']"
+          class="page"
+          @on-change="item['changePage']"
+        />
+      </TabPane>
+    </Tabs>
 
+    <Modal
+      :title="type === 'create' ? '添加题库' : '查看详情或修改'"
+      v-model="showSubHourse"
+      :width="900"
+      @on-ok="createSub"
+    >
       <div class="modal-con df-fdc">
-        <div class="df-aic mb-20">
+        <div class="df-aic mb-20" v-show="type === 'create'">
           <h3>题目类型：</h3>
           <Select
             v-model="selVal"
@@ -56,10 +90,19 @@
           class="mb-30"
           v-for="(item, index) in inputInfo"
           type="create"
-          @delFillSubject="delFillSubject($event, index)"
+          :disabled="true"
           :index="index"
           :key="index"
         />
+      </div>
+
+      <div slot="footer">
+        <Button type="primary" @click="closeModal">
+          返回
+        </Button>
+        <Button type="primary" @click="updateSub">
+          确认修改
+        </Button>
       </div>
     </Modal>
   </div>
@@ -68,34 +111,45 @@
 <script>
 import myMixin from "@/view/global/mixin";
 import SubjectType from "@/view/global/component/show-subject-different-types";
-import { mapState, mapMutations } from "vuex";
+import { mapState, mapMutations, mapActions } from "vuex";
 
 export default {
   mixins: [myMixin],
 
   props: {
-    subType: String
+    courseInfo: Object
   },
 
   components: {
     SubjectType
   },
 
+  watch: {
+    async courseInfo(newVal, oldVal) {
+      await this.getTableData(1);
+    }
+  },
+
   computed: {
     ...mapState({
-      inputInfo: state => state.homework.inputInfo
+      inputInfo: state => state.homework.inputInfo,
+      userName: state => state.user.userName,
+      teaId: state => state.user.stu_nmuber
     })
   },
 
   data() {
     return {
+      type: "create",
       total: 1,
       searchText: "",
       loading: false,
       showSubHourse: false,
+      subType: "单选题",
       columns: [
         {
           title: "题号",
+          type: "index",
           key: "subNum",
           maxWidth: 70,
           align: "center",
@@ -103,7 +157,7 @@ export default {
         },
         {
           title: "题目",
-          key: "subject",
+          key: "context",
           ellipsis: true
         },
         {
@@ -112,25 +166,26 @@ export default {
           maxWidth: 150,
           align: "center",
           render: (h, params) => {
+            let { id } = params.row;
             return h("div", [
               this.btnStyle("详情", h, () => {
-                this.showSubHourse = true;
+                this.getDeatail(params.index);
               }),
-              this.btnStyle("删除", h, () => {}, "error")
+              this.btnStyle(
+                "删除",
+                h,
+                () => {
+                  this.$Modal.confirm({
+                    title: "确定要删除该任务？",
+                    onOk: async () => {
+                      await this.delSub(id);
+                    }
+                  });
+                },
+                "error"
+              )
             ]);
           }
-        }
-      ],
-      tableData: [
-        {
-          subNum: 1,
-          subject:
-            "nodejs怎么发请求哈哈哈哈哈哈哈哈哈哈和和和和和和和哈哈和和和和和和和和和",
-          optionA: "选项一",
-          optionB: "选项二",
-          optionC: "选项三",
-          optionD: "选项四",
-          referenceAnswer: "C"
         }
       ],
       selList: [
@@ -151,16 +206,92 @@ export default {
           label: "问答题"
         }
       ],
-      selVal: ""
+      selVal: "",
+      subject: "",
+      table: [
+        {
+          data: [],
+          page: 1,
+          label: "单选题",
+          name: "单选题",
+          total: 1,
+          changePage: async page => {
+            let table = this.table;
+            table[0]["page"] = page;
+            this.table = table;
+            await this.getTableData(page);
+          }
+        },
+        {
+          data: [],
+          page: 1,
+          label: "多选题",
+          name: "多选题",
+          total: 1,
+          changePage: async page => {
+            let table = this.table;
+            table[1]["page"] = page;
+            this.table = table;
+            await this.getTableData(page);
+          }
+        },
+        {
+          data: [],
+          page: 1,
+          label: "填空题",
+          name: "填空题",
+          total: 1,
+          changePage: async page => {
+            let table = this.table;
+            table[2]["page"] = page;
+            this.table = table;
+            await this.getTableData(page);
+          }
+        },
+        {
+          data: [],
+          page: 1,
+          label: "问答题",
+          name: "问答题",
+          total: 1,
+          changePage: async page => {
+            let table = this.table;
+            table[3]["page"] = page;
+            this.table = table;
+            await this.getTableData(page);
+          }
+        }
+      ]
     };
   },
 
   methods: {
+    ...mapActions([
+      "createSubHouse",
+      "getSubHouse",
+      "delSubHouse",
+      "updateSubHouse",
+      "searchSubHouse"
+    ]),
+
     ...mapMutations(["setInputInfo"]),
 
-    // 获取搜索结果
-    async getSearchResult() {
-      this.$emit("search", this.searchText);
+    // 获取table列表数据
+    async getTableData(page) {
+      this.loading = true;
+      let res = await this.getSubHouse({
+        course: this.courseInfo["name"],
+        category: "",
+        type: this.subType,
+        page: page || 1
+      });
+      let table = this.table;
+      let num = this.getNum(this.subType);
+      table[num]["data"] = res.data;
+      table[num]["total"] = res.count;
+      table[num]["page"] = page;
+      this.table = table;
+      this.loading = false;
     },
 
     // 获取分页数据
@@ -168,22 +299,146 @@ export default {
       this.$emit("changePage", page);
     },
 
-    addSub() {
+    async tabsClick(name) {
+      let num = this.getNum(name);
+      await this.getTableData(this.table[num]["page"]);
+    },
+
+    // modal 确定新建题目事件
+    async createSub() {
+      let arr = [];
+      let { name } = this.courseInfo;
+      let {
+        subjectType,
+        subject,
+        optionList,
+        choice,
+        weighting
+      } = this.inputInfo[0];
+      if (subjectType !== "填空题") {
+        arr = [
+          {
+            course: name,
+            category: "",
+            type: subjectType,
+            context: subject,
+            obj: {
+              first_option: optionList[0]["option"],
+              sec_option: optionList[1]["option"],
+              third_option: optionList[2]["option"],
+              fourth_option: optionList[3]["option"]
+            },
+            answer: Array.isArray(choice) ? choice.join() : choice,
+            grade: weighting
+          }
+        ];
+      } else {
+        arr = subject.map(item => {
+          return {
+            course: name,
+            category: "",
+            type: subjectType,
+            context: item["subject"],
+            obj: {
+              first_option: "",
+              sec_option: "",
+              third_option: "",
+              fourth_option: ""
+            },
+            answer: item["referenceAnswer"],
+            grade: weighting / subject.length
+          };
+        });
+      }
+      let res = await this.createSubHouse({
+        teach_id: this.teaId,
+        teacher: this.userName,
+        arr
+      });
+      this.setInputInfo([]);
+      let num = this.getNum(subjectType);
+      await this.getTableData(this.table[num]["page"]);
+      this.$Notice.success({
+        title: "新增成功！"
+      });
+    },
+
+    // 更新题目
+    async updateSub() {
+      let { id } = this.subject;
+      let {
+        subjectType,
+        choice,
+        subject,
+        optionList,
+        weighting
+      } = this.inputInfo[0];
+      let res = await this.updateSubHouse({
+        teach_id: this.teaId,
+        teacher: this.userName,
+        id,
+        course: this.courseInfo["name"],
+        category: "",
+        context: subjectType === "填空题" ? subject[0]["subject"] : subject,
+        obj: {
+          first_option: optionList[0]["option"] || "",
+          sec_option: optionList[1]["option"] || "",
+          third_option: optionList[2]["option"] || "",
+          fourth_option: optionList[3]["option"] || ""
+        },
+        answer: subjectType === "填空题" ? subject[0]["answer"] : choice,
+        grade: weighting
+      });
+      if (res["status"] === 1) {
+        this.setInputInfo([]);
+        this.closeModal();
+        let num = this.getNum(subjectType);
+        await this.getTableData(this.table[num]["page"]);
+        return this.$Notice.success({
+          title: "修改成功！"
+        });
+      }
+      this.$Notice.error({
+        title: "修改失败"
+      });
+    },
+
+    // 删除题目
+    async delSub(id) {
+      let res = await this.delSubHouse({
+        id,
+        teach_id: this.teaId,
+        teacher: this.userName
+      });
+      if (res["status"] === 1) {
+        this.getTableData(1);
+        return this.$Notice.success({ title: "删除成功！" });
+      }
+      this.$Notice.error({ title: "删除失败！" });
+    },
+
+    // 打开新增题目的modal
+    openModal() {
+      this.type = "create";
+      this.selVal = "";
+      this.setInputInfo([]);
       this.showSubHourse = true;
     },
 
-    // 新建题目
+    // 关闭modal
+    closeModal() {
+      this.showSubHourse = false;
+    },
+
+    // 切换题目
     selectChange(type) {
       this.setInputInfo([]);
-      let index = 0;
       let inputInfo = this.inputInfo;
-      let key = Math.round(new Date().getTime() / 1000).toString();
       let subject =
         type !== "填空题"
           ? ""
           : [
               {
-                key,
                 subject: "",
                 answer: "",
                 referenceAnswer: "",
@@ -205,7 +460,6 @@ export default {
         }
       ];
       inputInfo.push({
-        key: type === "填空题" ? "" : key,
         subject,
         subjectType: type,
         title: "",
@@ -216,23 +470,123 @@ export default {
       this.setInputInfo(inputInfo);
     },
 
-    // 删除填空题小题
-    delFillSubject(fillindex, index) {
-      if (fillindex === 0) {
-        return this.$Notice.warning({
-          title: "最后一题无法删除！"
-        });
-      }
-      let inputInfo = this.inputInfo;
-      inputInfo[index]["subject"].splice(fillindex, 1);
-      let subjectListLength = inputInfo[index]["subject"].length;
+    // 查看问题详情
+    async getDeatail(index) {
+      this.type = "check";
+      this.openModal();
+      let num = this.getNum(this.subType);
+      console.log(this.table[num]["data"][index]);
+      this.subject = this.table[num]["data"][index];
+      this.setSubject();
+    },
 
-      // 删除的是最后一个才显示前一个的删除按钮
-      if (fillindex - 1 >= 0 && subjectListLength === fillindex) {
-        inputInfo[index]["subject"][fillindex - 1]["showCreSubjectBtn"] = true;
+    setSubject() {
+      this.setInputInfo([]);
+      let arr = [];
+      let {
+        type,
+        answer,
+        context,
+        grade,
+        first_option,
+        sec_option,
+        third_option,
+        fourth_option
+      } = this.subject;
+      let optionList = [
+        {
+          label: "A",
+          option: first_option
+        },
+        {
+          label: "B",
+          option: sec_option
+        },
+        {
+          label: "C",
+          option: third_option
+        },
+        {
+          label: "D",
+          option: fourth_option
+        }
+      ];
+      if (type !== "填空题") {
+        arr = [
+          {
+            subject: context,
+            subjectType: type,
+            title: "",
+            choice: type === "多选题" ? answer.split(",") : answer,
+            optionList,
+            weighting: grade
+          }
+        ];
+      } else {
+        arr = [
+          {
+            subject: [
+              {
+                subject: context,
+                referenceAnswer: answer
+              }
+            ],
+            subjectType: type,
+            title: "",
+            choice: "",
+            optionList: [],
+            weighting: grade
+          }
+        ];
       }
+      this.setInputInfo(arr);
+    },
 
-      this.setInputInfo(inputInfo);
+    // 返回课程页面
+    headerGoBack() {
+      this.$emit("backCourse");
+    },
+
+    // async onSearch() {
+    //   await this.getSearchResult(1);
+    // },
+
+    // // 搜索题目
+    // async getSearchResult(page) {
+    //   this.loading = true;
+    //   let res = await this.searchSubHouse({
+    //     condition: this.searchText,
+    //     course: this.courseInfo["name"],
+    //     Category: "",
+    //     type: this.subType,
+    //     page
+    //   });
+    //   let table = this.table;
+    //   let num = this.getNum(this.subType);
+    //   table[num]["data"] = res.data;
+    //   table[num]["total"] = res.count;
+    //   table[num]["page"] = page;
+    //   this.table = table;
+    //   this.loading = false;
+    // },
+
+    getNum(type) {
+      let num = 0;
+      switch (type) {
+        case "单选题":
+          num = 0;
+          break;
+        case "多选题":
+          num = 1;
+          break;
+        case "填空题":
+          num = 2;
+          break;
+        case "问答题":
+          num = 3;
+          break;
+      }
+      return num;
     }
   }
 };
@@ -246,6 +600,33 @@ export default {
   flex-direction: column;
   width: 100%;
   height: auto;
+}
+
+.top_title {
+  // overflow: hidden;
+  // padding-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  background-color: #fff;
+  padding: 14px 20px;
+  border-radius: 10px;
+  color: #666;
+  box-shadow: 2px 2px 2px #eee;
+  .class_title {
+    font-size: 18px;
+    font-weight: 700;
+    float: left;
+    line-height: 32px;
+    .course-code {
+      font-weight: 500;
+      color: #888;
+      font-size: 14px;
+    }
+  }
+  .return_btn {
+    float: right;
+  }
 }
 
 .page {

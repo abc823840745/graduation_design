@@ -22,9 +22,9 @@
   .course-detail-intro {
     position: relative;
     margin: 0 4px 4px 0;
-    padding: 0 20px;
+    padding: 0 10px 10px 10px;
     border-radius: 10px;
-    height: 400px;
+    min-height: 400px;
     background-color: #fff;
     box-shadow: 2px 2px 2px #eee;
     text-align: center;
@@ -38,6 +38,7 @@
       left: 10px;
       top: 10px;
       cursor: pointer;
+      z-index: 999;
     }
   }
   .course-detail-teacher-talk {
@@ -467,6 +468,9 @@ export default {
       questions_data: []
     };
   },
+  components: {
+    myPdf
+  },
   methods: {
     checkStudentList() {
       console.log("打开进入课程的学生名单");
@@ -508,7 +512,7 @@ export default {
       this.loadingStatus = true;
     },
     // 获取课程详情
-    getCourseDetail() {
+    getCourseDetail(to_id) {
       getCourseDetail({
         id: to_id || this.$route.params.id
       })
@@ -566,7 +570,7 @@ export default {
     // 获取课时列表
     getCourseClassList(cb = () => {}, to_id) {
       getCourseClassList({
-        course_id: this.$route.params.id,
+        course_id: to_id || this.$route.params.id,
         offset: this.course_class_offset,
         limit: this.course_class_limit
       })

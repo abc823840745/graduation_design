@@ -37,6 +37,17 @@
     text-align: center;
     margin-top: 20px;
   }
+  .class-introduce {
+    position: relative;
+    margin: 0 4px 4px 0;
+    padding: 0 10px 10px 10px;
+    border-radius: 10px;
+    min-height: 400px;
+    background-color: #fff;
+    box-shadow: 2px 2px 2px #eee;
+    text-align: center;
+    margin-top: 20px;
+  }
 }
 </style>
 <template>

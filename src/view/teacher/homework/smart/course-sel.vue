@@ -11,8 +11,8 @@
     <div class="course-list-wrap" v-show="courseList.length > 0">
       <div class="course-item" v-for="(item, index) in courseList" :key="index">
         <h3>{{ item.name }}</h3>
-        <!-- <p class="course-code">课程代码：{{ item.code }}</p>
-        <p class="course-code">教学班：{{ item.classes }}</p> -->
+        <p class="course-code">课程代码：{{ item.code }}</p>
+        <p class="course-code">教学班：{{ item.classes }}</p>
         <ButtonGroup class="course-btn">
           <Button
             shape="circle"

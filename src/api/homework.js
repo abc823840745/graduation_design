@@ -348,10 +348,12 @@ export function searchStudentHW(obj) {
  */
 
 // 删除题库
-export function delSubHouse(id) {
+export function delSubHouse(obj) {
   return axios.request({
     data: {
-      id,
+      id: obj['id'],
+      teach_id: obj['teach_id'],
+      teacher: obj['teacher'],
     },
     url: '/delete/exper/question',
     method: 'post',
@@ -362,9 +364,11 @@ export function delSubHouse(id) {
 export function updateSubHouse(obj) {
   return axios.request({
     data: {
+      teach_id: obj['teach_id'],
+      teacher: obj['teacher'],
       id: obj['id'],
       course: obj['course'],
-      Category: obj['category'],
+      Category: obj['category'] || '',
       context: obj['context'],
       obj: obj['obj'],
       answer: obj['answer'],
@@ -380,7 +384,7 @@ export function getSubHouse(obj) {
   return axios.request({
     data: {
       course: obj['course'],
-      Category: obj['category'],
+      Category: obj['category'] || '',
       type: obj['type'],
       limit: obj['limit'] || 10,
       page: obj['page'] || 1,
@@ -394,9 +398,27 @@ export function getSubHouse(obj) {
 export function createSubHouse(obj) {
   return axios.request({
     data: {
+      teach_id: obj['teach_id'],
+      teacher: obj['teacher'],
       arr: obj['arr'],
     },
     url: '/add/exper/question',
+    method: 'post',
+  });
+}
+
+// 搜索题目
+export function searchSubHouse(obj) {
+  return axios.request({
+    data: {
+      condition: obj['condition'],
+      course: obj['course'],
+      Category: obj['category'] || '',
+      type: obj['type'],
+      limit: obj['limit'] || 10,
+      page: obj['page'] || 1,
+    },
+    url: '/search/exper/question',
     method: 'post',
   });
 }
