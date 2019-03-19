@@ -345,7 +345,8 @@ export default {
                     item["subjectType"] === "多选题"
                       ? item["choice"].join()
                       : item["choice"],
-                  grade
+                  grade,
+                  status: item["status"]
                 }
               ];
             } else {
@@ -363,7 +364,8 @@ export default {
                   course: this.curCourse,
                   qtype: "填空题",
                   answer: item["referenceAnswer"],
-                  grade: grade / arr.length
+                  grade: grade / arr.length,
+                  status: item["status"]
                 };
               });
             }

@@ -547,6 +547,7 @@ export default {
       try {
         let res = await getStuOnlineSubject(id);
         let data = res.data.data;
+        // console.log(data[0]['context']);
         let executeOnce = true;
         let inputInfo = data.reduce((arr, item, index) => {
           let optionList = [

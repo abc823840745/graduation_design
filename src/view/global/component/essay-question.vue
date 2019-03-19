@@ -11,13 +11,9 @@
       </h2>
 
       <!-- 显示的题目 -->
-      <div v-if="type !== 'create'" class="df-aic">
-        <div><span>题目：</span></div>
-        <div>
-          <span v-html="info['subject']">
-            {{ info["subject"] }}
-          </span>
-        </div>
+      <div v-if="type !== 'create'" class="df-fdc mt-10">
+        <p>题目：</p>
+        <pre style="font-size:16px;">{{ info["subject"] }}</pre>
       </div>
 
       <!-- 输入题目 -->
@@ -53,23 +49,19 @@
       </div>
 
       <!-- 显示的回答 -->
-      <div class="df-aic mb-20 mt-20">
-        <div class="df-aic" v-if="type === 'check' || type === 'score'">
-          <p>
-            {{ answerTip }}回答：
-            <span class="blue" v-html="info['choice']">
-              {{ info["choice"] }}
-            </span>
-          </p>
+      <div class="df-aic mb-10">
+        <div class="df-fdc" v-if="type === 'check' || type === 'score'">
+          <p>{{ answerTip }}回答：</p>
+          <pre class="blue" style="font-size:16px;">{{ info["choice"] }}</pre>
         </div>
       </div>
 
       <!-- 参考答案 -->
       <div class="mb-10" v-if="type === 'check' || type === 'score'">
-        <span>参考答案：</span>
-        <span class="green" v-html="info['referenceAnswer']">{{
+        <p>参考答案：</p>
+        <pre class="green" style="font-size:16px;">{{
           info["referenceAnswer"]
-        }}</span>
+        }}</pre>
       </div>
 
       <!-- 评分 -->

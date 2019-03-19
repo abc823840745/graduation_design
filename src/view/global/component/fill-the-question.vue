@@ -18,29 +18,29 @@
         >
           <div class="mb-20 w100">
             <!-- 显示的题目 -->
-            <div class="df mb-10 w100">
+            <div class="df-fdc w100">
               <p>({{ index + 1 }})</p>
-              <p class="ml-5" v-if="type !== 'create'">
-                {{ item["subject"] }}
-              </p>
+              <!-- <p class="ml-5" v-if="type !== 'create'"> -->
+              <pre style="font-size:16px;" v-if="type !== 'create'">{{
+                item["subject"]
+              }}</pre>
+              <!-- </p> -->
             </div>
 
             <!-- 参考答案和显示的回答 -->
             <div class="df-fdc">
-              <p class="mb-10">
-                回答：
-                <span class="blue">
-                  {{ item["answer"] }}
-                </span>
-              </p>
+              <p>回答：</p>
+              <pre class="blue" style="font-size:16px;">{{
+                item["answer"]
+              }}</pre>
 
               <div v-if="type === 'check' || type === 'score'">
                 <p>
                   参考答案：
-                  <span class="green">
-                    {{ item["referenceAnswer"] }}
-                  </span>
                 </p>
+                <pre class="green" style="font-size:16px;">{{
+                  item["referenceAnswer"]
+                }}</pre>
               </div>
             </div>
           </div>
@@ -55,9 +55,14 @@
       >
         <div class="df-fdc">
           <!-- 显示的题目 -->
-          <div class="df mb-10 w100">
+          <div class="df-fdc mb-10 w100">
             <p>({{ index + 1 }})</p>
-            <p v-if="type !== 'create'" class="ml-10">{{ item["subject"] }}</p>
+            <pre
+              style="font-size:16px;"
+              v-if="type !== 'create'"
+              class="ml-10"
+              >{{ item["subject"] }}</pre
+            >
           </div>
 
           <!-- 输入题目 -->

@@ -202,7 +202,8 @@ export default {
                 subject: "",
                 answer: "",
                 referenceAnswer: "",
-                showCreSubjectBtn: true
+                showCreSubjectBtn: true,
+                status: "new"
               }
             ];
       let optionList = [
@@ -218,7 +219,8 @@ export default {
         title: `${inputInfo.length + 1}、${type}`,
         choice: type === "多选题" ? [] : "",
         optionList,
-        weighting: 10
+        weighting: 10,
+        status: "new"
       });
       index = length - 1;
       this.setInputInfo(inputInfo);

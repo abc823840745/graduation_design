@@ -239,7 +239,8 @@ export default {
           title: `${inputInfo.length + 1}、${type}`,
           choice: type === "多选题" ? answer.split(",") : answer,
           optionList,
-          weighting: grade
+          weighting: grade,
+          status: "old"
         });
       } else {
         let fillSub = this.inputInfo.filter(
@@ -257,7 +258,8 @@ export default {
             subject: context,
             answer: "",
             referenceAnswer: answer,
-            showCreSubjectBtn: true
+            showCreSubjectBtn: true,
+            status: "old"
           });
         }
         if (fillSub["length"] === 0) {
@@ -269,14 +271,16 @@ export default {
                 subject: context,
                 answer: "",
                 referenceAnswer: answer,
-                showCreSubjectBtn: true
+                showCreSubjectBtn: true,
+                status: "old"
               }
             ],
             subjectType: type,
             title: `${inputInfo.length + 1}、${type}`,
             choice: answer,
             optionList: [],
-            weighting: grade
+            weighting: grade,
+            status: "old"
           });
         }
       }

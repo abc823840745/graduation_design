@@ -11,13 +11,9 @@
       </h2>
 
       <!-- 显示题目 -->
-      <div v-if="type !== 'create'" class="df-aic">
-        <div><span>题目：</span></div>
-        <div>
-          <span v-html="info['subject']">
-            {{ info["subject"] }}
-          </span>
-        </div>
+      <div v-if="type !== 'create'" class="df-fdc mt-10">
+        <p>题目：</p>
+        <pre style="font-size:16px;">{{ info["subject"] }}</pre>
       </div>
 
       <!-- 输入题目 -->
