@@ -13,9 +13,9 @@
         请点击新建作业按钮快点新建作业吧！
       </Alert>
 
-      <Alert show-icon v-if="type !== 'create'">
+      <!-- <Alert show-icon v-if="type !== 'create'">
         修改模式下出现如&lt;p&gt;、&lt;pre&gt;、&amp;lt;等html代码是正常现象，请勿随意删改html代码
-      </Alert>
+      </Alert> -->
 
       <div
         v-for="(item, index) in inputInfo"
@@ -79,8 +79,12 @@
       </div>
     </Modal>
 
-    <Modal v-model="modalOpen" fullscreen title="题库选择">
-      <SubWarehouse />
+    <Modal v-model="modalOpen" fullscreen :title="`题库选择(${subType})`">
+      <SubWarehouse
+        :type="type"
+        :subType="subType"
+        @closeModal="subWarehouseClose"
+      />
 
       <div slot="footer">
         <Button type="primary" size="large" @click="subWarehouseClose">
@@ -119,9 +123,7 @@ export default {
 
     isShowModal(newVal, oldVal) {
       this.$emit("update:showModal", newVal);
-      this.hasFillSub = this.inputInfo.some(
-        item => item["subjectType"] === "填空题"
-      );
+      this.hasFillSubject();
     }
   },
 
@@ -140,6 +142,7 @@ export default {
       loading: false,
       subjectClassify: "单选题",
       hasFillSub: false,
+      subType: "",
       subjectClassifyList: [
         {
           value: "单选题",
@@ -203,18 +206,10 @@ export default {
               }
             ];
       let optionList = [
-        {
-          option: ""
-        },
-        {
-          option: ""
-        },
-        {
-          option: ""
-        },
-        {
-          option: ""
-        }
+        { label: "A", option: "" },
+        { label: "B", option: "" },
+        { label: "C", option: "" },
+        { label: "D", option: "" }
       ];
       let length = inputInfo.push({
         key: type === "填空题" ? "" : key,
@@ -239,10 +234,7 @@ export default {
         let filterData = this.reduceData(optionList);
         this.setOptionList(filterData);
       }
-
-      this.hasFillSub = this.inputInfo.some(
-        item => item["subjectType"] === "填空题"
-      );
+      this.hasFillSubject();
     },
 
     // 删除题目
@@ -324,6 +316,12 @@ export default {
       this.setInputInfo(inputInfo);
     },
 
+    hasFillSubject() {
+      this.hasFillSub = this.inputInfo.some(
+        item => item["subjectType"] === "填空题"
+      );
+    },
+
     // 筛选需要update的题目，并对concat后的数组对象进行去重
     reduceData(optionList) {
       let list = optionList;
@@ -356,6 +354,7 @@ export default {
     // 打开题库
     subWarehouseOpen(subType) {
       this.modalOpen = true;
+      this.subType = subType;
     },
 
     // 关闭题目选择

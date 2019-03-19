@@ -317,7 +317,6 @@ export default {
                 this.showModal = true;
                 this.curDirectory = 6;
                 localStorage.removeItem("subjectList");
-                // localStorage.removeItem("remainTime");
                 await this.getStuSubjectList(questions);
               })
             ]);
@@ -388,6 +387,7 @@ export default {
         grade: value
       });
       if (res["status"] === 1) {
+        await this.getStuClassHW();
         this.$Notice.success({
           title: "评分成功！"
         });
@@ -447,12 +447,14 @@ export default {
         classHour: this.curClassHour
       });
       this.data4 = res.data;
-      this.allStuClassHW = res.alldata.map(item => {
-        return {
-          localname: item["localname"],
-          name: `${item["name"]}.docx`
-        };
-      });
+      this.allStuClassHW =
+        res.alldata &&
+        res.alldata.map(item => {
+          return {
+            localname: item["localname"],
+            name: `${item["name"]}.docx`
+          };
+        });
       this.loading = false;
     },
 

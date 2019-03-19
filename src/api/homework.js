@@ -352,6 +352,7 @@ export function delSubHouse(obj) {
   return axios.request({
     data: {
       id: obj['id'],
+      Category: obj['category'] || '',
       teach_id: obj['teach_id'],
       teacher: obj['teacher'],
     },
@@ -419,6 +420,19 @@ export function searchSubHouse(obj) {
       page: obj['page'] || 1,
     },
     url: '/search/exper/question',
+    method: 'post',
+  });
+}
+
+// 历史记录
+export function subHouseHistory(obj) {
+  return axios.request({
+    data: {
+      course: obj['course'],
+      limit: obj['limit'] || 10,
+      page: obj['page'] || 1,
+    },
+    url: '/get/exper/qusetion/modifyrecord',
     method: 'post',
   });
 }

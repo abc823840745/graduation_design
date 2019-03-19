@@ -38,6 +38,7 @@ import {
   getSubHouse,
   createSubHouse,
   searchSubHouse,
+  subHouseHistory,
 } from '@/api/homework';
 
 export default {
@@ -46,6 +47,7 @@ export default {
     remainTime: 0,
     surplusTime: 0, // 后端传的剩余时间
     fintime: 0, // 老师规定的截止时间
+    curCourse: '', // 点击选择的课程信息
     courseList: [],
     inputInfo: [],
     originalInfo: [],
@@ -119,6 +121,9 @@ export default {
     },
     setFintime(state, seconds) {
       state.fintime = seconds;
+    },
+    setCurCourse(state, course) {
+      state.curCourse = course;
     },
   },
   actions: {
@@ -483,6 +488,17 @@ export default {
         console.error(err);
       }
     },
+
+    // 历史记录
+    async subHouseHistory({ commit }, obj) {
+      try {
+        let res = await subHouseHistory(obj);
+        return res.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
     /**
      * 学生端
      */
@@ -519,6 +535,7 @@ export default {
           tableData: res.data.data,
           count: res.data.count,
           page: obj['page'] || 1,
+          ondoingStatus: res.data.ondoingStatus,
         });
       } catch (err) {
         console.error(err);

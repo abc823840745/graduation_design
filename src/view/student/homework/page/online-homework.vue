@@ -199,14 +199,12 @@ export default {
             ) {
               return h("div", [
                 this.btnStyle("完成作业", h, async () => {
-                  // let filterData = this.tableInfo["tableData"].filter(
-                  //   item => item["status"] === "进行中"
-                  // );
-                  // if (filterData["length"] > 1) {
+                  // if (this.tableInfo["ondoingStatus"]["ondoingcount"] > 1) {
                   //   return this.$Notice.success({
                   //     title: "请先完成当前的在线测试"
                   //   });
                   // }
+                  // console.log(this.tableInfo["ondoingStatus"]);
                   this.setRemainTime(0);
                   this.showModal2 = true;
                   this.stuHomeworkId = id;

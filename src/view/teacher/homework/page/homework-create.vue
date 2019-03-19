@@ -15,6 +15,7 @@
 import CourseSelect from "@teaHomework/smart/course-select";
 import MyHomework from "@teaHomework/smart/my-homework";
 import myMixin from "@/view/global/mixin";
+import { mapMutations } from "vuex";
 
 export default {
   mixins: [myMixin],
@@ -38,6 +39,8 @@ export default {
   },
 
   methods: {
+    ...mapMutations(["setCurCourse"]),
+
     goNext(info) {
       let { id, name, semester } = info;
       let submitInfo = this.submitInfo;
@@ -46,6 +49,7 @@ export default {
       submitInfo["course_id"] = id;
       this.submitInfo = submitInfo;
       this.courseId = id;
+      this.setCurCourse(name);
       this.modalOpen = true;
     }
   }

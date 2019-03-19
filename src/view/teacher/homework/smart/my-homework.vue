@@ -49,7 +49,7 @@
         >
           <h3>考试时间：</h3>
           <InputNumber
-            :max="80"
+            :max="200"
             :min="1"
             v-model="homeworkInfo['testingTime']"
           />
@@ -190,7 +190,8 @@ export default {
       optionList: state => state.homework.optionList,
       originalInfo: state => state.homework.originalInfo,
       originInputInfo: state => state.homework.originInputInfo,
-      stu_number: state => state.user.stu_nmuber
+      stu_number: state => state.user.stu_nmuber,
+      curCourse: state => state.homework.curCourse
     }),
 
     classifyList() {
@@ -337,6 +338,8 @@ export default {
                     third_option: item["optionList"][2]["option"],
                     fourth_option: item["optionList"][3]["option"]
                   },
+                  Category: "",
+                  course: this.curCourse,
                   qtype: item["subjectType"],
                   answer:
                     item["subjectType"] === "多选题"
@@ -356,6 +359,8 @@ export default {
                     third_option: "",
                     fourth_option: ""
                   },
+                  Category: "",
+                  course: this.curCourse,
                   qtype: "填空题",
                   answer: item["referenceAnswer"],
                   grade: grade / arr.length

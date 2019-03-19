@@ -178,6 +178,7 @@ export default {
                     title: "已经有学生提交，不能修改！"
                   });
                 }
+                this.setCurCourse(course);
                 this.modalOpen = true;
                 this.itemInfo = this.tableInfo["tableData"][params.index];
                 let getId = this.courseList.reduce((arr, item) => {
@@ -226,7 +227,7 @@ export default {
       "searchMyHW"
     ]),
 
-    ...mapMutations(["setOriginInputInfo", "setInputInfo"]),
+    ...mapMutations(["setOriginInputInfo", "setInputInfo", "setCurCourse"]),
 
     // 获取表格信息
     async getTableData(page = 1) {
@@ -414,8 +415,6 @@ export default {
           }
           return arr;
         }, []);
-        // console.log(inputInfo);
-        // this.setInputInfo(inputInfo);
         this.setOriginInputInfo(inputInfo);
       }
     },
