@@ -65,7 +65,7 @@
           <div class="course-detail-teacher-talk">
             <Card :bordered="false" :dis-hover="true">
               <p slot="title">课程介绍</p>
-              <p>期望老师的关爱能让你愉快畅游在知识的海洋，同学的帮忙能给你带来更多的感动。为你下半学期的进步鼓掌！</p>
+              <p>{{course_desc_text}}</p>
             </Card>
           </div>
           <div class="class_introduce">
@@ -119,7 +119,7 @@
 import myPdf from '@/view/pdf/pdf'
 import { mavonEditor } from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
-import { getCourseDetail, getCourseClassList, getCourseQusetionsList } from '@/api/course'
+import { getCourseDetail, getCourseClassList, getCourseQusetionsList, askQuestionByStudent } from '@/api/course'
 import { getMyDate } from '@/libs/tools'
 export default {
   name: 'course-index',
@@ -130,6 +130,7 @@ export default {
       course_code: '',
       course_classes: '',
       course_desc_url: '',
+      course_desc_text: '',
       // 课时表格
       class_table_loading: true,
       class_columns: [
@@ -338,6 +339,7 @@ export default {
         this.course_code = detail.code
         this.course_classes = detail.classes
         this.course_desc_url = detail.desc_url
+        this.course_desc_text = detail.desc_text
       }).catch((err)=>{
         console.log(err)
         this.$Message.error('获取课程详情失败');
@@ -395,11 +397,22 @@ export default {
     },
     // 提问
     askQusetion() {
-      console.log(this.ask_question_data.content)
+      askQuestionByStudent({
+        course_id: this.$route.params.id,
+        title: this.ask_question_data.title,
+        content: this.ask_question_data.content
+      }).then((res)=>{
+        console.log(res)
+        this.$Message.success('提交成功');
+        
+      }).catch((err)=>{
+        console.log(err)
+        this.$Message.error('提问提交失败');
+      })
     },
     // 取消提问
     cancelAskQuestion() {
-
+      
     },
   },
   created () {

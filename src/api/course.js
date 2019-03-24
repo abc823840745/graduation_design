@@ -100,6 +100,46 @@ export function getStuCourseList (obj) {
   })
 }
 
+// 学生提问
+export function askQuestionByStudent (obj) {
+  return axios.request({
+    data: {
+      title: obj['title'],
+      content: obj['content'],
+      course_id: obj['course_id']
+    },
+    url: '/add/course/question',
+    method: 'post'
+  })
+}
+
+// 查看笔记
+export function getNotesList (obj) {
+  return axios.request({
+    params: {
+      course_id: obj['course_id'],
+      course_time_id: obj['course_time_id'],
+      limit: obj['limit'] || 10,
+      offset: obj['offset'] || 1
+    },
+    url: '/get/course/note/list',
+    method: 'get'
+  })
+}
+
+// 新增笔记
+export function addStuNotes (obj) {
+  return axios.request({
+    data: {
+      course_id: obj['course_id'],
+      course_time_id: obj['course_time_id'],
+      content: obj['content']
+    },
+    url: '/add/course/note',
+    method: 'post'
+  })
+}
+
 /**
  * 教师部分
  */

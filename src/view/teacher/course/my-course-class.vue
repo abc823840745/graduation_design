@@ -40,7 +40,7 @@
       left: 10px;
       top: 10px;
       cursor: pointer;
-      z-index: 999;
+      z-index: 1000;
     }
   }
   .course-detail-teacher-talk {
@@ -87,7 +87,7 @@
                   >上传 / 修改本课讲义</Button>
               </Upload>
             </div>
-            <my-pdf v-if="course_desc_url" :src="course_desc_url"></my-pdf>
+            <my-pdf v-if="course_desc_url" :src="course_desc_url" :click_change="true" :full_screen="true"></my-pdf>
             <span v-else>教师尚未上传本课讲义</span>
             <Spin size="large" fix v-if="loadingStatus"></Spin>
           </div>

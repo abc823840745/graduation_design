@@ -135,7 +135,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.$router.push('/teacher/answering/detail/'+params.row.id)
+                      this.$router.push('/student/course/answering/answer-detail/'+params.row.id)
                     }
                   }
                 },
@@ -158,7 +158,7 @@ export default {
                             console.log(params.index);
                             this.deleteCourseQuestion(params.row.id, ()=>{
                               this.$Modal.remove();
-                              this.$Message.success('删除成功');
+                              this.getQusetionsList()
                             })
                           }
                       });
@@ -288,7 +288,7 @@ export default {
         id
       }).then((res)=>{
         console.log(res)
-        this.getCourseQusetionsList()
+        this.$Message.success('删除成功');
         cb()
       }).catch((err)=>{
         console.log(err)

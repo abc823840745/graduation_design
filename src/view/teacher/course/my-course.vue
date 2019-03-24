@@ -27,6 +27,13 @@
        }
      }
    }
+   .none-course {
+      font-size: 16px;
+      font-weight: 700;
+      color: #888;
+      text-align: center;
+      padding-top: 40px;
+   }
    .course-page-nav {
      text-align: center;
      margin-top: 20px;

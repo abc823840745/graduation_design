@@ -38,7 +38,7 @@
       left: 10px;
       top: 10px;
       cursor: pointer;
-      z-index: 999;
+      z-index: 1000;
     }
   }
   .course-detail-teacher-talk {
@@ -96,7 +96,7 @@
           <div class="course-detail-teacher-talk">
             <Card :bordered="false" :dis-hover="true">
               <p slot="title">课程介绍</p>
-              <p>期望老师的关爱能让你愉快畅游在知识的海洋，同学的帮忙能给你带来更多的感动。为你下半学期的进步鼓掌！</p>
+              <p>{{course_desc_text}}</p>
             </Card>
           </div>
           <Modal v-model="showStudentList" fullscreen title="当前课程学生名单" :footer-hide="true">
@@ -163,6 +163,7 @@ export default {
       course_code: '',
       course_classes: '',
       course_desc_url: '',
+      course_desc_text: '',
       // 课时页码
       course_class_limit: 10,
       course_class_offset: 1,
@@ -449,6 +450,7 @@ export default {
         this.course_code = detail.code
         this.course_classes = detail.classes
         this.course_desc_url = detail.desc_url
+        this.course_desc_text = detail.desc_text
       }).catch((err)=>{
         console.log(err)
         this.$Message.error('获取课程详情失败');

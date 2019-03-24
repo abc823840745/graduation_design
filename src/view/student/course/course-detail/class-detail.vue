@@ -56,7 +56,7 @@
       left: 10px;
       top: 10px;
       cursor: pointer;
-      z-index: 999;
+      z-index: 1000;
     }
   }
 }
@@ -76,7 +76,7 @@
             </Card>
           </div>
           <div class="class-introduce">
-            <my-pdf v-if="course_desc_url" :src="course_desc_url" :click_change="true" :full_screen="true" :show_notes="true"></my-pdf>
+            <my-pdf v-if="course_desc_url" :src="course_desc_url" :click_change="true" :full_screen="true" :show_notes="true" :course_id="$route.params.id" :course_time_id="$route.params.class_id"></my-pdf>
             <span v-else>教师尚未上传本课讲义</span>
           </div>
         </TabPane>
@@ -208,7 +208,7 @@ export default {
         this.$Message.error('获取附件列表失败')
       })
     },
-    // 更改课时列表页码
+    // 更改课时附件列表页码
     changeCourseClassPage(page) {
       this.course_class_offset = page
       this.getClassFileList()
