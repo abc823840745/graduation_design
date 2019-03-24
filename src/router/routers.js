@@ -321,6 +321,17 @@ export default [
         },
         component: () => import('@/view/answering/answer-detail.vue'),
       },
+      {
+        path: 'course-notes',
+        name: 'course-notes',
+        meta: {
+          icon: 'ios-paper',
+          title: '我的笔记',
+          access: ['student'],
+          notCache: true,
+        },
+        component: () => import('@/view/student/course/course-notes.vue'),
+      },
     ],
   },
   {

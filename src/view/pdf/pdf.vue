@@ -30,28 +30,35 @@
       <Card :bordered="true" class="notes-card">
         <p slot="title">我的笔记</p>
         <div>
-          <Input v-model="fast_note_content" type="textarea" :autosize="{maxRows: 3, minRows: 3}" placeholder="快速笔记..." />
+          <Input v-model="fast_note_content" type="textarea" :autosize="{maxRows: 3, minRows: 3}" placeholder="快速笔记，可回车保存..." @on-enter="saveNote" />
           <p class="add-note-btn">
             <Button shape="circle" :disabled="is_full_screen" @click="showCreateNote = true">高级笔记</Button>
-            <Button type="primary" shape="circle" @click="saveNote">保存笔记</Button>
+            <Button type="primary" shape="circle" @click="saveNote" :loading="save_loading">保存笔记</Button>
           </p>
           <ul class="notes-list" v-if="notes_list.length !=0">
             <li v-for="(item, index) in notes_list" :key="index">
-              {{item.content}}
+              <div v-html="item.content" class="render-html"></div>
               <p class="note-tag">
-                <span class="more">详情</span>
                 <span class="time">{{item.created_at}}</span>
+                <span class="more" @click="lookDetail(index)">详情</span>
+                <span class="delete" @click="delNote(item.id)">删除</span>
               </p>
             </li>
           </ul>
           <div class="noyes-none" v-else>
             您在本课时还没记录过笔记哦~
           </div>
+          <div class="notes-page-nav" v-if="notes_list.length !=0">
+            <Page :current="notes_offset" :total="notes_total" size="small" :page-size="notes_limit" @on-change="changeNotePage" />
+          </div>
         </div>
       </Card>
     </div>
-    <Modal v-model="showCreateNote" draggable scrollable title="新建笔记">
-      <mavon-editor style="height: 300px" v-model="note_content" :toolbars="editorOptions"></mavon-editor>
+    <Modal v-model="showCreateNote" draggable scrollable title="新建笔记" :loading="high_loading" @on-ok="saveHighNote">
+      <mavon-editor style="height: 300px" v-model="note_content" :toolbars="editorOptions" @change="renderEditor"></mavon-editor>
+    </Modal>
+    <Modal v-model="showNoteDetail" draggable scrollable title="笔记详情" :footer-hide="true">
+        <div v-html="note_detail_content" class="render-html-detail"></div>
     </Modal>
   </div>
 </template>
@@ -60,7 +67,7 @@
   import { getMyDate } from '@/libs/tools'
   import { mavonEditor } from 'mavon-editor'
   import { setTimeout } from 'timers';
-  import { getNotesList, addStuNotes } from '@/api/course'
+  import { getNotesList, addStuNotes, deleteNote } from '@/api/course'
   export default {
     components: {
       pdf,
@@ -82,9 +89,11 @@
         is_full_screen: false,
         fast_note_content: '',
         note_content: '',
+        render_note_content: '',
         notes_list_height: 0,
         save_height: 0,
         showCreateNote: false,
+        defaultData: "preview",
         editorOptions: {
           bold: true,
           italic: true,
@@ -120,7 +129,11 @@
         notes_offset: 1,
         notes_limit: 10,
         notes_list: [],
-        note_total: 0
+        notes_total: 0,
+        save_loading: false,
+        high_loading: false,
+        showNoteDetail: false,
+        note_detail_content: ''
       }
     },
     mounted() {
@@ -219,36 +232,108 @@
             item.created_at = getMyDate(new Date(item.created_at).getTime(), "yyyy-MM-dd hh:mm")
             return item
           })
-          this.note_total = res.data.count
+          this.notes_total = res.data.count
           
         }).catch((err)=>{
           console.log(err)
           this.$Message.error('获取笔记列表失败')
         })
       },
-      // 新增笔记
-      addStuNotes() {
-        addStuNotes({
-          course_id: this.course_id,
-          course_time_id: this.course_time_id,
-          content: this.fast_note_content
-        }).then((res)=> {
-          console.log(res)
-          this.getNotesList()
-        }).catch((err)=>{
-          console.log(err)
-          this.$Message.error('新增笔记失败')
-        })
-      },
       // 保存笔记
       saveNote() {
-        this.addStuNotes()
+        if(!this.save_loading){
+          this.save_loading = true
+          addStuNotes({
+            course_id: this.course_id,
+            course_time_id: this.course_time_id,
+            content: this.fast_note_content
+          }).then((res)=> {
+            console.log(res)
+            this.save_loading = false
+            this.fast_note_content = ''
+            this.$Message.success('保存成功')
+            this.getNotesList()
+          }).catch((err)=>{
+            console.log(err)
+            this.save_loading = false
+            this.$Message.error('新增笔记失败')
+          })
+        }
+      },
+      // 高级笔记保存
+      saveHighNote() {
+        if(!this.save_loading){
+          this.save_loading = true
+          addStuNotes({
+            course_id: this.course_id,
+            course_time_id: this.course_time_id,
+            content: this.render_note_content
+          }).then((res)=> {
+            console.log(res)
+            this.save_loading = false
+            this.note_content = ''
+            this.$Message.success('保存成功')
+            this.getNotesList()
+          }).catch((err)=>{
+            console.log(err)
+            this.save_loading = false
+            this.$Message.error('新增笔记失败')
+          })
+        }
+      },
+      renderEditor(val, render) {
+        this.render_note_content = render
+      },
+      // 查看笔记详情
+      lookDetail(index) {
+        this.note_detail_content = this.notes_list[index].content
+        this.showNoteDetail = true
+      },
+      // 笔记换页
+      changeNotePage(page) {
+        this.notes_offset = page
+        this.getNotesList()
+      },
+      // 删除笔记
+      delNote(id) {
+        if(this.is_full_screen){
+          deleteNote({
+              id
+            }).then((res)=> {
+              console.log(res)
+              this.getNotesList()
+              this.$Message.success('删除成功')
+            }).catch((err)=>{
+              console.log(err)
+              this.$Message.error('删除失败')
+            })
+        }else{
+          this.$Modal.confirm({
+            title: '提示',
+            content: '<p>确定要删除这条笔记吗？</p>',
+            loading: true,
+            onOk: () => {
+              deleteNote({
+                id
+              }).then((res)=> {
+                console.log(res)
+                this.getNotesList()
+                this.$Modal.remove();
+                this.$Message.success('删除成功')
+              }).catch((err)=>{
+                console.log(err)
+                this.$Modal.remove();
+                this.$Message.error('删除失败')
+              })
+            }
+          })
+        }
       }
     }
   }
 
 </script>
-<style lang="less" scoped>
+<style lang="less">
 .pdf {
   padding-top: 53px;
   width: 100%;
@@ -296,8 +381,20 @@
             color: #2d8cf0;
             cursor: pointer;
           }
+          .delete {
+            color: #f32c1e;
+            cursor: pointer;
+          }
           span {
             margin-left: 6px;
+          }
+        }
+        .render-html {
+          width: 223px;
+          word-wrap: break-word;
+          word-break: normal;
+          img {
+            width: 100%;
           }
         }
       }
@@ -317,6 +414,13 @@
       right: 20px;
       top: 16px;
     }
+  }
+}
+.render-html-detail {
+  word-wrap: break-word;
+  word-break: normal;
+  img {
+    width: 100%;
   }
 }
 </style>

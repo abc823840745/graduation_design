@@ -15,6 +15,7 @@ export default {
   'student-my-course': '我的课程',
   'student-my-course-detail': '课程详情',
   'student-my-course-class-detail': '课时详情',
+  'course-notes': '我的笔记',
   'student-answer-index': '课程答疑',
   'student-answer-detail': '答疑详情',
   'student-other': '其他',

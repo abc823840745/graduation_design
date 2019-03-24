@@ -140,6 +140,17 @@ export function addStuNotes (obj) {
   })
 }
 
+// 删除笔记
+export function deleteNote (obj) {
+  return axios.request({
+    data: {
+      id: obj['id']
+    },
+    url: '/delete/course/note',
+    method: 'post'
+  })
+}
+
 /**
  * 教师部分
  */
