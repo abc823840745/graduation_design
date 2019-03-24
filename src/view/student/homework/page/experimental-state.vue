@@ -158,7 +158,18 @@ export default {
           sortable: true,
           render: (h, params) => {
             let text = params.row.status;
-            let btnColor = text === "已完成" ? "success" : "error";
+            let btnColor = null;
+            switch (text) {
+              case "已完成":
+                btnColor = "success";
+                break;
+              case "进行中":
+                btnColor = "warning";
+                break;
+              default:
+                btnColor = "error";
+                break;
+            }
             return h("div", [this.statusBtnStyle(text, h, btnColor)]);
           }
         },

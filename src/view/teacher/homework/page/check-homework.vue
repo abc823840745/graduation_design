@@ -477,69 +477,73 @@ export default {
     async getStuSubjectList(questions = []) {
       let subjectLength = 0;
       let executeOnce = true;
-      let inputInfo = questions.reduce((arr, item, index) => {
-        let { grade, answer, id } = item["stuanswer"];
-        let optionList = [
-          {
-            label: "A",
-            option: item["first_option"]
-          },
-          {
-            label: "B",
-            option: item["sec_option"]
-          },
-          {
-            label: "C",
-            option: item["third_option"]
-          },
-          {
-            label: "D",
-            option: item["fourth_option"]
-          }
-        ];
-        if (item["type"] !== "填空题") {
-          arr.push({
-            id: id,
-            subject: item["context"],
-            subjectType: item["type"],
-            title: `${index + 1}、${item["type"]}`,
-            choice:
-              item["type"] === "多选题" && answer ? answer.split(",") : answer,
-            optionList,
-            weighting: item["grade"],
-            referenceAnswer: item["answer"],
-            score: grade === "未评分" ? 1 : grade
-          });
-        } else {
-          if (executeOnce) {
-            // 填空题只有一条大题，所以只执行一次
-            executeOnce = false;
-            let subject = questions.reduce((arr, item) => {
-              if (item["type"] === "填空题") {
-                subjectLength += 1;
-                arr.push({
-                  id: id,
-                  subject: item["context"],
-                  answer: answer,
-                  referenceAnswer: item["answer"],
-                  showCreSubjectBtn: true
-                });
-              }
-              return arr;
-            }, []);
+      let inputInfo =
+        questions["length"] > 0 &&
+        questions.reduce((arr, item, index) => {
+          let { grade, answer, id } = item["stuanswer"];
+          let optionList = [
+            {
+              label: "A",
+              option: item["first_option"]
+            },
+            {
+              label: "B",
+              option: item["sec_option"]
+            },
+            {
+              label: "C",
+              option: item["third_option"]
+            },
+            {
+              label: "D",
+              option: item["fourth_option"]
+            }
+          ];
+          if (item["type"] !== "填空题") {
             arr.push({
-              subject,
+              id: id,
+              subject: item["context"],
               subjectType: item["type"],
               title: `${index + 1}、${item["type"]}`,
-              choice: "",
+              choice:
+                item["type"] === "多选题" && answer
+                  ? answer.split(",")
+                  : answer,
               optionList,
               weighting: item["grade"],
+              referenceAnswer: item["answer"],
               score: grade === "未评分" ? 1 : grade
             });
+          } else {
+            if (executeOnce) {
+              // 填空题只有一条大题，所以只执行一次
+              executeOnce = false;
+              let subject = questions.reduce((arr, item) => {
+                if (item["type"] === "填空题") {
+                  subjectLength += 1;
+                  arr.push({
+                    id: id,
+                    subject: item["context"],
+                    answer: answer,
+                    referenceAnswer: item["answer"],
+                    showCreSubjectBtn: true
+                  });
+                }
+                return arr;
+              }, []);
+              arr.push({
+                subject,
+                subjectType: item["type"],
+                title: `${index + 1}、${item["type"]}`,
+                choice: "",
+                optionList,
+                weighting: item["grade"],
+                score: grade === "未评分" ? 1 : grade
+              });
+            }
           }
-        }
-        return arr;
-      }, []);
+          return arr;
+        }, []);
       this.subjectList = questions;
       this.setInputInfo(inputInfo);
     },

@@ -326,11 +326,6 @@ export default {
       return questions;
     },
 
-    // 处理后端返回的questions格式
-    // getFilterQuestion() {
-
-    // },
-
     // 提交题目数据后的事件
     async submitSubjectAfter(seconds, title) {
       this.leaveRoom(seconds);

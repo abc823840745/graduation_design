@@ -64,9 +64,8 @@
         >
           <p slot="title">{{ item["operation"].slice(0, 4) }}</p>
           <p>
-            {{ item["teacher"] }}{{ item["operation"] }},题号为：{{
-              item["quest_id"]
-            }}
+            <Time :time="item['time']" />,{{ item["teacher"]
+            }}{{ item["operation"] }},题号为：{{ item["quest_id"] }}
           </p>
         </Card>
 
