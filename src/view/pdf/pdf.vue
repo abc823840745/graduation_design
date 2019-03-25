@@ -66,6 +66,7 @@
   import pdf from 'vue-pdf'
   import { getMyDate } from '@/libs/tools'
   import { mavonEditor } from 'mavon-editor'
+  import 'mavon-editor/dist/css/index.css'
   import { setTimeout } from 'timers';
   import { getNotesList, addStuNotes, deleteNote } from '@/api/course'
   export default {

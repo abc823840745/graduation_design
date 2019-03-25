@@ -325,7 +325,7 @@ export default [
         path: 'course-notes',
         name: 'course-notes',
         meta: {
-          icon: 'ios-paper',
+          icon: 'ios-quote',
           title: '我的笔记',
           access: ['student'],
           notCache: true,

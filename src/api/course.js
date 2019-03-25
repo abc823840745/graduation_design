@@ -80,6 +80,16 @@ export function getCourseClassFileList (obj) {
   })
 }
 
+// 上传图片接口
+export function uploadImage (obj) {
+  return axios.request({
+    headers: {'Content-Type': 'multipart/form-data'},
+    data: obj,
+    url: '/upload/image/of/public',
+    method: 'post'
+  })
+}
+
 /**
  * 学生部分
  */
