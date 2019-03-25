@@ -55,7 +55,7 @@
       </Card>
     </div>
     <Modal v-model="showCreateNote" draggable scrollable title="新建笔记" :loading="high_loading" @on-ok="saveHighNote">
-      <mavon-editor style="height: 300px" v-model="note_content" :toolbars="editorOptions" @change="renderEditor"></mavon-editor>
+      <mavon-editor style="height: 300px" ref="md" @imgAdd="$imgAdd" v-model="note_content" :toolbars="editorOptions" @change="renderEditor"></mavon-editor>
     </Modal>
     <Modal v-model="showNoteDetail" draggable scrollable title="笔记详情" :footer-hide="true">
         <div v-html="note_detail_content" class="render-html-detail"></div>
@@ -68,7 +68,7 @@
   import { mavonEditor } from 'mavon-editor'
   import 'mavon-editor/dist/css/index.css'
   import { setTimeout } from 'timers';
-  import { getNotesList, addStuNotes, deleteNote } from '@/api/course'
+  import { getNotesList, addStuNotes, deleteNote, uploadImage } from '@/api/course'
   export default {
     components: {
       pdf,
@@ -329,6 +329,25 @@
             }
           })
         }
+      },
+      // 编辑器上传图片 绑定@imgAdd event uploadImage
+      $imgAdd(pos, $file){
+          // 第一步.将图片上传到服务器.
+          var formdata = new FormData();
+          formdata.append('file', $file);
+          uploadImage(formdata).then((res)=> {
+            console.log(res);
+            // this.file = null;
+            // this.loadingStatus = false;
+            this.$Message.success('上传成功')
+            let url = res.data.urls[0].filePath
+            this.$refs.md.$img2Url(pos, url);
+          }).catch((err)=>{
+            console.log(err)
+            // this.file = null;
+            // this.loadingStatus = false;
+            this.$Message.error('上传失败')
+          })
       }
     }
   }
@@ -421,7 +440,7 @@
   word-wrap: break-word;
   word-break: normal;
   img {
-    width: 100%;
+    max-width: 100%;
   }
 }
 </style>
