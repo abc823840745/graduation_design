@@ -223,7 +223,9 @@ export default {
                     shape: "circle"
                   },
                   on: {
-                    click: () => {}
+                    click: () => {
+                      this.goHomework();
+                    }
                   }
                 },
                 "查看作业"
@@ -386,6 +388,13 @@ export default {
     goClass(id) {
       this.$router.push(`${this.$route.params.id}/${id}`);
     },
+
+    goHomework() {
+      this.$router.push({
+        name: "student-experimental-state"
+      });
+    },
+
     // 获取课程详情
     getCourseDetail(to_id) {
       getCourseDetail({
