@@ -41,7 +41,7 @@ export default [
     meta: {
       hideInMenu: true,
       notCache: true,
-      access: ['student', 'teacher'],
+      access: ['student', 'teacher', 'admin'],
     },
     children: [
       {
@@ -477,29 +477,6 @@ export default [
 
   //教师端路由
   {
-    path: '/teacher/main',
-    name: 'teacher-main',
-    meta: {
-      icon: 'logo-buffer',
-      title: '首页',
-      access: ['teacher', 'admin'],
-    },
-    component: Main,
-    children: [
-      {
-        path: '',
-        name: 'teacher-main',
-        meta: {
-          icon: 'md-contacts',
-          title: '首页',
-          notCache: true,
-          access: ['teacher', 'admin'],
-        },
-        component: () => import('@teaHomework/page/homework-main.vue'),
-      },
-    ],
-  },
-  {
     path: '/teacher/personal',
     name: 'teacher-personal',
     meta: {
@@ -686,8 +663,8 @@ export default [
     path: '/teacher/homework',
     name: 'teacher-homework',
     meta: {
-      icon: 'logo-buffer',
-      title: '作业管理',
+      icon: 'ios-paper',
+      title: '作业设计',
       access: ['teacher', 'admin'],
     },
     component: Main,
@@ -736,7 +713,7 @@ export default [
         path: 'item-bank-management',
         name: 'teacher-item-bank-management',
         meta: {
-          icon: 'ios-list-box',
+          icon: 'ios-book',
           title: '题库管理',
           access: ['teacher', 'admin'],
         },

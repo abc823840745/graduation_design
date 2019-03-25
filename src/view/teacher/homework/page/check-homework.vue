@@ -39,7 +39,7 @@
         class="table-con mar-top"
       />
 
-      <Page :total="30" class="mar-top page" />
+      <Page :total="totalCount" class="mar-top page" @on-change="changePage" />
 
       <!-- <div class="btn-ground"> -->
       <Button
@@ -78,7 +78,7 @@
         :tableData="searchTableData"
         :total="searchCount"
         @search="getSearchResult"
-        @changePage="changePage"
+        @changePage="changeSearchPage"
       />
       <div slot="footer">
         <Button type="primary" size="large" @click="searchClose">
@@ -117,7 +117,20 @@ export default {
       userName: state => state.user.userName,
       inputInfo: state => state.homework.inputInfo,
       teaId: state => state.user.stu_nmuber
-    })
+    }),
+
+    totalCount() {
+      switch (this.curDirectory) {
+        case 1:
+          return this.tableTotal1;
+        case 3:
+          return this.tableTotal3;
+        case 4:
+          return this.tableTotal4;
+        case 5:
+          return this.tableTotal5;
+      }
+    }
   },
 
   data() {
@@ -139,6 +152,11 @@ export default {
       stuHwInfo: {},
       stuHWId: 0,
       allStuClassHW: [],
+      tableTotal1: 1,
+      tableTotal2: 1,
+      tableTotal3: 1,
+      tableTotal4: 1,
+      tableTotal5: 1,
       columns1: [
         {
           title: "课时名称",
@@ -168,9 +186,8 @@ export default {
           render: (h, params) => {
             return h("div", [
               this.btnStyle("查看", h, () => {
-                let { index } = params;
                 this.curHWtype = params.row.hwType;
-                if (index === 0) {
+                if (params.row.hwType === "课时作业") {
                   this.curDirectory = 3;
                   this.getClassHW();
                 } else {
@@ -195,13 +212,14 @@ export default {
               this.btnStyle("查看", h, async () => {
                 let { id, questions } = params.row;
                 this.stuHWId = id;
+                console.log(params.row);
                 if (!questions) {
                   // 课时作业
                   this.curDirectory = 4;
                   await this.getStuClassHW();
                 } else {
                   this.curDirectory = 5;
-                  await this.getStuOnlineHW(id);
+                  await this.getStuOnlineHW();
                 }
               })
             ]);
@@ -395,50 +413,61 @@ export default {
     },
 
     async goNext(info) {
-      this.loading = true;
       this.curCourseInfo = info;
-      // 获取课程的课时列表
+      await this.getClassHourList();
+    },
+
+    // 获取课程的课时列表
+    async getClassHourList(page = 1) {
+      this.loading = true;
       let res = await getCourseClassList({
-        course_id: info["id"]
+        page,
+        course_id: this.curCourseInfo["id"]
       });
       this.data1 = res.data.courseTimeList;
+      this.tableTotal1 = res.data.count;
       this.isSelectCourse = false;
       this.loading = false;
     },
 
     // 教师查看课时作业
-    async getClassHW() {
+    async getClassHW(page) {
       this.loading = true;
       let { name, semester } = this.curCourseInfo;
       let res = await this.getTeaClassHW({
+        page,
         course: name,
         teacher: this.userName,
         semester,
         classHour: this.curClassHour
       });
-      this.data3 = res;
+      this.data3 = res.data;
+      this.tableTotal3 = res.count;
       this.loading = false;
     },
 
     // 教师查看在线作业
-    async getOnlineHW() {
+    async getOnlineHW(page) {
       this.loading = true;
       let { name, semester } = this.curCourseInfo;
       let res = await this.getTeaOnlineHW({
+        page,
         course: name,
         teacher: this.userName,
         semester,
         classHour: this.curClassHour
       });
-      this.data3 = res;
+      this.data3 = res.data;
+      this.tableTotal3 = res.count;
       this.loading = false;
     },
 
     // 获取学生课时作业列表(用于评分)
-    async getStuClassHW() {
+    async getStuClassHW(page = 1) {
       this.loading = true;
       let { name, semester, classes } = this.curCourseInfo;
       let res = await this.getStuHWList({
+        page,
         exper_id: this.stuHWId,
         course: name,
         semester,
@@ -447,6 +476,7 @@ export default {
         classHour: this.curClassHour
       });
       this.data4 = res.data;
+      this.tableTotal4 = res.count;
       this.allStuClassHW =
         res.alldata &&
         res.alldata.map(item => {
@@ -459,18 +489,20 @@ export default {
     },
 
     // 获取学生在线作业作业列表(用于评分)
-    async getStuOnlineHW(id) {
+    async getStuOnlineHW(page = 1) {
       this.loading = true;
       let { name, semester, classes } = this.curCourseInfo;
       let res = await this.getStuOnlineHWList({
-        exper_id: id,
+        page,
+        exper_id: this.stuHWId,
         course: name,
         semester,
         teacher: this.userName,
         stuclass: classes,
         classHour: this.curClassHour
       });
-      this.data5 = res;
+      this.data5 = res.data;
+      this.tableTotal5 = res.count;
       this.loading = false;
     },
 
@@ -585,7 +617,7 @@ export default {
         grade,
         obj
       });
-      await this.getStuOnlineHW(this.stuHWId);
+      await this.getStuOnlineHW();
       this.curDirectory = 5;
       this.setInputInfo([]);
       this.$Notice.success({
@@ -646,8 +678,30 @@ export default {
     },
 
     // 搜索表格分页
-    async changePage(page) {
+    async changeSearchPage(page) {
       await this.searchResult(this.searchText, page);
+    },
+
+    // 表格分页
+    async changePage(page) {
+      switch (this.curDirectory) {
+        case 1:
+          await this.getClassHourList(page);
+          break;
+        case 3:
+          if (this.curHWtype === "课时作业") {
+            await this.getClassHW(page);
+          } else {
+            await this.getOnlineHW(page);
+          }
+          break;
+        case 4:
+          await this.getStuClassHW(page);
+          break;
+        case 5:
+          await this.getStuOnlineHW(page);
+          break;
+      }
     }
   }
 };

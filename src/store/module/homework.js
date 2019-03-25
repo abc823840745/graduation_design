@@ -135,7 +135,7 @@ export default {
     async getTeaClassHW({ commit }, obj) {
       try {
         let res = await getTeaClassHW(obj);
-        return res.data.data;
+        return res.data;
       } catch (err) {
         console.error(err);
       }
@@ -221,7 +221,7 @@ export default {
     async getTeaOnlineHW({ commit }, obj) {
       try {
         let res = await getTeaOnlineHW(obj);
-        return res.data.data;
+        return res.data;
       } catch (err) {
         console.error(err);
       }
@@ -241,7 +241,7 @@ export default {
     async getStuOnlineHWList({ commit }, obj) {
       try {
         let res = await getStuOnlineHWList(obj);
-        return res.data.data;
+        return res.data;
       } catch (err) {
         console.error(err);
       }
