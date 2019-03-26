@@ -226,7 +226,7 @@ export default {
             let { id, type } = params.row;
             return h("div", [
               this.btnStyle("详情", h, () => {
-                this.getDeatail(params.index);
+                this.getDeatail(params.row.id);
               }),
               this.btnStyle(
                 "删除",
@@ -546,12 +546,15 @@ export default {
     },
 
     // 查看问题详情
-    async getDeatail(index) {
+    async getDeatail(id) {
       this.setInputInfo([]);
       this.openModal();
       this.type = "check";
       let num = this.getNum(this.subType);
-      this.subject = this.table[num]["data"][index];
+      let filterData = this.table[num]["data"].filter(
+        item => item["id"] === id
+      );
+      this.subject = filterData[0];
       this.setSubject();
     },
 
