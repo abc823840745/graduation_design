@@ -57,7 +57,7 @@
         </Form>
       </Modal>
     </div>
-    <div v-if="access == 'admin'">
+    <div v-if="access === 'admin' || access === 'teacher'">
       <TeaHome />
     </div>
   </div>
