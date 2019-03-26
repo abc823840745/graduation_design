@@ -199,6 +199,7 @@ export default {
             ) {
               return h("div", [
                 this.btnStyle("完成作业", h, async () => {
+                  this.$Loading.start();
                   this.setRemainTime(0);
                   this.showModal2 = true;
                   this.stuHomeworkId = id;
@@ -214,6 +215,7 @@ export default {
                     this.setSurplusTime(surplus_time);
                     this.senSocketData(surplus_time);
                   }
+                  this.$Loading.finish();
                 })
               ]);
             }

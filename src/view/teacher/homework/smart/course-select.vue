@@ -26,8 +26,8 @@
       </div>
     </div>
 
-    <div v-show="courseList.length === 0" class="none-data">
-      <p>暂无数据</p>
+    <div class="none-course" v-if="courseList.length === 0">
+      您选择的学期找不到课程信息哦，尝试一下刷新课表吧~
     </div>
 
     <Page class="mt-20 page" :total="totalCount" @on-change="changePage" />
@@ -116,12 +116,12 @@ export default {
     padding-right: 0.5%;
   }
 
-  .none-data {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 400px;
+  .none-course {
+    font-size: 16px;
+    font-weight: 700;
+    color: #888;
+    text-align: center;
+    padding-top: 40px;
   }
 
   .course-list-wrap {

@@ -21,7 +21,7 @@
             <div class="df-fdc w100">
               <p>({{ index + 1 }})</p>
               <!-- <p class="ml-5" v-if="type !== 'create'"> -->
-              <pre style="font-size:16px;" v-if="type !== 'create'">{{
+              <pre class="pre" v-if="type !== 'create'">{{
                 item["subject"]
               }}</pre>
               <!-- </p> -->
@@ -30,7 +30,7 @@
             <!-- 参考答案和显示的回答 -->
             <div class="df-fdc">
               <p>回答：</p>
-              <pre class="blue" style="font-size:16px;">{{
+              <pre class="blue pre" style="font-size:16px;">{{
                 item["answer"]
               }}</pre>
 
@@ -38,7 +38,7 @@
                 <p>
                   参考答案：
                 </p>
-                <pre class="green" style="font-size:16px;">{{
+                <pre class="green pre" style="font-size:16px;">{{
                   item["referenceAnswer"]
                 }}</pre>
               </div>
@@ -57,12 +57,9 @@
           <!-- 显示的题目 -->
           <div class="df-fdc mb-10 w100">
             <p>({{ index + 1 }})</p>
-            <pre
-              style="font-size:16px;"
-              v-if="type !== 'create'"
-              class="ml-10"
-              >{{ item["subject"] }}</pre
-            >
+            <pre class="ml-10 pre" v-if="type !== 'create'">{{
+              item["subject"]
+            }}</pre>
           </div>
 
           <!-- 输入题目 -->
@@ -209,6 +206,10 @@ export default {
     };
   },
 
+  // mounted() {
+  //   console.log(this.disabled);
+  // },
+
   methods: {
     ...mapMutations(["setInputInfo", "setOptionList"]),
 
@@ -321,6 +322,12 @@ export default {
   span {
     font-size: 15px;
     line-height: 27px;
+  }
+
+  .pre {
+    font-size: 16px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
   }
 
   .mavonEditor {

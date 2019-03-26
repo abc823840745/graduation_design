@@ -12,19 +12,17 @@ export default {
   },
 
   computed: {
-    ...mapState({
-      courseList: state => {
-        return state.homework.courseList.map(item => item.name);
-      },
+    courseList() {
+      return this.data.map(item => item["course"]);
+    },
 
-      unfinishedData() {
-        return this.data.map(item => item["unfinished"]);
-      },
+    unfinishedData() {
+      return this.data.map(item => item["unfinished"]);
+    },
 
-      totalData() {
-        return this.data.map(item => item["count"]);
-      }
-    })
+    totalData() {
+      return this.data.map(item => item["count"]);
+    }
   },
 
   watch: {

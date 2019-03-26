@@ -8,13 +8,6 @@
         :key="index"
         :index="index"
       />
-
-      <!-- <div class="bottom-bar">
-        <p class="total-score">
-          总评分:
-          <span class="total-score score">80</span>
-        </p>
-      </div> -->
     </div>
   </div>
 </template>

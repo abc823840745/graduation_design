@@ -13,7 +13,7 @@
       <!-- 显示题目 -->
       <div v-if="type !== 'create'" class="df-fdc mt-10">
         <p>题目：</p>
-        <pre style="font-size:16px;">{{ info["subject"] }}</pre>
+        <pre class="pre">{{ info["subject"] }}</pre>
       </div>
 
       <!-- 输入题目 -->
@@ -21,7 +21,7 @@
         v-if="type === 'create'"
         class="mb-10 mavonEditor"
         :subfield="false"
-        :placeholder="`第${info['title'].slice(0, 1)}题题目`"
+        :placeholder="`第${info['title'].slice(0, 1) || 1}题题目`"
         :toolbars="toolbars"
         :value="info['subject']"
         @change="subjectChange"
@@ -269,6 +269,12 @@ export default {
   p,
   span {
     font-size: 15px;
+  }
+
+  .pre {
+    font-size: 16px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
   }
 
   .mavonEditor {

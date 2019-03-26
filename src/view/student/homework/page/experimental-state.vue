@@ -98,6 +98,7 @@ export default {
       loading: true,
       searchText: "",
       searchCount: 1,
+      tableData: [],
       selectList: [
         {
           tip: "学期选择",
@@ -204,9 +205,7 @@ export default {
             }
           }
         }
-      ],
-
-      tableData: []
+      ]
     };
   },
 

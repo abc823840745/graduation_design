@@ -13,7 +13,7 @@
       <!-- 显示的题目 -->
       <div v-if="type !== 'create'" class="df-fdc mt-10">
         <p>题目：</p>
-        <pre style="font-size:16px;">{{ info["subject"] }}</pre>
+        <pre class="pre">{{ info["subject"] }}</pre>
       </div>
 
       <!-- 输入题目 -->
@@ -21,7 +21,7 @@
         v-if="type === 'create'"
         class="mb-10 mavonEditor"
         :subfield="false"
-        :placeholder="`第${info['title'].slice(0, 1)}题题目`"
+        :placeholder="`第${info['title'].slice(0, 1) || 1}题题目`"
         :toolbars="toolbars"
         :value="info['subject']"
         @change="subjectChange"
@@ -52,16 +52,14 @@
       <div class="df-aic mb-10">
         <div class="df-fdc" v-if="type === 'check' || type === 'score'">
           <p>{{ answerTip }}回答：</p>
-          <pre class="blue" style="font-size:16px;">{{ info["choice"] }}</pre>
+          <pre class="blue pre">{{ info["choice"] }}</pre>
         </div>
       </div>
 
       <!-- 参考答案 -->
       <div class="mb-10" v-if="type === 'check' || type === 'score'">
         <p>参考答案：</p>
-        <pre class="green" style="font-size:16px;">{{
-          info["referenceAnswer"]
-        }}</pre>
+        <pre class="green pre">{{ info["referenceAnswer"] }}</pre>
       </div>
 
       <!-- 评分 -->
@@ -210,6 +208,12 @@ export default {
   p,
   span {
     font-size: 15px;
+  }
+
+  .pre {
+    font-size: 16px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
   }
 
   .mavonEditor {

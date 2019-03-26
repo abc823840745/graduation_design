@@ -12,11 +12,9 @@ export default {
   },
 
   computed: {
-    ...mapState({
-      courseList: state => {
-        return state.homework.courseList.map(item => item.name);
-      }
-    }),
+    courseList() {
+      return this.data.map(item => item["course"]);
+    },
 
     chartData() {
       return this.data.map(item => item["percentage"]);

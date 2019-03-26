@@ -35,15 +35,6 @@
         </Button>
       </div>
     </Modal>
-
-    <Modal title="添加题库">
-      <div class="modal-con df-fdc">
-        <div class="df-aic mb-20">
-          <h3>作业名称：</h3>
-          <Input placeholder="输入内容" clearable style="width: 250px" />
-        </div>
-      </div>
-    </Modal>
   </div>
 </template>
 

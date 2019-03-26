@@ -338,7 +338,13 @@ export default {
         course: this.courseInfo["name"],
         page
       });
-      this.historyList = res.data;
+      let data = res.data;
+      data.forEach(item => {
+        if (item["teacher"] === "-----") {
+          item["teacher"] = "系统管理员";
+        }
+      });
+      this.historyList = data;
       this.historyTotal = res.count;
     },
 

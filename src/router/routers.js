@@ -350,6 +350,7 @@ export default [
         meta: {
           icon: 'ios-list-box',
           title: '作业状态',
+          notCache: true,
           access: ['student'],
         },
         component: () => import('@stuHomework/page/experimental-state.vue'),
@@ -360,7 +361,7 @@ export default [
         meta: {
           icon: 'ios-keypad',
           title: '实验管理',
-          notCache: false,
+          notCache: true,
           access: ['student'],
         },
         component: () => import('@stuHomework/page/experiment-management.vue'),
@@ -371,7 +372,7 @@ export default [
         meta: {
           icon: 'ios-globe',
           title: '在线作业',
-          notCache: false,
+          notCache: true,
           access: ['student'],
         },
         component: () => import('@stuHomework/page/online-homework.vue'),
@@ -675,6 +676,7 @@ export default [
         meta: {
           icon: 'ios-home',
           title: '首页',
+          notCache: true,
           access: ['teacher', 'admin'],
         },
         component: () => import('@teaHomework/page/homework-main.vue'),
@@ -685,6 +687,7 @@ export default [
         meta: {
           icon: 'ios-add-circle',
           title: '新建作业',
+          notCache: true,
           access: ['teacher', 'admin'],
         },
         component: () => import('@teaHomework/page/homework-create.vue'),
@@ -695,6 +698,7 @@ export default [
         meta: {
           icon: 'ios-brush',
           title: '作业评分',
+          notCache: true,
           access: ['teacher', 'admin'],
         },
         component: () => import('@teaHomework/page/check-homework.vue'),
@@ -705,6 +709,7 @@ export default [
         meta: {
           icon: 'ios-list-box',
           title: '任务中心',
+          notCache: true,
           access: ['teacher', 'admin'],
         },
         component: () => import('@teaHomework/page/task-center.vue'),
@@ -715,6 +720,7 @@ export default [
         meta: {
           icon: 'ios-book',
           title: '题库管理',
+          notCache: true,
           access: ['teacher', 'admin'],
         },
         component: () => import('@teaHomework/page/item-bank-management.vue'),

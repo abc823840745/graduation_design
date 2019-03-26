@@ -82,13 +82,6 @@ export default {
     surplusTime(newVal, oldVal) {
       this.isStartTimer = true;
     }
-
-    // stuHWInfo(newVal, oldVal) {
-    //   console.log(newVal);
-    //   // this.seconds = newVal["surplus_time"];
-    //   // this.isStartTimer = true;
-    //   // console.log(this.seconds, this.isStartTimer);
-    // }
   },
 
   computed: {
@@ -108,10 +101,6 @@ export default {
       seconds: 10,
       showModal: false
     };
-  },
-
-  mounted() {
-    console.log(this.inputInfo);
   },
 
   methods: {

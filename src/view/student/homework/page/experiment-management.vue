@@ -1,7 +1,7 @@
 <template>
   <div class="containter">
     <div class="containter" v-if="curDirectory !== 3">
-      <Modal v-model="showModal" title="上传" @on-ok="dialogOk">
+      <Modal v-model="showModal" title="上传">
         <Alert show-icon
           >只能上传单个文件或文件夹，如果上传有误，请重新上传即可</Alert
         >
@@ -24,6 +24,12 @@
             <p>点击或者把文件拖拽到这里</p>
           </div>
         </Upload>
+
+        <div slot="footer">
+          <Button type="primary" size="large" long @click="dialogOk"
+            >返回</Button
+          >
+        </div>
       </Modal>
 
       <div class="select-con">
@@ -199,7 +205,7 @@ export default {
     ...mapActions(["getStuClassHW", "stuSubmitClassHW", "stuUploadAgain"]),
 
     dialogOk() {
-      console.log("上传");
+      this.showModal = false;
     },
 
     // 获取表格数据

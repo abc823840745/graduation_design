@@ -51,6 +51,7 @@
           <InputNumber
             :max="200"
             :min="1"
+            :step="1"
             v-model="homeworkInfo['testingTime']"
           />
           <span class="ml-5">分钟</span>
