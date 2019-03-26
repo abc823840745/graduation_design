@@ -135,7 +135,11 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.$router.push('/student/course/answering/answer-detail/'+params.row.id)
+                      if(this.isTeacher){
+                        this.$router.push('/teacher/answering/detail/'+params.row.id)
+                      }else{
+                        this.$router.push('/student/answering/detail/'+params.row.id)
+                      }
                     }
                   }
                 },
@@ -144,6 +148,9 @@ export default {
               h(
                 "Button",
                 {
+                  style: {
+                    display:this.isTeacher?"":"none",
+                  },
                   props: {
                     type: "error",
                     shape: "circle"

@@ -20,6 +20,18 @@
           font-size: 12px;
           color: #888;
         }
+        .course-name {
+          font-weight: 500;
+          font-size: 14px;
+          color: #888;
+        }
+      }
+      .question-content {
+        font-size: 14px;
+        margin: 10px 0;
+        img {
+          max-width: 100%;
+        }
       }
       .teacher-question-sub {
         font-size: 14px;
@@ -47,6 +59,14 @@
       position: relative;
       p {
         background-color: #f5f7f9;
+      }
+      .none-reply {
+        text-align: center;
+        background-color: #fff;
+        padding: 14px 20px;
+        border-radius: 10px;
+        color: #666;
+        box-shadow: 2px 2px 2px #eee;
       }
     }
     .keyword-panel {
@@ -145,8 +165,10 @@
   <div class="teacher-question-detail">
     <div class="teacher-question-detail-top">
       <div>
-        <h2 class="teacher-question-title">{{question_title}} <span class="time"> {{question_time}}</span></h2>
-        <p class="teacher-question-sub">提问者：{{questioner}}</p>
+        <h2 class="teacher-question-title">{{question_detail.title}} <span class="course-name">[{{question_detail.course_name}} - {{question_detail.course_code}} - {{question_detail.course_classes}}]</span></h2>
+        <p class="teacher-question-sub">提问者：{{question_detail.username}}</p>
+        <p class="teacher-question-sub">时间：{{question_detail.created_at}}</p>
+        <div class="question-content" v-html="question_detail.content"></div>
         <Button style="margin-top:10px" icon="ios-create-outline" type="success" @click.native="showAnswerPanel">我来答</Button>
       </div>
       <p class="teacher-question-status-btn" v-if="isTeacher">
@@ -164,14 +186,15 @@
         </Select>
       </p>
       <div class="answer-panel" v-if="show_answer_panel">
-        <mavon-editor style="height: 300px" v-model="answer_content"></mavon-editor>
+        <mavon-editor style="height: 300px" ref="md" @imgAdd="$imgAdd" v-model="answer_content" @change="renderEditor"></mavon-editor>
         <div class="answer-panel-btn"><Button type="primary" @click="showSubmitAnswer()">提交回答</Button></div>
       </div>
     </div>
     <div class="questions-key-title">
-      <p>{{key_number}}个回答</p>
+      <p v-if="question_detail.replyList.length > 0">{{question_detail.replyList.length}}个回答</p>
+      <p class="none-reply" v-else>还没有人回答该问题，点击上方「我来答」试一试吧~</p>
     </div>
-    <div class="keyword-panel">
+    <div class="keyword-panel" v-if="question_detail.replyList.length > 0">
       <div class="answer_item" v-for="(item,index) in answer_list" :key="index">
         <div class="answerer">
           <div class="answer-left">
@@ -226,12 +249,26 @@
 import { getMyDate } from '@/libs/tools'
 import { mavonEditor } from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
+import { getQuestionDetail, uploadImage, askQuestionReply } from '@/api/course'
 export default {
   name: 'teacher-question-detail',
   data () {
     return {
       isTeacher: false,
       status: 0,
+      question_detail: {
+        content: "提问测试",
+        course_classes: "C201",
+        course_code: "AME",
+        course_name: "",
+        created_at: "",
+        id: "",
+        number: "",
+        replyList: [],
+        status: "unsolved",
+        title: "",
+        username: "骆镜濠",
+      },
       question_title: '环境安装报错无法解决',
       question_time: '2018-12-25 12:25',
       questioner: '骆镜濠',
@@ -239,6 +276,8 @@ export default {
       answer_list: [],
       // 填写的回答
       answer_content: '',
+      // html的回答
+      answer_render_content: '',
       // 评论回答
       my_comment_content: '',
       show_answer_panel: false,
@@ -299,17 +338,69 @@ export default {
     },
     // 提交答案
     submitAnswer() {
-      setTimeout(() => {
+      this.askQuestionReply(()=>{
         this.show_answer_submit = false;
-        this.$Message.success('提交成功');
-      }, 2000);
+      })
+      
     },
     chanegAnswerStatus(v,i){
       this.answer_list[i].status = v;
+    },
+    // 获取答疑详情 <公共>
+    getQuestionDetail() {
+      getQuestionDetail({
+        id: this.$route.params.id
+      }).then((res)=>{
+        console.log(res)
+        res.data.questionDetail.created_at = getMyDate(new Date(res.data.questionDetail.created_at).getTime(), "yyyy-MM-dd hh:mm")
+        this.question_detail = res.data.questionDetail
+      }).catch((err)=>{
+        console.log(err)
+        this.$Message.error('获取答疑详情失败');
+      })
+    },
+    renderEditor(val, render) {
+      this.answer_render_content = render
+    },
+    // 编辑器上传图片 绑定@imgAdd event uploadImage
+    $imgAdd(pos, $file){
+        // 第一步.将图片上传到服务器.
+        var formdata = new FormData();
+        formdata.append('file', $file);
+        uploadImage(formdata).then((res)=> {
+          console.log(res);
+          // this.file = null;
+          // this.loadingStatus = false;
+          this.$Message.success('上传成功')
+          let url = res.data.urls[0].filePath
+          this.$refs.md.$img2Url(pos, url);
+        }).catch((err)=>{
+          console.log(err)
+          // this.file = null;
+          // this.loadingStatus = false;
+          this.$Message.error('上传失败')
+        })
+    },
+    // 答疑回答
+    askQuestionReply(cb = ()=>{}) {
+      askQuestionReply({
+        question_id: this.$route.params.id,
+        content: this.answer_render_content
+      }).then((res)=>{
+        console.log(res)
+        this.$Message.success('回答成功')
+        cb()
+        this.getQuestionDetail()
+      }).catch((err)=>{
+        console.log(err)
+        this.$Message.error('提交回答失败');
+        cb()
+      })
     }
   },
   created () {
-    this.getAnswerList()
+    // this.getAnswerList()
+    this.getQuestionDetail()
   },
   components: {
     mavonEditor

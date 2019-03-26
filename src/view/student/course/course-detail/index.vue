@@ -108,7 +108,7 @@
           </FormItem>
           <FormItem label="问题描述">
             <!-- <Input type="textarea" v-model="ask_question_data.content"></Input> -->
-            <mavon-editor style="height: 400px" v-model="ask_question_data.content"></mavon-editor>
+            <mavon-editor style="height: 400px" ref="md" @imgAdd="$imgAdd" v-model="ask_question_data.content"  @change="renderEditor"></mavon-editor>
           </FormItem>
         </Form>
     </Modal>
@@ -119,7 +119,7 @@
 import myPdf from '@/view/pdf/pdf'
 import { mavonEditor } from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
-import { getCourseDetail, getCourseClassList, getCourseQusetionsList, askQuestionByStudent } from '@/api/course'
+import { getCourseDetail, getCourseClassList, getCourseQusetionsList, askQuestionByStudent, uploadImage } from '@/api/course'
 import { getMyDate } from '@/libs/tools'
 export default {
   name: 'course-index',
@@ -275,7 +275,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.$router.push('/teacher/answering/detail/'+params.row.id)
+                      this.$router.push('/student/answering/detail/'+params.row.id)
                     }
                   }
                 },
@@ -316,7 +316,8 @@ export default {
       show_my_askquestion: false,
       ask_question_data: {
         title: '',
-        content: ''
+        content: '',
+        render_answer_content: ''
       }
     }
   },
@@ -395,12 +396,34 @@ export default {
         this.questions_table_loading = false
       })
     },
+    renderEditor(val, render) {
+      this.ask_question_data.render_answer_content = render
+    },
+    // 编辑器上传图片 绑定@imgAdd event uploadImage
+    $imgAdd(pos, $file){
+        // 第一步.将图片上传到服务器.
+        var formdata = new FormData();
+        formdata.append('file', $file);
+        uploadImage(formdata).then((res)=> {
+          console.log(res);
+          // this.file = null;
+          // this.loadingStatus = false;
+          this.$Message.success('上传成功')
+          let url = res.data.urls[0].filePath
+          this.$refs.md.$img2Url(pos, url);
+        }).catch((err)=>{
+          console.log(err)
+          // this.file = null;
+          // this.loadingStatus = false;
+          this.$Message.error('上传失败')
+        })
+    },
     // 提问
     askQusetion() {
       askQuestionByStudent({
         course_id: this.$route.params.id,
         title: this.ask_question_data.title,
-        content: this.ask_question_data.content
+        content: this.ask_question_data.render_answer_content
       }).then((res)=>{
         console.log(res)
         this.$Message.success('提交成功');
