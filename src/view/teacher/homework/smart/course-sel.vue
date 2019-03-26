@@ -1,13 +1,5 @@
 <template>
   <div class="containter">
-    <MultipleChoice
-      semesterTip="学期选择"
-      :defaultValue.sync="semesterList['value']"
-      :semesterList="semesterList['list']"
-      @onChange="semesterList['onChange']"
-      class="flex-start"
-    />
-
     <div class="course-list-wrap" v-show="courseList.length > 0">
       <div class="course-item" v-for="(item, index) in courseList" :key="index">
         <h3>{{ item.name }}</h3>
@@ -73,7 +65,6 @@ export default {
   methods: {
     goNext(index) {
       let obj = this.courseList[index];
-      obj["semester"] = this.semesterList["value"];
       this.$emit("goNext", obj);
     },
 
@@ -158,7 +149,7 @@ export default {
         justify-content: center;
 
         .select-course-btn {
-          width: 200px;
+          width: 150px;
         }
       }
     }

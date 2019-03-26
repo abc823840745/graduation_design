@@ -50,8 +50,8 @@
     margin-top: 10px;
   }
   .teacher-questions-page-nav {
-     text-align: center;
-     margin-top: 20px;
+    text-align: center;
+    margin-top: 20px;
   }
   .new-class-btn {
     margin-bottom: 10px;
@@ -66,11 +66,19 @@
   <div class="teacher-my-course-detail">
     <div class="course-detail-top">
       <h2 class="course-title">
-        {{course_name}}
-        <span class="title-code">[{{course_code}} - {{course_classes}}]</span>
+        {{ course_name }}
+        <span class="title-code"
+          >[{{ course_code }} - {{ course_classes }}]</span
+        >
       </h2>
       <p class="course-sub-title">
-        <Button size="small" shape="circle" @click="checkStudentList" type="primary">本班学生名单</Button>
+        <Button
+          size="small"
+          shape="circle"
+          @click="checkStudentList"
+          type="primary"
+          >本班学生名单</Button
+        >
       </p>
     </div>
     <div class="course-detail-navbar">
@@ -79,17 +87,21 @@
           <div class="course-detail-intro">
             <div class="edit-course-intro">
               <Upload
-                  :before-upload="handleUpload"
-                  accept="application/pdf"
-                  action="//jsonplaceholder.typicode.com/posts/">
-                  <Button
-                    type="dashed"
-                    shape="circle"
-                    icon="ios-copy-outline"
-                  >上传 / 修改课程介绍</Button>
+                :before-upload="handleUpload"
+                accept="application/pdf"
+                action="//jsonplaceholder.typicode.com/posts/"
+              >
+                <Button type="dashed" shape="circle" icon="ios-copy-outline"
+                  >上传 / 修改课程介绍</Button
+                >
               </Upload>
             </div>
-            <my-pdf v-if="course_desc_url" :src="course_desc_url" :click_change="true" :full_screen="true"></my-pdf>
+            <my-pdf
+              v-if="course_desc_url"
+              :src="course_desc_url"
+              :click_change="true"
+              :full_screen="true"
+            ></my-pdf>
             <span v-else>教师尚未上传课程介绍</span>
             <Spin size="large" fix v-if="loadingStatus"></Spin>
           </div>
@@ -99,19 +111,30 @@
               <p>{{course_desc_text}}</p>
             </Card>
           </div>
-          <Modal v-model="showStudentList" fullscreen title="当前课程学生名单" :footer-hide="true">
+          <Modal
+            v-model="showStudentList"
+            fullscreen
+            title="当前课程学生名单"
+            :footer-hide="true"
+          >
             <Table
-            size="large"
-            :loading="students_table_loading"
-            border
-            :columns="students_columns"
-            :data="students_data"
-          ></Table>
+              size="large"
+              :loading="students_table_loading"
+              border
+              :columns="students_columns"
+              :data="students_data"
+            ></Table>
           </Modal>
         </TabPane>
         <TabPane label="课时管理" name="class_manage">
           <!-- 新建课时 -->
-          <Button type="success" class="new-class-btn" shape="circle" @click="showCreateCourseClass()">新建课时</Button>
+          <Button
+            type="success"
+            class="new-class-btn"
+            shape="circle"
+            @click="showCreateCourseClass()"
+            >新建课时</Button
+          >
           <!-- 新建课时 end -->
           <Table
             size="large"
@@ -121,7 +144,12 @@
             :data="class_data"
           ></Table>
           <div class="course-detail-page-nav">
-            <Page :current="course_class_offset" :total="course_class_total" :page-size="course_class_limit" @on-change="changeCourseClassPage" />
+            <Page
+              :current="course_class_offset"
+              :total="course_class_total"
+              :page-size="course_class_limit"
+              @on-change="changeCourseClassPage"
+            />
           </div>
         </TabPane>
         <TabPane label="答疑区" name="course_question">
@@ -133,7 +161,12 @@
             :data="questions_data"
           ></Table>
           <div class="teacher-questions-page-nav">
-            <Page :current="course_question_offset" :total="course_question_total" :page-size="course_question_limit" @on-change="changeQuestionPage" />
+            <Page
+              :current="course_question_offset"
+              :total="course_question_total"
+              :page-size="course_question_limit"
+              @on-change="changeQuestionPage"
+            />
           </div>
         </TabPane>
       </Tabs>
@@ -141,9 +174,16 @@
   </div>
 </template>
 <script>
-import myPdf from '@/view/pdf/pdf'
-import { getMyDate } from '@/libs/tools'
-import { getCourseDetail, getTeaCourseStudentList, getCourseClassList, createTeaCourseClass, deleteTeaCourseClass, uploadCourseIntro, getCourseQusetionsList, deleteCourseQuestion } from '@/api/course'
+import { getMyDate } from "@/libs/tools";
+import {
+  getTeaCourseStudentList,
+  getCourseClassList,
+  createTeaCourseClass,
+  deleteTeaCourseClass,
+  uploadCourseIntro,
+  getCourseQusetionsList,
+  deleteCourseQuestion
+} from "@/api/course";
 export default {
   name: "teacher-my-course-detail",
   data() {
@@ -154,7 +194,7 @@ export default {
       course_current_number: 2,
       showStudentList: false,
       cur_tab: "course_intro",
-      intro_pdf_url: '',
+      intro_pdf_url: "",
       // 上传文件
       file: null,
       loadingStatus: false,
@@ -194,7 +234,13 @@ export default {
           key: "created_at",
           width: 160,
           render: (h, params) => {
-            return h("span", getMyDate(new Date(params.row.created_at).getTime(), "yyyy-MM-dd hh:mm"));
+            return h(
+              "span",
+              getMyDate(
+                new Date(params.row.created_at).getTime(),
+                "yyyy-MM-dd hh:mm"
+              )
+            );
           }
         },
         {
@@ -217,7 +263,9 @@ export default {
                   on: {
                     click: () => {
                       console.log(params.index);
-                      this.$router.push('./'+this.$route.params.id+'/'+params.row.id)
+                      this.$router.push(
+                        "./" + this.$route.params.id + "/" + params.row.id
+                      );
                     }
                   }
                 },
@@ -233,15 +281,15 @@ export default {
                   on: {
                     click: () => {
                       this.$Modal.confirm({
-                          title: '确定要删除该课时？',
-                          content: '<p>删除后将清空课时所有数据</p>',
-                          loading: true,
-                          onOk: () => {
-                            console.log(params.index);
-                            this.deleteCourseClass(params.row.id, ()=>{
-                              this.$Modal.remove();
-                            })
-                          }
+                        title: "确定要删除该课时？",
+                        content: "<p>删除后将清空课时所有数据</p>",
+                        loading: true,
+                        onOk: () => {
+                          console.log(params.index);
+                          this.deleteCourseClass(params.row.id, () => {
+                            this.$Modal.remove();
+                          });
+                        }
                       });
                     }
                   }
@@ -254,7 +302,7 @@ export default {
       ],
       class_data: [],
       // 创建课时存储姓名
-      create_class_name: '',
+      create_class_name: "",
       // 学生名单表格
       students_table_loading: true,
       students_columns: [
@@ -324,7 +372,13 @@ export default {
           key: "date",
           width: 160,
           render: (h, params) => {
-            return h("span", getMyDate(new Date(params.row.created_at).getTime(), "yyyy-MM-dd hh:mm"));
+            return h(
+              "span",
+              getMyDate(
+                new Date(params.row.created_at).getTime(),
+                "yyyy-MM-dd hh:mm"
+              )
+            );
           }
         },
         {
@@ -332,14 +386,24 @@ export default {
           key: "status",
           width: 140,
           render: (h, params) => {
-            return h("Tag", 
+            return h(
+              "Tag",
               {
                 props: {
                   type: "dot",
-                  color: params.row.status=='unsolved'?'primary':(params.row.status=='resolved'?'success':'error')
+                  color:
+                    params.row.status == "unsolved"
+                      ? "primary"
+                      : params.row.status == "resolved"
+                      ? "success"
+                      : "error"
                 }
               },
-              params.row.status=='unsolved'?'未解决':(params.row.status=='resolved'?'已解决':'已关闭')
+              params.row.status == "unsolved"
+                ? "未解决"
+                : params.row.status == "resolved"
+                ? "已解决"
+                : "已关闭"
             );
           }
         },
@@ -362,7 +426,9 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.$router.push('/teacher/answering/detail/'+params.row.id)
+                      this.$router.push(
+                        "/teacher/answering/detail/" + params.row.id
+                      );
                     }
                   }
                 },
@@ -378,16 +444,16 @@ export default {
                   on: {
                     click: () => {
                       this.$Modal.confirm({
-                          title: '确定要删除该问题？',
-                          content: '<p>删除后将无法恢复</p>',
-                          loading: true,
-                          onOk: () => {
-                            console.log(params.index);
-                            this.deleteCourseQuestion(params.row.id, ()=>{
-                              this.$Modal.remove();
-                              this.$Message.success('删除成功');
-                            })
-                          }
+                        title: "确定要删除该问题？",
+                        content: "<p>删除后将无法恢复</p>",
+                        loading: true,
+                        onOk: () => {
+                          console.log(params.index);
+                          this.deleteCourseQuestion(params.row.id, () => {
+                            this.$Modal.remove();
+                            this.$Message.success("删除成功");
+                          });
+                        }
                       });
                     }
                   }
@@ -398,7 +464,7 @@ export default {
           }
         }
       ],
-      questions_data: [],
+      questions_data: []
     };
   },
   components: {
@@ -408,36 +474,41 @@ export default {
     checkStudentList() {
       console.log("打开进入课程的学生名单");
       this.showStudentList = true;
-      this.getTeaCourseStudentList(()=>{
-        this.students_table_loading = false
-      })
+      this.getTeaCourseStudentList(() => {
+        this.students_table_loading = false;
+      });
     },
     // 上传函数
-    handleUpload (file) {
-      if(file.type != 'application/pdf') {
-        this.$Message.error('请选择PDF文件上传')
+    handleUpload(file) {
+      if (file.type != "application/pdf") {
+        this.$Message.error("请选择PDF文件上传");
         return false;
       }
-      this.loadingStatus = true
+      this.loadingStatus = true;
       this.file = file;
       // 创建form对象
       let formData = new FormData();
       // 通过append向form对象添加数据
-      formData.append('file', this.file);
-      formData.append('id', this.$route.params.id);
-      uploadCourseIntro(formData).then((res)=> {
-        console.log(res);
-        this.file = null;
-        this.loadingStatus = false;
-        this.$Message.success('上传成功')
-        this.getCourseDetail()
-      }).catch((err)=>{
-        console.log(err)
-        this.file = null;
-        this.loadingStatus = false;
-        this.$Message.error('上传失败')
-      })
+      formData.append("file", this.file);
+      formData.append("id", this.$route.params.id);
+      uploadCourseIntro(formData)
+        .then(res => {
+          console.log(res);
+          this.file = null;
+          this.loadingStatus = false;
+          this.$Message.success("上传成功");
+          this.getCourseDetail();
+        })
+        .catch(err => {
+          console.log(err);
+          this.file = null;
+          this.loadingStatus = false;
+          this.$Message.error("上传失败");
+        });
       return false;
+    },
+    uploadCourseIntro() {
+      this.loadingStatus = true;
     },
     // 获取课程详情
     getCourseDetail(to_id) {
@@ -455,167 +526,215 @@ export default {
         console.log(err)
         this.$Message.error('获取课程详情失败');
       })
+        .then(res => {
+          console.log(res);
+          let detail = res.data.courseDetail;
+          this.course_name = detail.name;
+          this.course_code = detail.code;
+          this.course_classes = detail.classes;
+          this.course_desc_url = detail.desc_url;
+        })
+        .catch(err => {
+          console.log(err);
+          this.$Message.error("获取课程详情失败");
+        })
+        .then(res => {
+          console.log(res);
+          let detail = res.data.courseDetail;
+          this.course_name = detail.name;
+          this.course_code = detail.code;
+          this.course_classes = detail.classes;
+          this.course_desc_url = detail.desc_url;
+        })
+        .catch(err => {
+          console.log(err);
+          this.$Message.error("获取课程详情失败");
+        });
     },
     // 获取学生名单
-    getTeaCourseStudentList(cb = ()=>{}, to_id) {
+    getTeaCourseStudentList(cb = () => {}, to_id) {
       getTeaCourseStudentList({
         id: to_id || this.$route.params.id
-      }).then((res)=>{
-        console.log(res)
-        this.students_data = res.data.studentList
-        cb()
-      }).catch((err)=>{
-        console.log(err)
-        cb()
-        this.$Message.error('获取学生名单失败');
       })
+        .then(res => {
+          console.log(res);
+          this.students_data = res.data.studentList;
+          cb();
+        })
+        .catch(err => {
+          console.log(err);
+          cb();
+          this.$Message.error("获取学生名单失败");
+        })
+        .then(res => {
+          console.log(res);
+          this.students_data = res.data.studentList;
+          cb();
+        })
+        .catch(err => {
+          console.log(err);
+          cb();
+          this.$Message.error("获取学生名单失败");
+        });
     },
     // 获取课时列表
-    getCourseClassList(cb = ()=>{}, to_id) {
+    getCourseClassList(cb = () => {}, to_id) {
       getCourseClassList({
         course_id: to_id || this.$route.params.id,
         offset: this.course_class_offset,
         limit: this.course_class_limit
-      }).then((res)=>{
-        console.log(res)
-        this.course_class_total = res.data.count
-        this.class_data = res.data.courseTimeList
-        cb()
-      }).catch((err)=>{
-        console.log(err)
-        this.$Message.error('获取课时列表失败');
-        cb()
       })
+        .then(res => {
+          console.log(res);
+          this.course_class_total = res.data.count;
+          this.class_data = res.data.courseTimeList;
+          cb();
+        })
+        .catch(err => {
+          console.log(err);
+          this.$Message.error("获取课时列表失败");
+          cb();
+        });
     },
     // 更改课时列表页码
     changeCourseClassPage(page) {
-      this.course_class_offset = page
-      this.getCourseClassList()
+      this.course_class_offset = page;
+      this.getCourseClassList();
     },
     // 打开创建窗口
     showCreateCourseClass() {
       this.$Modal.confirm({
-        render: (h) => {
-          return h('div', [
-            h('p', {
-              style: {
-                textAlign: 'center',
-                fontSize: '16px',
-                fontWeight: '700',
-                marginBottom: '10px'
-              }
-            }, '请输入课时名称'),
-            h('Input', {
+        render: h => {
+          return h("div", [
+            h(
+              "p",
+              {
+                style: {
+                  textAlign: "center",
+                  fontSize: "16px",
+                  fontWeight: "700",
+                  marginBottom: "10px"
+                }
+              },
+              "请输入课时名称"
+            ),
+            h("Input", {
               props: {
                 value: this.create_class_name,
                 autofocus: true,
-                placeholder: '请输入课时名称',
-                size: 'large'
+                placeholder: "请输入课时名称",
+                size: "large"
               },
               on: {
-                input: (val) => {
-                    this.create_class_name = val;
+                input: val => {
+                  this.create_class_name = val;
                 }
               }
             })
-          ])
+          ]);
         },
-        onOk: ()=>{
-          this.createCourseClass(this.create_class_name)
-          this.create_class_name = ''
+        onOk: () => {
+          this.createCourseClass(this.create_class_name);
+          this.create_class_name = "";
         },
-        onCancel: ()=>{
-          this.create_class_name = ''
+        onCancel: () => {
+          this.create_class_name = "";
         }
-      })
+      });
     },
     // 创建课时
     createCourseClass(name) {
       createTeaCourseClass({
         name,
         course_id: this.$route.params.id
-      }).then((res)=>{
-        console.log(res)
-        this.$Message.success('创建成功');
-        this.getCourseClassList()
-      }).catch((err)=>{
-        console.log(err)
-        this.$Message.error('创建课时失败');
       })
+        .then(res => {
+          console.log(res);
+          this.$Message.success("创建成功");
+          this.getCourseClassList();
+        })
+        .catch(err => {
+          console.log(err);
+          this.$Message.error("创建课时失败");
+        });
     },
     // 删除课时
-    deleteCourseClass(id, cb = ()=>{}) {
+    deleteCourseClass(id, cb = () => {}) {
       deleteTeaCourseClass({
         id
-      }).then((res)=>{
-        console.log(res)
-        this.$Message.success('删除成功');
-        cb()
-        this.getCourseClassList()
-      }).catch((err)=>{
-        console.log(err)
-        this.$Message.error('删除失败');
-        cb()
       })
+        .then(res => {
+          console.log(res);
+          this.$Message.success("删除成功");
+          cb();
+          this.getCourseClassList();
+        })
+        .catch(err => {
+          console.log(err);
+          this.$Message.error("删除失败");
+          cb();
+        });
     },
     // 获取该课程答疑列表
-    getCourseQusetionsList(cb = ()=>{}) {
+    getCourseQusetionsList(cb = () => {}) {
       getCourseQusetionsList({
         course_id: this.$route.params.id,
         offset: this.course_question_offset,
         limit: this.course_question_limit
-      }).then((res)=>{
-        console.log(res)
-        this.questions_data = res.data.questionList
-        this.course_question_total = res.count
-        cb()
-      }).catch((err)=>{
-        console.log(err)
-        this.$Message.error('获取答疑列表失败');
-        cb()
       })
+        .then(res => {
+          console.log(res);
+          this.questions_data = res.data.questionList;
+          this.course_question_total = res.count;
+          cb();
+        })
+        .catch(err => {
+          console.log(err);
+          this.$Message.error("获取答疑列表失败");
+          cb();
+        });
     },
     // 改变答疑列表页码
-    changeQuestionPage(page){
-      this.course_question_offset = page
+    changeQuestionPage(page) {
+      this.course_question_offset = page;
     },
     // 删除答疑
-    deleteCourseQuestion(id, cb = ()=>{}) {
+    deleteCourseQuestion(id, cb = () => {}) {
       deleteCourseQuestion({
         id
-      }).then((res)=>{
-        console.log(res)
-        this.getCourseQusetionsList()
-        cb()
-      }).catch((err)=>{
-        console.log(err)
-        this.$Message.error('删除失败');
-        cb()
       })
+        .then(res => {
+          console.log(res);
+          this.getCourseQusetionsList();
+          cb();
+        })
+        .catch(err => {
+          console.log(err);
+          this.$Message.error("删除失败");
+          cb();
+        });
     }
   },
   created() {
-    this.getCourseDetail()
-    this.getCourseClassList(()=>{
+    this.getCourseDetail();
+    this.getCourseClassList(() => {
       this.class_table_loading = false;
-    })
-    this.getCourseQusetionsList(()=>{
+    });
+    this.getCourseQusetionsList(() => {
       this.questions_table_loading = false;
-    })
+    });
   },
   mounted() {},
   beforeRouteUpdate(to, from, next) {
-    console.log('update')
-    this.getCourseDetail(to.params.id)
-    this.getCourseClassList(()=>{
+    console.log("update");
+    this.getCourseDetail(to.params.id);
+    this.getCourseClassList(() => {
       this.class_table_loading = false;
-    }, to.params.id)
-    this.getCourseQusetionsList(()=>{
+    }, to.params.id);
+    this.getCourseQusetionsList(() => {
       this.questions_table_loading = false;
-    }, to.params.id)
-    next(vm => {
-      
-    });
-  },
+    }, to.params.id);
+    next(vm => {});
+  }
 };
 </script>

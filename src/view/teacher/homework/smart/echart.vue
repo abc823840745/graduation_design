@@ -1,5 +1,5 @@
 <template>
-  <div id="main" class="echart-con"></div>
+  <div ref="main" class="echart-con"></div>
 </template>
 
 <script>
@@ -7,68 +7,75 @@ import echarts from "echarts";
 import { mapState } from "vuex";
 
 export default {
-  computed: {
-    ...mapState({
-      courseList: state => {
-        return state.homework.courseList.map(item => item.name);
-      }
-    })
+  props: {
+    data: Array
   },
 
-  mounted() {
-    // 基于准备好的dom，初始化echarts实例
-    let myChart = echarts.init(document.getElementById("main"));
-    let courseList = this.courseList;
+  computed: {
+    courseList() {
+      return this.data.map(item => item["course"]);
+    },
 
-    // 指定图表的配置项和数据
-    let option = {
-      title: {
-        text: "每周作业汇总图表"
-      },
-      tooltip: {
-        trigger: "axis",
-        axisPointer: {
-          type: "cross",
-          label: {
-            backgroundColor: "#6a7985"
+    chartData() {
+      return this.data.map(item => item["percentage"]);
+    }
+  },
+
+  watch: {
+    data(newVal, oldVal) {
+      this.setChartOption();
+    }
+  },
+
+  methods: {
+    setChartOption() {
+      // 基于准备好的dom，初始化echarts实例
+      let myChart = echarts.init(this.$refs.main);
+      let courseList = this.courseList;
+      let option = {
+        title: {
+          text: "作业汇总图表"
+        },
+        tooltip: {
+          trigger: "axis",
+          axisPointer: {
+            // 坐标轴指示器，坐标轴触发有效
+            type: "shadow" // 默认为直线，可选为：'line' | 'shadow'
           }
-        }
-      },
-      legend: {
-        data: ["课程作业完成率"]
-      },
-      grid: {
-        left: "3%",
-        right: "4%",
-        bottom: "3%",
-        containLabel: true
-      },
-      xAxis: [
-        {
-          type: "category",
-          boundaryGap: true,
-          data: courseList
-        }
-      ],
-      yAxis: [
-        {
-          type: "value",
-          max: "dataMax"
-        }
-      ],
-      series: [
-        {
-          name: "课程作业完成率",
-          type: "line",
-          stack: "总量",
-          areaStyle: {},
-          data: [120, 132, 101, 134, 90, 230, 210]
-        }
-      ]
-    };
+        },
+        legend: {
+          data: ["课程作业完成率"]
+        },
+        grid: {
+          left: "3%",
+          right: "4%",
+          bottom: "3%",
+          containLabel: true
+        },
+        xAxis: [
+          {
+            type: "category",
+            data: courseList
+          }
+        ],
+        yAxis: [
+          {
+            type: "value",
+            max: 100
+          }
+        ],
+        series: [
+          {
+            name: "课程作业完成率",
+            type: "bar",
+            data: this.chartData
+          }
+        ]
+      };
 
-    // 使用刚指定的配置项和数据显示图表。
-    myChart.setOption(option);
+      // 使用刚指定的配置项和数据显示图表。
+      myChart.setOption(option);
+    }
   }
 };
 </script>

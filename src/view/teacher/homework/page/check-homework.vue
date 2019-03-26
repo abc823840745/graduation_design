@@ -8,14 +8,27 @@
           {{ curCourseInfo["name"] }}
           <span class="course-code">[{{ curCourseInfo["code"] }}]</span>
         </h2>
-        <Button
-          class="return_btn"
-          type="primary"
-          shape="circle"
-          @click="headerGoBack"
-          icon="md-arrow-back"
-          >返回</Button
-        >
+
+        <div class="return_btn">
+          <Button
+            v-show="curDirectory === 4 || curDirectory === 5"
+            type="primary"
+            shape="circle"
+            @click="searchOpen"
+            icon="ios-search"
+          >
+            搜索</Button
+          >
+
+          <Button
+            class="ml-10"
+            type="primary"
+            shape="circle"
+            @click="headerGoBack"
+            icon="md-arrow-back"
+            >返回</Button
+          >
+        </div>
       </div>
 
       <Table
@@ -26,39 +39,52 @@
         class="table-con mar-top"
       />
 
-      <Page :total="30" class="mar-top page" />
+      <Page :total="totalCount" class="mar-top page" @on-change="changePage" />
 
-      <div class="btn-ground">
-        <Button
-          v-show="curDirectory === 4"
-          @click="submit"
-          type="primary"
-          class="mar-top"
-          size="large"
-          icon="ios-download-outline"
-          >全部下载</Button
-        >
-
-        <Button
-          v-show="curDirectory === 4"
-          @click="submit"
-          type="primary"
-          class="mar-top"
-          size="large"
-          icon="ios-download-outline"
-          >提交评分</Button
-        >
-      </div>
+      <!-- <div class="btn-ground"> -->
+      <Button
+        v-show="curDirectory === 4"
+        @click="allDownload"
+        type="primary"
+        class="mar-top"
+        size="large"
+        icon="ios-download-outline"
+        >全部下载</Button
+      >
+      <!-- </div> -->
     </div>
 
     <Modal
       fullscreen
       title="作业评分"
       v-model="showModal"
-      @on-ok="handleOk"
       @on-cancel="handleCancel"
     >
       <CheckOnlineHWDetail />
+      <div slot="footer">
+        <Button
+          type="primary"
+          size="large"
+          :loading="modalLoading"
+          @click="handleOk"
+          >确定评分</Button
+        >
+      </div>
+    </Modal>
+
+    <Modal fullscreen title="搜索" v-model="modalOpen" @on-ok="searchClose">
+      <SearchView
+        :columns="curDirectory === 4 ? columns4 : columns5"
+        :tableData="searchTableData"
+        :total="searchCount"
+        @search="getSearchResult"
+        @changePage="changeSearchPage"
+      />
+      <div slot="footer">
+        <Button type="primary" size="large" @click="searchClose">
+          返回
+        </Button>
+      </div>
     </Modal>
   </div>
 </template>
@@ -66,33 +92,71 @@
 <script>
 import CourseSelect from "@teaHomework/smart/course-select";
 import CheckOnlineHWDetail from "@teaHomework/smart/check-online-homework-detail";
+import SearchView from "@/view/global/component/search-view";
 import myMixin from "@/view/global/mixin";
 import { mapActions, mapState, mapMutations } from "vuex";
 import { getCourseClassList } from "@/api/course";
+import { debounce } from "@tools";
+import axios from "axios";
+import config from "@/config";
+
+const baseUrl =
+  process.env.NODE_ENV === "development"
+    ? config.baseUrl.dev
+    : config.baseUrl.pro;
 
 export default {
   name: "check-homework",
 
   mixins: [myMixin],
 
-  components: { CheckOnlineHWDetail, CourseSelect },
+  components: { CheckOnlineHWDetail, CourseSelect, SearchView },
 
   computed: {
     ...mapState({
-      userName: state => state.user.userName
-    })
+      userName: state => state.user.userName,
+      inputInfo: state => state.homework.inputInfo,
+      teaId: state => state.user.stu_nmuber
+    }),
+
+    totalCount() {
+      switch (this.curDirectory) {
+        case 1:
+          return this.tableTotal1;
+        case 3:
+          return this.tableTotal3;
+        case 4:
+          return this.tableTotal4;
+        case 5:
+          return this.tableTotal5;
+      }
+    }
   },
 
   data() {
     return {
+      // searchColumns: [],
+      searchCount: 1,
+      searchTableData: [],
       isSelectCourse: true,
       showModal: false,
+      modalOpen: false,
       loading: false,
+      subjectList: [],
+      modalLoading: false,
+      score: 0,
       curClassHour: "",
       curCourseInfo: {},
       curDirectory: 1,
-      homeworkList: [], // 作业列表
-      hwType: "", //作业类型
+      curHWtype: "",
+      stuHwInfo: {},
+      stuHWId: 0,
+      allStuClassHW: [],
+      tableTotal1: 1,
+      tableTotal2: 1,
+      tableTotal3: 1,
+      tableTotal4: 1,
+      tableTotal5: 1,
       columns1: [
         {
           title: "课时名称",
@@ -122,10 +186,8 @@ export default {
           render: (h, params) => {
             return h("div", [
               this.btnStyle("查看", h, () => {
-                // TODO: 打开实验报告
-                let { index } = params;
-                if (index === 0) {
-                  // index = 0时为课时作业
+                this.curHWtype = params.row.hwType;
+                if (params.row.hwType === "课时作业") {
                   this.curDirectory = 3;
                   this.getClassHW();
                 } else {
@@ -148,14 +210,16 @@ export default {
           render: (h, params) => {
             return h("div", [
               this.btnStyle("查看", h, async () => {
-                // TODO: 打开实验报告
-                if (!params.row.questions) {
-                  // params.questions不存在时为课时作业
+                let { id, questions } = params.row;
+                this.stuHWId = id;
+                console.log(params.row);
+                if (!questions) {
+                  // 课时作业
                   this.curDirectory = 4;
-                  await this.getStuClassHW(params.row.id);
+                  await this.getStuClassHW();
                 } else {
                   this.curDirectory = 5;
-                  await this.getStuOnlineHW(params.row.id);
+                  await this.getStuOnlineHW();
                 }
               })
             ]);
@@ -188,25 +252,32 @@ export default {
             let _this = this;
             let { webpath, grade, id } = params.row;
             if (webpath === "待上传") {
-              return h("div", [
-                h("Rate", {
-                  props: {
-                    value: 3,
-                    disabled: true
-                  },
-                  style: {
-                    marginRight: "5px"
-                  }
-                })
-              ]);
+              return h("InputNumber", {
+                props: {
+                  max: 100,
+                  min: 1,
+                  disabled: true
+                },
+                style: {
+                  marginRight: "5px"
+                }
+              });
             }
-            return h("Rate", {
+            return h("InputNumber", {
               props: {
-                value: grade === "待评分" ? 3 : parseInt(grade, 10)
+                max: 100,
+                min: 1,
+                value: grade !== "待评分" ? parseInt(grade, 10) : 1
+              },
+              style: {
+                marginRight: "5px"
               },
               on: {
-                async input(value) {
-                  await _this.scoreHw(id, value);
+                input(value) {
+                  _this.score = value;
+                },
+                async "on-blur"() {
+                  await _this.scoreHw(id, _this.score);
                 }
               }
             });
@@ -248,23 +319,23 @@ export default {
         },
         {
           title: "评分",
-          key: "grade",
-          render: (h, params) => {
-            if (!params.row.score) {
-              return h("p", {}, "未评分");
-            }
-          }
+          key: "grade"
         },
         {
           title: "操作",
           key: "operation",
           render: (h, params) => {
+            let { status, questions, id } = params.row;
+            if (status === "待上传") {
+              return h("div", [this.disableBtnStyle("查看", h)]);
+            }
             return h("div", [
               this.btnStyle("查看", h, async () => {
-                let { questions } = params.row;
-                await this.getStuSubjectList(questions);
+                this.stuHwInfo = params.row;
                 this.showModal = true;
                 this.curDirectory = 6;
+                localStorage.removeItem("subjectList");
+                await this.getStuSubjectList(questions);
               })
             ]);
           }
@@ -291,13 +362,40 @@ export default {
       "getTeaClassHW",
       "getTeaOnlineHW",
       "getStuHWList",
-      "getStuOnlineHWList"
+      "getStuOnlineHWList",
+      "scoreOnlineHW",
+      "setInputInfo",
+      "searchStudentHW",
+      "downloadAllHW"
     ]),
 
     ...mapMutations(["setInputInfo"]),
 
-    submit() {
-      console.log("submit");
+    // 全部下载
+    async allDownload() {
+      let res = await axios({
+        url: `${baseUrl}/download/teacher/stuexperStream`,
+        method: "post",
+        data: {
+          arr: this.allStuClassHW
+        },
+        responseType: "blob"
+      });
+      let blob = new Blob([res.data], {
+        type: "application/octet-stream;charset=utf-8"
+      });
+      const elink = document.createElement("a");
+      const filename = res.headers["content-disposition"].substring(
+        22,
+        res.headers["content-disposition"].length - 1
+      );
+      elink.download = filename;
+      elink.style.display = "none";
+      elink.href = URL.createObjectURL(blob);
+      document.body.appendChild(elink);
+      elink.click();
+      URL.revokeObjectURL(elink.href);
+      document.body.removeChild(elink);
     },
 
     // 评分
@@ -307,6 +405,7 @@ export default {
         grade: value
       });
       if (res["status"] === 1) {
+        await this.getStuClassHW();
         this.$Notice.success({
           title: "评分成功！"
         });
@@ -314,149 +413,218 @@ export default {
     },
 
     async goNext(info) {
-      this.loading = true;
       this.curCourseInfo = info;
-      // 获取课程的课时列表
+      await this.getClassHourList();
+    },
+
+    // 获取课程的课时列表
+    async getClassHourList(page = 1) {
+      this.loading = true;
       let res = await getCourseClassList({
-        course_id: info["id"]
+        page,
+        course_id: this.curCourseInfo["id"]
       });
       this.data1 = res.data.courseTimeList;
+      this.tableTotal1 = res.data.count;
       this.isSelectCourse = false;
       this.loading = false;
     },
 
     // 教师查看课时作业
-    async getClassHW() {
+    async getClassHW(page) {
       this.loading = true;
       let { name, semester } = this.curCourseInfo;
       let res = await this.getTeaClassHW({
+        page,
         course: name,
         teacher: this.userName,
         semester,
         classHour: this.curClassHour
       });
-      this.data3 = res;
+      this.data3 = res.data;
+      this.tableTotal3 = res.count;
       this.loading = false;
     },
 
     // 教师查看在线作业
-    async getOnlineHW() {
+    async getOnlineHW(page) {
       this.loading = true;
       let { name, semester } = this.curCourseInfo;
       let res = await this.getTeaOnlineHW({
+        page,
         course: name,
         teacher: this.userName,
         semester,
         classHour: this.curClassHour
       });
-      this.data3 = res;
+      this.data3 = res.data;
+      this.tableTotal3 = res.count;
       this.loading = false;
     },
 
     // 获取学生课时作业列表(用于评分)
-    async getStuClassHW(id) {
+    async getStuClassHW(page = 1) {
       this.loading = true;
       let { name, semester, classes } = this.curCourseInfo;
       let res = await this.getStuHWList({
-        exper_id: id,
+        page,
+        exper_id: this.stuHWId,
         course: name,
         semester,
         teacher: this.userName,
-        stuclass: classes
+        stuclass: classes,
+        classHour: this.curClassHour
       });
-      console.log(res);
-      this.data4 = res;
+      this.data4 = res.data;
+      this.tableTotal4 = res.count;
+      this.allStuClassHW =
+        res.alldata &&
+        res.alldata.map(item => {
+          return {
+            localname: item["localname"],
+            name: `${item["name"]}.docx`
+          };
+        });
       this.loading = false;
     },
 
     // 获取学生在线作业作业列表(用于评分)
-    async getStuOnlineHW(id) {
+    async getStuOnlineHW(page = 1) {
       this.loading = true;
       let { name, semester, classes } = this.curCourseInfo;
       let res = await this.getStuOnlineHWList({
-        exper_id: id,
+        page,
+        exper_id: this.stuHWId,
         course: name,
         semester,
         teacher: this.userName,
-        stuclass: classes
+        stuclass: classes,
+        classHour: this.curClassHour
       });
-      this.data5 = res;
+      this.data5 = res.data;
+      this.tableTotal5 = res.count;
       this.loading = false;
     },
 
-    async getStuSubjectList(questions) {
+    async getStuSubjectList(questions = []) {
       let subjectLength = 0;
       let executeOnce = true;
-      console.log(questions);
-      let inputInfo = questions.reduce((arr, item, index) => {
-        let optionList = [
-          {
-            label: "A",
-            option: item["first_option"]
-          },
-          {
-            label: "B",
-            option: item["sec_option"]
-          },
-          {
-            label: "C",
-            option: item["third_option"]
-          },
-          {
-            label: "D",
-            option: item["fourth_option"]
-          }
-        ];
-        if (item["type"] !== "填空题") {
-          arr.push({
-            id: item["id"],
-            subject: item["context"],
-            subjectType: item["type"],
-            title: `${index + 1}、${item["type"]}`,
-            choice:
-              item["type"] === "多选题" && item["stuanswer"]["answer"]
-                ? item["stuanswer"]["answer"].split(",")
-                : item["stuanswer"]["answer"],
-            optionList,
-            weighting: item["grade"],
-            referenceAnswer: item["answer"]
-          });
-        } else {
-          if (executeOnce) {
-            // 填空题只有一条大题，所以只执行一次
-            executeOnce = false;
-            let subject = questions.reduce((arr, item) => {
-              if (item["type"] === "填空题") {
-                subjectLength += 1;
-                arr.push({
-                  id: item["id"],
-                  subject: item["context"],
-                  answer: item["stuanswer"]["answer"],
-                  referenceAnswer: item["answer"],
-                  showCreSubjectBtn: true
-                });
-              }
-              return arr;
-            }, []);
+      let inputInfo =
+        questions["length"] > 0 &&
+        questions.reduce((arr, item, index) => {
+          let { grade, answer, id } = item["stuanswer"];
+          let optionList = [
+            {
+              label: "A",
+              option: item["first_option"]
+            },
+            {
+              label: "B",
+              option: item["sec_option"]
+            },
+            {
+              label: "C",
+              option: item["third_option"]
+            },
+            {
+              label: "D",
+              option: item["fourth_option"]
+            }
+          ];
+          if (item["type"] !== "填空题") {
             arr.push({
-              subject,
+              id: id,
+              subject: item["context"],
               subjectType: item["type"],
               title: `${index + 1}、${item["type"]}`,
-              choice: "",
+              choice:
+                item["type"] === "多选题" && answer
+                  ? answer.split(",")
+                  : answer,
               optionList,
-              weighting: item["grade"]
+              weighting: item["grade"],
+              referenceAnswer: item["answer"],
+              score: grade === "未评分" ? 1 : grade
             });
+          } else {
+            if (executeOnce) {
+              // 填空题只有一条大题，所以只执行一次
+              executeOnce = false;
+              let subject = questions.reduce((arr, item) => {
+                if (item["type"] === "填空题") {
+                  subjectLength += 1;
+                  arr.push({
+                    id: id,
+                    subject: item["context"],
+                    answer: answer,
+                    referenceAnswer: item["answer"],
+                    showCreSubjectBtn: true
+                  });
+                }
+                return arr;
+              }, []);
+              arr.push({
+                subject,
+                subjectType: item["type"],
+                title: `${index + 1}、${item["type"]}`,
+                choice: "",
+                optionList,
+                weighting: item["grade"],
+                score: grade === "未评分" ? 1 : grade
+              });
+            }
           }
-        }
-        return arr;
-      }, []);
+          return arr;
+        }, []);
+      this.subjectList = questions;
       this.setInputInfo(inputInfo);
-      console.log(inputInfo);
     },
 
-    handleOk() {
-      // TODO:提交评分
+    // 教师对在线作业评分
+    async handleOk() {
+      this.modalLoading = true;
+      let obj = [];
+      let { id } = this.stuHwInfo;
+      this.inputInfo.map(item => {
+        if (item["subjectType"] !== "填空题") {
+          obj.push({
+            id: item["id"],
+            grade: item["score"] || 0
+          });
+        } else {
+          let score = item["score"];
+          item["subject"].forEach((item, index, arr) => {
+            obj.push({
+              id: item["id"],
+              grade: score || 0
+            });
+          });
+        }
+      });
+      let grade = obj.reduce((num, item) => {
+        num += parseInt(item["grade"], 10);
+        return num;
+      }, 0);
+      if (grade > 100) {
+        this.$Notice.error({
+          title: "总分不能超过100"
+        });
+        this.modalLoading = false;
+        return;
+      }
+      let res = await this.scoreOnlineHW({
+        id,
+        grade,
+        obj
+      });
+      await this.getStuOnlineHW();
       this.curDirectory = 5;
+      this.setInputInfo([]);
+      this.$Notice.success({
+        title: "评分成功！"
+      });
+      this.showModal = false;
+      this.modalLoading = false;
     },
 
     handleCancel() {
@@ -471,12 +639,77 @@ export default {
         return (this.curDirectory = 3);
       }
       this.curDirectory -= 1;
+    },
+
+    searchOpen() {
+      this.modalOpen = true;
+      this.searchTableData = [];
+    },
+
+    searchClose() {
+      this.modalOpen = false;
+      this.searchTableData = [];
+    },
+
+    // 搜索结果
+    async searchResult(searchText, page = 1) {
+      this.searchText = searchText;
+      let { name, classes, semester } = this.curCourseInfo;
+      let type = this.curHWtype === "课时作业" ? "offline" : "online";
+      let res = await this.searchStudentHW({
+        page,
+        semester,
+        condition: searchText,
+        teach_id: this.teaId,
+        teacher: this.userName,
+        type,
+        week: this.curClassHour,
+        exper_id: this.stuHWId,
+        course: name,
+        stuclass: classes
+      });
+      this.searchCount = res.count;
+      this.searchTableData = res.data;
+    },
+
+    // 获取搜索结果
+    async getSearchResult(searchText) {
+      await this.searchResult(searchText);
+    },
+
+    // 搜索表格分页
+    async changeSearchPage(page) {
+      await this.searchResult(this.searchText, page);
+    },
+
+    // 表格分页
+    async changePage(page) {
+      switch (this.curDirectory) {
+        case 1:
+          await this.getClassHourList(page);
+          break;
+        case 3:
+          if (this.curHWtype === "课时作业") {
+            await this.getClassHW(page);
+          } else {
+            await this.getOnlineHW(page);
+          }
+          break;
+        case 4:
+          await this.getStuClassHW(page);
+          break;
+        case 5:
+          await this.getStuOnlineHW(page);
+          break;
+      }
     }
   }
 };
 </script>
 
 <style lang="less" scoped>
+@import "../../../global/public.less";
+
 .containter {
   width: 100%;
   height: auto;

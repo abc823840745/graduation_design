@@ -41,7 +41,7 @@ export default [
     meta: {
       hideInMenu: true,
       notCache: true,
-      access: ['student', 'teacher'],
+      access: ['student', 'teacher', 'admin'],
     },
     children: [
       {
@@ -350,6 +350,7 @@ export default [
         meta: {
           icon: 'ios-home',
           title: '首页',
+          notCache: true,
           access: ['student'],
         },
         component: () => import('@stuHomework/page/homework-main.vue'),
@@ -360,6 +361,7 @@ export default [
         meta: {
           icon: 'ios-list-box',
           title: '作业状态',
+          notCache: true,
           access: ['student'],
         },
         component: () => import('@stuHomework/page/experimental-state.vue'),
@@ -370,7 +372,7 @@ export default [
         meta: {
           icon: 'ios-keypad',
           title: '实验管理',
-          notCache: false,
+          notCache: true,
           access: ['student'],
         },
         component: () => import('@stuHomework/page/experiment-management.vue'),
@@ -381,7 +383,7 @@ export default [
         meta: {
           icon: 'ios-globe',
           title: '在线作业',
-          notCache: false,
+          notCache: true,
           access: ['student'],
         },
         component: () => import('@stuHomework/page/online-homework.vue'),
@@ -486,28 +488,6 @@ export default [
   },
 
   //教师端路由
-  {
-    path: '/teacher/main',
-    name: 'teacher-main',
-    meta: {
-      icon: 'logo-buffer',
-      title: '首页',
-      access: ['teacher', 'admin'],
-    },
-    component: Main,
-    children: [
-      {
-        path: '',
-        name: 'teacher-main',
-        meta: {
-          icon: 'md-contacts',
-          title: '首页',
-          access: ['teacher', 'admin'],
-        },
-        component: () => import('@teaHomework/page/homework-main.vue'),
-      },
-    ],
-  },
   {
     path: '/teacher/personal',
     name: 'teacher-personal',
@@ -695,8 +675,8 @@ export default [
     path: '/teacher/homework',
     name: 'teacher-homework',
     meta: {
-      icon: 'logo-buffer',
-      title: '作业管理',
+      icon: 'ios-paper',
+      title: '作业设计',
       access: ['teacher', 'admin'],
     },
     component: Main,
@@ -707,6 +687,7 @@ export default [
         meta: {
           icon: 'ios-home',
           title: '首页',
+          notCache: true,
           access: ['teacher', 'admin'],
         },
         component: () => import('@teaHomework/page/homework-main.vue'),
@@ -717,6 +698,7 @@ export default [
         meta: {
           icon: 'ios-add-circle',
           title: '新建作业',
+          notCache: true,
           access: ['teacher', 'admin'],
         },
         component: () => import('@teaHomework/page/homework-create.vue'),
@@ -727,6 +709,7 @@ export default [
         meta: {
           icon: 'ios-brush',
           title: '作业评分',
+          notCache: true,
           access: ['teacher', 'admin'],
         },
         component: () => import('@teaHomework/page/check-homework.vue'),
@@ -737,9 +720,21 @@ export default [
         meta: {
           icon: 'ios-list-box',
           title: '任务中心',
+          notCache: true,
           access: ['teacher', 'admin'],
         },
         component: () => import('@teaHomework/page/task-center.vue'),
+      },
+      {
+        path: 'item-bank-management',
+        name: 'teacher-item-bank-management',
+        meta: {
+          icon: 'ios-book',
+          title: '题库管理',
+          notCache: true,
+          access: ['teacher', 'admin'],
+        },
+        component: () => import('@teaHomework/page/item-bank-management.vue'),
       },
     ],
   },

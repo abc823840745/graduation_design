@@ -16,11 +16,9 @@
 <script>
 import { mapState, mapActions, mapMutations } from "vuex";
 import { getTeaCourseList, getStuCourseList } from "@/api/course";
-import myMixin from "@/view/global/mixin";
+import { getCurSchoolYear, dateFormat } from "@tools";
 
 export default {
-  mixins: [myMixin],
-
   computed: {
     ...mapState({
       role: state => state.user.role,
@@ -43,7 +41,7 @@ export default {
     // 获取课程列表
     async getCourseList() {
       let res = null;
-      let { year, semester } = this.$tools.dateFormat(this.getCurSchoolYear());
+      let { year, semester } = dateFormat(getCurSchoolYear());
       if (this.role === "student") {
         res = await getStuCourseList({
           year,
@@ -51,7 +49,6 @@ export default {
           offset: 1,
           limit: 999
         });
-        console.log(res);
       } else {
         res = await getTeaCourseList({
           year,
@@ -88,6 +85,8 @@ export default {
 </script>
 
 <style lang='less' scoped>
+@import "../../../global/public.less";
+
 .slider-bar {
   height: auto;
 

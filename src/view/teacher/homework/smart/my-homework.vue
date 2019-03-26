@@ -3,9 +3,10 @@
     <CreateSubject
       ref="subject"
       :type="type"
-      :homeworkInfo="homeworkInfo"
+      :homeworkInfo="info"
       :showModal.sync="showModal2"
       @modalOk="type === 'create' ? submitSubject() : updateSubject()"
+      @modalCancel="modalCancel"
     />
 
     <Modal v-model="showModal" title="新建任务">
@@ -48,8 +49,9 @@
         >
           <h3>考试时间：</h3>
           <InputNumber
-            :max="80"
-            :min="5"
+            :max="200"
+            :min="1"
+            :step="1"
             v-model="homeworkInfo['testingTime']"
           />
           <span class="ml-5">分钟</span>
@@ -115,9 +117,7 @@
               : updateClassHWInfo()
           "
         >
-          {{
-            info["classify"] === "在线作业" ? "修改题目信息" : "修改作业信息"
-          }}
+          {{ info["classify"] === "在线作业" ? "修改题目信息" : "确认修改" }}
         </Button>
 
         <Button
@@ -125,7 +125,7 @@
           v-if="type === 'update' && info['classify'] === '在线作业'"
           @click="updateOnlineHWInfo"
         >
-          修改
+          确认修改
         </Button>
       </div>
     </Modal>
@@ -185,6 +185,16 @@ export default {
   },
 
   computed: {
+    ...mapState({
+      inputInfo: state => state.homework.inputInfo,
+      subjectList: state => state.homework.subjectList,
+      optionList: state => state.homework.optionList,
+      originalInfo: state => state.homework.originalInfo,
+      originInputInfo: state => state.homework.originInputInfo,
+      stu_number: state => state.user.stu_nmuber,
+      curCourse: state => state.homework.curCourse
+    }),
+
     classifyList() {
       return this.getClassifyList().filter(item => item.value !== "所有类型");
     },
@@ -196,12 +206,7 @@ export default {
           : config.baseUrl.pro;
       const uploadUrl = baseUrl + "/upload/teacher/exper";
       return uploadUrl;
-    },
-
-    ...mapState({
-      inputInfo: state => state.homework.inputInfo,
-      subjectList: state => state.homework.subjectList
-    })
+    }
   },
 
   data() {
@@ -228,10 +233,11 @@ export default {
       "teaUploadAgain",
       "addTeaOnlineHW",
       "addTeaOnlineSubject",
-      "updateTeaOnlineSubject"
+      "updateTeaOnlineSubject",
+      "changeSubject"
     ]),
 
-    ...mapMutations(["setInputInfo"]),
+    ...mapMutations(["setInputInfo", "setOptionList"]),
 
     async setClassHourList(id) {
       let res = await this.getClassHourList(id);
@@ -247,7 +253,7 @@ export default {
 
     // 监听选择时间日期函数
     timeOnChange(value) {
-      let homeworkInfo = { ...this.homeworkInfo };
+      let homeworkInfo = this.homeworkInfo;
       homeworkInfo["stopTimeList"] = value;
       this.homeworkInfo = homeworkInfo;
     },
@@ -259,7 +265,7 @@ export default {
       info["name"] = name;
       info["classify"] = classify;
       info["classHour"] = week;
-      info["testingTime"] = classify === "课时作业" ? 0 : totaltime;
+      info["testingTime"] = classify === "课时作业" ? 0 : totaltime / 60; // 将秒数转换成分钟显示
       info["stopTimeList"] = [startime, fintime];
       this.homeworkInfo = info;
     },
@@ -287,6 +293,7 @@ export default {
           course,
           course_id,
           teacher,
+          teach_id: this.stu_number,
           startime: stopTimeList[0],
           fintime: stopTimeList[1]
         });
@@ -310,9 +317,10 @@ export default {
         semester,
         course,
         teacher,
-        totaltime: testingTime,
-        fintime: stopTimeList[0],
-        startime: stopTimeList[1]
+        teach_id: this.stu_number,
+        totaltime: testingTime * 60, // 转换成秒数提交
+        startime: stopTimeList[0],
+        fintime: stopTimeList[1]
       });
       if (res["status"] === 1) {
         let questions = null;
@@ -321,7 +329,6 @@ export default {
           this.inputInfo.map(async item => {
             let grade = item["weighting"];
             let subject = item["subject"];
-
             if (item["subjectType"] !== "填空题") {
               questions = [
                 {
@@ -332,12 +339,15 @@ export default {
                     third_option: item["optionList"][2]["option"],
                     fourth_option: item["optionList"][3]["option"]
                   },
+                  Category: "",
+                  course: this.curCourse,
                   qtype: item["subjectType"],
                   answer:
                     item["subjectType"] === "多选题"
                       ? item["choice"].join()
                       : item["choice"],
-                  grade
+                  grade,
+                  status: item["status"]
                 }
               ];
             } else {
@@ -351,9 +361,12 @@ export default {
                     third_option: "",
                     fourth_option: ""
                   },
+                  Category: "",
+                  course: this.curCourse,
                   qtype: "填空题",
                   answer: item["referenceAnswer"],
-                  grade: grade / arr.length
+                  grade: grade / arr.length,
+                  status: item["status"]
                 };
               });
             }
@@ -362,12 +375,15 @@ export default {
             let res = await this.addTeaOnlineSubject({
               root_id,
               root_name: name,
-              questions
+              questions,
+              teach_id: this.stu_number
             });
           })
         );
         this.homeworkInfo = {};
         this.setInputInfo([]);
+        localStorage.removeItem("subjectList");
+        // localStorage.removeItem("remainTime");
         this.$Notice.success({
           title: "新建成功！"
         });
@@ -377,13 +393,200 @@ export default {
 
     // 修改在线作业题目
     async updateSubject() {
+      let executeOne = true;
+      let notFillSubject = this.originInputInfo.filter(
+        item => item["subjectType"] !== "填空题"
+      );
+      let notFillSubject2 = this.inputInfo.filter(
+        item => item["subjectType"] !== "填空题"
+      );
+      let fillSubject = this.originInputInfo.filter(
+        item => item["subjectType"] === "填空题"
+      );
+      let fillSubject2 = this.inputInfo.filter(
+        item => item["subjectType"] === "填空题"
+      );
+      let beforeFillSubLen =
+        fillSubject["length"] > 0 ? fillSubject[0]["subject"]["length"] : 0;
+      let curFillSubLen =
+        fillSubject2["length"] > 0 ? fillSubject2[0]["subject"]["length"] : 0;
+
+      // 判断数组长度和填空题小题数量是否变化，没有变化，则全部为更新操作
+      if (this.optionList.length === 0 && beforeFillSubLen === curFillSubLen) {
+        await this.updateOnlineSubject();
+        return;
+      }
+
+      let data = this.optionList.reduce((arr, item, index) => {
+        let { key, type, subjectType } = item;
+        if (item["subjectType"] !== "填空题") {
+          // 处理非填空题的逻辑
+          if (type === "delete") {
+            arr.push({
+              id: item["key"],
+              type: "delete"
+            });
+          } else if (type === "update") {
+            // 获取该题具体数据
+            arr.push(this.update(key, notFillSubject2));
+          } else if (type === "add") {
+            arr.push(this.add(key));
+          }
+        } else {
+          // 处理填空题的逻辑
+          let key = item["key"];
+          let subject = item["subject"];
+          if (type === "delete") {
+            let subjectInfo = fillSubject[0]["subject"].filter(
+              item => item["id"] === key
+            );
+            arr.push({
+              id: subjectInfo[0]["id"],
+              type: "delete"
+            });
+          } else if (type === "update") {
+            // 获取该题具体数据
+            arr.push(this.update2(key, fillSubject2));
+          } else if (type === "add") {
+            // 只执行一次，因为只有一道填空题
+            if (executeOne) {
+              executeOne = false;
+              let weighting = fillSubject2[0]["weighting"];
+              fillSubject2[0]["subject"].forEach((item, index, array) => {
+                // 剔除不需要添加的填空题
+                if (item["id"]) return;
+                arr.push(this.add2(item, weighting, array));
+              });
+            }
+          }
+        }
+        return arr;
+      }, []);
+      let res = await this.changeSubject({
+        id: this.info["id"],
+        arr: data
+      });
+      this.showModal = false;
+      this.showModal2 = false;
+      this.setInputInfo([]);
+      this.setOptionList([]);
+      localStorage.removeItem("subjectList");
+      // localStorage.removeItem("remainTime");
+      this.$Notice.success({
+        title: "修改成功！"
+      });
+    },
+
+    // 非填空题添加题目逻辑
+    add(key) {
+      let subjectInfo = this.inputInfo.filter(item => item["key"] === key);
+      let {
+        id,
+        subject,
+        optionList,
+        type,
+        subjectType,
+        choice,
+        weighting
+      } = subjectInfo[0];
+      return {
+        type: "add",
+        context: subject,
+        root_name: this.info["name"],
+        root_id: this.info["id"],
+        obj: {
+          first_option: optionList[0]["option"],
+          sec_option: optionList[1]["option"],
+          third_option: optionList[2]["option"],
+          fourth_option: optionList[3]["option"]
+        },
+        qtype: subjectType,
+        answer: subjectType === "多选题" ? choice.join() : choice,
+        grade: weighting
+      };
+    },
+
+    // 填空题添加逻辑
+    add2(item, weighting, array) {
+      let { subject, referenceAnswer } = item;
+      return {
+        type: "add",
+        context: subject,
+        root_name: this.info["name"],
+        root_id: this.info["id"],
+        obj: {
+          first_option: "",
+          sec_option: "",
+          third_option: "",
+          fourth_option: ""
+        },
+        qtype: "填空题",
+        answer: referenceAnswer,
+        grade: weighting / array.length
+      };
+    },
+
+    // 非填空题更新题目逻辑
+    update(key, notFillSubject) {
+      let subjectInfo = notFillSubject.filter(item => item["id"] === key);
+      let {
+        id,
+        subject,
+        optionList,
+        type,
+        subjectType,
+        choice,
+        weighting
+      } = subjectInfo[0];
+      return {
+        id,
+        type: "update",
+        context: subject,
+        obj: {
+          first_option: optionList[0]["option"],
+          sec_option: optionList[1]["option"],
+          third_option: optionList[2]["option"],
+          fourth_option: optionList[3]["option"]
+        },
+        qtype: subjectType,
+        answer: subjectType === "多选题" ? choice.join() : choice,
+        grade: weighting
+      };
+    },
+
+    // 填空题更新题目逻辑
+    update2(key, fillSubject) {
+      let fillSubjectLen = 0;
+      let weighting = fillSubject[0]["weighting"];
+      let subjectInfo = fillSubject[0]["subject"].filter(item => {
+        fillSubjectLen += 1;
+        return item["id"] === key;
+      });
+      let { id, subject, referenceAnswer } = subjectInfo[0];
+      return {
+        id,
+        type: "update",
+        context: subject,
+        obj: {
+          first_option: "",
+          sec_option: "",
+          third_option: "",
+          fourth_option: ""
+        },
+        qtype: "填空题",
+        answer: referenceAnswer,
+        grade: weighting / fillSubjectLen
+      };
+    },
+
+    // 对题目只执行更新操作
+    async updateOnlineSubject() {
       let questions = [];
       await Promise.all(
         this.inputInfo.map(async item => {
           let [first, second, third, fourth] = item["optionList"];
           let { subject, choice, weighting, subjectType, id } = item;
           let answer = subjectType === "多选题" ? choice.join() : choice;
-
           if (subjectType !== "填空题") {
             questions = [
               {
@@ -423,6 +626,7 @@ export default {
         })
       );
       this.showModal = false;
+      this.showModal2 = false;
       this.setInputInfo([]);
       this.$Notice.success({
         title: "修改成功！"
@@ -432,6 +636,12 @@ export default {
     // 点击修改在线作业题目按钮事件
     updateSubjectInfo() {
       this.showModal2 = true;
+    },
+
+    // 取消modal事件
+    modalCancel() {
+      this.showModal = false;
+      this.showModal2 = false;
     },
 
     // 更新课时作业信息
@@ -492,6 +702,7 @@ export default {
         return this.$Message.error("缺少必填信息");
       }
       this.showModal2 = true;
+      this.setInputInfo([]);
     },
 
     handleMaxSize(file) {

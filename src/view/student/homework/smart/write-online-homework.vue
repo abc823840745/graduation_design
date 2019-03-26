@@ -3,16 +3,19 @@
     fullscreen
     title="完成在线作业"
     v-model="showModal"
-    @on-ok="handleOk"
+    :closable="false"
     @on-cancel="$emit('handleCancel')"
   >
     <div class="containter">
       <div class="header-bar">
-        <Alert
-          ><span class="alert-text">课程：nodejs实验</span>
-          <span class="alert-text">实验：堂上构建简单服务器</span>
-          <span class="alert-text">时间：20分钟</span></Alert
-        >
+        <Alert>
+          <span class="alert-text">课程：{{ stuHWInfo["course"] }}</span>
+          <span class="alert-text">实验：{{ stuHWInfo["exper_name"] }}</span>
+          <span class="alert-text">时间：{{ formatMinute }}分钟</span>
+          <span class="alert-text"
+            >截止时间：{{ stuHWInfo["exper_fintime"] }}</span
+          >
+        </Alert>
 
         <div class="count-down-con">
           <P class="count-down-text">倒计时：</P>
@@ -20,7 +23,7 @@
             <CountDown
               ref="countDown"
               :isStartTimer="isStartTimer"
-              :initialTime="1200"
+              :initialTime="surplusTime"
               @callBack="endTimeDoing"
             >
               <h2 slot-scope="{ remainingTime }">
@@ -39,6 +42,12 @@
         :key="index"
       />
     </div>
+
+    <div slot="footer">
+      <Button type="primary" size="large" @click="instance('warning')"
+        >提交作业</Button
+      >
+    </div>
   </Modal>
 </template>
 
@@ -46,12 +55,14 @@
 import SubjectType from "@/view/global/component/show-subject-different-types";
 import CountDown from "@stuHomework/smart/count-down";
 import { mapState } from "vuex";
+import { getlocalStorage } from "@tools";
 
 export default {
   name: "online-homework",
 
   props: {
-    modalOpen: Boolean
+    modalOpen: Boolean,
+    stuHWInfo: Object
   },
 
   components: {
@@ -66,18 +77,28 @@ export default {
 
     showModal(newVal, oldVal) {
       this.$emit("update:modalOpen", newVal);
+    },
+
+    surplusTime(newVal, oldVal) {
+      this.isStartTimer = true;
     }
   },
 
   computed: {
     ...mapState({
-      inputInfo: state => state.homework.inputInfo
-    })
+      inputInfo: state => state.homework.inputInfo,
+      surplusTime: state => state.homework.surplusTime
+    }),
+
+    formatMinute() {
+      return parseInt(this.stuHWInfo["surplus_time"] / 60, 10);
+    }
   },
 
   data() {
     return {
-      isStartTimer: true, // 是否开启定时器
+      isStartTimer: false, // 是否开启定时器
+      seconds: 10,
       showModal: false
     };
   },
@@ -85,12 +106,30 @@ export default {
   methods: {
     endTimeDoing() {
       this.isStartTimer = false;
-      console.log("结束后的回调");
+      let remainingTime = this.$refs.countDown.remainingTime;
+      this.$emit("endTimeDoing", remainingTime);
     },
 
     handleOk() {
+      this.isStartTimer = false;
       let remainingTime = this.$refs.countDown.remainingTime;
       this.$emit("handleOk", remainingTime);
+    },
+
+    instance(type) {
+      const title = "确定提交";
+      const content = "<p>认真检查所有题目是否完成</p><p>提交后将不能修改</p>";
+      if (type === "warning") {
+        this.$Modal.confirm({
+          title,
+          content,
+          loading: true,
+          onOk: async () => {
+            await this.handleOk();
+            this.$Modal.remove();
+          }
+        });
+      }
     }
   }
 };

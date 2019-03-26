@@ -68,6 +68,7 @@ export default {
   'teacher-homework-create': '新建作业',
   'teacher-check-homework': '作业评分',
   'teacher-task-center': '任务中心',
+  'teacher-item-bank-management': '题库管理',
 
   // 教师毕设管理
   'teacher-graduation': '毕业管理',

@@ -57,8 +57,8 @@
         </Form>
       </Modal>
     </div>
-    <div v-if="access == 'teacher'">
-      教师首页
+    <div v-if="access === 'admin' || access === 'teacher'">
+      <TeaHome />
     </div>
   </div>
 </template>
@@ -68,6 +68,7 @@ import InforCard from "_c/info-card";
 import CountTo from "_c/count-to";
 import { ChartPie, ChartBar } from "_c/charts";
 import Example from "./example.vue";
+import TeaHome from "@teaHomework/page/homework-main.vue";
 import { mapMutations, mapActions, mapGetters } from "vuex";
 import { getNewMessage } from "@/api/message";
 import { refreshCourse } from "@/api/user";
@@ -79,7 +80,8 @@ export default {
     CountTo,
     ChartPie,
     ChartBar,
-    Example
+    Example,
+    TeaHome
   },
   data() {
     return {

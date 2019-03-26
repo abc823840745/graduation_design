@@ -1,7 +1,7 @@
 <template>
   <div class="containter">
     <div class="containter" v-if="curDirectory !== 3">
-      <Modal v-model="showModal" title="上传" @on-ok="dialogOk">
+      <Modal v-model="showModal" title="上传">
         <Alert show-icon
           >只能上传单个文件或文件夹，如果上传有误，请重新上传即可</Alert
         >
@@ -24,6 +24,12 @@
             <p>点击或者把文件拖拽到这里</p>
           </div>
         </Upload>
+
+        <div slot="footer">
+          <Button type="primary" size="large" long @click="dialogOk"
+            >返回</Button
+          >
+        </div>
       </Modal>
 
       <div class="select-con">
@@ -35,13 +41,6 @@
           :semesterList="item['list']"
           @onChange="item['onChange']"
           class="multiple-choice"
-        />
-
-        <Input
-          class="search-item"
-          search
-          enter-button
-          placeholder="请输入关键词"
         />
       </div>
 
@@ -68,6 +67,7 @@ import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import myMixin from "@/view/global/mixin";
 import config from "@/config";
 import { mapActions, mapState } from "vuex";
+import { getCurSchoolYear } from "@tools";
 
 export default {
   mixins: [myMixin],
@@ -77,6 +77,13 @@ export default {
   },
 
   computed: {
+    ...mapState({
+      userName: state => state.user.userName,
+      stuId: state => state.user.stu_nmuber,
+      courseList: state => state.homework.courseList,
+      tableInfo: state => state.homework.experMangerInfo
+    }),
+
     uploadUrl() {
       const baseUrl =
         process.env.NODE_ENV === "development"
@@ -84,39 +91,7 @@ export default {
           : config.baseUrl.pro;
       const uploadUrl = baseUrl + "/upload/teacher/exper";
       return uploadUrl;
-    },
-
-    getAllCourse() {
-      return [
-        {
-          course: "新媒体综合实训",
-          stuclass: "AND",
-          teacher: "程亮"
-        },
-        {
-          course: "HTML5网页设计",
-          stuclass: "AMT",
-          teacher: "程亮"
-        }
-      ];
-    },
-
-    ...mapState({
-      userName: state => state.user.userName,
-      stuId: state => state.user.stu_nmuber,
-      courseList: state => state.homework.courseList,
-      tableInfo: state => state.homework.experMangerInfo,
-      allCourse: state => {
-        state.homework.courseList.map(item => {
-          let { name, classes } = item;
-          return {
-            course: name,
-            stuclass: classes,
-            teacher: ""
-          };
-        });
-      }
-    })
+    }
   },
 
   data() {
@@ -127,7 +102,7 @@ export default {
       selectList: [
         {
           tip: "学期选择",
-          value: this.getCurSchoolYear(),
+          value: getCurSchoolYear(),
           list: this.getSchoolYear(),
           onChange: this.changeYear
         },
@@ -168,28 +143,50 @@ export default {
           key: "exper_name"
         },
         {
-          title: "完成时间",
+          title: "开始时间",
+          key: "exper_startime",
+          sortable: true,
+          minWidth: 10
+        },
+        {
+          title: "截止时间",
           key: "exper_fintime",
-          sortable: true
+          sortable: true,
+          minWidth: 10
         },
         {
           title: "完成状态",
           key: "status",
-          sortable: true
+          sortable: true,
+          render: (h, params) => {
+            let text = params.row.status;
+            let btnColor = text === "已完成" ? "success" : "error";
+            return h("div", [this.statusBtnStyle(text, h, btnColor)]);
+          }
         },
         {
           title: "操作",
           key: "operation",
+          minWidth: 50,
           render: (h, params) => {
+            let { exper_startime, exper_webpath } = params.row;
+            let curDate = new Date();
+            let startDate = new Date(exper_startime);
             return h("div", [
               this.btnStyle("上传作业", h, () => {
-                this.showModal = true;
-                this.itemInfo = this.tableInfo["tableData"][params.index];
+                if (curDate >= startDate) {
+                  this.showModal = true;
+                  this.itemInfo = this.tableInfo["tableData"][params.index];
+                } else {
+                  this.$Notice.warning({
+                    title: "还没到开始时间！"
+                  });
+                }
               }),
               this.btnStyle(
                 "下载实验",
                 h,
-                () => window.open(params.row.exper_webpath),
+                () => window.open(exper_webpath),
                 "success"
               )
             ]);
@@ -208,113 +205,27 @@ export default {
     ...mapActions(["getStuClassHW", "stuSubmitClassHW", "stuUploadAgain"]),
 
     dialogOk() {
-      console.log("上传");
+      this.showModal = false;
     },
 
     // 获取表格数据
     async getTableData(page = 1) {
-      this.loading = true;
-      await this.getStuClassHW({
-        page,
-        obj:
-          this.selectList[1]["value"] === "所有课程"
-            ? this.getAllCourse
-            : [
-                {
-                  course: this.selectList[1]["value"],
-                  stuclass: "ATM",
-                  teacher: "程亮"
-                }
-              ],
-        semester: this.selectList[0]["value"],
-        classHour:
-          this.selectList[2]["value"] === "所有课时"
-            ? undefined
-            : this.selectList[2]["value"],
-        student: this.userName,
-        stuId: this.stuId
-      });
-      this.loading = false;
+      await this.getTableList("getStuClassHW", page);
     },
 
     // 选择学年
     async changeYear(value) {
-      this.loading = true;
-      await this.getStuClassHW({
-        // TODO: 暂时写死，课程信息由课程接口返回
-        obj:
-          this.selectList[1]["value"] === "所有课程"
-            ? this.getAllCourse
-            : [
-                {
-                  course: this.selectList[1]["value"],
-                  stuclass: "ATM",
-                  teacher: "程亮"
-                }
-              ],
-        semester: value,
-        classHour:
-          this.selectList[2]["value"] === "所有课时"
-            ? undefined
-            : this.selectList[2]["value"],
-        student: this.userName,
-        stuId: this.stuId
-      });
-      this.loading = false;
+      await this.yearChange("getStuClassHW", value);
     },
 
     // 选择课程
     async changeCourse(value) {
-      this.loading = true;
-      let getId = this.courseList.reduce((arr, item) => {
-        if (item["name"] === value) {
-          arr.push(item["id"]);
-        }
-        return arr;
-      }, []);
-      await this.setClassHourSelList(getId[0]);
-      await this.getStuClassHW({
-        obj:
-          value === "所有课程"
-            ? this.getAllCourse
-            : [
-                {
-                  course: value,
-                  stuclass: "ATM",
-                  teacher: "程亮"
-                }
-              ],
-        semester: this.selectList[0]["value"],
-        classHour:
-          this.selectList[2]["value"] === "所有课时"
-            ? undefined
-            : this.selectList[2]["value"],
-        student: this.userName,
-        stuId: this.stuId
-      });
-      this.loading = false;
+      await this.courseChange("getStuClassHW", value);
     },
 
     // 选择学时
     async changeClassHour(value) {
-      this.loading = true;
-      await this.getStuClassHW({
-        obj:
-          this.selectList[1]["value"] === "所有课程"
-            ? this.getAllCourse
-            : [
-                {
-                  course: this.selectList[1]["value"],
-                  stuclass: "ATM",
-                  teacher: "程亮"
-                }
-              ],
-        semester: this.selectList[0]["value"],
-        classHour: value === "所有课时" ? undefined : value,
-        student: this.userName,
-        stuId: this.stuId
-      });
-      this.loading = false;
+      await this.classHourChange("getStuClassHW", value);
     },
 
     async handleSuccess(result) {

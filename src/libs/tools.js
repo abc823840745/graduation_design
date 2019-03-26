@@ -307,6 +307,44 @@ export function getSessionStorage(key) {
 }
 
 /**
+ * 存LocalStorage
+ */
+export function setlocalStorage(key, val) {
+  let jsonVal = JSON.stringify(val);
+  localStorage.setItem(key, jsonVal);
+}
+
+/**
+ * 取localStorage
+ */
+export function getlocalStorage(key) {
+  let value = localStorage.getItem(key);
+  if (value) {
+    return JSON.parse(value);
+  }
+  return false;
+}
+
+/**
+ * 防抖动函数
+ */
+export function debounce(fn, delay) {
+  var delay = delay || 200;
+  var timer;
+  return function() {
+    var th = this;
+    var args = arguments;
+    if (timer) {
+      clearTimeout(timer);
+    }
+    timer = setTimeout(function() {
+      timer = null;
+      fn.apply(th, args);
+    }, delay);
+  };
+}
+
+/**
  * 获取当前系统时间，格式为2018-09-18 00:00:00
  */
 export function getCurDate() {

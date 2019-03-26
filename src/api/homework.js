@@ -53,6 +53,7 @@ export function getStuHWList(obj) {
       semester: obj['semester'],
       teacher: obj['teacher'],
       stuclass: obj['stuclass'],
+      week: obj['classHour'],
       limit: obj['limit'] || 10,
       page: obj['page'] || 1,
     },
@@ -70,6 +71,7 @@ export function getStuOnlineHWList(obj) {
       semester: obj['semester'],
       teacher: obj['teacher'],
       stuclass: obj['stuclass'],
+      week: obj['classHour'],
       limit: obj['limit'] || 10,
       page: obj['page'] || 1,
     },
@@ -91,6 +93,7 @@ export function addTeaClassHW(obj) {
       course: obj['course'],
       course_id: obj['course_id'],
       teacher: obj['teacher'],
+      teach_id: obj['teach_id'],
       fintime: obj['fintime'],
       startime: obj['startime'],
     },
@@ -106,6 +109,7 @@ export function addTeaOnlineHW(obj) {
       name: obj['name'],
       course: obj['course'],
       teacher: obj['teacher'],
+      teach_id: obj['teach_id'],
       semester: obj['semester'],
       week: obj['classHour'],
       totaltime: obj['totaltime'],
@@ -124,6 +128,7 @@ export function addTeaOnlineSubject(obj) {
       root_id: obj['root_id'],
       root_name: obj['root_name'],
       questions: obj['questions'],
+      teach_id: obj['teach_id'],
     },
     url: '/add/teacher/question',
     method: 'post',
@@ -247,7 +252,208 @@ export function getStuHW(obj) {
   });
 }
 
-// 学生部分
+// 在线作业-教师-作业评分
+export function scoreOnlineHW(obj) {
+  return axios.request({
+    data: {
+      id: obj['id'],
+      grade: obj['grade'],
+      obj: obj['obj'],
+    },
+    url: '/registerScore/teacher/inexper',
+    method: 'post',
+  });
+}
+
+// 在线作业-老师-问题操作（增删改一体）
+export function changeSubject(obj) {
+  return axios.request({
+    data: {
+      id: obj['id'],
+      arr: obj['arr'],
+    },
+    url: 'operation/teacher/question',
+    method: 'post',
+  });
+}
+
+// 教师搜索学生作业
+export function searchStuHW(obj) {
+  return axios.request({
+    data: {
+      condition: obj['condition'],
+      teacher: obj['teacher'],
+      teach_id: obj['teach_id'],
+      semester: obj['semester'],
+      limit: obj['limit'] || 10,
+      page: obj['page'] || 1,
+    },
+    url: '/search/teacher/stuexper',
+    method: 'post',
+  });
+}
+
+// 教师搜索自己发布的作业
+export function searchMyHW(obj) {
+  return axios.request({
+    data: {
+      condition: obj['condition'],
+      teacher: obj['teacher'],
+      teach_id: obj['teach_id'],
+      semester: obj['semester'],
+      limit: obj['limit'] || 10,
+      page: obj['page'] || 1,
+    },
+    url: '/search/teacher/exper',
+    method: 'post',
+  });
+}
+
+// 教师首页
+export function getTeaMainInfo(obj) {
+  return axios.request({
+    data: {
+      teach_id: obj['teach_id'],
+      semester: obj['semester'],
+      obj: obj['obj'],
+    },
+    url: '/get/teacher/index',
+    method: 'post',
+  });
+}
+
+// 教师搜索学生不同类型作业
+export function searchStudentHW(obj) {
+  return axios.request({
+    data: {
+      condition: obj['condition'],
+      type: obj['type'],
+      week: obj['week'],
+      exper_id: obj['exper_id'],
+      semester: obj['semester'],
+      course: obj['course'],
+      stuclass: obj['stuclass'],
+      teacher: obj['teacher'],
+      teach_id: obj['teach_id'],
+      limit: obj['limit'] || 10,
+      page: obj['page'] || 1,
+    },
+    url: '/search/teacher/stuexper',
+    method: 'post',
+  });
+}
+
+/**
+ * 题库
+ */
+
+// 删除题库
+export function delSubHouse(obj) {
+  return axios.request({
+    data: {
+      id: obj['id'],
+      Category: obj['category'] || '',
+      teach_id: obj['teach_id'],
+      teacher: obj['teacher'],
+    },
+    url: '/delete/exper/question',
+    method: 'post',
+  });
+}
+
+// 更新题目
+export function updateSubHouse(obj) {
+  return axios.request({
+    data: {
+      teach_id: obj['teach_id'],
+      teacher: obj['teacher'],
+      id: obj['id'],
+      course: obj['course'],
+      Category: obj['category'] || '',
+      context: obj['context'],
+      obj: obj['obj'],
+      answer: obj['answer'],
+      grade: obj['grade'],
+    },
+    url: '/update/exper/question',
+    method: 'post',
+  });
+}
+
+// 查看题目
+export function getSubHouse(obj) {
+  return axios.request({
+    data: {
+      course: obj['course'],
+      Category: obj['category'] || '',
+      type: obj['type'],
+      limit: obj['limit'] || 10,
+      page: obj['page'] || 1,
+    },
+    url: '/read/exper/question',
+    method: 'post',
+  });
+}
+
+// 新增题目
+export function createSubHouse(obj) {
+  return axios.request({
+    data: {
+      teach_id: obj['teach_id'],
+      teacher: obj['teacher'],
+      arr: obj['arr'],
+    },
+    url: '/add/exper/question',
+    method: 'post',
+  });
+}
+
+// 搜索题目
+export function searchSubHouse(obj) {
+  return axios.request({
+    data: {
+      condition: obj['condition'],
+      course: obj['course'],
+      Category: obj['category'] || '',
+      type: obj['type'],
+      limit: obj['limit'] || 10,
+      page: obj['page'] || 1,
+    },
+    url: '/search/exper/question',
+    method: 'post',
+  });
+}
+
+// 历史记录
+export function subHouseHistory(obj) {
+  return axios.request({
+    data: {
+      course: obj['course'],
+      limit: obj['limit'] || 10,
+      page: obj['page'] || 1,
+    },
+    url: '/get/exper/qusetion/modifyrecord',
+    method: 'post',
+  });
+}
+
+/**
+ * 学生部分
+ */
+
+// 学生首页
+export function getStuMainInfo(obj) {
+  return axios.request({
+    data: {
+      stu_id: obj['stu_id'],
+      semester: obj['semester'],
+      obj: obj['obj'],
+    },
+    url: '/get/student/index',
+    method: 'post',
+  });
+}
+
 // 查看课时作业
 export function getStuClassHW(obj) {
   return axios.request({
@@ -348,6 +554,7 @@ export function stuSubmitOnlineHW(obj) {
       root_id: obj['root_id'],
       quest_id: obj['quest_id'],
       answer: obj['answer'],
+      status: obj['status'],
     },
     url: '/submit/student/inexper',
     method: 'post',
@@ -394,6 +601,7 @@ export function searchMyHWlist(obj) {
       condition: obj['condition'],
       stu_id: obj['stuId'],
       student: obj['student'],
+      semester: obj['semester'],
       page: obj['page'] || 1,
       limit: obj['limit'] || 10,
     },

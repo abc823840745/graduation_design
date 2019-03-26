@@ -26,13 +26,34 @@ import {
   getStuMyHWlist,
   searchMyHWlist,
   getStuScoreSubject,
+  scoreOnlineHW,
+  changeSubject,
+  searchStuHW,
+  searchMyHW,
+  getTeaMainInfo,
+  getStuMainInfo,
+  searchStudentHW,
+  delSubHouse,
+  updateSubHouse,
+  getSubHouse,
+  createSubHouse,
+  searchSubHouse,
+  subHouseHistory,
 } from '@/api/homework';
 
 export default {
   state: {
+    experId: 0, // 老师发布的任务id
+    remainTime: 0,
+    surplusTime: 0, // 后端传的剩余时间
+    fintime: 0, // 老师规定的截止时间
+    curCourse: '', // 点击选择的课程信息
     courseList: [],
     inputInfo: [],
+    originalInfo: [],
     subjectList: [],
+    optionList: [],
+    originInputInfo: [],
     taskCenterInfo: {
       tableData: [],
       page: 1,
@@ -80,15 +101,41 @@ export default {
     setStuMyHWList(state, obj) {
       state.stuMyHWList = obj;
     },
+    setOptionList(state, arr) {
+      state.optionList = arr;
+    },
+    setOriginalInfo(state, arr) {
+      state.originalInfo = arr;
+    },
+    setOriginInputInfo(state, arr) {
+      state.originInputInfo = arr;
+    },
+    setRemainTime(state, seconds) {
+      state.remainTime = seconds;
+    },
+    setSurplusTime(state, seconds) {
+      state.surplusTime = seconds;
+    },
+    setExperId(state, id) {
+      state.experId = id;
+    },
+    setFintime(state, seconds) {
+      state.fintime = seconds;
+    },
+    setCurCourse(state, course) {
+      state.curCourse = course;
+    },
   },
   actions: {
-    // 教师端
+    /**
+     *  教师端
+     */
+
     // 查看课时作业
     async getTeaClassHW({ commit }, obj) {
       try {
         let res = await getTeaClassHW(obj);
-        console.log(res);
-        return res.data.data;
+        return res.data;
       } catch (err) {
         console.error(err);
       }
@@ -125,7 +172,6 @@ export default {
               id: item['id'],
               subject: item['context'],
               subjectType: item['type'],
-              title: `${index + 1}、${item['type']}`,
               choice: item['type'] === '多选题' ? item['answer'].split(',') : item['answer'],
               optionList,
               weighting: item['grade'],
@@ -152,7 +198,6 @@ export default {
               arr.push({
                 subject,
                 subjectType: item['type'],
-                title: `${index + 1}、${item['type']}`,
                 choice: item['answer'],
                 optionList,
                 weighting: item['grade'] * subjectLength,
@@ -161,7 +206,12 @@ export default {
           }
           return arr;
         }, []);
+        inputInfo.forEach((item, index) => {
+          item['title'] = `${index + 1}、${item['subjectType']}`;
+        });
+        commit('setOriginalInfo', res.data.data);
         commit('setInputInfo', inputInfo);
+        return res;
       } catch (err) {
         console.error(err);
       }
@@ -171,7 +221,7 @@ export default {
     async getTeaOnlineHW({ commit }, obj) {
       try {
         let res = await getTeaOnlineHW(obj);
-        return res.data.data;
+        return res.data;
       } catch (err) {
         console.error(err);
       }
@@ -181,7 +231,7 @@ export default {
     async getStuHWList({ commit }, obj) {
       try {
         let res = await getStuHWList(obj);
-        return res.data.data;
+        return res.data;
       } catch (err) {
         console.error(err);
       }
@@ -191,7 +241,7 @@ export default {
     async getStuOnlineHWList({ commit }, obj) {
       try {
         let res = await getStuOnlineHWList(obj);
-        return res.data.data;
+        return res.data;
       } catch (err) {
         console.error(err);
       }
@@ -300,7 +350,6 @@ export default {
     // 课时作业评分
     async teaScoreHW({ commit }, obj) {
       try {
-        console.log(obj);
         let res = await teaScoreHW(obj);
         return res.data;
       } catch (err) {
@@ -326,7 +375,144 @@ export default {
       }
     },
 
-    // 学生端
+    // 在线作业-教师-作业评分
+    async scoreOnlineHW({ commit }, obj) {
+      try {
+        let res = await scoreOnlineHW(obj);
+        return res.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
+    // 在线作业-老师-问题操作（增删改一体）
+    async changeSubject({ commit }, obj) {
+      try {
+        let res = await changeSubject(obj);
+        return res.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
+    // 教师搜索学生作业
+    async searchStuHW({ commit }, obj) {
+      try {
+        let res = await searchStuHW(obj);
+        return res.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
+    // 教师搜索自己的作业
+    async searchMyHW({ commit }, obj) {
+      try {
+        let res = await searchMyHW(obj);
+        return res.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
+    // 教师搜索学生不同类型作业
+    async searchStudentHW({ commit }, obj) {
+      try {
+        let res = await searchStudentHW(obj);
+        return res.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
+    // 教师首页
+    async getTeaMainInfo({ commit }, obj) {
+      try {
+        let res = await getTeaMainInfo(obj);
+        return res.data.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
+    /**
+     * 题库
+     */
+
+    // 删除题库
+    async delSubHouse({ commit }, obj) {
+      try {
+        let res = await delSubHouse(obj);
+        return res.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
+    // 更新题目
+    async updateSubHouse({ commit }, obj) {
+      try {
+        let res = await updateSubHouse(obj);
+        return res.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
+    // 查看题目
+    async getSubHouse({ commit }, obj) {
+      try {
+        let res = await getSubHouse(obj);
+        return res.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
+    // 新增题目
+    async createSubHouse({ commit }, obj) {
+      try {
+        let res = await createSubHouse(obj);
+        return res.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
+    // 搜索题目
+    async searchSubHouse({ commit }, obj) {
+      try {
+        let res = await searchSubHouse(obj);
+        return res.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
+    // 历史记录
+    async subHouseHistory({ commit }, obj) {
+      try {
+        let res = await subHouseHistory(obj);
+        return res.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
+    /**
+     * 学生端
+     */
+
+    // 学生首页
+    async getStuMainInfo({ commit }, obj) {
+      try {
+        let res = await getStuMainInfo(obj);
+        return res.data.data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+
     // 查询课时作业
     async getStuClassHW({ commit }, obj) {
       try {
@@ -349,6 +535,7 @@ export default {
           tableData: res.data.data,
           count: res.data.count,
           page: obj['page'] || 1,
+          ondoingStatus: res.data.ondoingStatus,
         });
       } catch (err) {
         console.error(err);
@@ -360,6 +547,7 @@ export default {
       try {
         let res = await getStuOnlineSubject(id);
         let data = res.data.data;
+        // console.log(data[0]['context']);
         let executeOnce = true;
         let inputInfo = data.reduce((arr, item, index) => {
           let optionList = [
@@ -386,7 +574,6 @@ export default {
               id: item['id'],
               subject: item['context'],
               subjectType: item['type'],
-              title: `${index + 1}、${item['type']}`,
               choice: item['answer'],
               optionList,
               weighting: item['grade'],
@@ -410,7 +597,6 @@ export default {
               arr.push({
                 subject,
                 subjectType: item['type'],
-                title: `${index + 1}、${item['type']}`,
                 choice: item['answer'],
                 optionList,
                 weighting: item['grade'],
@@ -419,6 +605,9 @@ export default {
           }
           return arr;
         }, []);
+        inputInfo.forEach((item, index) => {
+          item['title'] = `${index + 1}、${item['subjectType']}`;
+        });
         commit('setInputInfo', inputInfo);
       } catch (err) {
         console.error(err);
@@ -426,10 +615,9 @@ export default {
     },
 
     // 查看评分后的作业问题
-    async getStuScoreSubject({ commit, state }, obj) {
+    async getStuScoreSubject({ commit }, obj) {
       try {
         let res = await getStuScoreSubject(obj);
-        console.log(res);
         let data = res.data.data;
         let executeOnce = true;
         let subjectLength = 0;
@@ -457,7 +645,6 @@ export default {
               id: item['id'],
               subject: item['context'],
               subjectType: item['type'],
-              title: `${index + 1}、${item['type']}`,
               choice: item['stuanswer'],
               optionList,
               score: item['stugrade'],
@@ -484,7 +671,6 @@ export default {
               arr.push({
                 subject,
                 subjectType: item['type'],
-                title: `${index + 1}、${item['type']}`,
                 choice: '',
                 optionList,
                 score: item['stugrade'],
@@ -494,6 +680,9 @@ export default {
           }
           return arr;
         }, []);
+        inputInfo.forEach((item, index) => {
+          item['title'] = `${index + 1}、${item['subjectType']}`;
+        });
         commit('setInputInfo', inputInfo);
       } catch (err) {
         console.error(err);
@@ -562,7 +751,7 @@ export default {
     async searchMyHWlist({ commit }, obj) {
       try {
         let res = await searchMyHWlist(obj);
-        return res.data.data;
+        return res.data;
       } catch (err) {
         console.error(err);
       }

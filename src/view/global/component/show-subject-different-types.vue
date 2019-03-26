@@ -21,6 +21,7 @@
     <FillTheQuestion
       v-if="info['subjectType'] === '填空题'"
       @delFillSubject="delFillSubject"
+      :disabled="disabled"
       :type="type"
       :pIndex="index"
     />
@@ -37,6 +38,7 @@ import { mapState } from "vuex";
 export default {
   props: {
     index: Number, // 题目索引
+    disabled: Boolean, // 是否屏蔽填空题按钮
     type: String // 四种状态，老师评分、老师新建、学生做题、学生查看作业状态
   },
 
