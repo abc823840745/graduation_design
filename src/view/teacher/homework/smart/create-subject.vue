@@ -35,7 +35,7 @@
       </div>
 
       <div class="btn-ground">
-        <Dropdown @on-click="createSubject">
+        <Dropdown @on-click="createSubject" transfer>
           <Button type="primary">
             新建题目
             <Icon type="ios-arrow-down"></Icon>
@@ -54,6 +54,7 @@
           trigger="click"
           @on-click="subWarehouseOpen"
           style="margin-left: 20px"
+          transfer
         >
           <Button type="primary">
             从题库中选择

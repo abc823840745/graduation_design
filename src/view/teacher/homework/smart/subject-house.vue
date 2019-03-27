@@ -7,7 +7,12 @@
       </h2>
 
       <div class="return_btn">
-        <Button type="primary" shape="circle" @click="openModal" icon="ios-add">
+        <Button
+          type="primary"
+          shape="circle"
+          @click="addSubject"
+          icon="ios-add"
+        >
           添加题目</Button
         >
 
@@ -408,7 +413,6 @@ export default {
         teacher: this.userName,
         arr
       });
-      this.setInputInfo([]);
       this.closeModal();
       let num = this.getNum(subjectType);
       await this.getTableData(this.table[num]["page"]);
@@ -489,10 +493,15 @@ export default {
       return this.$Notice.success({ title: "删除成功！" });
     },
 
-    // 打开新增题目的modal
-    openModal() {
+    // 点击新增题目的按钮
+    addSubject() {
       this.type = "create";
       this.selVal = "";
+      this.openModal();
+    },
+
+    // 打开modal
+    openModal() {
       this.setInputInfo([]);
       this.showSubHourse = true;
     },
@@ -545,9 +554,8 @@ export default {
     // 查看问题详情
     async getDeatail(params) {
       let { id } = params.row;
-      this.setInputInfo([]);
-      this.openModal();
       this.type = "check";
+      this.openModal();
       let num = this.getNum(this.subType);
       let filterData = this.table[num]["data"].filter(
         item => item["id"] === id
