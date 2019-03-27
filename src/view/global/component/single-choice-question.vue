@@ -199,11 +199,15 @@ export default {
     },
 
     // 更新vuex的inputInfo最新值
-    subjectChange: debounce(function(value, render) {
-      let inputInfo = this.inputInfo;
-      inputInfo[this.index]["subject"] = value;
-      this.setInputInfo(inputInfo);
-    }),
+    subjectChange: debounce(
+      function(value, render) {
+        let inputInfo = this.inputInfo;
+        inputInfo[this.index]["subject"] = value;
+        this.setInputInfo(inputInfo);
+      },
+      1000,
+      true
+    ),
 
     choiceChange(value) {
       let inputInfo = this.inputInfo;

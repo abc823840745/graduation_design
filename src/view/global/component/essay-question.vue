@@ -162,17 +162,25 @@ export default {
     ...mapMutations(["setInputInfo"]),
 
     // 更新vuex的inputInfo最新值
-    subjectChange: debounce(function(value, render) {
-      let inputInfo = this.inputInfo;
-      inputInfo[this.index]["subject"] = value;
-      this.setInputInfo(inputInfo);
-    }),
+    subjectChange: debounce(
+      function(value, render) {
+        let inputInfo = this.inputInfo;
+        inputInfo[this.index]["subject"] = value;
+        this.setInputInfo(inputInfo);
+      },
+      1000,
+      true
+    ),
 
-    choiceChange: debounce(function(value, render) {
-      let inputInfo = this.inputInfo;
-      inputInfo[this.index]["choice"] = value;
-      this.setInputInfo(inputInfo);
-    }),
+    choiceChange: debounce(
+      function(value, render) {
+        let inputInfo = this.inputInfo;
+        inputInfo[this.index]["choice"] = value;
+        this.setInputInfo(inputInfo);
+      },
+      1000,
+      true
+    ),
 
     weightingChange(value) {
       let inputInfo = this.inputInfo;

@@ -13,10 +13,6 @@
         请点击新建作业按钮快点新建作业吧！
       </Alert>
 
-      <!-- <Alert show-icon v-if="type !== 'create'">
-        修改模式下出现如&lt;p&gt;、&lt;pre&gt;、&amp;lt;等html代码是正常现象，请勿随意删改html代码
-      </Alert> -->
-
       <div
         v-for="(item, index) in inputInfo"
         :key="index"
@@ -100,6 +96,7 @@ import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import SubjectType from "@/view/global/component/show-subject-different-types";
 import SubWarehouse from "@teaHomework/smart/subject-warehouse";
 import { mapMutations, mapState } from "vuex";
+import { debounce } from "@tools";
 
 export default {
   name: "create-subject",
@@ -364,11 +361,15 @@ export default {
       this.modalOpen = false;
     },
 
-    modalOk() {
-      this.loading = true;
-      this.$emit("modalOk");
-      this.loading = false;
-    },
+    modalOk: debounce(
+      function() {
+        this.loading = true;
+        this.$emit("modalOk");
+        this.loading = false;
+      },
+      2000,
+      true
+    ),
 
     modalCancel() {
       this.loading = true;

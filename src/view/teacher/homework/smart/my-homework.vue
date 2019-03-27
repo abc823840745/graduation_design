@@ -138,6 +138,7 @@ import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import myMixin from "@/view/global/mixin";
 import config from "@/config";
 import { mapActions, mapState, mapMutations } from "vuex";
+import { debounce } from "@tools";
 
 export default {
   name: "my-homework",
@@ -271,41 +272,45 @@ export default {
     },
 
     // 新建作业任务
-    async addHWInfo() {
-      let { name, classify, classHour, stopTimeList } = this.homeworkInfo;
-      let { filename, localpath, url } = this.uploadFileInfo;
+    addHWInfo: debounce(
+      async function() {
+        let { name, classify, classHour, stopTimeList } = this.homeworkInfo;
+        let { filename, localpath, url } = this.uploadFileInfo;
 
-      if (!name || !classify || !classHour || stopTimeList.length === 0) {
-        return this.$Message.error("缺少必填信息");
-      }
-      if (this.$tools.isEmptyObject(this.uploadFileInfo)) {
-        return this.$Message.error("请上传课件");
-      }
-      if (classify === "课时作业") {
-        let { semester, course, course_id, teacher } = this.submitInfo;
-        let res = await this.addTeaClassHW({
-          name,
-          classHour,
-          localpath,
-          localname: filename,
-          webpath: url,
-          semester,
-          course,
-          course_id,
-          teacher,
-          teach_id: this.stu_number,
-          startime: stopTimeList[0],
-          fintime: stopTimeList[1]
-        });
-        if (res["status"] === 1) {
-          this.$Notice.success({
-            title: "新建成功！"
-          });
-          this.homeworkInfo = {};
-          this.showModal = false;
+        if (!name || !classify || !classHour || stopTimeList.length === 0) {
+          return this.$Message.error("缺少必填信息");
         }
-      }
-    },
+        if (this.$tools.isEmptyObject(this.uploadFileInfo)) {
+          return this.$Message.error("请上传课件");
+        }
+        if (classify === "课时作业") {
+          let { semester, course, course_id, teacher } = this.submitInfo;
+          let res = await this.addTeaClassHW({
+            name,
+            classHour,
+            localpath,
+            localname: filename,
+            webpath: url,
+            semester,
+            course,
+            course_id,
+            teacher,
+            teach_id: this.stu_number,
+            startime: stopTimeList[0],
+            fintime: stopTimeList[1]
+          });
+          if (res["status"] === 1) {
+            this.$Notice.success({
+              title: "新建成功！"
+            });
+            this.homeworkInfo = {};
+            this.showModal = false;
+          }
+        }
+      },
+      2000,
+      true
+    ),
 
     // 提交题目Modal确定事件
     async submitSubject() {
@@ -318,7 +323,7 @@ export default {
         course,
         teacher,
         teach_id: this.stu_number,
-        totaltime: testingTime * 60, // 转换成秒数提交
+        totaltime: testingTime, // 转换成秒数提交
         startime: stopTimeList[0],
         fintime: stopTimeList[1]
       });

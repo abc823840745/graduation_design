@@ -143,6 +143,7 @@ import myMixin from "@/view/global/mixin";
 import SubjectType from "@/view/global/component/show-subject-different-types";
 import { mapState, mapMutations, mapActions } from "vuex";
 import SearchView from "@/view/global/component/search-view";
+import { debounce } from "@tools";
 
 export default {
   mixins: [myMixin],
@@ -309,13 +310,13 @@ export default {
     ...mapMutations(["setInputInfo"]),
 
     // 获取table列表数据
-    async getTableData(page) {
+    async getTableData(page = 1) {
       this.loading = true;
       let res = await this.getSubHouse({
+        page,
         course: this.courseInfo["name"],
         category: "",
-        type: this.subType,
-        page: page || 1
+        type: this.subType
       });
       let table = this.table;
       let num = this.getNum(this.subType);
@@ -324,6 +325,7 @@ export default {
       table[num]["page"] = page;
       this.table = table;
       this.loading = false;
+      return res.data;
     },
 
     // 获取题库修改历史记录
@@ -474,16 +476,17 @@ export default {
         teach_id: this.teaId,
         teacher: this.userName
       });
-      // if (res["status"] === 1) {
       let num = this.getNum(type);
+      let page = parseInt(this.table[num]["page"], 10);
       if (this.modalOpen === true) {
         await this.searchResult(this.searchText, this.searchPage);
       } else {
-        await this.getTableData(this.table[num]["page"]);
+        let res = await this.getTableData(page);
+        if (page !== 1 && res.length === 0) {
+          await this.getTableData(page - 1);
+        }
       }
       return this.$Notice.success({ title: "删除成功！" });
-      // }
-      // this.$Notice.error({ title: "删除失败！" });
     },
 
     // 打开新增题目的modal

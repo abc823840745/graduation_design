@@ -41,7 +41,7 @@
       :modalOpen.sync="modalOpen"
       :info="itemInfo"
       :courseId="courseId"
-      @getTableData="getTableData"
+      @getTableData="getTableData(tableInfo['page'])"
     />
 
     <Modal fullscreen title="搜索" v-model="showModal" @on-ok="searchClose">
@@ -191,7 +191,7 @@ export default {
 
   async mounted() {
     await this.setCourseSelList();
-    await this.getTableData();
+    await this.getTableData(1);
   },
 
   methods: {
@@ -435,22 +435,25 @@ export default {
 
     // 删除课时作业
     async delClassHWInfo(index) {
-      let { id } = this.tableInfo["tableData"][index];
-      let res = await this.delTeaClassHW(id);
-      if (res["status"] === 1) {
-        await this.getTableData();
-        this.$Notice.success({
-          title: "删除成功！"
-        });
-      }
+      this.delHomework("delTeaClassHW", index);
     },
 
     // 删除在线作业
     async delOnlineHWInfo(index) {
-      let { id } = this.tableInfo["tableData"][index];
-      let res = await this.delTeaOnlineHW(id);
+      this.delHomework("delTeaOnlineHW", index);
+    },
+
+    // 删除作业
+    async delHomework(apiName, index) {
+      let { page, tableData } = this.tableInfo;
+      let { id } = tableData[index];
+      let res = await this[apiName](id);
       if (res["status"] === 1) {
-        await this.getTableData();
+        await this.getTableData(page);
+        let { page, tableData } = this.tableInfo;
+        if (page !== 1 && tableData.length === 0) {
+          await this.getTableData(page - 1);
+        }
         this.$Notice.success({
           title: "删除成功！"
         });
