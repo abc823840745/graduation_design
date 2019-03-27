@@ -91,8 +91,9 @@
 
 <script>
 import { mapState, mapMutations } from "vuex";
-import { setlocalStorage, getlocalStorage } from "@tools";
+import { setlocalStorage, getlocalStorage, debounce } from "@tools";
 import { mavonEditor } from "mavon-editor";
+import "mavon-editor/dist/css/index.css";
 
 export default {
   props: {
@@ -226,11 +227,11 @@ export default {
     },
 
     // 更新vuex的inputInfo最新值
-    subjectChange(value, render) {
+    subjectChange: debounce(function(value, render) {
       let inputInfo = this.inputInfo;
       inputInfo[this.index]["subject"] = value;
       this.setInputInfo(inputInfo);
-    },
+    }),
 
     choiceChange(value) {
       let inputInfo = this.inputInfo;

@@ -328,18 +328,16 @@ export function getlocalStorage(key) {
 /**
  * 防抖动函数
  */
-export function debounce(fn, delay) {
-  var delay = delay || 200;
-  var timer;
+export function debounce(fn, delay = 1000) {
+  let timer = null;
   return function() {
-    var th = this;
-    var args = arguments;
+    let args = arguments;
     if (timer) {
       clearTimeout(timer);
     }
-    timer = setTimeout(function() {
+    timer = setTimeout(() => {
       timer = null;
-      fn.apply(th, args);
+      fn.apply(this, args);
     }, delay);
   };
 }
