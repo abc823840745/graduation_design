@@ -654,6 +654,7 @@ export default [
           title: '课程详情',
           access: ['teacher', 'admin'],
           hideInMenu: true,
+          notCache: true,
         },
         component: () => import('@/view/teacher/course/my-course-detail.vue'),
       },
@@ -665,6 +666,7 @@ export default [
           title: '课时详情',
           access: ['teacher', 'admin'],
           hideInMenu: true,
+          notCache: true,
         },
         component: () => import('@/view/teacher/course/my-course-class.vue'),
       },
@@ -685,10 +687,40 @@ export default [
         name: 'teacher-answer-index',
         meta: {
           icon: 'md-contacts',
-          title: '答疑管理',
+          title: '全部答疑',
           access: ['teacher', 'admin'],
         },
         component: () => import('@/view/answering/answer-index.vue'),
+      },
+      {
+        path: 'audit',
+        name: 'teacher-answer-audit',
+        meta: {
+          icon: 'md-contacts',
+          title: '提问审核',
+          access: ['teacher', 'admin'],
+        },
+        component: () => import('@/view/answering/answer-audit.vue'),
+      },
+      {
+        path: 'ask',
+        name: 'teacher-answer-ask',
+        meta: {
+          icon: 'md-contacts',
+          title: '我的回答',
+          access: ['teacher', 'admin'],
+        },
+        component: () => import('@/view/answering/answer-my-ask.vue'),
+      },
+      {
+        path: 'reply',
+        name: 'teacher-answer-reply',
+        meta: {
+          icon: 'md-contacts',
+          title: '我的评论 / 回复',
+          access: ['teacher', 'admin'],
+        },
+        component: () => import('@/view/answering/answer-my-reply.vue'),
       },
       {
         path: 'detail/:id',

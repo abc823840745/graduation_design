@@ -93,11 +93,11 @@ export function uploadImage (obj) {
 // 获取答疑详情
 export function getQuestionDetail (obj) {
   return axios.request({
-    data: {
+    params: {
       id: obj['id']
     },
     url: '/get/course/question/detail',
-    method: 'post'
+    method: 'get'
   })
 }
 
@@ -109,6 +109,31 @@ export function askQuestionReply (obj) {
       content: obj['content']
     },
     url: '/add/course/question/reply',
+    method: 'post'
+  })
+}
+
+// 当前课程未审核列表
+export function queryAuditByCourse (obj) {
+  return axios.request({
+    params: {
+      course_id: obj['course_id'],
+      limit: obj['limit'] || 10,
+      offset: obj['offset'] || 1
+    },
+    url: '/get/current/course/question/list/no/audit',
+    method: 'get'
+  })
+}
+
+// 设置答疑状态
+export function setQuestionAudit (obj) {
+  return axios.request({
+    data: {
+      question_id: obj['question_id'],
+      audit_status: obj['audit_status']
+    },
+    url: '/audit/course/question',
     method: 'post'
   })
 }

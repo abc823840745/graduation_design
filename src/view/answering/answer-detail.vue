@@ -113,6 +113,9 @@
         }
         .answer-content {
           font-size: 14px;
+          img {
+            max-width: 100%;
+          }
         }
         .answer-comment-top {
           margin-top: 10px;
@@ -191,17 +194,17 @@
       </div>
     </div>
     <div class="questions-key-title">
-      <p v-if="question_detail.replyList.length > 0">{{question_detail.replyList.length}}个回答</p>
+      <p v-if="answer_list.length > 0">{{answer_list.length}}个回答</p>
       <p class="none-reply" v-else>还没有人回答该问题，点击上方「我来答」试一试吧~</p>
     </div>
-    <div class="keyword-panel" v-if="question_detail.replyList.length > 0">
+    <div class="keyword-panel" v-if="answer_list.length > 0">
       <div class="answer_item" v-for="(item,index) in answer_list" :key="index">
         <div class="answerer">
           <div class="answer-left">
             <div class="avatar">{{item.fisrt_name}}</div>
             <p class="answerer-name">
               <span>{{item.username}}</span>
-              <span class="answer-date">{{item.date}}</span>
+              <span class="answer-date">{{item.created_at}}</span>
             </p>
           </div>
           <Tag :color="item.status==1?'green':'cyan'" v-if="item.status!=0">{{item.status==1?'最佳答案':'有用'}}</Tag>
@@ -209,20 +212,20 @@
         <div class="answer-content" v-html="item.content"></div>
         <div class="answer-comment-top">
           <Icon type="ios-chatbubbles" />
-          <span @click="showComment(index)"> 评论（10）</span>
+          <span @click="showComment(index)"> {{item.commentList.length > 0 ? '评论（' + item.commentList.length + '）' : '暂无评论'}} </span>
           <span> 将该答案设为 </span>
           <Select :value="item.status" size="small" @on-change="chanegAnswerStatus($event, index)" style="width:100px">
-              <Option :value="0" >普通答案</Option>
-              <Option :value="2" >有用答案</Option>
-              <Option :value="1" >最佳答案</Option>
+              <Option value="general" >普通答案</Option>
+              <Option value="useful" >有用答案</Option>
+              <Option value="best" >最佳答案</Option>
           </Select>
         </div>
         <ul class="answer-comment-list" v-if="item.show_comment">
-          <li v-for="(comment_item, index) in item.comment_list" :key="index">
+          <li v-for="(comment_item, index) in item.commentList" :key="index">
             <div class="answer-comment-list-content" v-html="comment_item.content"></div>
             <div class="answer-comment-list-info">
-              <span>{{comment_item.username}}</span>
-              <span>{{comment_item.date}}</span>
+              <span>{{comment_item.from_user_name}}</span>
+              <span>{{comment_item.created_at}}</span>
             </div>
           </li>
         </ul>
@@ -264,15 +267,10 @@ export default {
         created_at: "",
         id: "",
         number: "",
-        replyList: [],
         status: "unsolved",
         title: "",
         username: "骆镜濠",
       },
-      question_title: '环境安装报错无法解决',
-      question_time: '2018-12-25 12:25',
-      questioner: '骆镜濠',
-      key_number: 4,
       answer_list: [],
       // 填写的回答
       answer_content: '',
@@ -288,47 +286,9 @@ export default {
     }
   },
   methods: {
-    getAnswerList () {
-      let arrList = [
-        {
-          username: '陈柳新',
-          date: 1546764772000,
-          status: 1,
-          content: '<p>1.按下shift+f10 会打开命令窗口，进入到C:\windows\system32\oobe文件夹，输入msoobe回车然后输入msoobe即可进入下一步操作。</p><p>2.如果错误提示框仍然在，不用理会按照屏幕提示输入相应的信息直至完成系统的安装。</p>',
-          comment_list: [
-            {
-              username: '吕嘉俊',
-              date: 1546764772000,
-              content: '<p>我觉得不错</p>'
-            },
-            {
-              username: '杨俊峰',
-              date: 1546764772000,
-              content: '<p>我也觉得不错</p>'
-            }
-          ]
-        },
-        {
-          username: '扬子江',
-          date: 1546764772000,
-          status: 2,
-          content: '<p>1.按下shift+f10 会打开命令窗口，进入到C:\windows\system32\oobe文件夹，输入msoobe回车然后输入msoobe即可进入下一步操作。</p><p>2.如果错误提示框仍然在，不用理会按照屏幕提示输入相应的信息直至完成系统的安装。</p>',
-          comment_list: []
-        }
-      ]
-      this.answer_list = arrList.map((item) => {
-        item.date = getMyDate(item.date, 'yyyy-MM-dd hh:mm')
-        item.fisrt_name = item.username.substr(0, 1)
-        item.comment_list = item.comment_list.map((com_item)=>{
-          com_item.date = getMyDate(com_item.date, 'yyyy-MM-dd hh:mm')
-          return com_item
-        })
-        item.show_comment = false
-        return item
-      })
-    },
     showComment (i) {
       this.answer_list[i].show_comment = !this.answer_list[i].show_comment
+      this.$forceUpdate();
     },
     showAnswerPanel() {
       this.show_answer_panel = !this.show_answer_panel;
@@ -347,13 +307,24 @@ export default {
       this.answer_list[i].status = v;
     },
     // 获取答疑详情 <公共>
-    getQuestionDetail() {
+    getQuestionDetail(id) {
       getQuestionDetail({
-        id: this.$route.params.id
+        id: id || this.$route.params.id
       }).then((res)=>{
         console.log(res)
         res.data.questionDetail.created_at = getMyDate(new Date(res.data.questionDetail.created_at).getTime(), "yyyy-MM-dd hh:mm")
         this.question_detail = res.data.questionDetail
+
+        this.answer_list = res.data.questionDetail.replyList.map((item, index)=>{
+          item.created_at = getMyDate(new Date(item.created_at).getTime(), "yyyy-MM-dd hh:mm")
+          item.fisrt_name = item.username.substr(0, 1)
+          item.commentList = item.commentList.map((com_item)=>{
+            com_item.created_at = getMyDate(new Date(com_item.created_at).getTime(), "yyyy-MM-dd hh:mm")
+            return com_item
+          })
+          item.show_comment = false
+          return item
+        })
       }).catch((err)=>{
         console.log(err)
         this.$Message.error('获取答疑详情失败');
@@ -399,7 +370,6 @@ export default {
     }
   },
   created () {
-    // this.getAnswerList()
     this.getQuestionDetail()
   },
   components: {
@@ -416,6 +386,11 @@ export default {
         vm.isTeacher = true
       }
     });
+  },
+  beforeRouteUpdate(to, from, next) {
+    console.log(to,from)
+    this.getQuestionDetail(to.params.id)
+    next(vm => {});
   },
 }
 </script>
