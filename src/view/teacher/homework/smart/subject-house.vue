@@ -223,21 +223,15 @@ export default {
           maxWidth: 150,
           align: "center",
           render: (h, params) => {
-            let { id, type } = params.row;
             return h("div", [
               this.btnStyle("详情", h, () => {
-                this.getDeatail(params.row.id);
+                this.getDeatail(params);
               }),
               this.btnStyle(
                 "删除",
                 h,
                 () => {
-                  this.$Modal.confirm({
-                    title: "确定要删除该任务？",
-                    onOk: async () => {
-                      await this.delSub(id, type);
-                    }
-                  });
+                  this.goDelete(params);
                 },
                 "error"
               )
@@ -546,7 +540,8 @@ export default {
     },
 
     // 查看问题详情
-    async getDeatail(id) {
+    async getDeatail(params) {
+      let { id } = params.row;
       this.setInputInfo([]);
       this.openModal();
       this.type = "check";
@@ -556,6 +551,16 @@ export default {
       );
       this.subject = filterData[0];
       this.setSubject();
+    },
+
+    async goDelete(params) {
+      let { id, type } = params.row;
+      this.$Modal.confirm({
+        title: "确定要删除该任务？",
+        onOk: async () => {
+          await this.delSub(id, type);
+        }
+      });
     },
 
     setSubject() {

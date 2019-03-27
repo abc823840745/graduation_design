@@ -170,39 +170,16 @@ export default {
           title: "操作",
           key: "operation",
           render: (h, params) => {
-            let { startime, course, id, type, submitterStatus } = params.row;
             return h("div", [
-              this.btnStyle("修改任务", h, async () => {
-                if (submitterStatus["isOperate"] === 0) {
-                  return this.$Notice.warning({
-                    title: "已经有学生提交，不能修改！"
-                  });
-                }
-                this.setCurCourse(course);
-                this.modalOpen = true;
-                this.itemInfo = this.tableInfo["tableData"][params.index];
-                let getId = this.courseList.reduce((arr, item) => {
-                  if (item["name"] === course) {
-                    arr.push(item["id"]);
-                  }
-                  return arr;
-                }, []);
-                this.courseId = getId[0];
-                await this.getSubjectData(id);
+              this.btnStyle("修改任务", h, () => {
+                this.goUpdateTask(params);
               }),
               this.btnStyle(
                 "删除",
                 h,
-                () =>
-                  this.$Modal.confirm({
-                    title: "确定要删除该任务？",
-                    onOk: () => {
-                      if (type === "offline") {
-                        return this.delClassHWInfo(params.index);
-                      }
-                      this.delOnlineHWInfo(params.index);
-                    }
-                  }),
+                () => {
+                  this.goDelete(params);
+                },
                 "error"
               )
             ]);
@@ -228,6 +205,43 @@ export default {
     ]),
 
     ...mapMutations(["setOriginInputInfo", "setInputInfo", "setCurCourse"]),
+
+    async goUpdateTask(params) {
+      let { index } = params;
+      let { course, id, submitterStatus } = params.row;
+      if (submitterStatus["isOperate"] === 0) {
+        this.$Notice.warning({
+          title: "已经有学生提交，不能修改！"
+        });
+        return;
+      }
+      this.setCurCourse(course);
+      this.modalOpen = true;
+      this.itemInfo = this.tableInfo["tableData"][index];
+      let getId = this.courseList.reduce((arr, item) => {
+        if (item["name"] === course) {
+          arr.push(item["id"]);
+        }
+        return arr;
+      }, []);
+      this.courseId = getId[0];
+      await this.getSubjectData(id);
+    },
+
+    goDelete(params) {
+      let { index } = params;
+      let { type } = params.row;
+      this.$Modal.confirm({
+        title: "确定要删除该任务？",
+        onOk: async () => {
+          if (type === "offline") {
+            await this.delClassHWInfo(index);
+            return;
+          }
+          await this.delOnlineHWInfo(index);
+        }
+      });
+    },
 
     // 获取表格信息
     async getTableData(page = 1) {

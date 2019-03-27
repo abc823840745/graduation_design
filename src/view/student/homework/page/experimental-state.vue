@@ -182,13 +182,12 @@ export default {
           title: "操作",
           key: "operation",
           render: (h, params) => {
-            let { status, type, id, exper_id, webpath } = params.row;
+            let { status, type } = params.row;
             if (type === "online") {
               if (status === "已完成") {
                 return h("div", [
                   this.btnStyle("查看", h, () => {
-                    this.showModal = true;
-                    this.getSubjectList(id, exper_id);
+                    this.goDetail(params);
                   })
                 ]);
               }
@@ -197,7 +196,7 @@ export default {
               if (status === "已完成") {
                 return h("div", [
                   this.btnStyle("下载", h, () => {
-                    window.open(webpath);
+                    this.goDownload(params);
                   })
                 ]);
               }
@@ -221,6 +220,17 @@ export default {
       "getStuScoreSubject",
       "searchMyHWlist"
     ]),
+
+    goDetail(params) {
+      let { id, exper_id } = params.row;
+      this.showModal = true;
+      this.getSubjectList(id, exper_id);
+    },
+
+    goDownload(params) {
+      let { webpath } = params.row;
+      window.open(webpath);
+    },
 
     handleOk() {
       this.showModal = false;

@@ -265,7 +265,7 @@ export default {
       info["name"] = name;
       info["classify"] = classify;
       info["classHour"] = week;
-      info["testingTime"] = classify === "课时作业" ? 0 : totaltime / 60; // 将秒数转换成分钟显示
+      info["testingTime"] = classify === "课时作业" ? 0 : totaltime; // 将秒数转换成分钟显示
       info["stopTimeList"] = [startime, fintime];
       this.homeworkInfo = info;
     },

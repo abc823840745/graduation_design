@@ -179,14 +179,7 @@ export default {
           title: "操作",
           key: "operation",
           render: (h, params) => {
-            let {
-              exper_fintime,
-              exper_startime,
-              id,
-              exper_id,
-              status,
-              surplus_time
-            } = params.row;
+            let { exper_fintime, exper_startime, status } = params.row;
             let curDate = new Date();
             let startTime = new Date(exper_startime);
             let finDate = new Date(exper_fintime);
@@ -199,23 +192,7 @@ export default {
             ) {
               return h("div", [
                 this.btnStyle("完成作业", h, async () => {
-                  this.$Loading.start();
-                  this.setRemainTime(0);
-                  this.showModal2 = true;
-                  this.stuHomeworkId = id;
-                  this.stuHWInfo = params.row;
-                  this.setFintime(exper_fintime);
-                  this.setExperId(exper_id);
-                  await this.getSubjectList(exper_id);
-                  this.joinRoom();
-                  if (status === "进行中") {
-                    this.senSocketData(this.surplusTime);
-                    await this.autoRecovery(exper_id);
-                  } else {
-                    this.setSurplusTime(surplus_time);
-                    this.senSocketData(surplus_time);
-                  }
-                  this.$Loading.finish();
+                  this.goFinish(params);
                 })
               ]);
             }
@@ -252,6 +229,27 @@ export default {
       "setFintime",
       "setRemainTime"
     ]),
+
+    async goFinish(params) {
+      let { exper_fintime, id, exper_id, status, surplus_time } = params.row;
+      this.$Loading.start();
+      this.setRemainTime(0);
+      this.showModal2 = true;
+      this.stuHomeworkId = id;
+      this.stuHWInfo = params.row;
+      this.setFintime(exper_fintime);
+      this.setExperId(exper_id);
+      await this.getSubjectList(exper_id);
+      this.joinRoom();
+      if (status === "进行中") {
+        this.senSocketData(this.surplusTime);
+        await this.autoRecovery(exper_id);
+      } else {
+        this.setSurplusTime(surplus_time);
+        this.senSocketData(surplus_time);
+      }
+      this.$Loading.finish();
+    },
 
     // 掉线下次再进来就恢复学生之前的回答
     async autoRecovery(exper_id) {
