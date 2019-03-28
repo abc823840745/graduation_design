@@ -138,6 +138,22 @@ export function setQuestionAudit (obj) {
   })
 }
 
+// 答疑评论
+export function addCommentQuestion (obj) {
+  return axios.request({
+    data: {
+      content: obj['content'],
+      reply_id: obj['reply_id'],
+      question_id: obj['question_id'],
+      from_user_name: obj['from_user_name'],
+      to_user_name: obj['to_user_name'],
+      to_user_role: obj['to_user_role']
+    },
+    url: '/add/course/question/reply/comment',
+    method: 'post'
+  })
+}
+
 /**
  * 学生部分
  */

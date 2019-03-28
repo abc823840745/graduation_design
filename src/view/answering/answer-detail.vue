@@ -130,6 +130,14 @@
         }
         .answer-comment-list {
           list-style-type: none;
+          .reply-someone-text {
+            color: #2d8cf0;
+          }
+          .answer-comment-list-content {
+            img {
+              max-width: 100%;
+            }
+          }
           li {
             border-bottom: 1px dashed #ddd;
             padding: 6px;
@@ -140,6 +148,10 @@
                 display: inline-block;
                 margin-left: 4px;
               }
+              .reply-btn {
+                color: #2d8cf0;
+                cursor: pointer;
+              }
             }
           }
         }
@@ -148,6 +160,9 @@
           box-shadow: 0 1px 2px 0 rgba(0,0,0,.1);
           padding: 10px;
           margin-top: 10px;
+          .reply-tag {
+            margin-bottom: 10px;
+          }
           .write-comment {
             display: flex;
             .comment-post-btn {
@@ -212,7 +227,7 @@
         <div class="answer-content" v-html="item.content"></div>
         <div class="answer-comment-top">
           <Icon type="ios-chatbubbles" />
-          <span @click="showComment(index)"> {{item.commentList.length > 0 ? '评论（' + item.commentList.length + '）' : '暂无评论'}} </span>
+          <span @click="showComment(index)"> {{'评论（' + item.commentList.length + '）'}} </span>
           <span> 将该答案设为 </span>
           <Select :value="item.status" size="small" @on-change="chanegAnswerStatus($event, index)" style="width:100px">
               <Option value="general" >普通答案</Option>
@@ -221,18 +236,21 @@
           </Select>
         </div>
         <ul class="answer-comment-list" v-if="item.show_comment">
-          <li v-for="(comment_item, index) in item.commentList" :key="index">
+          <li v-for="(comment_item, comment_index) in item.commentList" :key="comment_index">
+            <span class="reply-someone-text" v-if="comment_item.to_user_name">@{{comment_item.to_user_name}}：</span>
             <div class="answer-comment-list-content" v-html="comment_item.content"></div>
             <div class="answer-comment-list-info">
               <span>{{comment_item.from_user_name}}</span>
               <span>{{comment_item.created_at}}</span>
+              <span class="reply-btn" v-if="!comment_item.is_self" @click="replyMember(index, comment_item.from_user_name, comment_item.from_user_role)">回复</span>
             </div>
           </li>
         </ul>
         <div class="answer-comment" v-if="item.show_comment">
+          <Tag class="reply-tag" v-if="item.reply_ing_username" color="primary" type="border" closable @on-close="cancelReply(index)">正在回复@{{item.reply_ing_username}}</Tag>
           <div class="write-comment">
-            <mavon-editor style="height: 300px" v-model="my_comment_content"></mavon-editor>
-            <div class="comment-post-btn"><Button type="primary">发表</Button></div>
+            <mavon-editor style="height: 300px" ref="md2" @imgAdd="$imgAdd2" v-model="my_comment_content" @change="renderEditorComment"></mavon-editor>
+            <div class="comment-post-btn"><Button type="primary" @click="saveComment(item.id, index)">发表</Button></div>
           </div>
         </div>
       </div>
@@ -252,7 +270,7 @@
 import { getMyDate } from '@/libs/tools'
 import { mavonEditor } from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
-import { getQuestionDetail, uploadImage, askQuestionReply } from '@/api/course'
+import { getQuestionDetail, uploadImage, askQuestionReply, addCommentQuestion } from '@/api/course'
 export default {
   name: 'teacher-question-detail',
   data () {
@@ -278,16 +296,22 @@ export default {
       answer_render_content: '',
       // 评论回答
       my_comment_content: '',
+      // html的回复
+      answer_render_comment: '',
+      // 展示回答panel
       show_answer_panel: false,
       // 提交答案panel
       show_answer_submit: false,
       // 提交答案loading
       submit_answer_loading: true,
+      // 当前点击打开的回答下标
+      current_index: 0
     }
   },
   methods: {
     showComment (i) {
       this.answer_list[i].show_comment = !this.answer_list[i].show_comment
+      this.current_index = i
       this.$forceUpdate();
     },
     showAnswerPanel() {
@@ -307,7 +331,7 @@ export default {
       this.answer_list[i].status = v;
     },
     // 获取答疑详情 <公共>
-    getQuestionDetail(id) {
+    getQuestionDetail(id, i) {
       getQuestionDetail({
         id: id || this.$route.params.id
       }).then((res)=>{
@@ -322,7 +346,13 @@ export default {
             com_item.created_at = getMyDate(new Date(com_item.created_at).getTime(), "yyyy-MM-dd hh:mm")
             return com_item
           })
-          item.show_comment = false
+          if(index == i){
+            item.show_comment = true
+          }else{
+            item.show_comment = false
+          }
+          item.reply_ing_username = ''
+          item.reply_ing_role = ''
           return item
         })
       }).catch((err)=>{
@@ -333,6 +363,9 @@ export default {
     renderEditor(val, render) {
       this.answer_render_content = render
     },
+    renderEditorComment(val, render) {
+      this.answer_render_comment = render
+    },
     // 编辑器上传图片 绑定@imgAdd event uploadImage
     $imgAdd(pos, $file){
         // 第一步.将图片上传到服务器.
@@ -340,15 +373,26 @@ export default {
         formdata.append('file', $file);
         uploadImage(formdata).then((res)=> {
           console.log(res);
-          // this.file = null;
-          // this.loadingStatus = false;
           this.$Message.success('上传成功')
           let url = res.data.urls[0].filePath
           this.$refs.md.$img2Url(pos, url);
         }).catch((err)=>{
           console.log(err)
-          // this.file = null;
-          // this.loadingStatus = false;
+          this.$Message.error('上传失败')
+        })
+    },
+    // 评论编辑器上传图片 绑定@imgAdd2 event uploadImage
+    $imgAdd2(pos, $file){
+        // 第一步.将图片上传到服务器.
+        var formdata = new FormData();
+        formdata.append('file', $file);
+        uploadImage(formdata).then((res)=> {
+          console.log(res);
+          this.$Message.success('上传成功')
+          let url = res.data.urls[0].filePath
+          this.$refs.md2[0].$img2Url(pos, url);
+        }).catch((err)=>{
+          console.log(err)
           this.$Message.error('上传失败')
         })
     },
@@ -367,10 +411,43 @@ export default {
         this.$Message.error('提交回答失败');
         cb()
       })
+    },
+    // 回答评论
+    saveComment(id, index) {
+      addCommentQuestion({
+        content: this.answer_render_comment,
+        reply_id: id,
+        question_id: this.$route.params.id,
+        from_user_name: this.$store.state.user.userName,
+        to_user_name: this.answer_list[index].reply_ing_username || '',
+        to_user_role: this.answer_list[index].reply_ing_role || ''
+      }).then((res)=>{
+        console.log(res)
+        this.$Message.success('回复成功')
+        this.getQuestionDetail(null, this.current_index)
+        this.$forceUpdate();
+      }).catch((err)=>{
+        console.log(err)
+        this.$Message.error('回复失败');
+        cb()
+      })
+    },
+    // 回复其他人
+    replyMember(index, username, role) {
+      this.answer_list[index].reply_ing_username = username
+      this.answer_list[index].reply_ing_role = role
+      this.$forceUpdate();
+    },
+    // 取消回复
+    cancelReply(index) {
+      this.answer_list[index].reply_ing_username = ''
+      this.answer_list[index].reply_ing_role = ''
+      this.$forceUpdate();
     }
   },
   created () {
     this.getQuestionDetail()
+    console.log(this.$store.state.user)
   },
   components: {
     mavonEditor
