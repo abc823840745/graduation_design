@@ -11,7 +11,7 @@
 
     <Modal v-model="showModal" title="新建任务">
       <p slot="header" style="color:#666;text-align:center;font-size:18px;">
-        <span>{{ type === "create" ? "新建作业" : "修改作业" }}</span>
+        <span>{{ type === "create" ? "新建作业" : "编辑作业" }}</span>
       </p>
 
       <div class="create-subject-con">
@@ -89,6 +89,14 @@
           >
             <Button icon="ios-cloud-upload-outline">请点击此处上传</Button>
           </Upload>
+
+          <Button
+            class="ml-10"
+            v-if="type === 'update' && info['classify'] === '课时作业'"
+            @click="goDownload"
+          >
+            下载已上传课件
+          </Button>
         </div>
       </div>
 
@@ -117,7 +125,7 @@
               : updateClassHWInfo()
           "
         >
-          {{ info["classify"] === "在线作业" ? "修改题目信息" : "确认修改" }}
+          {{ info["classify"] === "在线作业" ? "编辑题目信息" : "确认修改" }}
         </Button>
 
         <Button
@@ -239,6 +247,11 @@ export default {
     ]),
 
     ...mapMutations(["setInputInfo", "setOptionList"]),
+
+    goDownload() {
+      let { webpath } = this.info;
+      window.open(webpath);
+    },
 
     async setClassHourList(id) {
       let res = await this.getClassHourList(id);
@@ -652,6 +665,12 @@ export default {
     // 更新课时作业信息
     async updateClassHWInfo() {
       let { name, classHour, stopTimeList } = this.homeworkInfo;
+      let { submitterStatus } = this.info;
+      if (submitterStatus["isOperate"] === 0) {
+        return this.$Notice.warning({
+          title: "已经有学生提交，不能修改！"
+        });
+      }
       let res = await this.updateTeaClassHW({
         id: this.info.id,
         name,
@@ -671,6 +690,12 @@ export default {
     // 更新在线作业信息
     async updateOnlineHWInfo() {
       let { name, classHour, stopTimeList, testingTime } = this.homeworkInfo;
+      let { submitterStatus } = this.info;
+      if (submitterStatus["isOperate"] === 0) {
+        return this.$Notice.warning({
+          title: "已经有学生提交，不能修改！"
+        });
+      }
       let res = await this.updateTeaOnlineHW({
         id: this.info.id,
         name,

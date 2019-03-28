@@ -3,11 +3,8 @@
     <Modal
       fullscreen
       v-model="isShowModal"
-      :ok-text="type === 'create' ? '确认新建' : '确认修改'"
       :loading="loading"
       :title="type === 'create' ? '新建题目信息' : '修改题目信息'"
-      @on-ok="modalOk"
-      @on-cancel="modalCancel"
     >
       <Alert show-icon v-if="inputInfo.length === 0">
         请点击新建作业按钮快点新建作业吧！
@@ -73,6 +70,16 @@
             <DropdownItem name="问答题">问答题</DropdownItem>
           </DropdownMenu>
         </Dropdown>
+      </div>
+
+      <div slot="footer">
+        <Button type="primary" @click="modalCancel">
+          返回
+        </Button>
+
+        <Button type="primary" @click="modalOk">
+          {{ type === "create" ? "确认新建" : "确认修改" }}
+        </Button>
       </div>
     </Modal>
 
@@ -364,6 +371,13 @@ export default {
 
     modalOk: debounce(
       function() {
+        let { submitterStatus } = this.homeworkInfo;
+        console.log(submitterStatus);
+        if (submitterStatus["isOperate"] === 0) {
+          return this.$Notice.warning({
+            title: "已经有学生提交，不能修改！"
+          });
+        }
         this.loading = true;
         this.$emit("modalOk");
         this.loading = false;

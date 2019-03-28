@@ -169,9 +169,10 @@ export default {
         {
           title: "操作",
           key: "operation",
+          width: 200,
           render: (h, params) => {
             return h("div", [
-              this.btnStyle("修改任务", h, () => {
+              this.btnStyle("编辑作业", h, () => {
                 this.goUpdateTask(params);
               }),
               this.btnStyle(
@@ -209,12 +210,12 @@ export default {
     async goUpdateTask(params) {
       let { index } = params;
       let { course, id, submitterStatus } = params.row;
-      if (submitterStatus["isOperate"] === 0) {
-        this.$Notice.warning({
-          title: "已经有学生提交，不能修改！"
-        });
-        return;
-      }
+      // if (submitterStatus["isOperate"] === 0) {
+      //   this.$Notice.warning({
+      //     title: "已经有学生提交，不能修改！"
+      //   });
+      //   return;
+      // }
       this.setCurCourse(course);
       this.modalOpen = true;
       this.itemInfo = this.tableInfo["tableData"][index];
