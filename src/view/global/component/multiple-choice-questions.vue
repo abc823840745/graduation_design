@@ -283,7 +283,7 @@ export default {
   }
 
   .mavonEditor {
-    width: 650px;
+    width: 660px;
     min-height: 200px;
     min-width: 300px;
     z-index: 1;
@@ -302,10 +302,12 @@ export default {
     }
 
     .checkbox-item {
-      margin-left: 18px;
+      margin-left: 9px;
 
       .choice-text {
         font-size: 14px;
+        margin-right: 10px;
+        margin-left: 5px;
       }
     }
   }

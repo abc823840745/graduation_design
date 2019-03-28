@@ -336,7 +336,7 @@ export default {
   }
 
   .mavonEditor {
-    width: 650px;
+    width: 665px;
     min-height: 200px;
     min-width: 300px;
     z-index: 1;
