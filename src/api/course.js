@@ -154,6 +154,40 @@ export function addCommentQuestion (obj) {
   })
 }
 
+// 删除回答（教师）
+export function delReplyQuestion (obj) {
+  return axios.request({
+    data: {
+      id: obj['id']
+    },
+    url: '/delete/course/question/reply',
+    method: 'post'
+  })
+}
+
+// 删除评论（自己和教师）
+export function delCommentQuestion (obj) {
+  return axios.request({
+    data: {
+      id: obj['id']
+    },
+    url: '/delete/course/question/comment',
+    method: 'post'
+  })
+}
+
+// 回答状态设置（自己和教师）
+export function changeReplyStatus (obj) {
+  return axios.request({
+    data: {
+      id: obj['id'],
+      status: obj['status']
+    },
+    url: '/change/course/question/reply/status',
+    method: 'post'
+  })
+}
+
 /**
  * 学生部分
  */
@@ -363,6 +397,18 @@ export function deleteCourseQuestion (obj) {
       id: obj['id']
     },
     url: '/delete/course/question',
+    method: 'post'
+  })
+}
+
+// 设置答疑状态
+export function changeQuestionStatus (obj) {
+  return axios.request({
+    data: {
+      id: obj['id'],
+      status: obj['status']
+    },
+    url: '/change/course/question/status',
     method: 'post'
   })
 }

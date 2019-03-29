@@ -127,6 +127,9 @@
           line-height: 18px;
           color: #888;
           cursor: pointer;
+          .del-reply-btn {
+            float: right;
+          }
         }
         .answer-comment-list {
           list-style-type: none;
@@ -150,6 +153,10 @@
               }
               .reply-btn {
                 color: #2d8cf0;
+                cursor: pointer;
+              }
+              .reply-del-btn {
+                color: #dc143c;
                 cursor: pointer;
               }
             }
@@ -189,16 +196,16 @@
         <div class="question-content" v-html="question_detail.content"></div>
         <Button style="margin-top:10px" icon="ios-create-outline" type="success" @click.native="showAnswerPanel">我来答</Button>
       </div>
-      <p class="teacher-question-status-btn" v-if="isTeacher">
+      <p class="teacher-question-status-btn" v-if="isTeacher || isSelf">
         <!-- <Button size="small" shape="circle" @click.native="checkStudentList" type="primary">状态设置</Button> -->
-        <Select v-model="status" style="width:100px">
-          <Option :value="0" label="未解决">
+        <Select v-model="question_detail.status" style="width:100px" @on-change="changeQuestionStatus($event, question_detail.id)">
+          <Option value="unsolved" label="未解决">
               <span>未解决</span>
           </Option>
-          <Option :value="1" label="已解决">
+          <Option value="resolved" label="已解决">
               <span>已解决</span>
           </Option>
-          <Option :value="2" label="已关闭">
+          <Option value="closed" label="已关闭">
               <span>已关闭</span>
           </Option>
         </Select>
@@ -222,18 +229,19 @@
               <span class="answer-date">{{item.created_at}}</span>
             </p>
           </div>
-          <Tag :color="item.status==1?'green':'cyan'" v-if="item.status!=0">{{item.status==1?'最佳答案':'有用'}}</Tag>
+          <Tag :color="item.status=='useful'?'cyan':'green'" v-if="item.status!='general'">{{item.status=='useful'?'有用答案':'最佳答案'}}</Tag>
         </div>
         <div class="answer-content" v-html="item.content"></div>
         <div class="answer-comment-top">
           <Icon type="ios-chatbubbles" />
-          <span @click="showComment(index)"> {{'评论（' + item.commentList.length + '）'}} </span>
+          <span @click="showComment(item.id)"> {{'评论（' + item.commentList.length + '）'}} </span>
           <span> 将该答案设为 </span>
-          <Select :value="item.status" size="small" @on-change="chanegAnswerStatus($event, index)" style="width:100px">
+          <Select v-if="isTeacher || isSelf" :value="item.status" size="small" @on-change="chanegAnswerStatus($event, item.id)" style="width:100px">
               <Option value="general" >普通答案</Option>
               <Option value="useful" >有用答案</Option>
               <Option value="best" >最佳答案</Option>
           </Select>
+          <Button v-if="isTeacher" class="del-reply-btn" size="small" @click="delReply(item.id)" type="error">删除</Button>
         </div>
         <ul class="answer-comment-list" v-if="item.show_comment">
           <li v-for="(comment_item, comment_index) in item.commentList" :key="comment_index">
@@ -243,6 +251,7 @@
               <span>{{comment_item.from_user_name}}</span>
               <span>{{comment_item.created_at}}</span>
               <span class="reply-btn" v-if="!comment_item.is_self" @click="replyMember(index, comment_item.from_user_name, comment_item.from_user_role)">回复</span>
+              <span class="reply-del-btn" v-if="comment_item.is_self" @click="delComment(comment_item.id)">删除</span>
             </div>
           </li>
         </ul>
@@ -270,13 +279,13 @@
 import { getMyDate } from '@/libs/tools'
 import { mavonEditor } from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
-import { getQuestionDetail, uploadImage, askQuestionReply, addCommentQuestion } from '@/api/course'
+import { getQuestionDetail, uploadImage, askQuestionReply, addCommentQuestion, delReplyQuestion, delCommentQuestion, changeReplyStatus, changeQuestionStatus } from '@/api/course'
 export default {
   name: 'teacher-question-detail',
   data () {
     return {
       isTeacher: false,
-      status: 0,
+      isSelf: false,
       question_detail: {
         content: "提问测试",
         course_classes: "C201",
@@ -305,13 +314,22 @@ export default {
       // 提交答案loading
       submit_answer_loading: true,
       // 当前点击打开的回答下标
-      current_index: 0
+      current_id: 0
     }
   },
   methods: {
-    showComment (i) {
-      this.answer_list[i].show_comment = !this.answer_list[i].show_comment
-      this.current_index = i
+    // 展开评论面板
+    showComment (id) {
+      // this.answer_list[i].show_comment = !this.answer_list[i].show_comment
+      this.answer_list.map((item,index)=>{
+        if(item.id == id) {
+          item.show_comment = !item.show_comment
+        } else {
+          item.show_comment = false
+        }
+        return item
+      })
+      this.current_id = id
       this.$forceUpdate();
     },
     showAnswerPanel() {
@@ -325,10 +343,34 @@ export default {
       this.askQuestionReply(()=>{
         this.show_answer_submit = false;
       })
-      
     },
-    chanegAnswerStatus(v,i){
-      this.answer_list[i].status = v;
+    // 设置答疑状态
+    changeQuestionStatus(v,id){
+      changeQuestionStatus({
+        id,
+        status: v
+      }).then((res)=>{
+        console.log(res)
+        this.$Message.success('设置成功')
+        this.getQuestionDetail()
+      }).catch((err)=>{
+        console.log(err)
+        this.$Message.error('设置失败');
+      })
+    },
+    // 设置回答状态
+    chanegAnswerStatus(v,id){
+      changeReplyStatus({
+        id,
+        status: v
+      }).then((res)=>{
+        console.log(res)
+        this.$Message.success('设置成功')
+        this.getQuestionDetail()
+      }).catch((err)=>{
+        console.log(err)
+        this.$Message.error('设置失败');
+      })
     },
     // 获取答疑详情 <公共>
     getQuestionDetail(id, i) {
@@ -338,7 +380,10 @@ export default {
         console.log(res)
         res.data.questionDetail.created_at = getMyDate(new Date(res.data.questionDetail.created_at).getTime(), "yyyy-MM-dd hh:mm")
         this.question_detail = res.data.questionDetail
-
+        // 判断是否自己的提问
+        if(this.$store.state.user.stu_nmuber == res.data.questionDetail.number) {
+          this.isSelf = true
+        }
         this.answer_list = res.data.questionDetail.replyList.map((item, index)=>{
           item.created_at = getMyDate(new Date(item.created_at).getTime(), "yyyy-MM-dd hh:mm")
           item.fisrt_name = item.username.substr(0, 1)
@@ -346,7 +391,7 @@ export default {
             com_item.created_at = getMyDate(new Date(com_item.created_at).getTime(), "yyyy-MM-dd hh:mm")
             return com_item
           })
-          if(index == i){
+          if(item.id == i){
             item.show_comment = true
           }else{
             item.show_comment = false
@@ -424,7 +469,7 @@ export default {
       }).then((res)=>{
         console.log(res)
         this.$Message.success('回复成功')
-        this.getQuestionDetail(null, this.current_index)
+        this.getQuestionDetail(null, this.current_id)
         this.$forceUpdate();
       }).catch((err)=>{
         console.log(err)
@@ -443,6 +488,50 @@ export default {
       this.answer_list[index].reply_ing_username = ''
       this.answer_list[index].reply_ing_role = ''
       this.$forceUpdate();
+    },
+    // 删除评论
+    delComment(id) {
+      this.$Modal.confirm({
+        title: '提示',
+        content: '<p>删除该条评论？</p>',
+        loading: true,
+        onOk: () => {
+          delCommentQuestion({
+            id
+          }).then((res)=>{
+            console.log(res)
+            this.$Modal.remove();
+            this.$Message.success('删除成功');
+            this.getQuestionDetail(null, this.current_id)
+          }).catch((err)=>{
+            console.log(err)
+            this.$Modal.remove();
+            this.$Message.error('删除失败');
+          })
+        }
+      });
+    },
+    // 删除回答
+    delReply(id) {
+      this.$Modal.confirm({
+        title: '提示',
+        content: '<p>删除该条回答？</p>',
+        loading: true,
+        onOk: () => {
+          delReplyQuestion({
+            id
+          }).then((res)=>{
+            console.log(res)
+            this.$Modal.remove();
+            this.$Message.success('删除成功');
+            this.getQuestionDetail(null, this.current_id)
+          }).catch((err)=>{
+            console.log(err)
+            this.$Modal.remove();
+            this.$Message.error('删除失败');
+          })
+        }
+      });
     }
   },
   created () {
