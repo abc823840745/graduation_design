@@ -70,13 +70,12 @@
       }
     }
     .keyword-panel {
-      background-color: #fff;
-      padding: 14px 20px;
-      border-radius: 10px;
-      color: #666;
-      box-shadow: 2px 2px 2px #eee;
       .answer_item {
-        margin: 20px 0;
+        margin-bottom: 20px;
+        padding: 14px 20px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 2px 2px 2px #eee;
         .answerer {
           margin: 10px 0;
           display: flex;
@@ -125,7 +124,6 @@
           padding-top: 10px;
           padding-bottom: 10px;
           border-top: 1px dashed #ddd;
-          border-bottom: 1px dashed #ddd;
           font-size: 12px;
           line-height: 18px;
           color: #888;

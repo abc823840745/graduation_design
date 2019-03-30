@@ -179,7 +179,7 @@ export default {
                             console.log(params.index);
                             this.deleteCourseQuestion(params.row.id, ()=>{
                               this.$Modal.remove();
-                              this.getQusetionsList()
+                              this.queryAuditByCourse()
                             })
                           }
                       });
@@ -296,6 +296,20 @@ export default {
         console.log(err)
         this.isShowAudit = false
         this.$Message.error('审核失败');
+      })
+    },
+    // 删除答疑
+    deleteCourseQuestion(id, cb = ()=>{}) {
+      deleteCourseQuestion({
+        id
+      }).then((res)=>{
+        console.log(res)
+        this.$Message.success('删除成功');
+        cb()
+      }).catch((err)=>{
+        console.log(err)
+        this.$Message.error('删除失败');
+        cb()
       })
     }
   },
