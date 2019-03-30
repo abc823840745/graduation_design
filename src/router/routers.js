@@ -348,7 +348,7 @@ export default [
         name: 'student-answer-reply',
         meta: {
           icon: 'md-chatboxes',
-          title: '我的回答/评论',
+          title: '我的回答 / 评论',
           access: ['student'],
         },
         component: () => import('@/view/answering/answer-my-reply.vue'),
@@ -703,21 +703,11 @@ export default [
         component: () => import('@/view/answering/answer-audit.vue'),
       },
       {
-        path: 'ask',
-        name: 'teacher-answer-ask',
-        meta: {
-          icon: 'md-contacts',
-          title: '我的回答',
-          access: ['teacher', 'admin'],
-        },
-        component: () => import('@/view/answering/answer-my-ask.vue'),
-      },
-      {
         path: 'reply',
         name: 'teacher-answer-reply',
         meta: {
           icon: 'md-contacts',
-          title: '我的评论 / 回复',
+          title: '我的回答 / 评论',
           access: ['teacher', 'admin'],
         },
         component: () => import('@/view/answering/answer-my-reply.vue'),

@@ -102,6 +102,9 @@
               margin-left: 10px;
               display: flex;
               flex-direction: column;
+              .role-teacher {
+                color: #ffa500;
+              }
               .answer-date {
                 display: block;
                 color: #888;
@@ -194,7 +197,7 @@
         <p class="teacher-question-sub">提问者：{{question_detail.username}}</p>
         <p class="teacher-question-sub">时间：{{question_detail.created_at}}</p>
         <div class="question-content" v-html="question_detail.content"></div>
-        <Button style="margin-top:10px" icon="ios-create-outline" type="success" @click.native="showAnswerPanel">我来答</Button>
+        <Button  style="margin-top:10px" icon="ios-create-outline" type="success" @click.native="showAnswerPanel">我来答</Button>
       </div>
       <p class="teacher-question-status-btn" v-if="isTeacher || isSelf">
         <!-- <Button size="small" shape="circle" @click.native="checkStudentList" type="primary">状态设置</Button> -->
@@ -225,7 +228,11 @@
           <div class="answer-left">
             <div class="avatar">{{item.fisrt_name}}</div>
             <p class="answerer-name">
-              <span>{{item.username}}</span>
+              <span>{{item.username}}
+                <Tooltip v-if="item.role == 'teacher' || item.role == 'admin'" content="教师认证">
+                  <Icon class="role-teacher" type="md-medal"  />
+                </Tooltip>
+              </span>
               <span class="answer-date">{{item.created_at}}</span>
             </p>
           </div>

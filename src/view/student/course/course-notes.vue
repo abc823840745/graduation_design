@@ -37,7 +37,7 @@
         <Option :value="2" label="第二学期"></Option>
       </Select>
       <span>课程：</span>
-      <Select v-model="course_id" @on-change="changeCourse()" style="width:160px;margin-right:10px;">
+      <Select v-model="course_id" :disabled="isAllowAddNote" @on-change="changeCourse()" style="width:160px;margin-right:10px;">
         <Option v-for="(item,index) in course_list" :key="index" :value="item.id" :label="item.name"></Option>
       </Select>
       <Button type="primary" @click="showNotePanel" :disabled="isAllowAddNote">

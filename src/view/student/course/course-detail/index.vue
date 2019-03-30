@@ -259,7 +259,7 @@ export default {
         {
           title: "操作",
           key: "action",
-          width: 200,
+          width: 120,
           align: "center",
           render: (h, params) => {
             return h("div", [
@@ -280,32 +280,6 @@ export default {
                   }
                 },
                 "问题详情"
-              ),
-              h(
-                "Button",
-                {
-                  props: {
-                    type: "error",
-                    shape: "circle"
-                  },
-                  on: {
-                    click: () => {
-                      this.$Modal.confirm({
-                          title: '确定要删除该问题？',
-                          content: '<p>删除后将无法恢复</p>',
-                          loading: true,
-                          onOk: () => {
-                            console.log(params.index);
-                            this.deleteCourseQuestion(params.row.id, ()=>{
-                              this.$Modal.remove();
-                              this.$Message.success('删除成功');
-                            })
-                          }
-                      });
-                    }
-                  }
-                },
-                "删除"
               )
             ]);
           }
@@ -426,8 +400,10 @@ export default {
         content: this.ask_question_data.render_answer_content
       }).then((res)=>{
         console.log(res)
-        this.$Message.success('提交成功');
-        
+        this.$Modal.success({
+          title: '提交成功',
+          content: '等待教师审核后才可公开，可在「答疑管理」→「我的提问」查询审核状态'
+        });
       }).catch((err)=>{
         console.log(err)
         this.$Message.error('提问提交失败');

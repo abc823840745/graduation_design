@@ -85,8 +85,7 @@ export default {
   'teacher-answering': '答疑管理',
   'teacher-answer-index': '全部答疑',
   'teacher-answer-audit': '提问审核',
-  'teacher-answer-ask': '我的回答',
-  'teacher-answer-reply': '我的评论 / 回复',
+  'teacher-answer-reply': '我的回答 / 评论',
   'teacher-answer-detail': '问题详情',
 
   // 管理员模块

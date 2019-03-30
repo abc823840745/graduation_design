@@ -40,7 +40,7 @@
         title="设置审核状态"
         :loading="audit_loading"
         width="300"
-        @on-ok="saveAudit(index)">
+        @on-ok="saveAudit()">
         <Select v-model="current_Select_status" style="width:200px">
             <Option value="success">通过</Option>
             <Option value="fail">拒绝</Option>

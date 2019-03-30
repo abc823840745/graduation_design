@@ -188,6 +188,34 @@ export function changeReplyStatus (obj) {
   })
 }
 
+// 获取回答过的答疑列表
+export function getReplyQusetionList (obj) {
+  return axios.request({
+    params: {
+      year: obj['year'],
+      semester: obj['semester'],
+      limit: obj['limit'] || 10,
+      offset: obj['offset'] || 1
+    },
+    url: '/get/has/replied/question/list',
+    method: 'get'
+  })
+}
+
+// 获取评论过的答疑列表
+export function getCommentQusetionList (obj) {
+  return axios.request({
+    params: {
+      year: obj['year'],
+      semester: obj['semester'],
+      limit: obj['limit'] || 10,
+      offset: obj['offset'] || 1
+    },
+    url: '/get/has/commented/question/list',
+    method: 'get'
+  })
+}
+
 /**
  * 学生部分
  */
@@ -255,6 +283,33 @@ export function deleteNote (obj) {
       id: obj['id']
     },
     url: '/delete/course/note',
+    method: 'post'
+  })
+}
+
+// 获取自己的提问
+export function getMyAskQuestion (obj) {
+  return axios.request({
+    params: {
+      year: obj['year'],
+      semester: obj['semester'],
+      limit: obj['limit'] || 10,
+      offset: obj['offset'] || 1
+    },
+    url: '/get/my/course/question/list',
+    method: 'get'
+  })
+}
+
+// 答疑问题未审核返修
+export function editMyAskQuestion (obj) {
+  return axios.request({
+    data: {
+      question_id: obj['question_id'],
+      title: obj['title'],
+      content: obj['content']
+    },
+    url: '/update/audit/fail/course/question',
     method: 'post'
   })
 }
