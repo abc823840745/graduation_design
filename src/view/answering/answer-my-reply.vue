@@ -40,6 +40,13 @@
         }
       }
     }
+    .none-list {
+      font-size: 16px;
+      font-weight: 700;
+      color: #888;
+      text-align: center;
+      padding-top: 40px;
+    }
   }
 </style>
 <template>
@@ -69,9 +76,10 @@
             </li>
           </ul>
         </div>
-        <div class="teacher-questions-page-nav">
+        <div class="teacher-questions-page-nav" v-if="ask_total > 0">
           <Page :current="ask_current" :total="ask_total" :page-size="ask_page_size" @on-change="changeAskPage" />
         </div>
+        <p v-else class="none-list">本学期您还没有回答过问题哦~</p>
       </TabPane>
       <TabPane label="我的评论">
         <div class="question-reply-list">
@@ -86,9 +94,10 @@
             </li>
           </ul>
         </div>
-        <div class="teacher-questions-page-nav">
+        <div class="teacher-questions-page-nav" v-if="comment_total > 0">
           <Page :current="comment_current" :total="comment_total" :page-size="comment_page_size" @on-change="changeCommentPage" />
         </div>
+        <p v-else class="none-list">本学期您还没有发表过评论哦~</p>
       </TabPane>
     </Tabs>
   </div>
