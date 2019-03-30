@@ -195,9 +195,9 @@
         <p class="teacher-question-sub">提问者：{{question_detail.username}}</p>
         <p class="teacher-question-sub">时间：{{question_detail.created_at}}</p>
         <div class="question-content" v-html="question_detail.content"></div>
-        <Button  style="margin-top:10px" icon="ios-create-outline" type="success" @click.native="showAnswerPanel">我来答</Button>
+        <Button v-if="question_detail.audit_status!='ing' && question_detail.audit_status!='fail'" style="margin-top:10px" icon="ios-create-outline" type="success" @click.native="showAnswerPanel">我来答</Button>
       </div>
-      <p class="teacher-question-status-btn" v-if="isTeacher || isSelf">
+      <p class="teacher-question-status-btn" v-if="question_detail.audit_status!='ing' && question_detail.audit_status!='fail' && (isTeacher || isSelf)">
         <!-- <Button size="small" shape="circle" @click.native="checkStudentList" type="primary">状态设置</Button> -->
         <Select v-model="question_detail.status" style="width:100px" @on-change="changeQuestionStatus($event, question_detail.id)">
           <Option value="unsolved" label="未解决">
@@ -218,7 +218,8 @@
     </div>
     <div class="questions-key-title">
       <p v-if="answer_list.length > 0">{{answer_list.length}}个回答</p>
-      <p class="none-reply" v-else>还没有人回答该问题，点击上方「我来答」试一试吧~</p>
+      <p class="none-reply" v-else-if="question_detail.audit_status!='ing' && question_detail.audit_status!='fail'">还没有人回答该问题，点击上方「我来答」试一试吧~</p>
+      <p v-else class="none-reply">该问题尚未审核</p>
     </div>
     <div class="keyword-panel" v-if="answer_list.length > 0">
       <div class="answer_item" v-for="(item,index) in answer_list" :key="index">

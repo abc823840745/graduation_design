@@ -68,11 +68,11 @@
           <ul>
             <li class="item" v-for="(item, index) in ask_data" :key="index">
               <p class="item-sub-title">
-                <span><Icon type="ios-bookmarks" />课程：<span class="course-name">{{item.course_name}}</span>&nbsp;&nbsp;&nbsp;&nbsp;<Icon type="ios-chatbubbles" /> 来自问题：<span class="question-name" @click="toQuestion(item.question_id)">{{'这道题我不会'}}</span><br /></span>
+                <span><Icon type="ios-bookmarks" />课程：<span class="course-name">{{item.course_name}}</span>&nbsp;&nbsp;&nbsp;&nbsp;<Icon type="ios-chatbubbles" /> 来自问题：<span class="question-name" @click="toQuestion(item.question_id)">{{item.question_title}}</span><br /></span>
                 <Icon class="close-btn" @click.native="delReply(item.reply_id)" type="md-close" />
               </p>
               <div class="content" v-html="item.reply_content"></div>
-              <p class="time"><Icon type="ios-time" /> 发表时间：{{'2019-03-30 11:21:10'}}</p>
+              <p class="time"><Icon type="ios-time" /> 发表时间：{{item.created_at}}</p>
             </li>
           </ul>
         </div>
@@ -86,11 +86,11 @@
           <ul>
             <li class="item" v-for="(item, index) in comment_data" :key="index">
               <p class="item-sub-title">
-                <span><Icon type="ios-bookmarks" />课程：<span class="course-name">{{item.course_name}}</span>&nbsp;&nbsp;&nbsp;&nbsp;<Icon type="ios-chatbubbles" /> 来自问题：<span class="question-name" @click="toQuestion(item.question_id)">{{'这道题我不会'}}</span><br /></span>
+                <span><Icon type="ios-bookmarks" />课程：<span class="course-name">{{item.course_name}}</span>&nbsp;&nbsp;&nbsp;&nbsp;<Icon type="ios-chatbubbles" /> 来自问题：<span class="question-name" @click="toQuestion(item.question_id)">{{item.question_title}}</span><br /></span>
                 <Icon class="close-btn" @click.native="delComment(item.comment_id)" type="md-close" />
               </p>
               <div class="content" v-html="item.comment_content"></div>
-              <p class="time"><Icon type="ios-time" /> 发表时间：{{'2019-03-30 11:21:10'}}</p>
+              <p class="time"><Icon type="ios-time" /> 发表时间：{{item.created_at}}</p>
             </li>
           </ul>
         </div>
@@ -168,7 +168,10 @@ export default {
         offset: this.ask_current
       }).then((res)=>{
         this.ask_total = res.data.count
-        this.ask_data = res.data.hasRepliedQuestionList
+        this.ask_data = res.data.hasRepliedQuestionList.map((item)=>{
+          item.created_at = getMyDate(new Date(item.created_at).getTime(), "yyyy-MM-dd hh:mm")
+          return item
+        })
         console.log(res)
       }).catch((err)=>{
         console.log(err)
@@ -184,7 +187,10 @@ export default {
         offset: this.comment_current
       }).then((res)=>{
         this.comment_total = res.data.count
-        this.comment_data = res.data.hasCommentedQuestionList
+        this.comment_data = res.data.hasCommentedQuestionList.map((item)=>{
+          item.created_at = getMyDate(new Date(item.created_at).getTime(), "yyyy-MM-dd hh:mm")
+          return item
+        })
         console.log(res)
       }).catch((err)=>{
         console.log(err)
