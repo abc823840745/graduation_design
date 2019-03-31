@@ -640,7 +640,7 @@ export default [
         path: 'my-course',
         name: 'teacher-my-course',
         meta: {
-          icon: 'logo-markdown',
+          icon: 'ios-book',
           title: '我的课程',
           access: ['teacher', 'admin'],
         },
@@ -676,7 +676,7 @@ export default [
     path: '/teacher/answering',
     name: 'teacher-answering',
     meta: {
-      icon: 'logo-buffer',
+      icon: 'ios-text',
       title: '答疑管理',
       access: ['teacher', 'admin'],
     },
@@ -686,7 +686,7 @@ export default [
         path: 'index',
         name: 'teacher-answer-index',
         meta: {
-          icon: 'md-contacts',
+          icon: 'md-albums',
           title: '全部答疑',
           access: ['teacher', 'admin'],
         },
@@ -706,7 +706,7 @@ export default [
         path: 'reply',
         name: 'teacher-answer-reply',
         meta: {
-          icon: 'md-contacts',
+          icon: 'md-chatboxes',
           title: '我的回答 / 评论',
           access: ['teacher', 'admin'],
         },
