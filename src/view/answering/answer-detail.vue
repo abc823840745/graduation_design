@@ -342,6 +342,10 @@ export default {
       this.show_answer_panel = !this.show_answer_panel;
     },
     showSubmitAnswer() {
+      if(!this.answer_content) {
+        this.$Message.warning('请输入回答内容');
+        return false
+      }
       this.show_answer_submit = true
     },
     // 提交答案
@@ -470,10 +474,6 @@ export default {
     },
     // 回答评论
     saveComment(id, index) {
-      if(!this.my_comment_content) {
-        this.$Message.warning('请输入回复内容');
-        return false
-      }
       addCommentQuestion({
         content: this.answer_render_comment,
         reply_id: id,
@@ -562,7 +562,7 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      if(to.name == 'student-answer-detail'){
+      if(to.name == 'student-answer-index'){
         vm.isTeacher = false
       }else{
         vm.isTeacher = true

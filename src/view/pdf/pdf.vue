@@ -64,6 +64,7 @@
     <Modal v-model="showNoteDetail" draggable scrollable title="笔记详情" :footer-hide="true">
         <div v-html="note_detail_content" class="render-html-detail"></div>
     </Modal>
+    <Spin size="large" fix v-if="spinShow"></Spin>
   </div>
 </template>
 <script>
@@ -88,6 +89,7 @@
     },
     data () {
       return {
+        spinShow: true,
         currentPage: 0,
         pageCount: 0,
         fileType: 'pdf',
@@ -167,6 +169,8 @@
       },
       // pdf加载时
       loadPdfHandler (e) {
+        console.log('加载完')
+        this.spinShow = false
         this.currentPage = 1 // 加载的时候先加载第一页
       },
       getLoadProgress(num) {
