@@ -449,6 +449,11 @@ export default {
     },
     // 答疑回答
     askQuestionReply(cb = ()=>{}) {
+      if(!this.answer_content) {
+        this.$Message.warning('请输入回答内容');
+        cb()
+        return false
+      }
       askQuestionReply({
         question_id: this.$route.params.id,
         content: this.answer_render_content
@@ -465,6 +470,10 @@ export default {
     },
     // 回答评论
     saveComment(id, index) {
+      if(!this.my_comment_content) {
+        this.$Message.warning('请输入回复内容');
+        return false
+      }
       addCommentQuestion({
         content: this.answer_render_comment,
         reply_id: id,
@@ -476,6 +485,7 @@ export default {
         console.log(res)
         this.$Message.success('回复成功')
         this.getQuestionDetail(null, this.current_id)
+        this.my_comment_content = ''
         this.$forceUpdate();
       }).catch((err)=>{
         console.log(err)

@@ -442,6 +442,10 @@ export default {
     },
     // 修改课时介绍
     editClassIntro() {
+      if(!this.edit_class_intro) {
+        this.$Message.warning('请输入课时介绍');
+        return false
+      }
       editCourseClassIntroText({
         id: this.$route.params.class_id,
         content: this.edit_class_intro
@@ -449,6 +453,7 @@ export default {
         .then(res => {
           console.log(res);
           this.$Message.success("修改成功");
+          this.edit_class_intro = "";
           this.getCourseClassDetail();
         })
         .catch(err => {
@@ -492,7 +497,6 @@ export default {
         },
         onOk: () => {
           this.editClassIntro();
-          this.edit_class_intro = "";
         },
         onCancel: () => {
           this.edit_class_intro = "";

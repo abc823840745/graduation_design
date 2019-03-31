@@ -280,6 +280,10 @@ export default {
         this.$Message.warning('请选择笔记需要保存的课时')
         return ;
       }
+      if(!/^.{1,}$/.test(this.note_content)) {
+        this.$Message.warning('请先填写笔记内容')
+        return ;
+      }
       addStuNotes({
         course_id: this.course_id,
         course_time_id: this.course_time_id,

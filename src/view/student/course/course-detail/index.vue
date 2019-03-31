@@ -99,18 +99,19 @@
         :fullscreen="true"
         v-model="show_my_askquestion"
         title="我要提问"
-        :mask-closable="false"
-        @on-ok="askQusetion"
-        @on-cancel="cancelAskQuestion">
+        :mask-closable="false">
         <Form label-position="top">
           <FormItem label="提问标题">
             <Input v-model="ask_question_data.title" placeholder="请输入提问的标题"></Input>
           </FormItem>
           <FormItem label="问题描述">
-            <!-- <Input type="textarea" v-model="ask_question_data.content"></Input> -->
-            <mavon-editor style="height: 400px" ref="md" @imgAdd="$imgAdd" v-model="ask_question_data.content"  @change="renderEditor"></mavon-editor>
+            <mavon-editor style="height: 400px" ref="md" @imgAdd="$imgAdd" placeholder="请输入问题描述" v-model="ask_question_data.content"  @change="renderEditor"></mavon-editor>
           </FormItem>
         </Form>
+        <div slot="footer">
+          <Button type="text" size="large" @click="cancelAskQuestion">取消</Button>
+          <Button type="primary" size="large" @click="askQusetion">确定</Button>
+        </div>
     </Modal>
     <!-- 提问modal end -->
   </div>
@@ -394,12 +395,24 @@ export default {
     },
     // 提问
     askQusetion() {
+      // 提问验证格式拦截
+      if(!/^.{6,50}$/.test(this.ask_question_data.title)) {
+        this.$Message.warning('问题长度必须大于6个字符，且在50个字符以内');
+        return false
+      }
+      if(!/^.{10,}$/.test(this.ask_question_data.content)) {
+        this.$Message.warning('问题描述至少填写10个字符');
+        return false
+      }
       askQuestionByStudent({
         course_id: this.$route.params.id,
         title: this.ask_question_data.title,
         content: this.ask_question_data.render_answer_content
       }).then((res)=>{
         console.log(res)
+        // 提交成功后清空内容
+        this.ask_question_data.title = ''
+        this.ask_question_data.content = ''
         this.$Modal.success({
           title: '提交成功',
           content: '等待教师审核后才可公开，可在「答疑管理」→「我的提问」查询审核状态'
@@ -411,7 +424,9 @@ export default {
     },
     // 取消提问
     cancelAskQuestion() {
-      
+      this.ask_question_data.title = ''
+      this.ask_question_data.content = ''
+      this.show_my_askquestion = false
     },
   },
   created () {

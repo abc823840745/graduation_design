@@ -39,8 +39,7 @@
         v-model="is_show_edit"
         title="修改问题"
         width="700"
-        :loading="edit_loading"
-        @on-ok="saveQuestionEdit">
+        :loading="edit_loading">
         <Form label-position="top">
           <FormItem label="提问标题">
             <Input v-model="edit_title" placeholder="请输入提问的标题"></Input>
@@ -50,6 +49,10 @@
             <mavon-editor style="height: 400px" ref="md" @imgAdd="$imgAdd" v-model="edit_content" @change="renderEditor"></mavon-editor>
           </FormItem>
         </Form>
+        <div slot="footer">
+          <Button type="text" size="large" @click="is_show_edit=false">取消</Button>
+          <Button type="primary" size="large" @click="saveQuestionEdit">确定</Button>
+        </div>
     </Modal>
     <!-- 修改问题弹层 -->
   </div>
@@ -365,6 +368,14 @@ export default {
     },
     // 提交修改
     saveQuestionEdit() {
+      if(!/^.{6,50}$/.test(this.edit_title)) {
+        this.$Message.warning('问题长度必须大于6个字符，且在50个字符以内');
+        return false
+      }
+      if(!(this.edit_content.length >= 10)) {
+        this.$Message.warning('问题描述至少填写10个字符');
+        return false
+      }
       editMyAskQuestion({
         question_id: this.current_edit_id,
         title: this.edit_title,

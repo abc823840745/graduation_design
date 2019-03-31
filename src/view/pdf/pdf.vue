@@ -54,8 +54,12 @@
         </div>
       </Card>
     </div>
-    <Modal v-model="showCreateNote" draggable scrollable title="新建笔记" :loading="high_loading" @on-ok="saveHighNote">
-      <mavon-editor style="height: 300px" ref="md" @imgAdd="$imgAdd" v-model="note_content" :toolbars="editorOptions" @change="renderEditor"></mavon-editor>
+    <Modal v-model="showCreateNote" draggable scrollable title="新建笔记" :loading="high_loading">
+      <mavon-editor style="height: 300px" ref="md" @imgAdd="$imgAdd" v-model="note_content" :toolbars="editorOptions" @change="renderEditor" placeholder="请填写笔记内容..."></mavon-editor>
+      <div slot="footer">
+        <Button type="text" size="large" @click="showCreateNote=false">取消</Button>
+        <Button type="primary" size="large" @click="saveHighNote">确定</Button>
+      </div>
     </Modal>
     <Modal v-model="showNoteDetail" draggable scrollable title="笔记详情" :footer-hide="true">
         <div v-html="note_detail_content" class="render-html-detail"></div>
@@ -243,6 +247,10 @@
       // 保存笔记
       saveNote() {
         if(!this.save_loading){
+          if(!/^.{1,}$/.test(this.fast_note_content)) {
+            this.$Message.warning('请先填写笔记内容');
+            return false
+          }
           this.save_loading = true
           addStuNotes({
             course_id: this.course_id,
@@ -264,6 +272,10 @@
       // 高级笔记保存
       saveHighNote() {
         if(!this.save_loading){
+          if(!/^.{1,}$/.test(this.note_content)) {
+            this.$Message.warning('请先填写笔记内容');
+            return false
+          }
           this.save_loading = true
           addStuNotes({
             course_id: this.course_id,
@@ -274,6 +286,7 @@
             this.save_loading = false
             this.note_content = ''
             this.$Message.success('保存成功')
+            this.showCreateNote = false
             this.getNotesList()
           }).catch((err)=>{
             console.log(err)

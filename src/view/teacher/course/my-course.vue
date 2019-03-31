@@ -214,6 +214,18 @@ export default {
     },
     // 创建课程
     sendCreateCourse() {
+      if(!this.course_name) {
+        this.$Message.warning('请输入课程名称');
+        return false
+      }
+      if(!this.course_code) {
+        this.$Message.warning('请输入教学班');
+        return false
+      }
+      if(!this.course_class_code) {
+        this.$Message.warning('请输入上课地点');
+        return false
+      }
       this.create_loading = true;
       createTeaCourse({
         name: this.course_name,

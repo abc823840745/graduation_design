@@ -522,7 +522,6 @@ export default {
         },
         onOk: ()=>{
           this.createCourseClass(this.create_class_name)
-          this.create_class_name = ''
         },
         onCancel: ()=>{
           this.create_class_name = ''
@@ -531,12 +530,17 @@ export default {
     },
     // 创建课时
     createCourseClass(name) {
+      if(!name) {
+        this.$Message.warning('请输入课时名称');
+        return false
+      }
       createTeaCourseClass({
         name,
         course_id: this.$route.params.id
       }).then((res)=>{
         console.log(res)
         this.$Message.success('创建成功');
+        this.create_class_name = ''
         this.getCourseClassList()
       }).catch((err)=>{
         console.log(err)
