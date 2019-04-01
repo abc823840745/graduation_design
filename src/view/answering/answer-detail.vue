@@ -474,6 +474,10 @@ export default {
     },
     // 回答评论
     saveComment(id, index) {
+      if(!this.my_comment_content) {
+        this.$Message.warning('请输入评论');
+        return false
+      }
       addCommentQuestion({
         content: this.answer_render_comment,
         reply_id: id,
