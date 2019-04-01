@@ -506,7 +506,7 @@ export default {
     // 本课时作业页面跳转
     changeTab(name) {
       if (name == "homework") {
-        this.$router.push("/teacher/homework/my-homework");
+        this.$router.push("/teacher/homework/task-center");
       }
     }
   },

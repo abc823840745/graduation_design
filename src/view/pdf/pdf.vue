@@ -276,7 +276,7 @@
       // 高级笔记保存
       saveHighNote() {
         if(!this.save_loading){
-          if(!/^.{1,}$/.test(this.note_content)) {
+          if(!this.note_content) {
             this.$Message.warning('请先填写笔记内容');
             return false
           }

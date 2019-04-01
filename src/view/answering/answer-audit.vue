@@ -251,6 +251,8 @@ export default {
         if(this.course_list.length != 0){
           this.course_id = res.data.courseList[0].id
           this.queryAuditByCourse()
+        }else{
+          this.questions_table_loading = false
         }
         this.current = 1
         cb()

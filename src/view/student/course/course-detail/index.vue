@@ -417,6 +417,7 @@ export default {
           title: '提交成功',
           content: '等待教师审核后才可公开，可在「答疑管理」→「我的提问」查询审核状态'
         });
+        this.show_my_askquestion = false
       }).catch((err)=>{
         console.log(err)
         this.$Message.error('提问提交失败');
