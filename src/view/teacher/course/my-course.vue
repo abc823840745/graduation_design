@@ -21,17 +21,24 @@
       }
       .course-code {
         font-size: 12px;
-      }
-      .course-btn {
-        margin-top: 10px;
-      }
-    }
-  }
-  .course-page-nav {
-    text-align: center;
-    margin-top: 20px;
-  }
-}
+       }
+       .course-btn {
+         margin-top: 10px;
+       }
+     }
+   }
+   .none-course {
+      font-size: 16px;
+      font-weight: 700;
+      color: #888;
+      text-align: center;
+      padding-top: 40px;
+   }
+   .course-page-nav {
+     text-align: center;
+     margin-top: 20px;
+   }
+ }
 </style>
 <template>
   <div class="teacher-my-course">
@@ -207,6 +214,18 @@ export default {
     },
     // 创建课程
     sendCreateCourse() {
+      if(!this.course_name) {
+        this.$Message.warning('请输入课程名称');
+        return false
+      }
+      if(!this.course_code) {
+        this.$Message.warning('请输入教学班');
+        return false
+      }
+      if(!this.course_class_code) {
+        this.$Message.warning('请输入上课地点');
+        return false
+      }
       this.create_loading = true;
       createTeaCourse({
         name: this.course_name,

@@ -104,7 +104,7 @@ import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import SubjectType from "@/view/global/component/show-subject-different-types";
 import SubWarehouse from "@teaHomework/smart/subject-warehouse";
 import { mapMutations, mapState } from "vuex";
-import { debounce } from "@tools";
+import { debounce, isEmptyObject } from "@tools";
 
 export default {
   name: "create-subject",
@@ -369,22 +369,20 @@ export default {
       this.modalOpen = false;
     },
 
-    modalOk: debounce(
-      function() {
-        let { submitterStatus } = this.homeworkInfo;
-        console.log(submitterStatus);
-        if (submitterStatus["isOperate"] === 0) {
-          return this.$Notice.warning({
-            title: "已经有学生提交，不能修改！"
-          });
-        }
-        this.loading = true;
-        this.$emit("modalOk");
-        this.loading = false;
-      },
-      2000,
-      true
-    ),
+    modalOk() {
+      let { submitterStatus } = this.homeworkInfo;
+      if (
+        !isEmptyObject(submitterStatus) &&
+        submitterStatus["isOperate"] === 0
+      ) {
+        return this.$Notice.warning({
+          title: "已经有学生提交，不能修改！"
+        });
+      }
+      this.loading = true;
+      this.$emit("modalOk");
+      this.loading = false;
+    },
 
     modalCancel() {
       this.loading = true;

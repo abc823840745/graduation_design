@@ -407,6 +407,7 @@ export default {
         });
       }
       this.showModal = false;
+      this.showModal2 = false;
     },
 
     // 修改在线作业题目

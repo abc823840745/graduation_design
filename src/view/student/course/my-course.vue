@@ -200,6 +200,16 @@ export default {
     },
     refreshCourse() {
       this.refresh_loading = true;
+      if(!/^\d{1,10}$/.test(this.myscse_account)) {
+        this.refresh_loading = false;
+        this.$Message.warning('请填写您的Myscse学号')
+        return ;
+      }
+      if(!/^\d{1,}$/.test(this.myscse_password)) {
+        this.refresh_loading = false;
+        this.$Message.warning('请填写您的Myscse密码')
+        return ;
+      }
       this.refreshCourseList(() => {
         this.refresh_loading = false;
         this.show_refresh_course = false;
@@ -239,6 +249,7 @@ export default {
         .then(res => {
           this.course_list = res.data.courseList;
           this.total = res.data.count;
+          this.$Message.success("刷新成功");
           cb();
         })
         .catch(err => {

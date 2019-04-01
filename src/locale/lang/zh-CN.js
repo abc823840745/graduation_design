@@ -15,7 +15,10 @@ export default {
   'student-my-course': '我的课程',
   'student-my-course-detail': '课程详情',
   'student-my-course-class-detail': '课时详情',
+  'course-notes': '我的笔记',
   'student-answer-index': '课程答疑',
+  'student-answer-ask': '我的提问',
+  'student-answer-reply': '我的回答 / 评论',
   'student-answer-detail': '答疑详情',
   'student-other': '其他',
   'student-else': '其他',
@@ -59,7 +62,6 @@ export default {
   'teacher-my-course-detail': '课程详情',
   'teacher-my-course-class': '课时详情',
   'teacher-question-detail': '问题详情',
-  'teacher-my-course-questions': '课程答疑',
 
   // 教师作业管理
   'teacher-homework': '作业管理',
@@ -81,7 +83,9 @@ export default {
 
   // 教师答疑模块
   'teacher-answering': '答疑管理',
-  'teacher-answer-index': '答疑管理',
+  'teacher-answer-index': '全部答疑',
+  'teacher-answer-audit': '提问审核',
+  'teacher-answer-reply': '我的回答 / 评论',
   'teacher-answer-detail': '问题详情',
 
   // 管理员模块

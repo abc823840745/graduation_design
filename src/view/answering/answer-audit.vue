@@ -1,5 +1,5 @@
 <style lang="less">
-  .teacher-my-course-questions {
+  .teacher-question-audit {
     .teacher-questions-page-nav {
       text-align: center;
       margin-top: 20px;
@@ -7,7 +7,7 @@
   }
 </style>
 <template>
-  <div class="teacher-my-course-questions">
+  <div class="teacher-question-audit">
     <div class="top-btn-wrap">
       <span>学年：</span>
       <Select v-model="year" @on-change="changeYear" style="width:140px;margin-right:10px;">
@@ -19,9 +19,8 @@
         <Option :value="2" label="第二学期"></Option>
       </Select>
       <span>课程：</span>
-      <Select v-model="course_name" @on-change="changeCourse" style="width:160px;margin-right:10px;">
-        <Option value="all" label="全部"></Option>
-        <Option v-for="(item,index) in course_list" :key="index" :value="item.name" :label="item.name"></Option>
+      <Select v-model="course_id" @on-change="changeCourse()" style="width:160px;margin-right:10px;">
+        <Option v-for="(item,index) in course_list" :key="index" :value="item.id" :label="item.name"></Option>
       </Select>
     </div>
     <Table
@@ -35,24 +34,36 @@
     <div class="teacher-questions-page-nav">
       <Page :current="current" :total="total" :page-size="page_size" @on-change="changePage" />
     </div>
+    <!-- 审核弹层 -->
+    <Modal
+        v-model="isShowAudit"
+        title="设置审核状态"
+        :loading="audit_loading"
+        width="300"
+        @on-ok="saveAudit()">
+        <Select v-model="current_Select_status" style="width:200px">
+            <Option value="success">通过</Option>
+            <Option value="fail">拒绝</Option>
+        </Select>
+    </Modal>
+    <!-- 审核弹层end -->
   </div>
 </template>
 <script>
 import { getMyDate } from '@/libs/tools'
-import { getTeaCourseList, getStuCourseList, getQusetionsList, deleteCourseQuestion } from '@/api/course'
+import { getTeaCourseList, getCourseClassList, getQusetionsList, deleteCourseQuestion, queryAuditByCourse, setQuestionAudit } from '@/api/course'
 export default {
-  name: 'teacher-question-index',
+  name: 'teacher-question-audit',
   data () {
     return {
-      isTeacher: false,
       total: 0,
       page_size: 10,
       current: 1,
       year: '',
       year_options: [],
       semester: 1,
-      course_name: 'all',
       course_list: [],
+      course_id: '',
       // 答疑区表格
       questions_table_loading: true,
       questions_columns: [
@@ -69,14 +80,6 @@ export default {
               }),
               h("strong", params.row.title)
             ]);
-          }
-        },
-        {
-          title: "课程",
-          key: "course_name",
-          width: 200,
-          render: (h, params) => {
-            return h("span", params.row.course_name);
           }
         },
         {
@@ -101,25 +104,25 @@ export default {
           }
         },
         {
-          title: "状态",
-          key: "status",
+          title: "审核状态",
+          key: "audit_status",
           width: 140,
           render: (h, params) => {
             return h("Tag", 
               {
                 props: {
                   type: "dot",
-                  color: params.row.status=='unsolved'?'primary':(params.row.status=='resolved'?'success':'error')
+                  color: params.row.audit_status=='ing'?'warning':(params.row.audit_status=='fail'?'error':'success')
                 }
               },
-              params.row.status=='unsolved'?'未解决':(params.row.status=='resolved'?'已解决':'已关闭')
+              params.row.audit_status=='ing'?'待审核':(params.row.audit_status=='fail'?'未通过':'通过')
             );
           }
         },
         {
           title: "操作",
           key: "action",
-          width: 200,
+          width: 260,
           align: "center",
           render: (h, params) => {
             return h("div", [
@@ -135,11 +138,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      if(this.isTeacher){
-                        this.$router.push('/teacher/answering/detail/'+params.row.id)
-                      }else{
-                        this.$router.push('/student/answering/detail/'+params.row.id)
-                      }
+                      this.$router.push('/teacher/answering/detail/'+params.row.id)
                     }
                   }
                 },
@@ -148,9 +147,24 @@ export default {
               h(
                 "Button",
                 {
-                  style: {
-                    display:this.isTeacher?"":"none",
+                  props: {
+                    shape: "circle"
                   },
+                  style: {
+                    marginRight: "5px"
+                  },
+                  on: {
+                    click: () => {
+                      this.current_select_id = params.row.id
+                      this.showAuditPanel()
+                    }
+                  }
+                },
+                "审核"
+              ),
+              h(
+                "Button",
+                {
                   props: {
                     type: "error",
                     shape: "circle"
@@ -165,7 +179,7 @@ export default {
                             console.log(params.index);
                             this.deleteCourseQuestion(params.row.id, ()=>{
                               this.$Modal.remove();
-                              this.getQusetionsList()
+                              this.queryAuditByCourse()
                             })
                           }
                       });
@@ -179,6 +193,11 @@ export default {
         }
       ],
       questions_data: [],
+      // 审核弹层
+      isShowAudit: false,
+      audit_loading: true,
+      current_select_id: 0,
+      current_Select_status: 'success'
     }
   },
   methods: {
@@ -199,38 +218,26 @@ export default {
     },
     changeYear(year){
       console.log(year)
-      if(this.isTeacher){
-        this.getCourseList(()=>{
-          this.getQusetionsList()
-        })
-      }else{
-        this.getStuCourseList(()=>{
-          this.getQusetionsList()
-        })
-      }
+      this.getTeaCourseList(()=>{
+        
+      })
     },
     changeSemester(semester){
       console.log(semester)
-      if(this.isTeacher){
-        this.getCourseList(()=>{
-          this.getQusetionsList()
-        })
-      }else{
-        this.getStuCourseList(()=>{
-          this.getQusetionsList()
-        })
-      }
+      this.getTeaCourseList(()=>{
+        
+      })
     },
-    changeCourse(name){
-      console.log(name)
-      this.getQusetionsList()
+    changeCourse(id){
+      console.log(id)
     },
     changePage(page){
       console.log('页码改变 '+page)
-      this.getQusetionsList()
+      
     },
     // 获取课程列表(教师)
-    getCourseList(cb = () => {}) {
+    getTeaCourseList(cb = () => {}) {
+      this.notes_offset = 1
       getTeaCourseList({
         year: this.year,
         semester: this.semester,
@@ -239,7 +246,12 @@ export default {
       }).then((res)=>{
         console.log(res)
         this.course_list = res.data.courseList
-        this.course_name = 'all'
+        this.course_id = ''
+        this.questions_data = []
+        if(this.course_list.length != 0){
+          this.course_id = res.data.courseList[0].id
+          this.queryAuditByCourse()
+        }
         this.current = 1
         cb()
       }).catch((err)=>{
@@ -248,45 +260,42 @@ export default {
         cb()
       })
     },
-    // 获取课程列表(学生)
-    getStuCourseList(cb = () => {}) {
-      getStuCourseList({
-        year: this.year,
-        semester: this.semester,
+    // 获取未审核列表
+    queryAuditByCourse() {
+      this.questions_table_loading = true
+      queryAuditByCourse({
+        course_id: this.course_id,
         offset: 1,
         limit: 100
       }).then((res)=>{
         console.log(res)
-        this.course_list = res.data.courseList
-        this.course_name = 'all'
-        this.current = 1
-        cb()
+        this.questions_data = res.data.questionList
+        this.questions_table_loading = false
       }).catch((err)=>{
         console.log(err)
-        this.$Message.error('获取课程列表失败');
-        cb()
+        this.questions_table_loading = false
+        this.$Message.error('获取审核列表失败');
       })
     },
-    // 获取答疑列表
-    getQusetionsList(cb = () => {}) {
-      this.questions_table_loading = true;
-      getQusetionsList({
-        year: this.year,
-        semester: this.semester,
-        course_name: this.course_name == 'all' ? null : this.course_name,
-        offset: this.current,
-        limit: this.page_size
+    // 弹层审核状态弹层
+    showAuditPanel() {
+      this.isShowAudit = true
+      this.current_Select_status = 'success'
+    },
+    // 设置审核状态
+    saveAudit() {
+      setQuestionAudit({
+        question_id: this.current_select_id,
+        audit_status: this.current_Select_status || 'fail'
       }).then((res)=>{
         console.log(res)
-        this.questions_table_loading = false;
-        this.total = res.data.count
-        this.questions_data = res.data.questionList
-        cb()
+        this.isShowAudit = false
+        this.$Message.success('审核成功');
+        this.queryAuditByCourse()
       }).catch((err)=>{
         console.log(err)
-        this.questions_table_loading = false;
-        this.$Message.error('获取答疑列表失败');
-        cb()
+        this.isShowAudit = false
+        this.$Message.error('审核失败');
       })
     },
     // 删除答疑
@@ -307,27 +316,12 @@ export default {
   created () {
     // 初始化学年列表
     this.createYearList()
-    if(this.isTeacher){
-      this.getCourseList(()=>{
-        this.getQusetionsList()
-      })
-    }else{
-      this.getStuCourseList(()=>{
-        this.getQusetionsList()
-      })
-    }
+    this.getTeaCourseList(()=>{
+      
+    })
   },
   mounted () {
 
-  },
-  beforeRouteEnter(to, from, next) {
-    next(vm => {
-      if(to.name == 'student-answer-index'){
-        vm.isTeacher = false
-      }else{
-        vm.isTeacher = true
-      }
-    });
-  },
+  }
 }
 </script>
