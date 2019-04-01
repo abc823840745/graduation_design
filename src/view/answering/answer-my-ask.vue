@@ -1,5 +1,5 @@
 <style lang="less">
-  .teacher-my-course-questions {
+ .student-question-ask {
     .teacher-questions-page-nav {
       text-align: center;
       margin-top: 20px;
@@ -7,7 +7,7 @@
   }
 </style>
 <template>
-  <div class="teacher-my-course-questions">
+  <div class="student-question-ask">
     <div class="top-btn-wrap">
       <span>学年：</span>
       <Select v-model="year" @on-change="changeYear" style="width:140px;margin-right:10px;">
@@ -19,9 +19,8 @@
         <Option :value="2" label="第二学期"></Option>
       </Select>
       <span>课程：</span>
-      <Select v-model="course_name" @on-change="changeCourse" style="width:160px;margin-right:10px;">
-        <Option value="all" label="全部"></Option>
-        <Option v-for="(item,index) in course_list" :key="index" :value="item.name" :label="item.name"></Option>
+      <Select v-model="course_id" :disabled="course_list.length==0" @on-change="changeCourse" style="width:160px;margin-right:10px;">
+        <Option v-for="(item,index) in course_list" :key="index" :value="item.id" :label="item.name"></Option>
       </Select>
     </div>
     <Table
@@ -35,13 +34,36 @@
     <div class="teacher-questions-page-nav">
       <Page :current="current" :total="total" :page-size="page_size" @on-change="changePage" />
     </div>
+    <!-- 修改问题弹层 -->
+    <Modal
+        v-model="is_show_edit"
+        title="修改问题"
+        width="700"
+        :loading="edit_loading">
+        <Form label-position="top">
+          <FormItem label="提问标题">
+            <Input v-model="edit_title" placeholder="请输入提问的标题"></Input>
+          </FormItem>
+          <FormItem label="问题描述">
+            <!-- <Input type="textarea" v-model="ask_question_data.content"></Input> -->
+            <mavon-editor style="height: 400px" ref="md" @imgAdd="$imgAdd" v-model="edit_content" @change="renderEditor"></mavon-editor>
+          </FormItem>
+        </Form>
+        <div slot="footer">
+          <Button type="text" size="large" @click="is_show_edit=false">取消</Button>
+          <Button type="primary" size="large" @click="saveQuestionEdit">确定</Button>
+        </div>
+    </Modal>
+    <!-- 修改问题弹层 -->
   </div>
 </template>
 <script>
 import { getMyDate } from '@/libs/tools'
-import { getTeaCourseList, getStuCourseList, getQusetionsList, deleteCourseQuestion } from '@/api/course'
+import { mavonEditor } from 'mavon-editor'
+import 'mavon-editor/dist/css/index.css'
+import { getTeaCourseList, getStuCourseList, getMyAskQuestion, deleteCourseQuestion, queryAuditByCourse, editMyAskQuestion, getQuestionDetail, uploadImage } from '@/api/course'
 export default {
-  name: 'teacher-question-index',
+  name: 'teacher-question-ask',
   data () {
     return {
       isTeacher: false,
@@ -51,7 +73,7 @@ export default {
       year: '',
       year_options: [],
       semester: 1,
-      course_name: 'all',
+      course_id: '',
       course_list: [],
       // 答疑区表格
       questions_table_loading: true,
@@ -72,27 +94,6 @@ export default {
           }
         },
         {
-          title: "课程",
-          key: "course_name",
-          width: 200,
-          render: (h, params) => {
-            return h("span", params.row.course_name);
-          }
-        },
-        {
-          title: "学生",
-          key: "username",
-          width: 160,
-          render: (h, params) => {
-            return h("span", params.row.username);
-          }
-        },
-        {
-          title: "学号",
-          key: "number",
-          width: 160
-        },
-        {
           title: "提问时间",
           key: "date",
           width: 160,
@@ -101,7 +102,47 @@ export default {
           }
         },
         {
-          title: "状态",
+          title: "审核状态",
+          key: "status",
+          width: 200,
+          render: (h, params) => {
+            return h("div", [
+              h("Tag", 
+                {
+                  style: {
+                    marginRight: "10px"
+                  },
+                  props: {
+                    type: "dot",
+                    color: params.row.audit_status=='ing'?'warning':(params.row.audit_status=='fail'?'error':'success')
+                  }
+                },
+                params.row.audit_status=='ing'?'待审核':(params.row.audit_status=='fail'?'未通过':'通过')
+              ),
+              h(
+                "Button",
+                {
+                  style: {
+                    display: params.row.audit_status=='success'?'none':''
+                  },
+                  props: {
+                    type: "info",
+                    ghost: true,
+                    shape: 'circle'
+                  },
+                  on: {
+                    click: () => {
+                      this.showEditModal(params.row.id)
+                    }
+                  }
+                },
+                "修改"
+              )
+            ])
+          }
+        },
+        {
+          title: "问题状态",
           key: "status",
           width: 140,
           render: (h, params) => {
@@ -148,9 +189,6 @@ export default {
               h(
                 "Button",
                 {
-                  style: {
-                    display:this.isTeacher?"":"none",
-                  },
                   props: {
                     type: "error",
                     shape: "circle"
@@ -179,7 +217,17 @@ export default {
         }
       ],
       questions_data: [],
+      // 修改问题弹出层
+      is_show_edit: false,
+      edit_loading: true,
+      current_edit_id: '',
+      edit_title: '',
+      edit_content: '',
+      render_edit_content: ''
     }
+  },
+  components: {
+    mavonEditor
   },
   methods: {
     // 初始化学年列表
@@ -199,54 +247,24 @@ export default {
     },
     changeYear(year){
       console.log(year)
-      if(this.isTeacher){
-        this.getCourseList(()=>{
-          this.getQusetionsList()
-        })
-      }else{
-        this.getStuCourseList(()=>{
-          this.getQusetionsList()
-        })
-      }
+      this.getStuCourseList(()=>{
+        this.getQusetionsList()
+      })
     },
     changeSemester(semester){
       console.log(semester)
-      if(this.isTeacher){
-        this.getCourseList(()=>{
-          this.getQusetionsList()
-        })
-      }else{
-        this.getStuCourseList(()=>{
-          this.getQusetionsList()
-        })
-      }
+      this.getStuCourseList(()=>{
+        this.getQusetionsList()
+      })
     },
-    changeCourse(name){
-      console.log(name)
+    changeCourse(id){
+      console.log(id)
+      this.is_passed = 'passed'
       this.getQusetionsList()
     },
     changePage(page){
       console.log('页码改变 '+page)
       this.getQusetionsList()
-    },
-    // 获取课程列表(教师)
-    getCourseList(cb = () => {}) {
-      getTeaCourseList({
-        year: this.year,
-        semester: this.semester,
-        offset: 1,
-        limit: 100
-      }).then((res)=>{
-        console.log(res)
-        this.course_list = res.data.courseList
-        this.course_name = 'all'
-        this.current = 1
-        cb()
-      }).catch((err)=>{
-        console.log(err)
-        this.$Message.error('获取课程列表失败');
-        cb()
-      })
     },
     // 获取课程列表(学生)
     getStuCourseList(cb = () => {}) {
@@ -258,7 +276,10 @@ export default {
       }).then((res)=>{
         console.log(res)
         this.course_list = res.data.courseList
-        this.course_name = 'all'
+        this.course_id = ''
+        if(res.data.courseList.length > 0){
+          this.course_id = res.data.courseList[0].id
+        }
         this.current = 1
         cb()
       }).catch((err)=>{
@@ -270,10 +291,9 @@ export default {
     // 获取答疑列表
     getQusetionsList(cb = () => {}) {
       this.questions_table_loading = true;
-      getQusetionsList({
+      getMyAskQuestion({
         year: this.year,
         semester: this.semester,
-        course_name: this.course_name == 'all' ? null : this.course_name,
         offset: this.current,
         limit: this.page_size
       }).then((res)=>{
@@ -302,32 +322,88 @@ export default {
         this.$Message.error('删除失败');
         cb()
       })
+    },
+    renderEditor(val, render) {
+      console.log(val,render)
+      this.render_edit_content = render
+    },
+    // 编辑器上传图片 绑定@imgAdd event uploadImage
+    $imgAdd(pos, $file){
+        // 第一步.将图片上传到服务器.
+        var formdata = new FormData();
+        formdata.append('file', $file);
+        uploadImage(formdata).then((res)=> {
+          console.log(res);
+          // this.file = null;
+          // this.loadingStatus = false;
+          this.$Message.success('上传成功')
+          let url = res.data.urls[0].filePath
+          this.$refs.md.$img2Url(pos, url);
+        }).catch((err)=>{
+          console.log(err)
+          // this.file = null;
+          // this.loadingStatus = false;
+          this.$Message.error('上传失败')
+        })
+    },
+    // 获取答疑详情
+    getQuestionDetail(id, cb = ()=>{}) {
+      getQuestionDetail({
+        id
+      }).then((res)=>{
+        console.log(res)
+        this.edit_title = res.data.questionDetail.title
+        this.edit_content = res.data.questionDetail.content
+        cb()
+      }).catch((err)=>{
+        console.log(err)
+      })
+    },
+    // 弹出修改弹层
+    showEditModal(id) {
+      this.current_edit_id = id
+      this.getQuestionDetail(id, ()=>{
+        this.is_show_edit = true
+      })
+    },
+    // 提交修改
+    saveQuestionEdit() {
+      if(!/^.{6,50}$/.test(this.edit_title)) {
+        this.$Message.warning('问题长度必须大于6个字符，且在50个字符以内');
+        return false
+      }
+      if(!(this.edit_content.length >= 10)) {
+        this.$Message.warning('问题描述至少填写10个字符');
+        return false
+      }
+      editMyAskQuestion({
+        question_id: this.current_edit_id,
+        title: this.edit_title,
+        content: this.render_edit_content
+      }).then((res)=>{
+        console.log(res)
+        this.is_show_edit = false
+        this.$Modal.success({
+          title: '修改成功',
+          content: '已重新提交审核'
+        });
+        this.getQusetionsList()
+      }).catch((err)=>{
+        console.log(err)
+        this.is_show_edit = false
+        this.$Message.error('提交失败');
+      })
     }
   },
   created () {
     // 初始化学年列表
     this.createYearList()
-    if(this.isTeacher){
-      this.getCourseList(()=>{
-        this.getQusetionsList()
-      })
-    }else{
-      this.getStuCourseList(()=>{
-        this.getQusetionsList()
-      })
-    }
+    this.getStuCourseList(()=>{
+      this.getQusetionsList()
+    })
   },
   mounted () {
 
-  },
-  beforeRouteEnter(to, from, next) {
-    next(vm => {
-      if(to.name == 'student-answer-index'){
-        vm.isTeacher = false
-      }else{
-        vm.isTeacher = true
-      }
-    });
-  },
+  }
 }
 </script>

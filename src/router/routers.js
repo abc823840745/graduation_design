@@ -301,17 +301,60 @@ export default [
         component: () => import('@/view/student/course/course-detail/class-detail.vue'),
       },
       {
-        path: 'answering/answer-index',
+        path: 'course-notes',
+        name: 'course-notes',
+        meta: {
+          icon: 'ios-quote',
+          title: '我的笔记',
+          access: ['student'],
+          notCache: true,
+        },
+        component: () => import('@/view/student/course/course-notes.vue'),
+      },
+    ],
+  },
+  {
+    path: '/student/answering',
+    name: 'student-answering',
+    meta: {
+      icon: 'ios-text',
+      title: '答疑管理',
+      access: ['student'],
+    },
+    component: Main,
+    children: [
+      {
+        path: 'index',
         name: 'student-answer-index',
         meta: {
-          icon: 'ios-text',
+          icon: 'md-albums',
           title: '课程答疑',
           access: ['student'],
         },
         component: () => import('@/view/answering/answer-index.vue'),
       },
       {
-        path: 'answering/answer-detail/:id',
+        path: 'ask',
+        name: 'student-answer-ask',
+        meta: {
+          icon: 'md-chatbubbles',
+          title: '我的提问',
+          access: ['student'],
+        },
+        component: () => import('@/view/answering/answer-my-ask.vue'),
+      },
+      {
+        path: 'reply',
+        name: 'student-answer-reply',
+        meta: {
+          icon: 'md-chatboxes',
+          title: '我的回答 / 评论',
+          access: ['student'],
+        },
+        component: () => import('@/view/answering/answer-my-reply.vue'),
+      },
+      {
+        path: 'detail/:id',
         name: 'student-answer-detail',
         meta: {
           title: '答疑详情',
@@ -321,7 +364,7 @@ export default [
         },
         component: () => import('@/view/answering/answer-detail.vue'),
       },
-    ],
+    ]
   },
   {
     path: '/student/homework',
@@ -597,7 +640,7 @@ export default [
         path: 'my-course',
         name: 'teacher-my-course',
         meta: {
-          icon: 'logo-markdown',
+          icon: 'ios-book',
           title: '我的课程',
           access: ['teacher', 'admin'],
         },
@@ -611,6 +654,7 @@ export default [
           title: '课程详情',
           access: ['teacher', 'admin'],
           hideInMenu: true,
+          notCache: true,
         },
         component: () => import('@/view/teacher/course/my-course-detail.vue'),
       },
@@ -622,6 +666,7 @@ export default [
           title: '课时详情',
           access: ['teacher', 'admin'],
           hideInMenu: true,
+          notCache: true,
         },
         component: () => import('@/view/teacher/course/my-course-class.vue'),
       },
@@ -631,7 +676,7 @@ export default [
     path: '/teacher/answering',
     name: 'teacher-answering',
     meta: {
-      icon: 'logo-buffer',
+      icon: 'ios-text',
       title: '答疑管理',
       access: ['teacher', 'admin'],
     },
@@ -641,22 +686,42 @@ export default [
         path: 'index',
         name: 'teacher-answer-index',
         meta: {
-          icon: 'md-contacts',
-          title: '答疑管理',
+          icon: 'md-albums',
+          title: '全部答疑',
           access: ['teacher', 'admin'],
         },
-        component: () => import('@/view/teacher/answering/answer-index.vue'),
+        component: () => import('@/view/answering/answer-index.vue'),
+      },
+      {
+        path: 'audit',
+        name: 'teacher-answer-audit',
+        meta: {
+          icon: 'md-contacts',
+          title: '提问审核',
+          access: ['teacher', 'admin'],
+        },
+        component: () => import('@/view/answering/answer-audit.vue'),
+      },
+      {
+        path: 'reply',
+        name: 'teacher-answer-reply',
+        meta: {
+          icon: 'md-chatboxes',
+          title: '我的回答 / 评论',
+          access: ['teacher', 'admin'],
+        },
+        component: () => import('@/view/answering/answer-my-reply.vue'),
       },
       {
         path: 'detail/:id',
         name: 'teacher-answer-detail',
         meta: {
           icon: 'md-contacts',
-          title: '答疑管理',
+          title: '答疑详情',
           access: ['teacher', 'admin'],
           hideInMenu: true,
         },
-        component: () => import('@/view/teacher/answering/answer-detail.vue'),
+        component: () => import('@/view/answering/answer-detail.vue'),
       },
     ],
   },
