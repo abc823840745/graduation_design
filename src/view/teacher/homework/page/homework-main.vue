@@ -16,7 +16,7 @@
 
 <script>
 import Echart from "@teaHomework/smart/echart";
-import SliderBar from "@teaHomework/smart/slider-bar";
+import SliderBar from "@teaHomework/smart/aside-content";
 import { mapActions, mapState } from "vuex";
 import { getTeaCourseStudentList } from "@/api/course";
 import { getCurSchoolYear } from "@tools";

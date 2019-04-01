@@ -1,5 +1,5 @@
 <template>
-  <div class="slider-bar w100">
+  <div class="aside-content w100">
     <h2 class="mb-10">{{ userName }}，{{ getDayType() }}</h2>
     <p>{{ getToday() }}</p>
 
@@ -78,7 +78,27 @@ export default {
       let dayNum = date.getDay();
       return `${year}年${month < 10 ? "0" + month : month}月${
         day < 10 ? "0" + day : day
-      }日 星期${dayNum}`;
+      }日 ${this.formatWeek(parseInt(dayNum, 10))}`;
+    },
+
+    // 处理周数为中文周数
+    formatWeek(week) {
+      switch (week) {
+        case 0:
+          return "星期天";
+        case 1:
+          return "星期一";
+        case 2:
+          return "星期二";
+        case 3:
+          return "星期三";
+        case 4:
+          return "星期四";
+        case 5:
+          return "星期五";
+        case 6:
+          return "星期六";
+      }
     }
   }
 };
@@ -87,7 +107,7 @@ export default {
 <style lang='less' scoped>
 @import "../../../global/public.less";
 
-.slider-bar {
+.aside-content {
   height: auto;
 
   p {
