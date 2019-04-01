@@ -380,7 +380,7 @@ export function getCurDate() {
 export function getCurSchoolYear() {
   let date = new Date();
   let year = date.getFullYear();
-  let month = date.getMonth();
+  let month = date.getMonth() + 1;
   let semester = null;
   if (month >= 3 && month <= 7) {
     semester = '下学期';
