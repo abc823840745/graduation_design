@@ -79,7 +79,10 @@
         <div class="teacher-questions-page-nav" v-if="ask_total > 0">
           <Page :current="ask_current" :total="ask_total" :page-size="ask_page_size" @on-change="changeAskPage" />
         </div>
-        <p v-else class="none-list">本学期您还没有回答过问题哦~</p>
+        <div v-else class="none-list">
+          <img :src="noneImg">
+          <p>本学期您还没有回答过问题哦~</p>
+        </div>
       </TabPane>
       <TabPane label="我的评论">
         <div class="question-reply-list">
@@ -97,18 +100,23 @@
         <div class="teacher-questions-page-nav" v-if="comment_total > 0">
           <Page :current="comment_current" :total="comment_total" :page-size="comment_page_size" @on-change="changeCommentPage" />
         </div>
-        <p v-else class="none-list">本学期您还没有发表过评论哦~</p>
+        <div v-else class="none-list">
+          <img :src="noneImg">
+          <p>本学期您还没有发表过评论哦~</p>
+        </div>
       </TabPane>
     </Tabs>
   </div>
 </template>
 <script>
 import { getMyDate } from '@/libs/tools'
+import noneImg from "@/assets/images/none.png"
 import { getReplyQusetionList, getCommentQusetionList, delReplyQuestion, delCommentQuestion } from '@/api/course'
 export default {
   name: 'teacher-answer-reply',
   data () {
     return {
+      noneImg,
       // 回答列表页码
       ask_total: 0,
       ask_page_size: 10,

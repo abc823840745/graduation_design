@@ -56,10 +56,12 @@
       <mavon-editor style="height: 300px;z-index:99;" ref="md" @imgAdd="$imgAdd" v-model="note_content" :toolbars="editorOptions" @change="renderEditor"></mavon-editor>
     </div>
     <div class="none-notes" v-if="course_list.length == 0">
-      您选择的学期暂无课程信息~
+      <img :src="noneImg">
+      <p>您选择的学期暂无课程信息~</p>
     </div>
     <div class="none-notes" v-else-if="notes_list.length == 0">
-      您该课程暂无记录笔记~
+      <img :src="noneImg">
+      <p>您该课程暂无记录笔记~</p>
     </div>
     <div class="notes-list-wrap" v-else>
       <Card style="width:100%;margin-bottom:10px;" v-for="(item, index) in notes_list" :key="index">
@@ -80,11 +82,13 @@
 import { getMyDate } from '@/libs/tools'
 import { mavonEditor } from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
+import noneImg from "@/assets/images/none.png"
 import { getTeaCourseList, getStuCourseList, getCourseClassList, getQusetionsList, deleteCourseQuestion, getNotesList, addStuNotes, deleteNote, uploadImage } from '@/api/course'
 export default {
   name: 'my-course-notes',
   data () {
     return {
+      noneImg,
       total: 0,
       page_size: 10,
       current: 1,
