@@ -53,6 +53,9 @@
   }
   .course-add-question-btn {
     margin-bottom: 10px;
+    Button {
+      margin-right: 10px;
+    }
   }
 </style>
 <template>
@@ -79,8 +82,6 @@
             :loading="class_table_loading"
             :columns="class_columns"
             :data="class_data"
-            @on-row-click="clickTableRow"
-            style="cursor:pointer;"
           ></Table>
           <div class="course-detail-page-nav">
             <Page :current="course_class_offset" :total="course_class_total" :page-size="course_class_limit" @on-change="changeCourseClassPage" />
@@ -89,6 +90,7 @@
         <TabPane label="课程答疑" name="question">
           <div class="course-add-question-btn">
             <Button type="primary" @click="show_my_askquestion = true">我要提问</Button>
+            <Button icon="ios-refresh-circle" @click="refreshList">刷新列表</Button>
           </div>
           <Table
             size="large"
@@ -96,6 +98,8 @@
             border
             :columns="questions_columns"
             :data="questions_data"
+            @on-row-click="clickTableRow"
+            style="cursor:pointer;"
           ></Table>
           <div class="course-detail-page-nav">
             <Page :current="course_question_offset" :total="course_question_total" :page-size="course_question_limit" @on-change="changeQuestionPage" />
@@ -311,7 +315,7 @@ export default {
   methods: {
     // 点击表格行
     clickTableRow(row, index) {
-      this.$router.push(`${this.$route.params.id}/${row.id}`)
+      this.$router.push('/student/answering/detail/'+row.id)
     },
     goClass (id) {
       this.$router.push(`${this.$route.params.id}/${id}`)
@@ -441,6 +445,12 @@ export default {
       this.ask_question_data.content = ''
       this.show_my_askquestion = false
     },
+    // 刷新列表
+    refreshList() {
+      this.getCourseQusetionsList(()=>{
+        this.questions_table_loading = false
+      })
+    }
   },
   created () {
     this.getCourseDetail()

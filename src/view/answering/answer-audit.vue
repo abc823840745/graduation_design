@@ -22,6 +22,8 @@
       <Select v-model="course_id" @on-change="changeCourse()" style="width:160px;margin-right:10px;">
         <Option v-for="(item,index) in course_list" :key="index" :value="item.id" :label="item.name"></Option>
       </Select>
+      <span></span>
+      <Button type="primary" icon="ios-refresh-circle" @click="refreshList">刷新列表</Button>
     </div>
     <Table
       size="large"
@@ -320,6 +322,10 @@ export default {
         this.$Message.error('删除失败');
         cb()
       })
+    },
+    // 刷新列表
+    refreshList() {
+      this.queryAuditByCourse()
     }
   },
   created () {

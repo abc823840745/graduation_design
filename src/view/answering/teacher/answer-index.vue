@@ -23,6 +23,8 @@
         <Option value="all" label="全部"></Option>
         <Option v-for="(item,index) in course_list" :key="index" :value="item.name" :label="item.name"></Option>
       </Select>
+      <span></span>
+      <Button type="primary" icon="ios-refresh-circle" @click="refreshList">刷新列表</Button>
     </div>
     <Table
       size="large"
@@ -277,6 +279,10 @@ export default {
       }).catch((err)=>{
         console.log(err)
       })
+    },
+    // 刷新列表
+    refreshList() {
+      this.getQusetionsList()
     }
   },
   created () {

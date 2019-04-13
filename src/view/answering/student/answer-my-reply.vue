@@ -61,6 +61,8 @@
         <Option :value="1" label="第一学期"></Option>
         <Option :value="2" label="第二学期"></Option>
       </Select>
+      <span></span>
+      <Button type="primary" icon="ios-refresh-circle" @click="refreshList">刷新列表</Button>
     </div>
     <Tabs class="question-reply-comment-panel" type="card" :animated="false">
       <TabPane label="我的回答">
@@ -252,6 +254,11 @@ export default {
         }
       });
     },
+    // 刷新列表
+    refreshList() {
+      this.getReplyQusetionList()
+      this.getCommentQusetionList()
+    }
   },
   created () {
     // 初始化学年列表

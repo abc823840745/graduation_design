@@ -22,6 +22,8 @@
       <Select v-model="course_id" :disabled="course_list.length==0" @on-change="changeCourse" style="width:160px;margin-right:10px;">
         <Option v-for="(item,index) in course_list" :key="index" :value="item.id" :label="item.name"></Option>
       </Select>
+      <span></span>
+      <Button type="primary" icon="ios-refresh-circle" @click="refreshList">刷新列表</Button>
     </div>
     <Table
       size="large"
@@ -395,6 +397,10 @@ export default {
         this.is_show_edit = false
         this.$Message.error('提交失败');
       })
+    },
+    // 刷新列表
+    refreshList() {
+      this.getQusetionsList()
     }
   },
   created () {

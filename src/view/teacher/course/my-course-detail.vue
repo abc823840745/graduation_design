@@ -1,5 +1,8 @@
 <style lang="less">
 .teacher-my-course-detail {
+  .top-btn-area {
+    margin-bottom: 20px;
+  }
   .course-detail-top {
     display: flex;
     justify-content: space-between;
@@ -125,12 +128,17 @@
           </div>
         </TabPane>
         <TabPane label="答疑区" name="course_question">
+          <div class="top-btn-area">
+            <Button type="primary" icon="ios-refresh-circle" @click="refreshList">刷新列表</Button>
+          </div>
           <Table
             size="large"
             :loading="questions_table_loading"
             border
             :columns="questions_columns"
             :data="questions_data"
+            @on-row-click="clickTableRow"
+            style="cursor:pointer;"
           ></Table>
           <div class="teacher-questions-page-nav">
             <Page :current="course_question_offset" :total="course_question_total" :page-size="course_question_limit" @on-change="changeQuestionPage" />
@@ -376,7 +384,8 @@ export default {
                     shape: "circle"
                   },
                   on: {
-                    click: () => {
+                    click: (e) => {
+                      e.stopPropagation();
                       this.$Modal.confirm({
                           title: '确定要删除该问题？',
                           content: '<p>删除后将无法恢复</p>',
@@ -405,6 +414,10 @@ export default {
     myPdf
   },
   methods: {
+    // 点击表格行
+    clickTableRow(row, index) {
+      this.$router.push('/teacher/answering/detail/'+row.id)
+    },
     checkStudentList() {
       console.log("打开进入课程的学生名单");
       this.showStudentList = true;
@@ -564,6 +577,7 @@ export default {
     },
     // 获取该课程答疑列表
     getCourseQusetionsList(cb = ()=>{}) {
+      this.questions_table_loading = true
       getCourseQusetionsList({
         course_id: this.$route.params.id,
         offset: this.course_question_offset,
@@ -595,6 +609,12 @@ export default {
         console.log(err)
         this.$Message.error('删除失败');
         cb()
+      })
+    },
+    // 刷新列表
+    refreshList() {
+      this.getCourseQusetionsList(()=>{
+        this.questions_table_loading = false;
       })
     }
   },
