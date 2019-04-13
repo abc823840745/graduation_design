@@ -81,8 +81,8 @@
       <SearchView
         :columns="
           curDirectory === 4
-            ? tableGround[3]['column']
-            : tableGround[4]['column']
+            ? tableGround[3]['columns']
+            : tableGround[4]['columns']
         "
         :tableData="searchTableData"
         :total="searchCount"
