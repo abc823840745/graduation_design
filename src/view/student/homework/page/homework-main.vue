@@ -9,24 +9,22 @@
     </div>
 
     <div class="main-right-con">
-      <SliderBar />
+      <AsideCon />
     </div>
   </div>
 </template>
 
 <script>
-import Echart from "@stuHomework/smart/echart";
-import SliderBar from "@teaHomework/smart/aside-content";
 import { mapActions, mapState } from "vuex";
-import myMixin from "@/view/global/mixin";
 import { getCurSchoolYear } from "@tools";
+import myMixin from "@/view/global/mixin";
 
 export default {
   mixins: [myMixin],
 
   components: {
-    Echart,
-    SliderBar
+    Echart: () => import("@stuHomework/smart/echart"),
+    AsideCon: () => import("@teaHomework/smart/aside-content")
   },
 
   computed: {

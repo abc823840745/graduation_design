@@ -32,7 +32,7 @@
         class="mar-top page"
         :total="tableInfo['count']"
         :page-size="10"
-        @on-change="getTableData"
+        @on-change="changePage"
       />
     </div>
 
@@ -50,7 +50,7 @@
         :tableData="tableData"
         :total="searchCount"
         @search="getSearchResult"
-        @changePage="changePage"
+        @changePage="changeSearchPage"
       />
       <div slot="footer">
         <Button type="primary" size="large" @click="goBack">
@@ -62,9 +62,6 @@
 </template>
 
 <script>
-import MultipleChoice from "@teaHomework/smart/multiple-choice";
-import MyHomework from "@teaHomework/smart/my-homework";
-import SearchView from "@/view/global/component/search-view";
 import myMixin from "@/view/global/mixin";
 import { mapActions, mapState, mapMutations } from "vuex";
 import { getCurSchoolYear } from "@tools";
@@ -73,9 +70,9 @@ export default {
   mixins: [myMixin],
 
   components: {
-    MultipleChoice,
-    MyHomework,
-    SearchView
+    MultipleChoice: () => import("@teaHomework/smart/multiple-choice"),
+    MyHomework: () => import("@teaHomework/smart/my-homework"),
+    SearchView: () => import("@/view/global/component/search-view")
   },
 
   computed: {
@@ -205,7 +202,12 @@ export default {
       "searchMyHW"
     ]),
 
-    ...mapMutations(["setOriginInputInfo", "setInputInfo", "setCurCourse"]),
+    ...mapMutations([
+      "setOriginInputInfo",
+      "setInputInfo",
+      "setCurCourse",
+      "setTaskCenterInfo"
+    ]),
 
     async goUpdateTask(params) {
       let { index } = params;
@@ -440,11 +442,11 @@ export default {
 
     // 删除作业
     async delHomework(apiName, index) {
-      let { page, tableData } = this.tableInfo;
+      let { tableData } = this.tableInfo;
       let { id } = tableData[index];
       let res = await this[apiName](id);
       if (res["status"] === 1) {
-        await this.getTableData(page);
+        await this.getTableData(this.tableInfo["page"]);
         let { page, tableData } = this.tableInfo;
         if (page !== 1 && tableData.length === 0) {
           await this.getTableData(page - 1);
@@ -462,6 +464,11 @@ export default {
 
     searchClose() {
       this.showModal = false;
+    },
+
+    // 表格分页
+    changePage(page) {
+      this.getTableData(page);
     },
 
     // 搜索结果
@@ -484,7 +491,7 @@ export default {
     },
 
     // 搜索表格分页
-    async changePage(page) {
+    async changeSearchPage(page) {
       await this.searchResult(this.searchText, page);
     },
 

@@ -100,9 +100,6 @@
 </template>
 
 <script>
-import MultipleChoice from "@teaHomework/smart/multiple-choice";
-import SubjectType from "@/view/global/component/show-subject-different-types";
-import SubWarehouse from "@teaHomework/smart/subject-warehouse";
 import { mapMutations, mapState } from "vuex";
 import { debounce, isEmptyObject } from "@tools";
 
@@ -116,9 +113,10 @@ export default {
   },
 
   components: {
-    MultipleChoice,
-    SubjectType,
-    SubWarehouse
+    MultipleChoice: () => import("@teaHomework/smart/multiple-choice"),
+    SubjectType: () =>
+      import("@/view/global/component/show-subject-different-types"),
+    SubWarehouse: () => import("@teaHomework/smart/subject-warehouse")
   },
 
   watch: {

@@ -14,14 +14,14 @@
 </template>
 
 <script>
-import SubjectType from "@/view/global/component/show-subject-different-types";
 import { mapState } from "vuex";
 
 export default {
   name: "check-online-homework-detail",
 
   components: {
-    SubjectType
+    SubjectType: () =>
+      import("@/view/global/component/show-subject-different-types")
   },
 
   computed: {

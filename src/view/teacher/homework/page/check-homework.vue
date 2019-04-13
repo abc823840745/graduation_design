@@ -90,13 +90,10 @@
 </template>
 
 <script>
-import CourseSelect from "@teaHomework/smart/course-select";
-import CheckOnlineHWDetail from "@teaHomework/smart/check-online-homework-detail";
-import SearchView from "@/view/global/component/search-view";
-import myMixin from "@/view/global/mixin";
 import { mapActions, mapState, mapMutations } from "vuex";
 import { getCourseClassList } from "@/api/course";
 import { debounce } from "@tools";
+import myMixin from "@/view/global/mixin";
 import axios from "axios";
 import config from "@/config";
 
@@ -110,7 +107,12 @@ export default {
 
   mixins: [myMixin],
 
-  components: { CheckOnlineHWDetail, CourseSelect, SearchView },
+  components: {
+    CheckOnlineHWDetail: () =>
+      import("@teaHomework/smart/check-online-homework-detail"),
+    CourseSelect: () => import("@teaHomework/smart/course-select"),
+    SearchView: () => import("@/view/global/component/search-view")
+  },
 
   computed: {
     ...mapState({

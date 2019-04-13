@@ -64,10 +64,7 @@
 </template>
 
 <script>
-import MultipleChoice from "@teaHomework/smart/multiple-choice";
-import HomeworkDetail from "@stuHomework/smart/check-online-homework-detail";
 import myMixin from "@/view/global/mixin";
-import SearchView from "@/view/global/component/search-view";
 import { mapState, mapActions } from "vuex";
 import { getCurSchoolYear } from "@tools";
 import { types } from "util";
@@ -76,9 +73,10 @@ export default {
   mixins: [myMixin],
 
   components: {
-    MultipleChoice,
-    HomeworkDetail,
-    SearchView
+    MultipleChoice: () => import("@teaHomework/smart/multiple-choice"),
+    HomeworkDetail: () =>
+      import("@stuHomework/smart/check-online-homework-detail"),
+    SearchView: () => import("@/view/global/component/search-view")
   },
 
   computed: {
