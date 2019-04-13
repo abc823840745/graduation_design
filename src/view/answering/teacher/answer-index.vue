@@ -149,7 +149,8 @@ export default {
                     shape: "circle"
                   },
                   on: {
-                    click: () => {
+                    click: (e) => {
+                      e.stopPropagation();
                       this.$Modal.confirm({
                           title: '确定要删除该问题？',
                           content: '<p>删除后将无法恢复</p>',
