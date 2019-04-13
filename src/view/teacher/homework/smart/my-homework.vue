@@ -289,7 +289,7 @@ export default {
         let { name, classify, classHour, stopTimeList } = this.homeworkInfo;
         let { filename, localpath, url } = this.uploadFileInfo;
 
-        if (!name || !classify || !classHour || stopTimeList.length === 0) {
+        if (!name || !classify || !classHour || !stopTimeList.length) {
           return this.$Message.error("缺少必填信息");
         }
         if (this.$tools.isEmptyObject(this.uploadFileInfo)) {
@@ -316,6 +316,7 @@ export default {
               title: "新建成功！"
             });
             this.homeworkInfo = {};
+            this.uploadFileInfo = {};
             this.showModal = false;
           }
         }

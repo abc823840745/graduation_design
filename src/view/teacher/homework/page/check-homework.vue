@@ -34,12 +34,17 @@
       <Table
         border
         :loading="loading"
-        :columns="showTable('columns', 6)"
-        :data="showTable('data', 6)"
+        :columns="filterData('columns')"
+        :data="filterData('data')"
         class="table-con mar-top"
       />
 
-      <Page :total="totalCount" class="mar-top page" @on-change="changePage" />
+      <Page
+        :total="filterData('total')"
+        :current="filterData('page')"
+        class="mar-top page"
+        @on-change="changePage"
+      />
 
       <!-- <div class="btn-ground"> -->
       <Button
@@ -74,7 +79,11 @@
 
     <Modal fullscreen title="搜索" v-model="modalOpen" @on-ok="searchClose">
       <SearchView
-        :columns="curDirectory === 4 ? columns4 : columns5"
+        :columns="
+          curDirectory === 4
+            ? tableGround[3]['column']
+            : tableGround[4]['column']
+        "
         :tableData="searchTableData"
         :total="searchCount"
         @search="getSearchResult"
@@ -119,25 +128,11 @@ export default {
       userName: state => state.user.userName,
       inputInfo: state => state.homework.inputInfo,
       teaId: state => state.user.stu_nmuber
-    }),
-
-    totalCount() {
-      switch (this.curDirectory) {
-        case 1:
-          return this.tableTotal1;
-        case 3:
-          return this.tableTotal3;
-        case 4:
-          return this.tableTotal4;
-        case 5:
-          return this.tableTotal5;
-      }
-    }
+    })
   },
 
   data() {
     return {
-      // searchColumns: [],
       searchCount: 1,
       searchTableData: [],
       isSelectCourse: true,
@@ -154,185 +149,202 @@ export default {
       stuHwInfo: {},
       stuHWId: 0,
       allStuClassHW: [],
-      tableTotal1: 1,
-      tableTotal2: 1,
-      tableTotal3: 1,
-      tableTotal4: 1,
-      tableTotal5: 1,
-      columns1: [
+      tableGround: [
         {
-          title: "课时名称",
-          key: "name"
-        },
-        {
-          title: "操作",
-          key: "operation",
-          render: (h, params) => {
-            return h("div", [
-              this.btnStyle("查看", h, () => {
-                this.goDirectoryTwo(params);
-              })
-            ]);
-          }
-        }
-      ],
-      columns2: [
-        {
-          title: "作业类型",
-          key: "hwType"
-        },
-        {
-          title: "操作",
-          key: "operation",
-          render: (h, params) => {
-            return h("div", [
-              this.btnStyle("查看", h, () => {
-                this.goDirectoryThree(params);
-              })
-            ]);
-          }
-        }
-      ],
-      columns3: [
-        {
-          title: "作业名称",
-          key: "name"
-        },
-        {
-          title: "操作",
-          key: "operation",
-          render: (h, params) => {
-            return h("div", [
-              this.btnStyle("查看", h, async () => {
-                this.goDirectoryFourth(params);
-              })
-            ]);
-          }
-        }
-      ],
-      columns4: [
-        {
-          title: "学号",
-          key: "stu_id"
-        },
-        {
-          title: "姓名",
-          key: "student"
-        },
-        {
-          title: "完成状态",
-          key: "status",
-          sortable: true,
-          render: (h, params) => {
-            let text = params.row.status;
-            let btnColor = text === "已完成" ? "success" : "error";
-            return h("div", [this.statusBtnStyle(text, h, btnColor)]);
-          }
-        },
-        {
-          title: "评分",
-          key: "grade",
-          render: (h, params) => {
-            let _this = this;
-            let { webpath, grade, id } = params.row;
-            if (webpath === "待上传") {
-              return h("InputNumber", {
-                props: {
-                  max: 100,
-                  min: 1,
-                  disabled: true
-                },
-                style: {
-                  marginRight: "5px"
-                }
-              });
-            }
-            return h("InputNumber", {
-              props: {
-                max: 100,
-                min: 1,
-                value: grade !== "待评分" ? parseInt(grade, 10) : 1
-              },
-              style: {
-                marginRight: "5px"
-              },
-              on: {
-                input(value) {
-                  _this.score = value;
-                },
-                async "on-blur"() {
-                  await _this.scoreHw(id, _this.score);
-                }
+          total: 1,
+          page: 1,
+          data: [],
+          columns: [
+            {
+              title: "课时名称",
+              key: "name"
+            },
+            {
+              title: "操作",
+              key: "operation",
+              render: (h, params) => {
+                return h("div", [
+                  this.btnStyle("查看", h, () => {
+                    this.goDirectoryTwo(params);
+                  })
+                ]);
               }
-            });
-          }
-        },
-        {
-          title: "操作",
-          key: "operation",
-          render: (h, params) => {
-            let webpath = params.row.webpath;
-            if (webpath === "待上传") {
-              return h("div", [this.disableBtnStyle("下载", h)]);
             }
-            return h("div", [
-              this.btnStyle("下载", h, () => {
-                this.goDownload(params);
-              })
-            ]);
-          }
-        }
-      ],
-      columns5: [
-        {
-          title: "学号",
-          key: "stu_id"
+          ]
         },
         {
-          title: "姓名",
-          key: "student"
-        },
-        {
-          title: "完成状态",
-          key: "status",
-          render: (h, params) => {
-            let text = params.row.status;
-            let btnColor = text === "已完成" ? "success" : "error";
-            return h("div", [this.statusBtnStyle(text, h, btnColor)]);
-          }
-        },
-        {
-          title: "评分",
-          key: "grade"
-        },
-        {
-          title: "操作",
-          key: "operation",
-          render: (h, params) => {
-            let { status } = params.row;
-            if (status === "待上传") {
-              return h("div", [this.disableBtnStyle("查看", h)]);
+          total: 1,
+          page: 1,
+          data: [
+            {
+              hwType: "课时作业"
+            },
+            {
+              hwType: "在线作业"
             }
-            return h("div", [
-              this.btnStyle("查看", h, async () => {
-                this.goDetail(params);
-              })
-            ]);
-          }
-        }
-      ],
-      data1: [],
-      data2: [
-        {
-          hwType: "课时作业"
+          ],
+          columns: [
+            {
+              title: "作业类型",
+              key: "hwType"
+            },
+            {
+              title: "操作",
+              key: "operation",
+              render: (h, params) => {
+                return h("div", [
+                  this.btnStyle("查看", h, () => {
+                    this.goDirectoryThree(params);
+                  })
+                ]);
+              }
+            }
+          ]
         },
         {
-          hwType: "在线作业"
+          total: 1,
+          page: 1,
+          data: [],
+          columns: [
+            {
+              title: "作业名称",
+              key: "name"
+            },
+            {
+              title: "操作",
+              key: "operation",
+              render: (h, params) => {
+                return h("div", [
+                  this.btnStyle("查看", h, async () => {
+                    this.goDirectoryFourth(params);
+                  })
+                ]);
+              }
+            }
+          ]
+        },
+        {
+          total: 1,
+          page: 1,
+          data: [],
+          columns: [
+            {
+              title: "学号",
+              key: "stu_id"
+            },
+            {
+              title: "姓名",
+              key: "student"
+            },
+            {
+              title: "完成状态",
+              key: "status",
+              sortable: true,
+              render: (h, params) => {
+                let text = params.row.status;
+                let btnColor = text === "已完成" ? "success" : "error";
+                return h("div", [this.statusBtnStyle(text, h, btnColor)]);
+              }
+            },
+            {
+              title: "评分",
+              key: "grade",
+              render: (h, params) => {
+                let _this = this;
+                let { webpath, grade, id } = params.row;
+                if (webpath === "待上传") {
+                  return h("InputNumber", {
+                    props: {
+                      max: 100,
+                      min: 1,
+                      disabled: true
+                    },
+                    style: {
+                      marginRight: "5px"
+                    }
+                  });
+                }
+                return h("InputNumber", {
+                  props: {
+                    max: 100,
+                    min: 1,
+                    value: grade !== "待评分" ? parseInt(grade, 10) : 1
+                  },
+                  style: {
+                    marginRight: "5px"
+                  },
+                  on: {
+                    input(value) {
+                      _this.score = value;
+                    },
+                    async "on-blur"() {
+                      await _this.scoreHw(id, _this.score);
+                    }
+                  }
+                });
+              }
+            },
+            {
+              title: "操作",
+              key: "operation",
+              render: (h, params) => {
+                let webpath = params.row.webpath;
+                if (webpath === "待上传") {
+                  return h("div", [this.disableBtnStyle("下载", h)]);
+                }
+                return h("div", [
+                  this.btnStyle("下载", h, () => {
+                    this.goDownload(params);
+                  })
+                ]);
+              }
+            }
+          ]
+        },
+        {
+          total: 1,
+          page: 1,
+          data: [],
+          columns: [
+            {
+              title: "学号",
+              key: "stu_id"
+            },
+            {
+              title: "姓名",
+              key: "student"
+            },
+            {
+              title: "完成状态",
+              key: "status",
+              render: (h, params) => {
+                let text = params.row.status;
+                let btnColor = text === "已完成" ? "success" : "error";
+                return h("div", [this.statusBtnStyle(text, h, btnColor)]);
+              }
+            },
+            {
+              title: "评分",
+              key: "grade"
+            },
+            {
+              title: "操作",
+              key: "operation",
+              render: (h, params) => {
+                let { status } = params.row;
+                if (status === "待上传") {
+                  return h("div", [this.disableBtnStyle("查看", h)]);
+                }
+                return h("div", [
+                  this.btnStyle("查看", h, async () => {
+                    this.goDetail(params);
+                  })
+                ]);
+              }
+            }
+          ]
         }
-      ],
-      data3: [],
-      data4: [],
-      data5: []
+      ]
     };
   },
 
@@ -383,6 +395,22 @@ export default {
 
     goDownload(params) {
       window.open(params.row.webpath);
+    },
+
+    // 根据当前目录选择对应的数据
+    filterData(parmasName) {
+      switch (this.curDirectory) {
+        case 1:
+          return this.tableGround[0][parmasName];
+        case 2:
+          return this.tableGround[1][parmasName];
+        case 3:
+          return this.tableGround[2][parmasName];
+        case 4:
+          return this.tableGround[3][parmasName];
+        case 5:
+          return this.tableGround[4][parmasName];
+      }
     },
 
     async goDetail(params) {
@@ -447,8 +475,8 @@ export default {
         page,
         course_id: this.curCourseInfo["id"]
       });
-      this.data1 = res.data.courseTimeList;
-      this.tableTotal1 = res.data.count;
+      this.$set(this.tableGround[0], "data", res.data.courseTimeList);
+      this.$set(this.tableGround[0], "total", res.data.count);
       this.isSelectCourse = false;
       this.loading = false;
     },
@@ -464,8 +492,8 @@ export default {
         semester,
         classHour: this.curClassHour
       });
-      this.data3 = res.data;
-      this.tableTotal3 = res.count;
+      this.$set(this.tableGround[2], "data", res.data);
+      this.$set(this.tableGround[2], "total", res.count);
       this.loading = false;
     },
 
@@ -480,8 +508,8 @@ export default {
         semester,
         classHour: this.curClassHour
       });
-      this.data3 = res.data;
-      this.tableTotal3 = res.count;
+      this.$set(this.tableGround[2], "data", res.data);
+      this.$set(this.tableGround[2], "total", res.count);
       this.loading = false;
     },
 
@@ -498,8 +526,8 @@ export default {
         stuclass: classes,
         classHour: this.curClassHour
       });
-      this.data4 = res.data;
-      this.tableTotal4 = res.count;
+      this.$set(this.tableGround[3], "data", res.data);
+      this.$set(this.tableGround[3], "total", res.count);
       this.allStuClassHW =
         res.alldata &&
         res.alldata.map(item => {
@@ -524,8 +552,8 @@ export default {
         stuclass: classes,
         classHour: this.curClassHour
       });
-      this.data5 = res.data;
-      this.tableTotal5 = res.count;
+      this.$set(this.tableGround[4], "data", res.data);
+      this.$set(this.tableGround[4], "total", res.count);
       this.loading = false;
     },
 
@@ -710,6 +738,7 @@ export default {
       switch (this.curDirectory) {
         case 1:
           await this.getClassHourList(page);
+          this.$set(this.tableGround[0], "page", page);
           break;
         case 3:
           if (this.curHWtype === "课时作业") {
@@ -717,12 +746,15 @@ export default {
           } else {
             await this.getOnlineHW(page);
           }
+          this.$set(this.tableGround[2], "page", page);
           break;
         case 4:
           await this.getStuClassHW(page);
+          this.$set(this.tableGround[3], "page", page);
           break;
         case 5:
           await this.getStuOnlineHW(page);
+          this.$set(this.tableGround[4], "page", page);
           break;
       }
     }
