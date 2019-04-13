@@ -29,10 +29,6 @@
 </template>
 
 <script>
-import RadioItem from "@/view/global/component/single-choice-question";
-import CheckBoxItem from "@/view/global/component/multiple-choice-questions";
-import EssayQuestion from "@/view/global/component/essay-question";
-import FillTheQuestion from "@/view/global/component/fill-the-question";
 import { mapState } from "vuex";
 
 export default {
@@ -43,10 +39,11 @@ export default {
   },
 
   components: {
-    RadioItem,
-    CheckBoxItem,
-    EssayQuestion,
-    FillTheQuestion
+    RadioItem: () => import("@/view/global/component/single-choice-question"),
+    CheckBoxItem: () =>
+      import("@/view/global/component/multiple-choice-questions"),
+    EssayQuestion: () => import("@/view/global/component/essay-question"),
+    FillTheQuestion: () => import("@/view/global/component/fill-the-question")
   },
 
   computed: {

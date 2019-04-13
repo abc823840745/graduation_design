@@ -141,8 +141,6 @@
 </template>
 
 <script>
-import CreateSubject from "@teaHomework/smart/create-subject";
-import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import myMixin from "@/view/global/mixin";
 import config from "@/config";
 import { mapActions, mapState, mapMutations } from "vuex";
@@ -167,8 +165,8 @@ export default {
   },
 
   components: {
-    CreateSubject,
-    MultipleChoice
+    CreateSubject: () => import("@teaHomework/smart/create-subject"),
+    MultipleChoice: () => import("@teaHomework/smart/multiple-choice")
   },
 
   watch: {
@@ -279,7 +277,8 @@ export default {
       info["name"] = name;
       info["classify"] = classify;
       info["classHour"] = week;
-      info["testingTime"] = classify === "课时作业" ? 0 : totaltime; // 将秒数转换成分钟显示
+      info["testingTime"] =
+        classify === "课时作业" ? 0 : parseInt(totaltime, 10) / 60; // 将秒数转换成分钟显示
       info["stopTimeList"] = [startime, fintime];
       this.homeworkInfo = info;
     },
@@ -336,7 +335,7 @@ export default {
         course,
         teacher,
         teach_id: this.stu_number,
-        totaltime: testingTime, // 转换成秒数提交
+        totaltime: testingTime * 60, // 转换成秒数提交
         startime: stopTimeList[0],
         fintime: stopTimeList[1]
       });
@@ -701,7 +700,7 @@ export default {
         id: this.info.id,
         name,
         classHour,
-        totaltime: testingTime,
+        totaltime: testingTime * 60,
         startime: stopTimeList[0],
         fintime: stopTimeList[1]
       });

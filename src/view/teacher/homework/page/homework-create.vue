@@ -12,8 +12,6 @@
 </template>
 
 <script>
-import CourseSelect from "@teaHomework/smart/course-select";
-import MyHomework from "@teaHomework/smart/my-homework";
 import myMixin from "@/view/global/mixin";
 import { mapMutations } from "vuex";
 
@@ -21,8 +19,8 @@ export default {
   mixins: [myMixin],
 
   components: {
-    CourseSelect,
-    MyHomework
+    CourseSelect: () => import("@teaHomework/smart/course-select"),
+    MyHomework: () => import("@teaHomework/smart/my-homework")
   },
 
   data() {

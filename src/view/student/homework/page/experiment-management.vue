@@ -63,7 +63,6 @@
 </template>
 
 <script>
-import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import myMixin from "@/view/global/mixin";
 import config from "@/config";
 import { mapActions, mapState } from "vuex";
@@ -73,7 +72,7 @@ export default {
   mixins: [myMixin],
 
   components: {
-    MultipleChoice
+    MultipleChoice: () => import("@teaHomework/smart/multiple-choice")
   },
 
   computed: {

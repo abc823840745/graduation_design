@@ -10,13 +10,10 @@
 </template>
 
 <script>
-import CourseSelect from "@teaHomework/smart/course-sel";
-import SubjectHouse from "@teaHomework/smart/subject-house";
-
 export default {
   components: {
-    CourseSelect,
-    SubjectHouse
+    CourseSelect: () => import("@teaHomework/smart/course-sel"),
+    SubjectHouse: () => import("@teaHomework/smart/subject-house")
   },
 
   data() {

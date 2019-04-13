@@ -24,7 +24,6 @@
 </template>
 
 <script>
-import HomeworkDetail from "@stuHomework/smart/check-online-homework-detail";
 import { mapState } from "vuex";
 import myMixin from "@/view/global/mixin";
 
@@ -32,7 +31,8 @@ export default {
   mixins: [myMixin],
 
   components: {
-    HomeworkDetail
+    HomeworkDetail: () =>
+      import("@stuHomework/smart/check-online-homework-detail")
   },
 
   props: {

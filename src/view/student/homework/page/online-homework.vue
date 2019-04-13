@@ -40,8 +40,6 @@
 </template>
 
 <script>
-import MultipleChoice from "@teaHomework/smart/multiple-choice";
-import WriteOnlineHomework from "@stuHomework/smart/write-online-homework";
 import myMixin from "@/view/global/mixin";
 import {
   getlocalStorage,
@@ -73,8 +71,9 @@ export default {
   mixins: [myMixin],
 
   components: {
-    MultipleChoice,
-    WriteOnlineHomework
+    MultipleChoice: () => import("@teaHomework/smart/multiple-choice"),
+    WriteOnlineHomework: () =>
+      import("@stuHomework/smart/write-online-homework")
   },
 
   computed: {

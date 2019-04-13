@@ -39,10 +39,7 @@
 </template>
 
 <script>
-import optionRow from "@teaHomework/smart/option-expand";
-import answerRow from "@teaHomework/smart/answer-expand";
 import myMixin from "@/view/global/mixin";
-import SearchView from "@/view/global/component/search-view";
 import { mapActions, mapState, mapMutations } from "vuex";
 
 export default {
@@ -54,9 +51,9 @@ export default {
   },
 
   components: {
-    optionRow,
-    answerRow,
-    SearchView
+    optionRow: () => import("@teaHomework/smart/option-expand"),
+    answerRow: () => import("@teaHomework/smart/answer-expand"),
+    SearchView: () => import("@/view/global/component/search-view")
   },
 
   watch: {

@@ -52,8 +52,6 @@
 </template>
 
 <script>
-import SubjectType from "@/view/global/component/show-subject-different-types";
-import CountDown from "@stuHomework/smart/count-down";
 import { mapState } from "vuex";
 import { getlocalStorage } from "@tools";
 
@@ -66,8 +64,9 @@ export default {
   },
 
   components: {
-    SubjectType,
-    CountDown
+    SubjectType: () =>
+      import("@/view/global/component/show-subject-different-types"),
+    CountDown: () => import("@stuHomework/smart/count-down")
   },
 
   watch: {
@@ -80,6 +79,7 @@ export default {
     },
 
     surplusTime(newVal, oldVal) {
+      console.log(newVal);
       this.isStartTimer = true;
     }
   },

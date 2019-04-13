@@ -145,9 +145,7 @@
 
 <script>
 import myMixin from "@/view/global/mixin";
-import SubjectType from "@/view/global/component/show-subject-different-types";
 import { mapState, mapMutations, mapActions } from "vuex";
-import SearchView from "@/view/global/component/search-view";
 import { debounce } from "@tools";
 
 export default {
@@ -158,8 +156,9 @@ export default {
   },
 
   components: {
-    SubjectType,
-    SearchView
+    SubjectType: () =>
+      import("@/view/global/component/show-subject-different-types"),
+    SearchView: () => import("@/view/global/component/search-view")
   },
 
   watch: {

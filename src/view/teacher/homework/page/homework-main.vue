@@ -15,8 +15,6 @@
 </template>
 
 <script>
-import Echart from "@teaHomework/smart/echart";
-import SliderBar from "@teaHomework/smart/aside-content";
 import { mapActions, mapState } from "vuex";
 import { getTeaCourseStudentList } from "@/api/course";
 import { getCurSchoolYear } from "@tools";
@@ -26,8 +24,8 @@ export default {
   mixins: [myMixin],
 
   components: {
-    Echart,
-    SliderBar
+    Echart: () => import("@teaHomework/smart/echart"),
+    SliderBar: () => import("@teaHomework/smart/aside-content")
   },
 
   computed: {
