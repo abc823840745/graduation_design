@@ -314,6 +314,16 @@ export function editMyAskQuestion (obj) {
   })
 }
 
+// 是否有新的通知
+export function getNewNotify (obj) {
+  return axios.request({
+    params: {},
+    url: '/has/new/course/question/notify',
+    method: 'get'
+  })
+}
+
+
 /**
  * 教师部分
  */

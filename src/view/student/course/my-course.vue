@@ -147,7 +147,7 @@
 <script>
 import { getStuCourseList } from "@/api/course";
 export default {
-  name: "my-course",
+  name: "student-my-course",
   data() {
     return {
       current: 1,
@@ -263,6 +263,7 @@ export default {
     // 初始化学年列表
     this.createYearList();
     this.getCourseList();
+    console.log('created')
   },
   mounted() {}
 };

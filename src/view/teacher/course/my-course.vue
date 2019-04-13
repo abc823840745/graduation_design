@@ -140,7 +140,7 @@
 <script>
 import { getTeaCourseList, createTeaCourse, delTeaCourse } from "@/api/course";
 export default {
-  name: "my-course",
+  name: "teacher-my-course",
   data() {
     return {
       total: 0,

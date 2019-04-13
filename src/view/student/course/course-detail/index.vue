@@ -400,7 +400,7 @@ export default {
         this.$Message.warning('问题长度必须大于6个字符，且在50个字符以内');
         return false
       }
-      if(!/^.{10,}$/.test(this.ask_question_data.content)) {
+      if(!this.ask_question_data.content) {
         this.$Message.warning('问题描述至少填写10个字符');
         return false
       }

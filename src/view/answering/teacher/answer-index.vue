@@ -39,12 +39,11 @@
 </template>
 <script>
 import { getMyDate } from '@/libs/tools'
-import { getTeaCourseList, getStuCourseList, getQusetionsList, deleteCourseQuestion } from '@/api/course'
+import { getTeaCourseList, getQusetionsList, deleteCourseQuestion, getNewNotify } from '@/api/course'
 export default {
-  name: 'teacher-question-index',
+  name: 'teacher-answer-index',
   data () {
     return {
-      isTeacher: false,
       total: 0,
       page_size: 10,
       current: 1,
@@ -135,11 +134,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      if(this.isTeacher){
-                        this.$router.push('/teacher/answering/detail/'+params.row.id)
-                      }else{
-                        this.$router.push('/student/answering/detail/'+params.row.id)
-                      }
+                      this.$router.push('/teacher/answering/detail/'+params.row.id)
                     }
                   }
                 },
@@ -148,9 +143,6 @@ export default {
               h(
                 "Button",
                 {
-                  style: {
-                    display:this.isTeacher?"":"none",
-                  },
                   props: {
                     type: "error",
                     shape: "circle"
@@ -199,27 +191,15 @@ export default {
     },
     changeYear(year){
       console.log(year)
-      if(this.isTeacher){
-        this.getCourseList(()=>{
-          this.getQusetionsList()
-        })
-      }else{
-        this.getStuCourseList(()=>{
-          this.getQusetionsList()
-        })
-      }
+      this.getCourseList(()=>{
+        this.getQusetionsList()
+      })
     },
     changeSemester(semester){
       console.log(semester)
-      if(this.isTeacher){
-        this.getCourseList(()=>{
-          this.getQusetionsList()
-        })
-      }else{
-        this.getStuCourseList(()=>{
-          this.getQusetionsList()
-        })
-      }
+      this.getCourseList(()=>{
+        this.getQusetionsList()
+      })
     },
     changeCourse(name){
       console.log(name)
@@ -232,25 +212,6 @@ export default {
     // 获取课程列表(教师)
     getCourseList(cb = () => {}) {
       getTeaCourseList({
-        year: this.year,
-        semester: this.semester,
-        offset: 1,
-        limit: 100
-      }).then((res)=>{
-        console.log(res)
-        this.course_list = res.data.courseList
-        this.course_name = 'all'
-        this.current = 1
-        cb()
-      }).catch((err)=>{
-        console.log(err)
-        this.$Message.error('获取课程列表失败');
-        cb()
-      })
-    },
-    // 获取课程列表(学生)
-    getStuCourseList(cb = () => {}) {
-      getStuCourseList({
         year: this.year,
         semester: this.semester,
         offset: 1,
@@ -302,32 +263,26 @@ export default {
         this.$Message.error('删除失败');
         cb()
       })
+    },
+    // 获取新通知
+    getNewNotify() {
+      getNewNotify({}).then((res)=>{
+        console.log(res)
+      }).catch((err)=>{
+        console.log(err)
+      })
     }
   },
   created () {
     // 初始化学年列表
     this.createYearList()
-    if(this.isTeacher){
-      this.getCourseList(()=>{
-        this.getQusetionsList()
-      })
-    }else{
-      this.getStuCourseList(()=>{
-        this.getQusetionsList()
-      })
-    }
+    this.getCourseList(()=>{
+      this.getQusetionsList()
+    })
+    console.log('会执行created')
   },
   mounted () {
 
-  },
-  beforeRouteEnter(to, from, next) {
-    next(vm => {
-      if(to.name == 'student-answer-index'){
-        vm.isTeacher = false
-      }else{
-        vm.isTeacher = true
-      }
-    });
   },
 }
 </script>

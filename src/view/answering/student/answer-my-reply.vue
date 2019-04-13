@@ -106,10 +106,9 @@
 import { getMyDate } from '@/libs/tools'
 import { getReplyQusetionList, getCommentQusetionList, delReplyQuestion, delCommentQuestion } from '@/api/course'
 export default {
-  name: 'teacher-question-reply',
+  name: 'student-answer-reply',
   data () {
     return {
-      isTeacher: false,
       // 回答列表页码
       ask_total: 0,
       ask_page_size: 10,
@@ -199,11 +198,7 @@ export default {
     },
     // 跳转到问题页面
     toQuestion(question_id) {
-      if(this.isTeacher){
-        this.$router.push(`/teacher/answering/detail/${question_id}`)
-      }else{
-        this.$router.push(`/student/answering/detail/${question_id}`)
-      }
+      this.$router.push(`/student/answering/detail/${question_id}`)
     },
     // 删除回答
     delReply(id) {
@@ -260,15 +255,6 @@ export default {
   },
   mounted () {
 
-  },
-  beforeRouteEnter(to, from, next) {
-    next(vm => {
-      if(to.name == 'student-answer-reply'){
-        vm.isTeacher = false
-      }else{
-        vm.isTeacher = true
-      }
-    });
   },
 }
 </script>

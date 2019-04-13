@@ -53,7 +53,7 @@
 import { getMyDate } from '@/libs/tools'
 import { getTeaCourseList, getCourseClassList, getQusetionsList, deleteCourseQuestion, queryAuditByCourse, setQuestionAudit } from '@/api/course'
 export default {
-  name: 'teacher-question-audit',
+  name: 'teacher-answer-audit',
   data () {
     return {
       total: 0,

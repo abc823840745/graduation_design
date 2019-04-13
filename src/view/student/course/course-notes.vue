@@ -82,7 +82,7 @@ import { mavonEditor } from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
 import { getTeaCourseList, getStuCourseList, getCourseClassList, getQusetionsList, deleteCourseQuestion, getNotesList, addStuNotes, deleteNote, uploadImage } from '@/api/course'
 export default {
-  name: 'course-notes',
+  name: 'my-course-notes',
   data () {
     return {
       total: 0,
@@ -324,6 +324,7 @@ export default {
     this.getStuCourseList(()=>{
       
     })
+    console.log('执行了created')
   },
   mounted () {
 

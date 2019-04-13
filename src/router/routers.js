@@ -275,6 +275,7 @@ export default [
           icon: 'md-bookmarks',
           title: '我的课程',
           access: ['student'],
+          notCache: false,
         },
         component: () => import('@/view/student/course/my-course.vue'),
       },
@@ -302,12 +303,12 @@ export default [
       },
       {
         path: 'course-notes',
-        name: 'course-notes',
+        name: 'my-course-notes',
         meta: {
           icon: 'ios-quote',
           title: '我的笔记',
           access: ['student'],
-          notCache: true,
+          notCache: false,
         },
         component: () => import('@/view/student/course/course-notes.vue'),
       },
@@ -331,7 +332,7 @@ export default [
           title: '课程答疑',
           access: ['student'],
         },
-        component: () => import('@/view/answering/answer-index.vue'),
+        component: () => import('@/view/answering/student/answer-index.vue'),
       },
       {
         path: 'ask',
@@ -351,7 +352,7 @@ export default [
           title: '我的回答 / 评论',
           access: ['student'],
         },
-        component: () => import('@/view/answering/answer-my-reply.vue'),
+        component: () => import('@/view/answering/student/answer-my-reply.vue'),
       },
       {
         path: 'detail/:id',
@@ -690,7 +691,7 @@ export default [
           title: '全部答疑',
           access: ['teacher', 'admin'],
         },
-        component: () => import('@/view/answering/answer-index.vue'),
+        component: () => import('@/view/answering/teacher/answer-index.vue'),
       },
       {
         path: 'audit',
@@ -710,7 +711,7 @@ export default [
           title: '我的回答 / 评论',
           access: ['teacher', 'admin'],
         },
-        component: () => import('@/view/answering/answer-my-reply.vue'),
+        component: () => import('@/view/answering/teacher/answer-my-reply.vue'),
       },
       {
         path: 'detail/:id',
