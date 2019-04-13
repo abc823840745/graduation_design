@@ -10,6 +10,7 @@ export default {
     lesson: '',
     team_id: 0,
     msgCount: 0,
+    quesCount: false,
     stu_nmuber: '',
     role: getRole(),
     userName: '',
@@ -50,6 +51,9 @@ export default {
     },
     setMsgCount(state, count) {
       state.msgCount = count;
+    },
+    setQuesCount(state, count) {
+      state.quesCount = count;
     },
     setAvator(state, avatorPath) {
       state.avatorImgPath = avatorPath;

@@ -54,6 +54,7 @@
           />
           <lock-screen></lock-screen>
           <message-tip :value="mesCount"></message-tip>
+          <question-tip :value="quesCount"></question-tip>
           <theme-switch></theme-switch>
         </header-bar>
       </Header>
@@ -86,6 +87,7 @@ import Fullscreen from "./components/fullscreen";
 import Language from "./components/language";
 import lockScreen from "./components/lockscreen";
 import messageTip from "./components/message-tip";
+import questionTip from "./components/question-tip";
 import themeSwitch from "./components/theme-switch";
 import ErrorStore from "./components/error-store";
 import { mapMutations, mapActions, mapGetters } from "vuex";
@@ -103,6 +105,7 @@ export default {
     Fullscreen,
     lockScreen,
     messageTip,
+    questionTip,
     themeSwitch,
     ErrorStore,
     User
@@ -110,6 +113,7 @@ export default {
   data() {
     return {
       mesCount: 0,
+      quesCount: false,
       collapsed: false,
       minLogo,
       maxLogo,
@@ -153,6 +157,9 @@ export default {
     ...mapActions(["handleLogin"]),
     updateNoticeCount(count) {
       this.mesCount = count;
+    },
+    updateQuestionCount(count) {
+      this.quesCount = count;
     },
     turnToPage(route) {
       let { name, params, query } = {};
@@ -203,6 +210,8 @@ export default {
       this.$refs.sideMenu.updateOpenName(newRoute.name);
     }
   },
+  created() {
+  },
   mounted() {
     /**
      * @description 初始化设置面包屑导航和标签导航
@@ -223,6 +232,7 @@ export default {
     this.$nextTick(() => {
       setTimeout(() => {
         this.mesCount = this.$store.state.user.msgCount;
+        this.quesCount = this.$store.state.user.quesCount;
       }, 2000);
     });
   }
