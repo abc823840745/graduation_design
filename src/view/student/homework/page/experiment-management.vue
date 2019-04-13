@@ -170,23 +170,16 @@ export default {
           minWidth: 50,
           render: (h, params) => {
             let { exper_startime, exper_webpath } = params.row;
-            let curDate = new Date();
-            let startDate = new Date(exper_startime);
             return h("div", [
               this.btnStyle("上传作业", h, () => {
-                if (curDate >= startDate) {
-                  this.showModal = true;
-                  this.itemInfo = this.tableInfo["tableData"][params.index];
-                } else {
-                  this.$Notice.warning({
-                    title: "还没到开始时间！"
-                  });
-                }
+                this.goUpload(params);
               }),
               this.btnStyle(
                 "下载实验",
                 h,
-                () => window.open(exper_webpath),
+                () => {
+                  this.goDownload(params);
+                },
                 "success"
               )
             ]);
@@ -206,6 +199,26 @@ export default {
 
     dialogOk() {
       this.showModal = false;
+    },
+
+    goUpload(params) {
+      let { index } = params;
+      let { exper_startime } = params.row;
+      let curDate = new Date();
+      let startDate = new Date(exper_startime);
+      if (curDate >= startDate) {
+        this.showModal = true;
+        this.itemInfo = this.tableInfo["tableData"][index];
+      } else {
+        this.$Notice.warning({
+          title: "还没到开始时间！"
+        });
+      }
+    },
+
+    goDownload(params) {
+      let { exper_webpath } = params.row;
+      window.open(exper_webpath);
     },
 
     // 获取表格数据

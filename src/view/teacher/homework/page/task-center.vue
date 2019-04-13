@@ -41,7 +41,7 @@
       :modalOpen.sync="modalOpen"
       :info="itemInfo"
       :courseId="courseId"
-      @getTableData="getTableData"
+      @getTableData="getTableData(tableInfo['page'])"
     />
 
     <Modal fullscreen title="搜索" v-model="showModal" @on-ok="searchClose">
@@ -169,40 +169,18 @@ export default {
         {
           title: "操作",
           key: "operation",
+          width: 200,
           render: (h, params) => {
-            let { startime, course, id, type, submitterStatus } = params.row;
             return h("div", [
-              this.btnStyle("修改任务", h, async () => {
-                if (submitterStatus["isOperate"] === 0) {
-                  return this.$Notice.warning({
-                    title: "已经有学生提交，不能修改！"
-                  });
-                }
-                this.setCurCourse(course);
-                this.modalOpen = true;
-                this.itemInfo = this.tableInfo["tableData"][params.index];
-                let getId = this.courseList.reduce((arr, item) => {
-                  if (item["name"] === course) {
-                    arr.push(item["id"]);
-                  }
-                  return arr;
-                }, []);
-                this.courseId = getId[0];
-                await this.getSubjectData(id);
+              this.btnStyle("编辑作业", h, () => {
+                this.goUpdateTask(params);
               }),
               this.btnStyle(
                 "删除",
                 h,
-                () =>
-                  this.$Modal.confirm({
-                    title: "确定要删除该任务？",
-                    onOk: () => {
-                      if (type === "offline") {
-                        return this.delClassHWInfo(params.index);
-                      }
-                      this.delOnlineHWInfo(params.index);
-                    }
-                  }),
+                () => {
+                  this.goDelete(params);
+                },
                 "error"
               )
             ]);
@@ -214,7 +192,7 @@ export default {
 
   async mounted() {
     await this.setCourseSelList();
-    await this.getTableData();
+    await this.getTableData(1);
   },
 
   methods: {
@@ -228,6 +206,37 @@ export default {
     ]),
 
     ...mapMutations(["setOriginInputInfo", "setInputInfo", "setCurCourse"]),
+
+    async goUpdateTask(params) {
+      let { index } = params;
+      let { course, id, submitterStatus } = params.row;
+      this.setCurCourse(course);
+      this.modalOpen = true;
+      this.itemInfo = this.tableInfo["tableData"][index];
+      let getId = this.courseList.reduce((arr, item) => {
+        if (item["name"] === course) {
+          arr.push(item["id"]);
+        }
+        return arr;
+      }, []);
+      this.courseId = getId[0];
+      await this.getSubjectData(id);
+    },
+
+    goDelete(params) {
+      let { index } = params;
+      let { type } = params.row;
+      this.$Modal.confirm({
+        title: "确定要删除该任务？",
+        onOk: async () => {
+          if (type === "offline") {
+            await this.delClassHWInfo(index);
+            return;
+          }
+          await this.delOnlineHWInfo(index);
+        }
+      });
+    },
 
     // 获取表格信息
     async getTableData(page = 1) {
@@ -421,22 +430,25 @@ export default {
 
     // 删除课时作业
     async delClassHWInfo(index) {
-      let { id } = this.tableInfo["tableData"][index];
-      let res = await this.delTeaClassHW(id);
-      if (res["status"] === 1) {
-        await this.getTableData();
-        this.$Notice.success({
-          title: "删除成功！"
-        });
-      }
+      this.delHomework("delTeaClassHW", index);
     },
 
     // 删除在线作业
     async delOnlineHWInfo(index) {
-      let { id } = this.tableInfo["tableData"][index];
-      let res = await this.delTeaOnlineHW(id);
+      this.delHomework("delTeaOnlineHW", index);
+    },
+
+    // 删除作业
+    async delHomework(apiName, index) {
+      let { page, tableData } = this.tableInfo;
+      let { id } = tableData[index];
+      let res = await this[apiName](id);
       if (res["status"] === 1) {
-        await this.getTableData();
+        await this.getTableData(page);
+        let { page, tableData } = this.tableInfo;
+        if (page !== 1 && tableData.length === 0) {
+          await this.getTableData(page - 1);
+        }
         this.$Notice.success({
           title: "删除成功！"
         });

@@ -136,8 +136,9 @@
 
 <script>
 import { mapState, mapMutations } from "vuex";
-import { setlocalStorage, getlocalStorage } from "@tools";
+import { setlocalStorage, getlocalStorage, debounce } from "@tools";
 import { mavonEditor } from "mavon-editor";
+import "mavon-editor/dist/css/index.css";
 
 export default {
   props: {
@@ -206,29 +207,33 @@ export default {
     };
   },
 
-  // mounted() {
-  //   console.log(this.disabled);
-  // },
-
   methods: {
     ...mapMutations(["setInputInfo", "setOptionList"]),
 
     // 更新vuex的inputInfo最新值
-    subjectChange(value, index) {
-      let inputInfo = this.inputInfo;
-      inputInfo[this.pIndex]["subject"][index]["subject"] = value;
-      this.setInputInfo(inputInfo);
-    },
+    subjectChange: debounce(
+      function(value, index) {
+        let inputInfo = this.inputInfo;
+        inputInfo[this.pIndex]["subject"][index]["subject"] = value;
+        this.setInputInfo(inputInfo);
+      },
+      1000,
+      true
+    ),
 
-    choiceChange(value, index) {
-      let inputInfo = this.inputInfo;
-      if (this.type === "create") {
-        inputInfo[this.pIndex]["subject"][index]["referenceAnswer"] = value;
-      } else if (this.type === "testing") {
-        inputInfo[this.pIndex]["subject"][index]["answer"] = value;
-      }
-      this.setInputInfo(inputInfo);
-    },
+    choiceChange: debounce(
+      function(value, index) {
+        let inputInfo = this.inputInfo;
+        if (this.type === "create") {
+          inputInfo[this.pIndex]["subject"][index]["referenceAnswer"] = value;
+        } else if (this.type === "testing") {
+          inputInfo[this.pIndex]["subject"][index]["answer"] = value;
+        }
+        this.setInputInfo(inputInfo);
+      },
+      1000,
+      true
+    ),
 
     weightingChange(value, index) {
       let inputInfo = this.inputInfo;
@@ -331,7 +336,7 @@ export default {
   }
 
   .mavonEditor {
-    width: 650px;
+    width: 665px;
     min-height: 200px;
     min-width: 300px;
     z-index: 1;

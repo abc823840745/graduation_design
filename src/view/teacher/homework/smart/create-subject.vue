@@ -3,19 +3,12 @@
     <Modal
       fullscreen
       v-model="isShowModal"
-      :ok-text="type === 'create' ? '确认新建' : '确认修改'"
       :loading="loading"
       :title="type === 'create' ? '新建题目信息' : '修改题目信息'"
-      @on-ok="modalOk"
-      @on-cancel="modalCancel"
     >
       <Alert show-icon v-if="inputInfo.length === 0">
         请点击新建作业按钮快点新建作业吧！
       </Alert>
-
-      <!-- <Alert show-icon v-if="type !== 'create'">
-        修改模式下出现如&lt;p&gt;、&lt;pre&gt;、&amp;lt;等html代码是正常现象，请勿随意删改html代码
-      </Alert> -->
 
       <div
         v-for="(item, index) in inputInfo"
@@ -39,7 +32,7 @@
       </div>
 
       <div class="btn-ground">
-        <Dropdown @on-click="createSubject">
+        <Dropdown @on-click="createSubject" transfer>
           <Button type="primary">
             新建题目
             <Icon type="ios-arrow-down"></Icon>
@@ -58,6 +51,7 @@
           trigger="click"
           @on-click="subWarehouseOpen"
           style="margin-left: 20px"
+          transfer
         >
           <Button type="primary">
             从题库中选择
@@ -76,6 +70,16 @@
             <DropdownItem name="问答题">问答题</DropdownItem>
           </DropdownMenu>
         </Dropdown>
+      </div>
+
+      <div slot="footer">
+        <Button type="primary" @click="modalCancel">
+          返回
+        </Button>
+
+        <Button type="primary" @click="modalOk">
+          {{ type === "create" ? "确认新建" : "确认修改" }}
+        </Button>
       </div>
     </Modal>
 
@@ -100,6 +104,7 @@ import MultipleChoice from "@teaHomework/smart/multiple-choice";
 import SubjectType from "@/view/global/component/show-subject-different-types";
 import SubWarehouse from "@teaHomework/smart/subject-warehouse";
 import { mapMutations, mapState } from "vuex";
+import { debounce, isEmptyObject } from "@tools";
 
 export default {
   name: "create-subject",
@@ -241,81 +246,93 @@ export default {
 
     // 删除题目
     delSubject(index) {
-      let inputInfo = this.inputInfo;
-      let { key, id, subjectType } = inputInfo[index];
-      let keys = key || id;
-      inputInfo.splice(index, 1);
-      inputInfo.forEach((item, index) => {
-        item["title"] = `${index + 1}、${item["subjectType"]}`;
-      });
-      this.setInputInfo(inputInfo);
-      if (this.type !== "create") {
-        // 查询create数组是否有删除题目的索引，有就删除，没就添加到delete数组
-        let optionList = this.optionList;
-        let flag = optionList.some(
-          item => item["key"] === keys && item["type"] === "add"
-        );
-        if (flag) {
-          optionList = optionList.filter(item => item["key"] !== keys);
-        } else {
-          // 先过滤相同数组对象
-          optionList = optionList.filter(item => item["key"] !== keys);
-          optionList.push({
-            type: "delete",
-            subjectType,
-            key: keys
+      this.$Modal.confirm({
+        title: "确定要删除该任务？",
+        onOk: async () => {
+          let inputInfo = this.inputInfo;
+          let { key, id, subjectType } = inputInfo[index];
+          let keys = key || id;
+          inputInfo.splice(index, 1);
+          inputInfo.forEach((item, index) => {
+            item["title"] = `${index + 1}、${item["subjectType"]}`;
           });
+          this.setInputInfo(inputInfo);
+          if (this.type !== "create") {
+            // 查询create数组是否有删除题目的索引，有就删除，没就添加到delete数组
+            let optionList = this.optionList;
+            let flag = optionList.some(
+              item => item["key"] === keys && item["type"] === "add"
+            );
+            if (flag) {
+              optionList = optionList.filter(item => item["key"] !== keys);
+            } else {
+              // 先过滤相同数组对象
+              optionList = optionList.filter(item => item["key"] !== keys);
+              optionList.push({
+                type: "delete",
+                subjectType,
+                key: keys
+              });
+            }
+            let filterData = this.reduceData(optionList);
+            console.log(filterData);
+            this.setOptionList(filterData);
+          }
         }
-        let filterData = this.reduceData(optionList);
-        console.log(filterData);
-        this.setOptionList(filterData);
-      }
+      });
     },
 
     // 删除填空题小题
     delFillSubject($event, index) {
-      let inputInfo = this.inputInfo;
-      let fillindex = $event;
-      let { key, subjectType } = inputInfo[index];
-      let { id } = inputInfo[index]["subject"][fillindex];
-      let keys = key || id;
+      this.$Modal.confirm({
+        title: "确定要删除该任务？",
+        onOk: async () => {
+          let inputInfo = this.inputInfo;
+          let fillindex = $event;
+          let { key, subjectType } = inputInfo[index];
+          let { id } = inputInfo[index]["subject"][fillindex];
+          let keys = key || id;
 
-      // 查询create数组是否有删除题目的索引，有就删除，没就添加到delete数组
-      if (this.type !== "create") {
-        let optionList = this.optionList;
-        let flag = optionList.some(
-          item => item["key"] === keys && item["type"] === "add"
-        );
-        if (flag) {
-          optionList = optionList.filter(item => item["key"] !== keys);
-        } else {
-          // 先过滤相同数组对象
-          optionList = optionList.filter(item => item["key"] !== keys);
-          optionList.push({
-            type: "delete",
-            subjectType,
-            key: keys
-          });
+          // 查询create数组是否有删除题目的索引，有就删除，没就添加到delete数组
+          if (this.type !== "create") {
+            let optionList = this.optionList;
+            let flag = optionList.some(
+              item => item["key"] === keys && item["type"] === "add"
+            );
+            if (flag) {
+              optionList = optionList.filter(item => item["key"] !== keys);
+            } else {
+              // 先过滤相同数组对象
+              optionList = optionList.filter(item => item["key"] !== keys);
+              optionList.push({
+                type: "delete",
+                subjectType,
+                key: keys
+              });
+            }
+            let filterData = this.reduceData(optionList);
+            this.setOptionList(filterData);
+          }
+          inputInfo[index]["subject"].splice(fillindex, 1);
+          let subjectListLength = inputInfo[index]["subject"].length;
+
+          // 删除的是最后一个才显示前一个的删除按钮
+          if (fillindex - 1 >= 0 && subjectListLength === fillindex) {
+            inputInfo[index]["subject"][fillindex - 1][
+              "showCreSubjectBtn"
+            ] = true;
+          }
+
+          // 删除当前填空题并更新题号
+          if (subjectListLength === 0) {
+            inputInfo.splice(index, 1);
+            inputInfo.forEach((item, index) => {
+              item["title"] = `${index + 1}、${item["subjectType"]}`;
+            });
+          }
+          this.setInputInfo(inputInfo);
         }
-        let filterData = this.reduceData(optionList);
-        this.setOptionList(filterData);
-      }
-      inputInfo[index]["subject"].splice(fillindex, 1);
-      let subjectListLength = inputInfo[index]["subject"].length;
-
-      // 删除的是最后一个才显示前一个的删除按钮
-      if (fillindex - 1 >= 0 && subjectListLength === fillindex) {
-        inputInfo[index]["subject"][fillindex - 1]["showCreSubjectBtn"] = true;
-      }
-
-      // 删除当前填空题并更新题号
-      if (subjectListLength === 0) {
-        inputInfo.splice(index, 1);
-        inputInfo.forEach((item, index) => {
-          item["title"] = `${index + 1}、${item["subjectType"]}`;
-        });
-      }
-      this.setInputInfo(inputInfo);
+      });
     },
 
     hasFillSubject() {
@@ -365,6 +382,15 @@ export default {
     },
 
     modalOk() {
+      let { submitterStatus } = this.homeworkInfo;
+      if (
+        !isEmptyObject(submitterStatus) &&
+        submitterStatus["isOperate"] === 0
+      ) {
+        return this.$Notice.warning({
+          title: "已经有学生提交，不能修改！"
+        });
+      }
       this.loading = true;
       this.$emit("modalOk");
       this.loading = false;

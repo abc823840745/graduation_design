@@ -168,8 +168,7 @@ export default {
           render: (h, params) => {
             return h("div", [
               this.btnStyle("查看", h, () => {
-                this.curDirectory = 2;
-                this.curClassHour = params.row.name;
+                this.goDirectoryTwo(params);
               })
             ]);
           }
@@ -186,14 +185,7 @@ export default {
           render: (h, params) => {
             return h("div", [
               this.btnStyle("查看", h, () => {
-                this.curHWtype = params.row.hwType;
-                if (params.row.hwType === "课时作业") {
-                  this.curDirectory = 3;
-                  this.getClassHW();
-                } else {
-                  this.curDirectory = 3;
-                  this.getOnlineHW();
-                }
+                this.goDirectoryThree(params);
               })
             ]);
           }
@@ -210,17 +202,7 @@ export default {
           render: (h, params) => {
             return h("div", [
               this.btnStyle("查看", h, async () => {
-                let { id, questions } = params.row;
-                this.stuHWId = id;
-                console.log(params.row);
-                if (!questions) {
-                  // 课时作业
-                  this.curDirectory = 4;
-                  await this.getStuClassHW();
-                } else {
-                  this.curDirectory = 5;
-                  await this.getStuOnlineHW();
-                }
+                this.goDirectoryFourth(params);
               })
             ]);
           }
@@ -293,7 +275,7 @@ export default {
             }
             return h("div", [
               this.btnStyle("下载", h, () => {
-                window.open(params.row.webpath);
+                this.goDownload(params);
               })
             ]);
           }
@@ -325,17 +307,13 @@ export default {
           title: "操作",
           key: "operation",
           render: (h, params) => {
-            let { status, questions, id } = params.row;
+            let { status } = params.row;
             if (status === "待上传") {
               return h("div", [this.disableBtnStyle("查看", h)]);
             }
             return h("div", [
               this.btnStyle("查看", h, async () => {
-                this.stuHwInfo = params.row;
-                this.showModal = true;
-                this.curDirectory = 6;
-                localStorage.removeItem("subjectList");
-                await this.getStuSubjectList(questions);
+                this.goDetail(params);
               })
             ]);
           }
@@ -370,6 +348,49 @@ export default {
     ]),
 
     ...mapMutations(["setInputInfo"]),
+
+    goDirectoryTwo(params) {
+      this.curDirectory = 2;
+      this.curClassHour = params.row.name;
+    },
+
+    async goDirectoryThree(params) {
+      let { hwType } = params.row;
+      this.curHWtype = hwType;
+      if (hwType === "课时作业") {
+        this.curDirectory = 3;
+        await this.getClassHW();
+      } else {
+        this.curDirectory = 3;
+        await this.getOnlineHW();
+      }
+    },
+
+    async goDirectoryFourth(params) {
+      let { id, questions } = params.row;
+      this.stuHWId = id;
+      if (!questions) {
+        // 课时作业
+        this.curDirectory = 4;
+        await this.getStuClassHW();
+      } else {
+        this.curDirectory = 5;
+        await this.getStuOnlineHW();
+      }
+    },
+
+    goDownload(params) {
+      window.open(params.row.webpath);
+    },
+
+    async goDetail(params) {
+      let { questions } = params.row;
+      this.stuHwInfo = params.row;
+      this.showModal = true;
+      this.curDirectory = 6;
+      localStorage.removeItem("subjectList");
+      await this.getStuSubjectList(questions);
+    },
 
     // 全部下载
     async allDownload() {

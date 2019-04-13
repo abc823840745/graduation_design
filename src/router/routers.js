@@ -737,17 +737,6 @@ export default [
     component: Main,
     children: [
       {
-        path: 'homework-main',
-        name: 'teacher-homework-main',
-        meta: {
-          icon: 'ios-home',
-          title: '首页',
-          notCache: true,
-          access: ['teacher', 'admin'],
-        },
-        component: () => import('@teaHomework/page/homework-main.vue'),
-      },
-      {
         path: 'homework-create',
         name: 'teacher-homework-create',
         meta: {

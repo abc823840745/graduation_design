@@ -328,19 +328,33 @@ export function getlocalStorage(key) {
 /**
  * 防抖动函数
  */
-export function debounce(fn, delay) {
-  var delay = delay || 200;
-  var timer;
+export function debounce(fn, delay = 1000, immediate = false) {
+  let timer = null;
   return function() {
-    var th = this;
-    var args = arguments;
-    if (timer) {
-      clearTimeout(timer);
+    let args = arguments;
+    if (timer) clearTimeout(timer);
+    if (immediate) {
+      // 根据距离上次触发操作的时间是否到达delay来决定是否要现在执行函数
+      let doNow = !timer;
+
+      /**
+       * 每一次都重新设置timer，就是要保证每一次执行的至少delay秒后才可以执行,
+       * 拼命点就拼命重新设置定时器，让timer一直为true
+       */
+      timer = setTimeout(() => {
+        timer = null;
+      }, delay);
+
+      // 立即执行
+      if (doNow) {
+        fn.apply(this, args);
+      }
+    } else {
+      timer = setTimeout(() => {
+        timer = null;
+        fn.apply(this, args);
+      }, delay);
     }
-    timer = setTimeout(function() {
-      timer = null;
-      fn.apply(th, args);
-    }, delay);
   };
 }
 
@@ -366,7 +380,7 @@ export function getCurDate() {
 export function getCurSchoolYear() {
   let date = new Date();
   let year = date.getFullYear();
-  let month = date.getMonth();
+  let month = date.getMonth() + 1;
   let semester = null;
   if (month >= 3 && month <= 7) {
     semester = '下学期';

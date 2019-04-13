@@ -106,20 +106,6 @@ const myMixin = {
       return schoolYearList;
     },
 
-    // // 获取当前的学年学期
-    // getCurSchoolYear() {
-    //   let date = new Date();
-    //   let year = date.getFullYear();
-    //   let month = date.getMonth();
-    //   let semester = null;
-    //   if (month >= 3 && month <= 7) {
-    //     semester = '下学期';
-    //   } else {
-    //     semester = '上学期';
-    //   }
-    //   return `${year - 1}-${year}${semester}`;
-    // },
-
     // 获取课程选择列表数据
     async getCourseList(curSemester = getCurSchoolYear()) {
       let res = null;

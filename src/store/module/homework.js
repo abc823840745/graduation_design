@@ -362,9 +362,10 @@ export default {
       try {
         let res = await getTeaHW(obj);
         let data = res.data.data.filter(item => item !== null);
-        data.forEach(item => {
-          item['classify'] = item['type'] === 'offline' ? '课时作业' : '在线作业';
-        });
+        data.length > 0 &&
+          data.forEach(item => {
+            item['classify'] = item['type'] === 'offline' ? '课时作业' : '在线作业';
+          });
         commit('setTaskCenterInfo', {
           tableData: data,
           count: res.data.count,

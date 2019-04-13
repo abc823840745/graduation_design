@@ -92,7 +92,7 @@
 
 <script>
 import { mapState, mapMutations } from "vuex";
-import { setlocalStorage, getlocalStorage } from "@tools";
+import { setlocalStorage, getlocalStorage, debounce } from "@tools";
 import { mavonEditor } from "mavon-editor";
 import "mavon-editor/dist/css/index.css";
 
@@ -124,6 +124,7 @@ export default {
 
   data() {
     return {
+      timer: null,
       radioItem: [
         {
           label: "A",
@@ -177,7 +178,6 @@ export default {
         subfield: false, // 单双栏模式
         preview: false // 预览
       }
-      // subject: ""
     };
   },
 
@@ -199,11 +199,15 @@ export default {
     },
 
     // 更新vuex的inputInfo最新值
-    subjectChange(value, render) {
-      let inputInfo = this.inputInfo;
-      inputInfo[this.index]["subject"] = value;
-      this.setInputInfo(inputInfo);
-    },
+    subjectChange: debounce(
+      function(value, render) {
+        let inputInfo = this.inputInfo;
+        inputInfo[this.index]["subject"] = value;
+        this.setInputInfo(inputInfo);
+      },
+      1000,
+      true
+    ),
 
     choiceChange(value) {
       let inputInfo = this.inputInfo;
@@ -250,7 +254,7 @@ export default {
   }
 
   .mavonEditor {
-    width: 650px;
+    width: 660px;
     min-height: 200px;
     min-width: 300px;
     z-index: 1;
@@ -272,6 +276,8 @@ export default {
 
         .choice-text {
           font-size: 14px;
+          margin-right: 10px;
+          margin-left: -1px;
         }
       }
     }

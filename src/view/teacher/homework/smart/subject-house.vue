@@ -7,7 +7,12 @@
       </h2>
 
       <div class="return_btn">
-        <Button type="primary" shape="circle" @click="openModal" icon="ios-add">
+        <Button
+          type="primary"
+          shape="circle"
+          @click="addSubject"
+          icon="ios-add"
+        >
           添加题目</Button
         >
 
@@ -143,6 +148,7 @@ import myMixin from "@/view/global/mixin";
 import SubjectType from "@/view/global/component/show-subject-different-types";
 import { mapState, mapMutations, mapActions } from "vuex";
 import SearchView from "@/view/global/component/search-view";
+import { debounce } from "@tools";
 
 export default {
   mixins: [myMixin],
@@ -223,21 +229,15 @@ export default {
           maxWidth: 150,
           align: "center",
           render: (h, params) => {
-            let { id, type } = params.row;
             return h("div", [
               this.btnStyle("详情", h, () => {
-                this.getDeatail(params.row.id);
+                this.getDeatail(params);
               }),
               this.btnStyle(
                 "删除",
                 h,
                 () => {
-                  this.$Modal.confirm({
-                    title: "确定要删除该任务？",
-                    onOk: async () => {
-                      await this.delSub(id, type);
-                    }
-                  });
+                  this.goDelete(params);
                 },
                 "error"
               )
@@ -315,13 +315,13 @@ export default {
     ...mapMutations(["setInputInfo"]),
 
     // 获取table列表数据
-    async getTableData(page) {
+    async getTableData(page = 1) {
       this.loading = true;
       let res = await this.getSubHouse({
+        page,
         course: this.courseInfo["name"],
         category: "",
-        type: this.subType,
-        page: page || 1
+        type: this.subType
       });
       let table = this.table;
       let num = this.getNum(this.subType);
@@ -330,6 +330,7 @@ export default {
       table[num]["page"] = page;
       this.table = table;
       this.loading = false;
+      return res.data;
     },
 
     // 获取题库修改历史记录
@@ -412,7 +413,6 @@ export default {
         teacher: this.userName,
         arr
       });
-      this.setInputInfo([]);
       this.closeModal();
       let num = this.getNum(subjectType);
       await this.getTableData(this.table[num]["page"]);
@@ -480,22 +480,28 @@ export default {
         teach_id: this.teaId,
         teacher: this.userName
       });
-      // if (res["status"] === 1) {
       let num = this.getNum(type);
+      let page = parseInt(this.table[num]["page"], 10);
       if (this.modalOpen === true) {
         await this.searchResult(this.searchText, this.searchPage);
       } else {
-        await this.getTableData(this.table[num]["page"]);
+        let res = await this.getTableData(page);
+        if (page !== 1 && res.length === 0) {
+          await this.getTableData(page - 1);
+        }
       }
       return this.$Notice.success({ title: "删除成功！" });
-      // }
-      // this.$Notice.error({ title: "删除失败！" });
     },
 
-    // 打开新增题目的modal
-    openModal() {
+    // 点击新增题目的按钮
+    addSubject() {
       this.type = "create";
       this.selVal = "";
+      this.openModal();
+    },
+
+    // 打开modal
+    openModal() {
       this.setInputInfo([]);
       this.showSubHourse = true;
     },
@@ -546,16 +552,26 @@ export default {
     },
 
     // 查看问题详情
-    async getDeatail(id) {
-      this.setInputInfo([]);
-      this.openModal();
+    async getDeatail(params) {
+      let { id } = params.row;
       this.type = "check";
+      this.openModal();
       let num = this.getNum(this.subType);
       let filterData = this.table[num]["data"].filter(
         item => item["id"] === id
       );
       this.subject = filterData[0];
       this.setSubject();
+    },
+
+    async goDelete(params) {
+      let { id, type } = params.row;
+      this.$Modal.confirm({
+        title: "确定要删除该任务？",
+        onOk: async () => {
+          await this.delSub(id, type);
+        }
+      });
     },
 
     setSubject() {

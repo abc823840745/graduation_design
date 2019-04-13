@@ -16,7 +16,7 @@
 
 <script>
 import Echart from "@stuHomework/smart/echart";
-import SliderBar from "@teaHomework/smart/slider-bar";
+import SliderBar from "@teaHomework/smart/aside-content";
 import { mapActions, mapState } from "vuex";
 import myMixin from "@/view/global/mixin";
 import { getCurSchoolYear } from "@tools";
