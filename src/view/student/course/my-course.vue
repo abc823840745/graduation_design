@@ -100,7 +100,8 @@
       </div>
     </div>
     <div class="none-course" v-if="total == 0">
-      您选择的学期找不到课程信息哦，尝试一下刷新课表吧~
+      <img :src="noneImg">
+      <p>您选择的学期找不到课程信息哦，尝试一下刷新课表吧~</p>
     </div>
     <div class="page_nav" v-else>
       <Page
@@ -146,10 +147,12 @@
 </template>
 <script>
 import { getStuCourseList } from "@/api/course";
+import noneImg from "@/assets/images/none.png";
 export default {
   name: "student-my-course",
   data() {
     return {
+      noneImg,
       current: 1,
       page_size: 10,
       total: 0,
@@ -263,7 +266,6 @@ export default {
     // 初始化学年列表
     this.createYearList();
     this.getCourseList();
-    console.log('created')
   },
   mounted() {}
 };

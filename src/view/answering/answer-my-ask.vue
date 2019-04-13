@@ -29,7 +29,8 @@
       border
       :columns="questions_columns"
       :data="questions_data"
-      style="margin-top:20px"
+      @on-row-click="clickTableRow"
+      style="margin-top:20px;cursor:pointer;"
     ></Table>
     <div class="teacher-questions-page-nav">
       <Page :current="current" :total="total" :page-size="page_size" @on-change="changePage" />
@@ -66,7 +67,6 @@ export default {
   name: 'student-answer-ask',
   data () {
     return {
-      isTeacher: false,
       total: 0,
       page_size: 10,
       current: 1,
@@ -176,11 +176,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      if(this.isTeacher){
-                        this.$router.push('/teacher/answering/detail/'+params.row.id)
-                      }else{
-                        this.$router.push('/student/answering/detail/'+params.row.id)
-                      }
+                      this.$router.push('/student/answering/detail/'+params.row.id)
                     }
                   }
                 },
@@ -230,6 +226,10 @@ export default {
     mavonEditor
   },
   methods: {
+    // 点击表格行
+    clickTableRow(row, index) {
+      this.$router.push('/student/answering/detail/'+row.id)
+    },
     // 初始化学年列表
     createYearList(){
       let cur_year = new Date().getFullYear()

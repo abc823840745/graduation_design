@@ -29,7 +29,8 @@
       border
       :columns="questions_columns"
       :data="questions_data"
-      style="margin-top:20px"
+      @on-row-click="clickTableRow"
+      style="margin-top:20px;cursor:pointer;"
     ></Table>
     <div class="teacher-questions-page-nav">
       <Page :current="current" :total="total" :page-size="page_size" @on-change="changePage" />
@@ -201,6 +202,10 @@ export default {
     }
   },
   methods: {
+    // 点击表格行
+    clickTableRow(row, index) {
+      this.$router.push('/teacher/answering/detail/'+row.id)
+    },
     // 初始化学年列表
     createYearList(){
       let cur_year = new Date().getFullYear()
