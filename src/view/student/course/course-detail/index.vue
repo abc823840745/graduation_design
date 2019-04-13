@@ -73,7 +73,15 @@
           </div>
         </TabPane>
         <TabPane label="课时列表" name="classlist">
-          <Table size="large" border :loading="class_table_loading" :columns="class_columns" :data="class_data"></Table>
+          <Table
+            size="large"
+            border
+            :loading="class_table_loading"
+            :columns="class_columns"
+            :data="class_data"
+            @on-row-click="clickTableRow"
+            style="cursor:pointer;"
+          ></Table>
           <div class="course-detail-page-nav">
             <Page :current="course_class_offset" :total="course_class_total" :page-size="course_class_limit" @on-change="changeCourseClassPage" />
           </div>
@@ -185,7 +193,7 @@ export default {
                 },
                 on: {
                   click: () => {
-
+                    this.$router.push(`/student/homework/experiment-management`)
                   }
                 }
               }, '查看作业')
@@ -301,6 +309,10 @@ export default {
     mavonEditor
   },
   methods: {
+    // 点击表格行
+    clickTableRow(row, index) {
+      this.$router.push(`${this.$route.params.id}/${row.id}`)
+    },
     goClass (id) {
       this.$router.push(`${this.$route.params.id}/${id}`)
     },
