@@ -211,7 +211,7 @@ export default {
 
     async goUpdateTask(params) {
       let { index } = params;
-      let { course, id, submitterStatus } = params.row;
+      let { course, id, week } = params.row;
       this.setCurCourse(course);
       this.modalOpen = true;
       this.itemInfo = this.tableInfo["tableData"][index];
@@ -222,6 +222,7 @@ export default {
         return arr;
       }, []);
       this.courseId = getId[0];
+      console.log(this.courseId);
       await this.getSubjectData(id);
     },
 
