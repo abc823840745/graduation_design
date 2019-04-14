@@ -257,12 +257,12 @@ export default {
     // 清除已读小红点
     alreadyRead() {
       this.$store.commit("setQuesCount", false);
-      this.$emit("changeQues", false);
-      // getAlreadyReadNotify({}).then((res)=>{
-      //   console.log(res)
-      // }).catch((err)=>{
-      //   console.log(err)
-      // })
+      // this.$emit("changeQues", false);
+      getAlreadyReadNotify({}).then((res)=>{
+        console.log(res)
+      }).catch((err)=>{
+        console.log(err)
+      })
     },
     // 刷新列表
     refreshList() {

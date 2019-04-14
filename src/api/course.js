@@ -228,9 +228,9 @@ export function getNewNotify (obj) {
 // 已读消息
 export function getAlreadyReadNotify (obj) {
   return axios.request({
-    params: {},
+    data: {},
     url: '/set/course/question/notify',
-    method: 'get'
+    method: 'post'
   })
 }
 
