@@ -226,17 +226,13 @@ const myMixin = {
     // 获取课程选择列表
     async setCourseSelList(value) {
       let res = await this.getCourseList(value);
-      let selectList = this.selectList;
-      selectList[1]['list'] = res;
-      this.selectList = selectList;
+      this.$set(this.selectList[1], 'list', res);
     },
 
     // 获取课时选择列表
     async setClassHourSelList(courseId) {
       let res = await this.getClassHourList(courseId);
-      let selectList = this.selectList;
-      selectList[2]['list'] = res;
-      this.selectList = selectList;
+      this.$set(this.selectList[2], 'list', res);
     },
 
     // 获取表格数据

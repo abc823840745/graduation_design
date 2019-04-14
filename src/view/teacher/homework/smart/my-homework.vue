@@ -176,6 +176,7 @@ export default {
 
     async courseId(newVal, oldVal) {
       await this.setClassHourList(newVal);
+      this.$set(this.homeworkInfo, "classHour", this.info["week"]);
     },
 
     showModal(newVal, oldVal) {
@@ -226,6 +227,7 @@ export default {
         name: "",
         classify: "",
         classHour: "",
+        webpath: "",
         testingTime: 0,
         stopTimeList: []
       }
@@ -247,8 +249,7 @@ export default {
     ...mapMutations(["setInputInfo", "setOptionList"]),
 
     goDownload() {
-      let { webpath } = this.info;
-      window.open(webpath);
+      window.open(this.homeworkInfo["webpath"]);
     },
 
     async setClassHourList(id) {
@@ -265,18 +266,17 @@ export default {
 
     // 监听选择时间日期函数
     timeOnChange(value) {
-      let homeworkInfo = this.homeworkInfo;
-      homeworkInfo["stopTimeList"] = value;
-      this.homeworkInfo = homeworkInfo;
+      this.$set(this.homeworkInfo, "stopTimeList", value);
     },
 
     getCurTaskInfo(val) {
-      let { name, week, startime, fintime, classify, totaltime } = val;
+      let { name, week, startime, fintime, classify, totaltime, webpath } = val;
       if (this.type === "create") return;
       let info = this.homeworkInfo;
       info["name"] = name;
       info["classify"] = classify;
       info["classHour"] = week;
+      info["webpath"] = classify === "课时作业" ? webpath : "";
       info["testingTime"] =
         classify === "课时作业" ? 0 : parseInt(totaltime, 10) / 60; // 将秒数转换成分钟显示
       info["stopTimeList"] = [startime, fintime];
@@ -766,6 +766,8 @@ export default {
         localname: filename
       });
       if (res["status"] === 1) {
+        console.log(res);
+        this.webpath = res.webpath;
         this.$Notice.success({
           title: "重新上传成功！"
         });
