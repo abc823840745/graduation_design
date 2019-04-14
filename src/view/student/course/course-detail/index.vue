@@ -49,7 +49,7 @@
   }
   .course-detail-page-nav {
     margin-top: 20px;
-    text-align: center;
+    text-align: right;
   }
   .course-add-question-btn {
     margin-bottom: 10px;

@@ -53,7 +53,7 @@
     margin-top: 10px;
   }
   .teacher-questions-page-nav {
-     text-align: center;
+     text-align: right;
      margin-top: 20px;
   }
   .new-class-btn {
@@ -61,7 +61,7 @@
   }
   .course-detail-page-nav {
     margin-top: 20px;
-    text-align: center;
+    text-align: right;
   }
 }
 </style>

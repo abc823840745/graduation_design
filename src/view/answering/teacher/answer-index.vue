@@ -1,7 +1,7 @@
 <style lang="less">
   .teacher-my-course-questions {
     .teacher-questions-page-nav {
-      text-align: center;
+      text-align: right;
       margin-top: 20px;
     }
   }

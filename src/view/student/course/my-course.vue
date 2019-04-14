@@ -52,7 +52,7 @@
   padding-top: 40px;
 }
 .page_nav {
-  text-align: center;
+  text-align: right;
   margin-top: 20px;
 }
 </style>

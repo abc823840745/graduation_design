@@ -35,7 +35,7 @@
       padding-top: 40px;
    }
    .course-page-nav {
-     text-align: center;
+     text-align: right;
      margin-top: 20px;
    }
  }

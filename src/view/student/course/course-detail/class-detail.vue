@@ -34,7 +34,7 @@
     margin-bottom: 20px;
   }
   .class-file-page-nav {
-     text-align: center;
+     text-align: right;
      margin-top: 20px;
   }
   .class-introduce {
