@@ -70,7 +70,7 @@
           </div>
           <Content class="content-wrapper">
             <keep-alive :include="cacheList">
-              <router-view @changeMsg="updateNoticeCount"></router-view>
+              <router-view @changeMsg="updateNoticeCount" @changeQues="updateQuestionCount"></router-view>
             </keep-alive>
           </Content>
         </Layout>

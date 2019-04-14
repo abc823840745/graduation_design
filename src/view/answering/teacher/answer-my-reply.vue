@@ -113,7 +113,7 @@
 <script>
 import { getMyDate } from '@/libs/tools'
 import noneImg from "@/assets/images/none.png"
-import { getReplyQusetionList, getCommentQusetionList, delReplyQuestion, delCommentQuestion } from '@/api/course'
+import { getReplyQusetionList, getCommentQusetionList, delReplyQuestion, delCommentQuestion, getAlreadyReadNotify } from '@/api/course'
 export default {
   name: 'teacher-answer-reply',
   data () {
@@ -254,11 +254,26 @@ export default {
         }
       });
     },
+    // 清除已读小红点
+    alreadyRead() {
+      this.$store.commit("setQuesCount", false);
+      this.$emit("changeQues", false);
+      // getAlreadyReadNotify({}).then((res)=>{
+      //   console.log(res)
+      // }).catch((err)=>{
+      //   console.log(err)
+      // })
+    },
     // 刷新列表
     refreshList() {
       this.getReplyQusetionList()
       this.getCommentQusetionList()
     }
+  },
+  beforeRouteEnter (to, from, next) {
+    next(vm => {
+      vm.alreadyRead()
+    })
   },
   created () {
     // 初始化学年列表
