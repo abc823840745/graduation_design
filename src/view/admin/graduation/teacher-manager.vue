@@ -281,7 +281,7 @@ export default {
         {
           title: "操作",
           key: "action",
-          width: 480,
+          width: 500,
           align: "center",
           render: (h, params) => {
             return h("div", [
@@ -726,13 +726,12 @@ export default {
 }
 
 .choice_btn {
-  position: fixed;
+  position: relative;
   width: 320px;
   text-align: center;
-  left: 50%;
-  bottom: 50px;
   transform: translateX(-20px);
   margin: 0 auto;
+  margin-top: 50px;
 }
 
 .choice_tip {
