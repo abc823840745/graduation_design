@@ -41,7 +41,7 @@ export default [
     meta: {
       hideInMenu: true,
       notCache: true,
-      access: ['student', 'teacher'],
+      access: ['student', 'teacher', 'admin'],
     },
     children: [
       {
@@ -230,7 +230,7 @@ export default [
     path: '/student/personal',
     name: 'student-personal',
     meta: {
-      icon: 'logo-buffer',
+      icon: 'md-contact',
       title: '个人中心',
       access: ['student'],
     },
@@ -240,8 +240,8 @@ export default [
         path: 'student-my-info',
         name: 'student-my-info',
         meta: {
-          icon: 'logo-markdown',
-          title: '我的课程',
+          icon: 'md-list',
+          title: '我的资料',
           access: ['student'],
         },
         component: () => import('@/view/student/personal/my-info.vue'),
@@ -250,8 +250,8 @@ export default [
         path: 'student-my-message',
         name: 'student-my-message',
         meta: {
-          icon: 'ios-create',
-          title: '其他',
+          icon: 'ios-mail-open',
+          title: '我的私信',
           access: ['student'],
         },
         component: () => import('@/view/student/personal/my-message.vue'),
@@ -262,8 +262,8 @@ export default [
     path: '/student/course',
     name: 'student-course',
     meta: {
-      icon: 'logo-buffer',
-      title: '课程设计',
+      icon: 'ios-book',
+      title: '课程管理',
       access: ['student'],
     },
     component: Main,
@@ -272,29 +272,106 @@ export default [
         path: 'my-course',
         name: 'student-my-course',
         meta: {
-          icon: 'logo-markdown',
+          icon: 'md-bookmarks',
           title: '我的课程',
           access: ['student'],
+          notCache: false,
         },
         component: () => import('@/view/student/course/my-course.vue'),
       },
       {
-        path: 'other',
-        name: 'student-else',
+        path: 'course-detail/:id',
+        name: 'student-my-course-detail',
         meta: {
-          icon: 'ios-create',
-          title: '其他',
+          title: '课程详情',
           access: ['student'],
+          hideInMenu: true,
+          notCache: true,
         },
-        component: () => import('@/view/student/course/else.vue'),
+        component: () => import('@/view/student/course/course-detail/index.vue'),
+      },
+      {
+        path: 'course-detail/:id/:class_id',
+        name: 'student-my-course-class-detail',
+        meta: {
+          title: '课时详情',
+          access: ['student'],
+          hideInMenu: true,
+          notCache: true,
+        },
+        component: () => import('@/view/student/course/course-detail/class-detail.vue'),
+      },
+      {
+        path: 'course-notes',
+        name: 'my-course-notes',
+        meta: {
+          icon: 'ios-quote',
+          title: '我的笔记',
+          access: ['student'],
+          notCache: false,
+        },
+        component: () => import('@/view/student/course/course-notes.vue'),
       },
     ],
+  },
+  {
+    path: '/student/answering',
+    name: 'student-answering',
+    meta: {
+      icon: 'ios-text',
+      title: '答疑管理',
+      access: ['student'],
+    },
+    component: Main,
+    children: [
+      {
+        path: 'index',
+        name: 'student-answer-index',
+        meta: {
+          icon: 'md-albums',
+          title: '课程答疑',
+          access: ['student'],
+        },
+        component: () => import('@/view/answering/student/answer-index.vue'),
+      },
+      {
+        path: 'ask',
+        name: 'student-answer-ask',
+        meta: {
+          icon: 'md-chatbubbles',
+          title: '我的提问',
+          access: ['student'],
+        },
+        component: () => import('@/view/answering/answer-my-ask.vue'),
+      },
+      {
+        path: 'reply',
+        name: 'student-answer-reply',
+        meta: {
+          icon: 'md-chatboxes',
+          title: '我的回答 / 评论',
+          access: ['student'],
+        },
+        component: () => import('@/view/answering/student/answer-my-reply.vue'),
+      },
+      {
+        path: 'detail/:id',
+        name: 'student-answer-detail',
+        meta: {
+          title: '答疑详情',
+          access: ['student'],
+          hideInMenu: true,
+          notCache: true,
+        },
+        component: () => import('@/view/answering/answer-detail.vue'),
+      },
+    ]
   },
   {
     path: '/student/homework',
     name: 'student-homework',
     meta: {
-      icon: 'logo-buffer',
+      icon: 'ios-paper',
       title: '作业设计',
       access: ['student'],
     },
@@ -306,6 +383,7 @@ export default [
         meta: {
           icon: 'ios-home',
           title: '首页',
+          notCache: true,
           access: ['student'],
         },
         component: () => import('@stuHomework/page/homework-main.vue'),
@@ -315,7 +393,8 @@ export default [
         name: 'student-experimental-state',
         meta: {
           icon: 'ios-list-box',
-          title: '实验状态',
+          title: '作业状态',
+          notCache: true,
           access: ['student'],
         },
         component: () => import('@stuHomework/page/experimental-state.vue'),
@@ -326,6 +405,7 @@ export default [
         meta: {
           icon: 'ios-keypad',
           title: '实验管理',
+          notCache: true,
           access: ['student'],
         },
         component: () => import('@stuHomework/page/experiment-management.vue'),
@@ -336,6 +416,7 @@ export default [
         meta: {
           icon: 'ios-globe',
           title: '在线作业',
+          notCache: true,
           access: ['student'],
         },
         component: () => import('@stuHomework/page/online-homework.vue'),
@@ -411,28 +492,6 @@ export default [
           access: ['student'],
         },
         component: () => import('@/view/student/graduation/practice-week.vue'),
-      },
-    ],
-  },
-  {
-    path: '/student/answering',
-    name: 'student-answering',
-    meta: {
-      icon: 'logo-buffer',
-      title: '答疑管理',
-      access: ['student'],
-    },
-    component: Main,
-    children: [
-      {
-        path: '',
-        name: 'student-answer-questions',
-        meta: {
-          icon: 'md-contacts',
-          title: '解答问题',
-          access: ['student'],
-        },
-        component: () => import('@/view/student/answering/answer-questions.vue'),
       },
     ],
   },
@@ -582,51 +641,108 @@ export default [
         path: 'my-course',
         name: 'teacher-my-course',
         meta: {
-          icon: 'logo-markdown',
+          icon: 'ios-book',
           title: '我的课程',
           access: ['teacher', 'admin'],
         },
         component: () => import('@/view/teacher/course/my-course.vue'),
       },
       {
-        path: 'other',
-        name: 'teacher-course-other',
+        path: 'my-course-detail/:id',
+        name: 'teacher-my-course-detail',
         meta: {
-          icon: 'ios-create',
-          title: '其他',
+          icon: 'logo-markdown',
+          title: '课程详情',
           access: ['teacher', 'admin'],
+          hideInMenu: true,
+          notCache: true,
         },
-        component: () => import('@/view/teacher/course/other.vue'),
+        component: () => import('@/view/teacher/course/my-course-detail.vue'),
+      },
+      {
+        path: 'my-course-detail/:id/:class_id',
+        name: 'teacher-my-course-class',
+        meta: {
+          icon: 'logo-markdown',
+          title: '课时详情',
+          access: ['teacher', 'admin'],
+          hideInMenu: true,
+          notCache: true,
+        },
+        component: () => import('@/view/teacher/course/my-course-class.vue'),
       },
     ],
   },
-
   {
-    path: '/teacher/homework',
-    name: 'teacher-homework',
+    path: '/teacher/answering',
+    name: 'teacher-answering',
     meta: {
-      icon: 'logo-buffer',
-      title: '作业管理',
+      icon: 'ios-text',
+      title: '答疑管理',
       access: ['teacher', 'admin'],
     },
     component: Main,
     children: [
       {
-        path: 'homework-main',
-        name: 'teacher-homework-main',
+        path: 'index',
+        name: 'teacher-answer-index',
         meta: {
-          icon: 'ios-home',
-          title: '首页',
+          icon: 'md-albums',
+          title: '全部答疑',
           access: ['teacher', 'admin'],
         },
-        component: () => import('@teaHomework/page/homework-main.vue'),
+        component: () => import('@/view/answering/teacher/answer-index.vue'),
       },
+      {
+        path: 'audit',
+        name: 'teacher-answer-audit',
+        meta: {
+          icon: 'md-contacts',
+          title: '提问审核',
+          access: ['teacher', 'admin'],
+        },
+        component: () => import('@/view/answering/answer-audit.vue'),
+      },
+      {
+        path: 'reply',
+        name: 'teacher-answer-reply',
+        meta: {
+          icon: 'md-chatboxes',
+          title: '我的回答 / 评论',
+          access: ['teacher', 'admin'],
+        },
+        component: () => import('@/view/answering/teacher/answer-my-reply.vue'),
+      },
+      {
+        path: 'detail/:id',
+        name: 'teacher-answer-detail',
+        meta: {
+          icon: 'md-contacts',
+          title: '答疑详情',
+          access: ['teacher', 'admin'],
+          hideInMenu: true,
+        },
+        component: () => import('@/view/answering/answer-detail.vue'),
+      },
+    ],
+  },
+  {
+    path: '/teacher/homework',
+    name: 'teacher-homework',
+    meta: {
+      icon: 'ios-paper',
+      title: '作业设计',
+      access: ['teacher', 'admin'],
+    },
+    component: Main,
+    children: [
       {
         path: 'homework-create',
         name: 'teacher-homework-create',
         meta: {
           icon: 'ios-add-circle',
           title: '新建作业',
+          notCache: true,
           access: ['teacher', 'admin'],
         },
         component: () => import('@teaHomework/page/homework-create.vue'),
@@ -637,19 +753,10 @@ export default [
         meta: {
           icon: 'ios-brush',
           title: '作业评分',
+          notCache: true,
           access: ['teacher', 'admin'],
         },
         component: () => import('@teaHomework/page/check-homework.vue'),
-      },
-      {
-        path: 'upload-courseware',
-        name: 'teacher-upload-courseware',
-        meta: {
-          icon: 'ios-cloud-upload',
-          title: '上传课件',
-          access: ['teacher', 'admin'],
-        },
-        component: () => import('@teaHomework/page/upload-courseware.vue'),
       },
       {
         path: 'task-center',
@@ -657,9 +764,21 @@ export default [
         meta: {
           icon: 'ios-list-box',
           title: '任务中心',
+          notCache: true,
           access: ['teacher', 'admin'],
         },
         component: () => import('@teaHomework/page/task-center.vue'),
+      },
+      {
+        path: 'item-bank-management',
+        name: 'teacher-item-bank-management',
+        meta: {
+          icon: 'ios-book',
+          title: '题库管理',
+          notCache: true,
+          access: ['teacher', 'admin'],
+        },
+        component: () => import('@teaHomework/page/item-bank-management.vue'),
       },
     ],
   },
@@ -702,28 +821,6 @@ export default [
           access: ['teacher', 'admin'],
         },
         component: () => import('@/view/teacher/graduation/my-mission.vue'),
-      },
-    ],
-  },
-  {
-    path: '/teacher/answering',
-    name: 'teacher-answering',
-    meta: {
-      icon: 'logo-buffer',
-      title: '答疑管理',
-      access: ['teacher', 'admin'],
-    },
-    component: Main,
-    children: [
-      {
-        path: '',
-        name: 'teacher-answer-questions',
-        meta: {
-          icon: 'md-contacts',
-          title: '解答问题',
-          access: ['teacher', 'admin'],
-        },
-        component: () => import('@/view/teacher/answering/answer-questions.vue'),
       },
     ],
   },

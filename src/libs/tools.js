@@ -289,3 +289,123 @@ export function isEmptyObject(obj) {
   }
   return false;
 }
+
+/**
+ * 存sessionStorage
+ */
+export function setSessionStorage(key, val) {
+  let jsonVal = JSON.stringify(val);
+  sessionStorage.setItem(key, jsonVal);
+}
+
+/**
+ * 取sessionStorage
+ */
+export function getSessionStorage(key) {
+  let value = sessionStorage.getItem(key);
+  return JSON.parse(value);
+}
+
+/**
+ * 存LocalStorage
+ */
+export function setlocalStorage(key, val) {
+  let jsonVal = JSON.stringify(val);
+  localStorage.setItem(key, jsonVal);
+}
+
+/**
+ * 取localStorage
+ */
+export function getlocalStorage(key) {
+  let value = localStorage.getItem(key);
+  if (value) {
+    return JSON.parse(value);
+  }
+  return false;
+}
+
+/**
+ * 防抖动函数
+ */
+export function debounce(fn, delay = 1000, immediate = false) {
+  let timer = null;
+  return function() {
+    let args = arguments;
+    if (timer) clearTimeout(timer);
+    if (immediate) {
+      // 根据距离上次触发操作的时间是否到达delay来决定是否要现在执行函数
+      let doNow = !timer;
+
+      /**
+       * 每一次都重新设置timer，就是要保证每一次执行的至少delay秒后才可以执行,
+       * 拼命点就拼命重新设置定时器，让timer一直为true
+       */
+      timer = setTimeout(() => {
+        timer = null;
+      }, delay);
+
+      // 立即执行
+      if (doNow) {
+        fn.apply(this, args);
+      }
+    } else {
+      timer = setTimeout(() => {
+        timer = null;
+        fn.apply(this, args);
+      }, delay);
+    }
+  };
+}
+
+/**
+ * 获取当前系统时间，格式为2018-09-18 00:00:00
+ */
+export function getCurDate() {
+  let date = new Date();
+  let year = date.getFullYear();
+  let month = date.getMonth() + 1;
+  let day = date.getDate();
+  let hours = date.getHours();
+  let minutes = date.getMinutes();
+  let seconds = date.getSeconds();
+  return `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day} ${
+    hours < 10 ? '0' + hours : hours
+  }:${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+}
+
+/**
+ * 获取当前的学年学期
+ */
+export function getCurSchoolYear() {
+  let date = new Date();
+  let year = date.getFullYear();
+  let month = date.getMonth() + 1;
+  let semester = null;
+  if (month >= 3 && month <= 7) {
+    semester = '下学期';
+  } else {
+    semester = '上学期';
+  }
+  return `${year - 1}-${year}${semester}`;
+}
+
+/**
+ * 转换2018-2019上学期格式时间为查询课程参数
+ */
+export function dateFormat(curSemester) {
+  let yearReg = /[0-9]{4}/;
+  let semesterReg = /[\u4e00-\u9fa5]{3}/;
+  let formatSemester = null;
+  let formatYear = curSemester.match(yearReg)[0];
+  let semester = curSemester.match(semesterReg)[0];
+  if (semester === '上学期') {
+    formatSemester = 1;
+  } else {
+    formatSemester = 2;
+  }
+  return {
+    year: formatYear,
+    semester: formatSemester,
+  };
+}

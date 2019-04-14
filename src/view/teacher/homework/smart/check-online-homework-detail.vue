@@ -1,159 +1,57 @@
 <template>
   <div class="homework-detail-con">
     <div>
-
-      <h2>作业评分</h2>
-
-      <Divider />
-
       <SubjectType
         class="mb-30"
-        v-for="(item,index) in inputInfo"
-        type='score'
+        v-for="(item, index) in inputInfo"
+        type="score"
         :key="index"
-        :inputInfo='item'
+        :index="index"
       />
-
-      <div class="bottom-bar">
-        <p class="total-score">总评分:
-          <span class="total-score score">80</span>
-        </p>
-      </div>
-
-      <div class="btnGround">
-        <Button
-          type="primary"
-          @click="submit"
-          long
-        >提交评分</Button>
-
-        <Button
-          type="primary"
-          @click="$emit('goBack')"
-          long
-        >返回</Button>
-      </div>
     </div>
-
   </div>
 </template>
 
 <script>
-import SubjectType from "@/view/global/show-subject-different-types";
+import { mapState } from "vuex";
 
 export default {
   name: "check-online-homework-detail",
 
   components: {
-    SubjectType
+    SubjectType: () =>
+      import("@/view/global/component/show-subject-different-types")
+  },
+
+  computed: {
+    ...mapState({
+      inputInfo: state => state.homework.inputInfo
+    })
   },
 
   data() {
-    return {
-      inputInfo: [
-        {
-          subjectType: "单选题",
-          subject:
-            "我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？",
-          title: "1、单选题",
-          choice: "A",
-          referenceAnswer: "A",
-          score: 60
-        },
-        {
-          subjectType: "多选题",
-          subject:
-            "我们是机车吗？我们是机车吗我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？",
-          title: "2、多选题",
-          choice: ["B"],
-          referenceAnswer: ["A"],
-          score: 60
-        },
-        {
-          subjectType: "填空题",
-          subject: [
-            {
-              subject:
-                "《红楼梦》又名_________ ，是中国古典现实主义小说发展的顶峰。全书共置120回，前80回为曹雪芹所作，后40回一般认为是_________ 续写。《红楼梦》又名_________ ，是中国古典现实主义小说发展的顶峰。全书共置120回，前80回为曹雪芹所作，后40回一般认为是_________ 续写。",
-              answer:
-                "石头记 高鹗我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？",
-              showCreSubjectBtn: false
-            },
-            {
-              subject:
-                "《红楼梦》又名_________ ，是中国古典现实主义小说发展的顶峰。全书共置120回，前80回为曹雪芹所作，后40回一般认为是_________ 续写。",
-              answer:
-                "石头记 高鹗我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？",
-              showCreSubjectBtn: false
-            }
-          ],
-          title: "3、填空题",
-          choice: "填空题的回答",
-          referenceAnswer:
-            "填空题的参考答案我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？",
-          score: 60
-        },
-        {
-          subjectType: "问答题",
-          subject:
-            "我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？",
-          title: "4、问答题",
-          choice:
-            "我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？",
-          referenceAnswer:
-            "我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？我们是机车吗？",
-          score: 60
-        }
-      ]
-    };
+    return {};
   },
 
   methods: {
-    submit() {
-      if (
-        !this.inputInfo[0]["subject"] ||
-        !this.inputInfo[0]["choice"] ||
-        !this.inputInfo[1]["subject"] ||
-        !this.inputInfo[1]["choice"] ||
-        !this.inputInfo[2]["subject"] ||
-        this.inputInfo[2]["choice"].length === 0
-      ) {
-        return this.$Message.error("缺少必填信息");
-      }
-      alert("提交表单");
-    },
-
     goBack() {
       console.log("goback");
-    },
-
-    onChangeScore(data) {
-      let inputInfo = { ...inputInfo };
-      inputInfo[0]["score"] = data.score;
-      this.inputInfo = inputInfo;
-    },
-
-    onChangeScore2(data) {
-      let inputInfo = { ...inputInfo };
-      inputInfo[1]["score"] = data.score;
-      this.inputInfo = inputInfo;
     }
   }
 };
 </script>
 
 <style lang="less" scoped>
-@import "../../../../public.less";
+@import "../../../global/public.less";
 
 .homework-detail-con {
   width: 100%;
   height: auto;
-  padding: 1%;
+  padding: 0 1%;
 
   .bottom-bar {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 4%;
 
     .total-score {
       font-size: 18px;

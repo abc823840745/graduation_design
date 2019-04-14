@@ -5,10 +5,14 @@
 <template>
   <div class="login">
     <div class="login-con">
-      <Card icon="log-in" title="欢迎登录" :bordered="false">
+      <Card icon="log-in" :bordered="false">
+        <p slot="title" style="text-align:center;height:86px;">
+          <img :src="Logo" alt="游戏系教学管理平台"><br />
+          <span>游戏系教学管理平台</span>
+        </p>
         <div class="form-con">
           <login-form @on-success-valid="handleSubmit"></login-form>
-          <p class="login-tip">教学管理平台</p>
+          <p class="login-tip">欢迎登录</p>
         </div>
       </Card>
     </div>
@@ -18,6 +22,7 @@
 <script>
   import LoginForm from '_c/login-form'
   import { mapActions, mapMutations } from 'vuex'
+  import Logo from '@/assets/images/logo-min.png'
  
   export default {
     components: {
@@ -26,6 +31,9 @@
     computed: {
       tagNavList() {
         return this.$store.state.app.tagNavList
+      },
+      Logo() {
+        return Logo
       }
     },
     methods: {

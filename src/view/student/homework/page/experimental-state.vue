@@ -1,288 +1,316 @@
 <template>
   <div class="containter">
-
-    <div
-      class="containter"
-      v-show="curDirectory !== 2"
-    >
-
+    <div class="containter" v-show="curDirectory !== 2">
       <div class="select-con">
         <MultipleChoice
-          v-for="(item,index) in selectList"
-          :key="index"
-          :defaultValue.sync="item['defaultValue']"
-          :semesterTip="item['semesterTip']"
-          :semesterList="item['semesterList']"
           class="multiple-choice"
+          v-for="(item, index) in selectList"
+          :key="index"
+          :defaultValue.sync="item['value']"
+          :semesterTip="item['tip']"
+          :semesterList="item['list']"
+          @onChange="item['onChange']"
         />
 
-        <Input
-          class="search-item"
-          search
-          enter-button
-          placeholder="请输入关键词"
-        />
+        <Button
+          type="primary"
+          icon="ios-search"
+          class="search-btn"
+          @click="searchOpen"
+          >Search</Button
+        >
       </div>
 
       <Table
         border
         class="table-con mar-top"
-        :columns="columns1"
-        :data="data1"
+        :loading="loading"
+        :columns="columns"
+        :data="tableInfo['tableData']"
       />
 
       <Page
-        :total="30"
         class="mar-top page"
+        :total="tableInfo['count']"
+        @on-change="getTableData"
       />
     </div>
 
-    <HomeworkDetail
-      v-show="curDirectory === 2"
-      @goBack='goBack'
-    />
+    <Modal fullscreen v-model="showModal" @on-cancel="handleCancel">
+      <p slot="header" style="text-align:center">
+        查看在线作业
+      </p>
+      <div slot="footer">
+        <Button type="primary" size="large" @click="handleOk">返回</Button>
+      </div>
+      <HomeworkDetail />
+    </Modal>
+
+    <Modal fullscreen title="搜索" v-model="modalOpen" @on-ok="searchClose">
+      <SearchView
+        :columns="columns"
+        :tableData="tableData"
+        :total="searchCount"
+        @search="getSearchResult"
+        @changePage="changePage"
+      />
+      <div slot="footer">
+        <Button type="primary" size="large" @click="goBack">
+          返回
+        </Button>
+      </div>
+    </Modal>
   </div>
 </template>
 
 <script>
-import MultipleChoice from "@teaHomework/smart/multiple-choice";
-import HomeworkDetail from "@stuHomework/smart/check-online-homework-detail";
-import myMixin from "@stuHomework/mixin";
+import myMixin from "@/view/global/mixin";
+import { mapState, mapActions } from "vuex";
+import { getCurSchoolYear } from "@tools";
+import { types } from "util";
 
 export default {
   mixins: [myMixin],
 
   components: {
-    MultipleChoice,
-    HomeworkDetail
+    MultipleChoice: () => import("@teaHomework/smart/multiple-choice"),
+    HomeworkDetail: () =>
+      import("@stuHomework/smart/check-online-homework-detail"),
+    SearchView: () => import("@/view/global/component/search-view")
+  },
+
+  computed: {
+    ...mapState({
+      userName: state => state.user.userName,
+      stuId: state => state.user.stu_nmuber,
+      courseList: state => state.homework.courseList,
+      tableInfo: state => state.homework.stuMyHWList
+    })
   },
 
   data() {
     return {
       curDirectory: 1, // 当前的目录
       showModal: false,
-      weeksNum: "",
-      weeksList: [
-        {
-          value: "第一周",
-          label: "第一周"
-        },
-        {
-          value: "第二周",
-          label: "第二周"
-        },
-        {
-          value: "第三周",
-          label: "第三周"
-        },
-        {
-          value: "第四周",
-          label: "第四周"
-        },
-        {
-          value: "第五周",
-          label: "第五周"
-        },
-        {
-          value: "第六周",
-          label: "第六周"
-        }
-      ],
+      modalOpen: false,
+      loading: true,
+      searchText: "",
+      searchCount: 1,
+      tableData: [],
       selectList: [
         {
-          semesterTip: "学期选择",
-          defaultValue: "2018-2019上学期",
-          semesterList: [
-            {
-              value: "2015-2016上学期",
-              label: "2015-2016上学期"
-            },
-            {
-              value: "2016-2017上学期",
-              label: "2016-2017上学期"
-            },
-            {
-              value: "2017-2018上学期",
-              label: "2017-2018上学期"
-            },
-            {
-              value: "2018-2019上学期",
-              label: "2018-2019上学期"
-            }
-          ]
+          tip: "学期选择",
+          value: getCurSchoolYear(),
+          list: this.getSchoolYear(),
+          onChange: this.changeYear
         },
         {
-          semesterTip: "课程选择",
-          defaultValue: "所有课程",
-          semesterList: [
+          tip: "课程选择",
+          value: "所有课程",
+          list: [
             {
               value: "所有课程",
               label: "所有课程"
-            },
-            {
-              value: "新媒体实训",
-              label: "新媒体实训"
-            },
-            {
-              value: "JavaScript编程",
-              label: "JavaScript编程"
-            },
-            {
-              value: "Vue应用开发",
-              label: "Vue应用开发"
             }
-          ]
+          ],
+          onChange: this.changeCourse
         },
         {
-          semesterTip: "周数选择",
-          defaultValue: "",
-          semesterList: [
+          tip: "课时选择",
+          value: "所有课时",
+          list: [
             {
-              value: "第一周",
-              label: "第一周"
-            },
-            {
-              value: "第二周",
-              label: "第二周"
+              value: "所有课时",
+              label: "所有课时"
             }
-          ]
-        },
-        {
-          semesterTip: "作业类型",
-          defaultValue: "",
-          semesterList: [
-            {
-              value: "课时作业",
-              label: "课时作业"
-            },
-            {
-              value: "在线作业",
-              label: "在线作业"
-            }
-          ]
-        },
-        {
-          semesterTip: "完成状态",
-          defaultValue: "",
-          semesterList: [
-            {
-              value: "未完成",
-              label: "未完成"
-            },
-            {
-              value: "已完成",
-              label: "已完成"
-            },
-            {
-              value: "已过期",
-              label: "已过期"
-            }
-          ]
+          ],
+          onChange: this.changeClassHour
         }
       ],
-      columns1: [
+      columns: [
         {
           title: "课程名称",
-          key: "courseName"
+          key: "course"
         },
         {
-          title: "实验",
-          key: "experiment"
+          title: "课时",
+          key: "week"
         },
         {
-          title: "周数",
-          key: "weeksNum"
+          title: "实验名称",
+          key: "exper_name"
         },
         {
           title: "作业类型",
-          key: "homeworkClassify"
+          key: "classify",
+          sortable: true,
+          render: (h, params) => {
+            if (params.row.type === "online") {
+              return h("p", {}, "在线作业");
+            }
+            return h("p", {}, "课时作业");
+          }
         },
         {
-          title: "状态",
-          key: "status"
+          title: "完成状态",
+          key: "status",
+          sortable: true,
+          render: (h, params) => {
+            let text = params.row.status;
+            let btnColor = null;
+            switch (text) {
+              case "已完成":
+                btnColor = "success";
+                break;
+              case "进行中":
+                btnColor = "warning";
+                break;
+              default:
+                btnColor = "error";
+                break;
+            }
+            return h("div", [this.statusBtnStyle(text, h, btnColor)]);
+          }
         },
         {
           title: "评分",
-          key: "grading"
+          key: "grade"
         },
         {
           title: "操作",
           key: "operation",
           render: (h, params) => {
-            const homeworkClassify = params["row"]["homeworkClassify"];
-            if (homeworkClassify === "在线作业") {
-              return h("div", [
-                this.btnStyle("查看", h, () => (this.curDirectory = 2))
-              ]);
+            let { status, type } = params.row;
+            if (type === "online") {
+              if (status === "已完成") {
+                return h("div", [
+                  this.btnStyle("查看", h, () => {
+                    this.goDetail(params);
+                  })
+                ]);
+              }
+              return h("div", [this.disableBtnStyle("查看", h)]);
+            } else {
+              if (status === "已完成") {
+                return h("div", [
+                  this.btnStyle("下载", h, () => {
+                    this.goDownload(params);
+                  })
+                ]);
+              }
+              return h("div", [this.disableBtnStyle("下载", h)]);
             }
-            return h("div", [
-              this.btnStyle("下载", h, () => this.$Message.info("下载中"))
-            ]);
           }
-        }
-      ],
-      data1: [
-        {
-          courseName: "新媒体实训",
-          weeksNum: "第一周",
-          experiment: "堂上构建简单服务器",
-          grading: 100,
-          status: "已完成",
-          homeworkClassify: "在线作业"
-        },
-        {
-          courseName: "新媒体实训",
-          weeksNum: "第二周",
-          experiment: "构建简单服务器",
-          grading: 0,
-          status: "未完成",
-          homeworkClassify: "课时作业"
-        },
-        {
-          courseName: "JavaScript编程",
-          weeksNum: "第一周",
-          experiment: "堂上构建简单服务器",
-          grading: 100,
-          status: "已完成",
-          homeworkClassify: "在线作业"
-        },
-        {
-          courseName: "JavaScript编程",
-          weeksNum: "第二周",
-          experiment: "构建简单服务器",
-          grading: 0,
-          status: "未完成",
-          homeworkClassify: "课时作业"
-        },
-        {
-          courseName: "Vue应用开发",
-          weeksNum: "第一周",
-          experiment: "堂上构建简单服务器",
-          grading: 100,
-          status: "已完成",
-          homeworkClassify: "在线作业"
-        },
-        {
-          courseName: "Vue应用开发",
-          weeksNum: "第二周",
-          experiment: "构建简单服务器",
-          grading: 0,
-          status: "未完成",
-          homeworkClassify: "课时作业"
         }
       ]
     };
   },
 
+  async mounted() {
+    await this.setCourseSelList();
+    await this.getTableData();
+  },
+
   methods: {
-    goBack() {
+    ...mapActions([
+      "getTeaHW",
+      "getStuMyHWlist",
+      "getStuScoreSubject",
+      "searchMyHWlist"
+    ]),
+
+    goDetail(params) {
+      let { id, exper_id } = params.row;
+      this.showModal = true;
+      this.getSubjectList(id, exper_id);
+    },
+
+    goDownload(params) {
+      let { webpath } = params.row;
+      window.open(webpath);
+    },
+
+    handleOk() {
+      this.showModal = false;
       this.curDirectory = 1;
+    },
+
+    handleCancel() {
+      this.curDirectory = 1;
+    },
+
+    // 获取表格数据
+    async getTableData(page = 1) {
+      await this.getTableList("getStuMyHWlist", page);
+    },
+
+    // 学年选择
+    async changeYear(value) {
+      await this.yearChange("getStuMyHWlist", value);
+    },
+
+    // 课程选择
+    async changeCourse(value) {
+      await this.courseChange("getStuMyHWlist", value);
+    },
+
+    // 学时选择
+    async changeClassHour(value) {
+      await this.classHourChange("getStuMyHWlist", value);
+    },
+
+    // 获取在线作业题目
+    async getSubjectList(id, exper_id) {
+      await this.getStuScoreSubject({
+        id,
+        exper_id
+      });
+    },
+
+    // 打开搜索页
+    searchOpen() {
+      this.modalOpen = true;
+    },
+
+    searchClose() {
+      this.modalOpen = false;
+    },
+
+    // 搜索结果
+    async searchResult(searchText, page = 1) {
+      this.searchText = searchText;
+      let res = await this.searchMyHWlist({
+        page,
+        semester: this.selectList[0]["value"],
+        condition: searchText,
+        stuId: this.stuId,
+        student: this.userName
+      });
+      this.searchCount = res.count;
+      this.tableData = res.data;
+    },
+
+    // 获取搜索结果
+    async getSearchResult(searchText) {
+      await this.searchResult(searchText);
+    },
+
+    // 搜索表格分页
+    async changePage(page) {
+      await this.searchResult(this.searchText, page);
+    },
+
+    // 关闭modal
+    goBack() {
+      this.modalOpen = false;
     }
   }
 };
 </script>
 
 <style lang='less' scoped>
+@import "../../../global/public.less";
+
 .containter {
   width: 100%;
   height: auto;
@@ -309,6 +337,10 @@ export default {
     flex-wrap: wrap;
     width: 100%;
 
+    .search-btn {
+      height: 32px;
+    }
+
     .multiple-choice {
       margin-bottom: 10px;
     }
@@ -319,7 +351,7 @@ export default {
 
     .search-item {
       margin-top: -1px;
-      width: 262px;
+      width: 271px;
     }
   }
 }

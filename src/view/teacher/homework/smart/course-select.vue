@@ -1,135 +1,102 @@
 <template>
   <div class="containter">
     <MultipleChoice
-      semesterTip='学期选择'
-      :defaultValue.sync='semester'
-      :semesterList='semesterList'
+      semesterTip="学期选择"
+      :defaultValue.sync="semesterList['value']"
+      :semesterList="semesterList['list']"
+      @onChange="semesterList['onChange']"
       class="flex-start"
     />
 
-    <div class="course-containter">
-      <Card
-        class="card"
-        v-for="item in courseList"
-        :key="item['name']"
-      >
-        <div
-          class="course-touch"
-          @click='goNext'
-        >
-          <div class="card-containter">
-            <div class="left-con">
-              <div
-                class="circle"
-                :style="{background:getRandomColor()}"
-              >
-                <p>{{item['name'].slice(0,1)}}</p>
-              </div>
-            </div>
-
-            <div class="right-con">
-              <p>{{item['name']}}</p>
-            </div>
-
-          </div>
-        </div>
-
-        <div
-          class="card-fill"
-          v-for="(item,index) in 10"
-          :key="index"
-        ></div>
-      </Card>
+    <div class="course-list-wrap" v-show="courseList.length > 0">
+      <div class="course-item" v-for="(item, index) in courseList" :key="index">
+        <h3>{{ item.name }}</h3>
+        <p class="course-code">课程代码：{{ item.code }}</p>
+        <p class="course-code">教学班：{{ item.classes }}</p>
+        <ButtonGroup class="course-btn">
+          <Button
+            shape="circle"
+            type="info"
+            @click.native="goNext(index)"
+            class="select-course-btn"
+          >
+            选择课程
+          </Button>
+        </ButtonGroup>
+      </div>
     </div>
 
-    <Page
-      :total="30"
-      class="mar-top page"
-    />
+    <div class="none-course" v-if="courseList.length === 0">
+      您选择的学期找不到课程信息哦，尝试一下刷新课表吧~
+    </div>
 
+    <Page class="mt-20 page" :total="totalCount" @on-change="changePage" />
   </div>
 </template>
 
 <script>
-import MultipleChoice from "@teaHomework/smart/multiple-choice";
-import myMixin from "@teaHomework/mixin";
+import myMixin from "@/view/global/mixin";
+import { getTeaCourseList } from "@/api/course";
+import { mapState } from "vuex";
+import { getCurSchoolYear, dateFormat } from "@tools";
 
 export default {
   mixins: [myMixin],
 
   components: {
-    MultipleChoice
+    MultipleChoice: () => import("@teaHomework/smart/multiple-choice")
+  },
+
+  computed: {
+    ...mapState({
+      role: state => state.user.role,
+      courseList: state => state.homework.courseList
+    })
   },
 
   data() {
     return {
-      semester: "2017-2018第二学期",
-      semesterList: [
-        {
-          value: "2016-2017第一学期",
-          label: "2016-2017第一学期"
-        },
-        {
-          value: "2016-2017第二学期",
-          label: "2016-2017第二学期"
-        },
-        {
-          value: "2017-2018第一学期",
-          label: "2017-2018第一学期"
-        },
-        {
-          value: "2017-2018第二学期",
-          label: "2017-2018第二学期"
-        }
-      ],
-      courseList: [
-        { name: "新媒体实训" },
-        { name: "JavaScript编程" },
-        { name: "vue应用程序开发哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈" },
-        { name: "新媒体概论" },
-        { name: "PhotoShop" },
-        { name: "Java" },
-        { name: "Flash" },
-        { name: "html5" },
-        { name: "React" },
-        { name: "Angular" }
-      ]
+      totalCount: 0,
+      semesterList: {
+        value: getCurSchoolYear(),
+        list: this.getSchoolYear(),
+        onChange: this.changeYear
+      }
     };
   },
 
+  async mounted() {
+    await this.getCourseList(this.semesterList["value"]);
+  },
+
   methods: {
-    getRandomColor() {
-      let colorList = [
-        "#4d4af2",
-        "#bea41e",
-        "#68eec6",
-        "#9b2cf2",
-        "#d2ee81",
-        "#1c87b5",
-        "#c21487",
-        "#ace114",
-        "#5d17cf",
-        "#8beebf",
-        "#f06072",
-        "#e8ea86",
-        "#0ac7a5",
-        "#8e1aea",
-        "#c8f68d",
-        "#c219bb",
-        "#FF1493",
-        "#8B008B",
-        "#483D8B",
-        "#00BFFF",
-        "#2F4F4F",
-        "#2E8B57",
-        "#FF6347"
-      ];
-      let color = colorList[Math.floor(Math.random() * colorList.length)];
-      return color;
+    goNext(index) {
+      let obj = this.courseList[index];
+      obj["semester"] = this.semesterList["value"];
+      this.$emit("goNext", obj);
     },
 
-    goNext() {
-      this.$emit("goNext");
+    // 获取课程列表
+    async getCourseList(curSemester, page) {
+      let { year, semester } = dateFormat(curSemester);
+      let res = await getTeaCourseList({
+        year,
+        semester,
+        offset: page,
+        limit: 10
+      });
+      this.totalCount = res.data.count;
+      this.setCourseList(res.data.courseList);
+    },
+
+    // 切换页数
+    async changePage(page) {
+      await getCourseList(this.semesterList["value"], page);
+    },
+
+    // 学年选择筛选
+    async changeYear(value) {
+      await this.getCourseList(value);
     }
   }
 };
@@ -146,6 +113,54 @@ export default {
   .page {
     align-self: flex-end;
     padding-right: 0.5%;
+  }
+
+  .none-course {
+    font-size: 16px;
+    font-weight: 700;
+    color: #888;
+    text-align: center;
+    padding-top: 40px;
+  }
+
+  .course-list-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    height: auto;
+    margin: 0;
+
+    .course-item {
+      width: 220px;
+      padding: 20px;
+      border-radius: 10px;
+      background-color: #fff;
+      box-shadow: 2px 2px 2px #eee;
+      margin-top: 20px;
+      margin-right: 20px;
+      text-align: center;
+      color: #666;
+      cursor: pointer;
+
+      h3 {
+        font-weight: 700;
+        font-size: 16px;
+      }
+
+      .course-code {
+        font-size: 12px;
+      }
+
+      .course-btn {
+        margin-top: 10px;
+        display: flex;
+        justify-content: center;
+
+        .select-course-btn {
+          width: 200px;
+        }
+      }
+    }
   }
 
   .course-containter {
@@ -223,10 +238,6 @@ export default {
 
   .flex-start {
     align-self: flex-start;
-  }
-
-  .mar-top {
-    margin-top: 20px;
   }
 
   .table-con {

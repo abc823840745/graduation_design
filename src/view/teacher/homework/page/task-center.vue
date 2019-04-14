@@ -1,191 +1,503 @@
 <template>
   <div class="containter">
-    <div
-      class="containter"
-      v-if="!isChangeHWTasks"
-    >
-
+    <div class="containter">
       <div class="select-list">
         <MultipleChoice
           v-for="item in selectList"
-          :key="item['semesterTip']"
-          :semesterTip="item['semesterTip']"
-          :defaultValue.sync="item['semester']"
-          :semesterList="item['semesterList']"
+          :key="item['tip']"
+          :semesterTip="item['tip']"
+          :defaultValue.sync="item['value']"
+          :semesterList="item['list']"
+          @onChange="item['onChange']"
           class="multiple-choice"
         />
 
-        <Input
-          class="search-item"
-          search
-          enter-button
-          placeholder="请输入关键词"
-        />
+        <Button
+          type="primary"
+          icon="ios-search"
+          class="search-btn"
+          @click="searchOpen"
+          >Search</Button
+        >
       </div>
 
       <Table
         border
+        :loading="loading"
         class="table-con mar-top"
-        :columns="columns1"
-        :data="data1"
+        :columns="columns"
+        :data="tableInfo['tableData']"
       />
       <Page
-        :total="30"
         class="mar-top page"
+        :total="tableInfo['count']"
+        :page-size="10"
+        @on-change="changePage"
       />
     </div>
 
-    <ChangeHomeworkTasks
-      v-if="isChangeHWTasks"
-      @goBack="goBack"
+    <MyHomework
+      type="update"
+      :modalOpen.sync="modalOpen"
+      :info="itemInfo"
+      :courseId="courseId"
+      @getTableData="getTableData(tableInfo['page'])"
     />
+
+    <Modal fullscreen title="搜索" v-model="showModal" @on-ok="searchClose">
+      <SearchView
+        :columns="columns"
+        :tableData="tableData"
+        :total="searchCount"
+        @search="getSearchResult"
+        @changePage="changeSearchPage"
+      />
+      <div slot="footer">
+        <Button type="primary" size="large" @click="goBack">
+          返回
+        </Button>
+      </div>
+    </Modal>
   </div>
 </template>
 
 <script>
-import MultipleChoice from "@teaHomework/smart/multiple-choice";
-import ChangeHomeworkTasks from "@teaHomework/smart/change-homework-tasks";
-import myMixin from "@teaHomework/mixin";
+import myMixin from "@/view/global/mixin";
+import { mapActions, mapState, mapMutations } from "vuex";
+import { getCurSchoolYear } from "@tools";
 
 export default {
   mixins: [myMixin],
 
   components: {
-    MultipleChoice,
-    ChangeHomeworkTasks
+    MultipleChoice: () => import("@teaHomework/smart/multiple-choice"),
+    MyHomework: () => import("@teaHomework/smart/my-homework"),
+    SearchView: () => import("@/view/global/component/search-view")
+  },
+
+  computed: {
+    ...mapState({
+      userName: state => state.user.userName,
+      tableInfo: state => state.homework.taskCenterInfo,
+      courseList: state => state.homework.courseList,
+      teaId: state => state.user.stu_nmuber
+    }),
+
+    allCourseList() {
+      return this.courseList.map(item => item.name);
+    },
+
+    selectCourse() {
+      return value => {
+        return this.allCourseList.filter(item => item === value);
+      };
+    }
   },
 
   data() {
     return {
-      isChangeHWTasks: false,
+      loading: true,
+      modalOpen: false,
+      showModal: false,
+      curIndex: 0,
+      courseId: 0,
+      searchCount: 0,
+      itemInfo: {},
+      tableData: [],
       selectList: [
         {
-          semesterTip: "学期选择",
-          semester: "2017-2018第二学期",
-          semesterList: [
-            {
-              value: "2016-2017第一学期",
-              label: "2016-2017第一学期"
-            },
-            {
-              value: "2016-2017第二学期",
-              label: "2016-2017第二学期"
-            },
-            {
-              value: "2017-2018第一学期",
-              label: "2017-2018第一学期"
-            },
-            {
-              value: "2017-2018第二学期",
-              label: "2017-2018第二学期"
-            }
-          ]
+          tip: "学期选择",
+          value: getCurSchoolYear(),
+          list: this.getSchoolYear(),
+          onChange: this.changeYear
         },
         {
-          semesterTip: "课程选择",
-          semester: "所有课程",
-          semesterList: [
+          tip: "课程选择",
+          value: "所有课程",
+          list: [
             {
               value: "所有课程",
               label: "所有课程"
-            },
-            {
-              value: "新媒体实训",
-              label: "新媒体实训"
-            },
-            {
-              value: "JavaScript编程",
-              label: "JavaScript编程"
-            },
-            {
-              value: "vue应用程序开发",
-              label: "vue应用程序开发"
-            },
-            {
-              value: "mysql数据库",
-              label: "mysql数据库"
             }
-          ]
+          ],
+          onChange: this.changeCourse
         },
         {
-          semesterTip: "作业类型",
-          defaultValue: "",
-          semesterList: [
+          tip: "课时选择",
+          value: "所有课时",
+          list: [
             {
-              value: "课时作业",
-              label: "课时作业"
-            },
-            {
-              value: "在线作业",
-              label: "在线作业"
+              value: "所有课时",
+              label: "所有课时"
             }
-          ]
+          ],
+          onChange: this.changeClassHour
         }
       ],
-      columns1: [
+      columns: [
         {
-          title: "课程名",
-          key: "courseName"
+          title: "课程名称",
+          key: "course"
         },
         {
-          title: "作业名",
-          key: "homeworkName"
+          title: "课时",
+          key: "week"
+        },
+        {
+          title: "作业名称",
+          key: "name"
         },
         {
           title: "作业类型",
-          key: "homeworkClassify"
+          key: "classify",
+          sortable: true,
+          render: (h, params) => {
+            if (params.row.type === "online") {
+              return h("p", {}, "在线作业");
+            }
+            return h("p", {}, "课时作业");
+          }
         },
         {
           title: "截止时间",
-          key: "stopTime",
+          key: "fintime",
           sortable: true
         },
         {
           title: "操作",
           key: "operation",
+          width: 200,
           render: (h, params) => {
             return h("div", [
-              this.btnStyle(
-                "修改任务信息",
-                h,
-                () => (this.isChangeHWTasks = true)
-              ),
+              this.btnStyle("编辑作业", h, () => {
+                this.goUpdateTask(params);
+              }),
               this.btnStyle(
                 "删除",
                 h,
-                () =>
-                  this.$Modal.confirm({
-                    title: "确定要删除该任务？",
-                    onOk: () => {
-                      // TODO: 删除任务信息
-                    }
-                  }),
+                () => {
+                  this.goDelete(params);
+                },
                 "error"
               )
             ]);
           }
         }
-      ],
-      data1: [
-        {
-          courseName: "新媒体实训",
-          homeworkName: "搭建服务器",
-          homeworkClassify: "课时作业",
-          stopTime: "2019-1-27"
-        },
-        {
-          courseName: "新媒体实训",
-          homeworkClassify: "在线作业",
-          homeworkName: "堂上搭建服务器",
-          stopTime: "2019-1-27"
-        }
       ]
     };
   },
 
+  async mounted() {
+    await this.setCourseSelList();
+    await this.getTableData(1);
+  },
+
   methods: {
+    ...mapActions([
+      "delTeaClassHW",
+      "delTeaOnlineHW",
+      "getTeaHW",
+      "getTeaOnlineHW",
+      "getTeaSubject",
+      "searchMyHW"
+    ]),
+
+    ...mapMutations([
+      "setOriginInputInfo",
+      "setInputInfo",
+      "setCurCourse",
+      "setTaskCenterInfo"
+    ]),
+
+    async goUpdateTask(params) {
+      let { index } = params;
+      let { course, id, submitterStatus } = params.row;
+      this.setCurCourse(course);
+      this.modalOpen = true;
+      this.itemInfo = this.tableInfo["tableData"][index];
+      let getId = this.courseList.reduce((arr, item) => {
+        if (item["name"] === course) {
+          arr.push(item["id"]);
+        }
+        return arr;
+      }, []);
+      this.courseId = getId[0];
+      await this.getSubjectData(id);
+    },
+
+    goDelete(params) {
+      let { index } = params;
+      let { type } = params.row;
+      this.$Modal.confirm({
+        title: "确定要删除该任务？",
+        onOk: async () => {
+          if (type === "offline") {
+            await this.delClassHWInfo(index);
+            return;
+          }
+          await this.delOnlineHWInfo(index);
+        }
+      });
+    },
+
+    // 获取表格信息
+    async getTableData(page = 1) {
+      this.loading = true;
+      let semester = this.selectList[0]["value"];
+      let course = this.selectList[1]["value"];
+      let classHour = this.selectList[2]["value"];
+      await this.getTeaHW({
+        page,
+        course:
+          course === "所有课程"
+            ? this.allCourseList
+            : this.selectCourse(course),
+        semester,
+        classHour: classHour === "所有课时" ? undefined : classHour,
+        teacher: this.userName
+      });
+      this.loading = false;
+    },
+
+    // 学年选择筛选
+    async changeYear(value) {
+      this.loading = true;
+      this.resetSelList();
+      let semester = value;
+      let course = this.selectList[1]["value"];
+      let classHour = this.selectList[2]["value"];
+      await this.setCourseSelList(value);
+      await this.getTeaHW({
+        course:
+          course === "所有课程"
+            ? this.allCourseList
+            : this.selectCourse(course),
+        semester,
+        classHour: classHour === "所有课时" ? undefined : classHour,
+        teacher: this.userName
+      });
+      this.loading = false;
+    },
+
+    // 课程选择筛选
+    async changeCourse(value) {
+      this.loading = true;
+      this.resetClassHour();
+      let semester = this.selectList[0]["value"];
+      let course = value;
+      let classHour = this.selectList[2]["value"];
+      let getId = this.courseList.reduce((arr, item) => {
+        if (item["name"] === value) {
+          arr.push(item["id"]);
+        }
+        return arr;
+      }, []);
+      await this.setClassHourSelList(getId[0]);
+      await this.getTeaHW({
+        course:
+          course === "所有课程"
+            ? this.allCourseList
+            : this.selectCourse(course),
+        semester,
+        classHour: classHour === "所有课时" ? undefined : classHour,
+        teacher: this.userName
+      });
+      this.loading = false;
+    },
+
+    // 课时选择筛选
+    async changeClassHour(value) {
+      this.loading = true;
+      let semester = this.selectList[0]["value"];
+      let course = this.selectList[1]["value"];
+      let classHour = value;
+      await this.getTeaHW({
+        course:
+          course === "所有课程"
+            ? this.allCourseList
+            : this.selectCourse(course),
+        semester,
+        classHour: classHour === "所有课时" ? undefined : classHour,
+        teacher: this.userName
+      });
+      this.loading = false;
+    },
+
+    // 重置所有选项
+    resetSelList() {
+      let selectList = this.selectList;
+      selectList[1]["value"] = "所有课程";
+      selectList[1]["list"] = [
+        {
+          value: "所有课程",
+          label: "所有课程"
+        }
+      ];
+      selectList[2]["value"] = "所有课时";
+      selectList[2]["list"] = [
+        {
+          value: "所有课时",
+          label: "所有课时"
+        }
+      ];
+      this.selectList = selectList;
+    },
+
+    // 重置所有课时
+    resetClassHour() {
+      let selectList = this.selectList;
+      selectList[2]["value"] = "所有课时";
+      selectList[2]["list"] = [
+        {
+          value: "所有课时",
+          label: "所有课时"
+        }
+      ];
+      this.selectList = selectList;
+    },
+
+    // 修改模式获取题目数据
+    async getSubjectData(id) {
+      if (this.itemInfo["classify"] === "在线作业") {
+        let res = await this.getTeaSubject(id);
+        let executeOnce = true;
+        let data = res.data.data;
+        let inputInfo = data.reduce((arr, item, index) => {
+          let optionList = [
+            {
+              label: "A",
+              option: item["first_option"]
+            },
+            {
+              label: "B",
+              option: item["sec_option"]
+            },
+            {
+              label: "C",
+              option: item["third_option"]
+            },
+            {
+              label: "D",
+              option: item["fourth_option"]
+            }
+          ];
+
+          if (item["type"] !== "填空题") {
+            arr.push({
+              id: item["id"],
+              subject: item["context"],
+              subjectType: item["type"],
+              title: `${index + 1}、${item["type"]}`,
+              choice:
+                item["type"] === "多选题"
+                  ? item["answer"].split(",")
+                  : item["answer"],
+              optionList,
+              weighting: item["grade"]
+            });
+          } else {
+            if (executeOnce) {
+              // 填空题只有一条大题，所以只执行一次
+              executeOnce = false;
+              let subjectLength = 0;
+              let subject = data.reduce((arr, item) => {
+                if (item["type"] === "填空题") {
+                  // 记录填空题的题数
+                  subjectLength += 1;
+                  arr.push({
+                    id: item["id"],
+                    subject: item["context"],
+                    answer: "",
+                    referenceAnswer: item["answer"],
+                    showCreSubjectBtn: true
+                  });
+                }
+                return arr;
+              }, []);
+              arr.push({
+                subject,
+                subjectType: item["type"],
+                title: `${index + 1}、${item["type"]}`,
+                choice: item["answer"],
+                optionList,
+                weighting: item["grade"] * subjectLength
+              });
+            }
+          }
+          return arr;
+        }, []);
+        this.setOriginInputInfo(inputInfo);
+      }
+    },
+
+    // 删除课时作业
+    async delClassHWInfo(index) {
+      this.delHomework("delTeaClassHW", index);
+    },
+
+    // 删除在线作业
+    async delOnlineHWInfo(index) {
+      this.delHomework("delTeaOnlineHW", index);
+    },
+
+    // 删除作业
+    async delHomework(apiName, index) {
+      let { tableData } = this.tableInfo;
+      let { id } = tableData[index];
+      let res = await this[apiName](id);
+      if (res["status"] === 1) {
+        await this.getTableData(this.tableInfo["page"]);
+        let { page, tableData } = this.tableInfo;
+        if (page !== 1 && tableData.length === 0) {
+          await this.getTableData(page - 1);
+        }
+        this.$Notice.success({
+          title: "删除成功！"
+        });
+      }
+    },
+
+    // 打开搜索页
+    searchOpen() {
+      this.showModal = true;
+    },
+
+    searchClose() {
+      this.showModal = false;
+    },
+
+    // 表格分页
+    changePage(page) {
+      this.getTableData(page);
+    },
+
+    // 搜索结果
+    async searchResult(searchText, page = 1) {
+      this.searchText = searchText;
+      let res = await this.searchMyHW({
+        page,
+        semester: this.selectList[0]["value"],
+        condition: searchText,
+        teach_id: this.teaId,
+        teacher: this.userName
+      });
+      this.searchCount = res.count;
+      this.tableData = res.data;
+    },
+
+    // 获取搜索结果
+    async getSearchResult(searchText) {
+      await this.searchResult(searchText);
+    },
+
+    // 搜索表格分页
+    async changeSearchPage(page) {
+      await this.searchResult(this.searchText, page);
+    },
+
+    // 关闭modal
     goBack() {
-      this.isChangeHWTasks = false;
+      this.showModal = false;
     }
   }
 };
@@ -205,6 +517,10 @@ export default {
     flex-wrap: wrap;
     width: 100%;
 
+    .search-btn {
+      height: 32px;
+    }
+
     .multiple-choice {
       margin-bottom: 10px;
     }
@@ -215,7 +531,7 @@ export default {
 
     .search-item {
       margin-top: -1px;
-      width: 262px;
+      width: 271px;
     }
   }
 

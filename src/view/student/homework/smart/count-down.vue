@@ -1,12 +1,15 @@
 <template>
   <div>
-    <slot :remainingTime='remainingTime'>
-      {{remainingTime}}
+    <slot :remainingTime="remainingTime">
+      {{ remainingTime }}
     </slot>
   </div>
 </template>
 
 <script>
+import { getlocalStorage, setlocalStorage } from "@tools";
+import { mapMutations, mapState } from "vuex";
+
 export default {
   props: {
     isStartTimer: {
@@ -28,6 +31,23 @@ export default {
     }
   },
 
+  watch: {
+    initialTime(newVal, oldVal) {
+      this.remainingTime = newVal;
+    },
+
+    isStartTimer(newVal, oldVal) {
+      this.timer && clearTimeout(this.timer);
+      this.isStartTimer && this.startTimer();
+    }
+  },
+
+  computed: {
+    ...mapState({
+      fintime: state => state.homework.fintime
+    })
+  },
+
   data() {
     return {
       remainingTime:
@@ -41,16 +61,13 @@ export default {
     };
   },
 
-  mounted() {
-    this.timer && clearTimeout(this.timer);
-    this.isStartTimer && this.startTimer();
-  },
-
   beforeDestroy() {
     this.stopTimer();
   },
 
   methods: {
+    ...mapMutations(["setRemainTime"]),
+
     startTimer() {
       this._countDown();
     },
@@ -58,12 +75,21 @@ export default {
     _countDown() {
       if (this.isStopTimer || this.remainingTime <= 0) {
         this.stopTimer();
+        this.setRemainTime(this.remainingTime);
         return this.$emit("callBack");
       }
       if (this.remainingTime - 1 <= 0) {
         this.isStopTimer = true;
       }
       this.remainingTime = this.remainingTime - 1;
+      this.setRemainTime(this.remainingTime);
+      let curDate = new Date();
+      let fintime = new Date(fintime);
+
+      // 判断是否超过老师规定的完成时间
+      if (curDate >= fintime) {
+        this.stopTimer();
+      }
       this.timer = setTimeout(this.startTimer, this.timeTnterval * 1000);
     },
 

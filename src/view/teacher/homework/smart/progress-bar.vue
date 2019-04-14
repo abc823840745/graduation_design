@@ -1,6 +1,6 @@
 <template>
   <div class="homework-progress">
-    <p class="homework-progress-text">作业完成情况:</p>
+    <h3 class="homework-progress-text">作业完成情况:</h3>
     <i-circle
       :percent="completeProgress"
       :size="80"

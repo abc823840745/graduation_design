@@ -1,83 +1,89 @@
 <template>
   <div class="teacher-homework-main df">
     <div class="main-left-con df-fdc">
-      <Echart />
+      <Echart :data="mainData" />
 
       <div class="table-con df-fdc">
-        <Table
-          border
-          class="table mb-10"
-          :columns="columns1"
-          :data="data1"
-        />
-
-        <Page :total="30" />
+        <Table border class="table mb-10" :columns="columns" :data="mainData" />
       </div>
-
     </div>
 
     <div class="main-right-con">
-      <SliderBar />
+      <AsideCon />
     </div>
-
   </div>
 </template>
 
 <script>
-import Echart from "@stuHomework/smart/echart";
-import SliderBar from "@teaHomework/smart/slider-bar";
+import { mapActions, mapState } from "vuex";
+import { getCurSchoolYear } from "@tools";
+import myMixin from "@/view/global/mixin";
 
 export default {
+  mixins: [myMixin],
+
   components: {
-    Echart,
-    SliderBar
+    Echart: () => import("@stuHomework/smart/echart"),
+    AsideCon: () => import("@teaHomework/smart/aside-content")
+  },
+
+  computed: {
+    ...mapState({
+      stuId: state => state.user.stu_nmuber,
+      courseList: state => state.homework.courseList
+    }),
+
+    params() {
+      return this.courseList.map(item => ({
+        teach_id: item["teacherNum"],
+        course: item["name"]
+      }));
+    }
+  },
+
+  watch: {
+    async courseList(newVal, oldVal) {
+      await this.getMainData();
+    }
   },
 
   data() {
     return {
-      columns1: [
+      columns: [
         {
           title: "课程名",
-          key: "courseName"
+          key: "course"
         },
         {
           title: "待完成实验数量",
-          key: "unFinishHomeworkCount"
+          key: "unfinished"
         },
         {
           title: "已完成实验数量",
-          key: "finishHomeworkCount"
+          key: "finished"
         }
       ],
-      data1: [
-        {
-          courseName: "新媒体实训",
-          unFinishHomeworkCount: 10,
-          finishHomeworkCount: 10
-        },
-        {
-          courseName: "新媒体实训",
-          unFinishHomeworkCount: 10,
-          finishHomeworkCount: 10
-        },
-        {
-          courseName: "新媒体实训",
-          unFinishHomeworkCount: 10,
-          finishHomeworkCount: 10
-        },
-        {
-          courseName: "新媒体实训",
-          unFinishHomeworkCount: 10,
-          finishHomeworkCount: 10
-        }
-      ]
+      mainData: []
     };
+  },
+
+  methods: {
+    ...mapActions(["getStuMainInfo"]),
+
+    async getMainData() {
+      let res = await this.getStuMainInfo({
+        stu_id: this.stuId,
+        semester: getCurSchoolYear(),
+        obj: this.params
+      });
+      this.mainData = res;
+    }
   }
 };
 </script>
 
 <style lang='less' >
-@import "../../../../public.less";
+@import "../../../global/public.less";
 
 .teacher-homework-main {
   .w(100%);

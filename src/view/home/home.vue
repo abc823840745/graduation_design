@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="access=='student'">
+    <div v-if="access == 'student'">
       <Row :gutter="20">
         <i-col
           :xs="12"
@@ -16,10 +16,7 @@
             :icon="infor.icon"
             :icon-size="36"
           >
-            <count-to
-              :end="infor.count"
-              count-class="count-style"
-            />
+            <count-to :end="infor.count" count-class="count-style" />
             <p>{{ infor.title }}</p>
           </infor-card>
         </i-col>
@@ -33,10 +30,7 @@
           no-data-text="暂时无法查询课表"
         ></Table>
         <div class="btn_container">
-          <Button
-            @click="showModal=true"
-            type="success"
-          >刷新课表</Button>
+          <Button @click="showModal = true" type="success">刷新课表</Button>
         </div>
       </div>
       <Modal
@@ -50,19 +44,10 @@
           :rules="ruleValidate"
           :label-width="80"
         >
-          <FormItem
-            label="学号"
-            prop="name"
-          >
-            <Input
-              v-model="form.name"
-              placeholder="请输入你的学号"
-            ></Input>
+          <FormItem label="学号" prop="name">
+            <Input v-model="form.name" placeholder="请输入你的学号"></Input>
           </FormItem>
-          <FormItem
-            label="密码"
-            prop="password"
-          >
+          <FormItem label="密码" prop="password">
             <Input
               v-model="form.password"
               type="password"
@@ -72,10 +57,9 @@
         </Form>
       </Modal>
     </div>
-    <div v-if="access=='teacher'">
-      教师首页
+    <div v-if="access === 'admin' || access === 'teacher'">
+      <TeaHome />
     </div>
-
   </div>
 </template>
 
@@ -84,9 +68,12 @@ import InforCard from "_c/info-card";
 import CountTo from "_c/count-to";
 import { ChartPie, ChartBar } from "_c/charts";
 import Example from "./example.vue";
+import TeaHome from "@teaHomework/page/homework-main.vue";
 import { mapMutations, mapActions, mapGetters } from "vuex";
 import { getNewMessage } from "@/api/message";
 import { refreshCourse } from "@/api/user";
+import { getNewNotify } from '@/api/course'
+
 export default {
   name: "student-teacher-home",
   components: {
@@ -94,7 +81,8 @@ export default {
     CountTo,
     ChartPie,
     ChartBar,
-    Example
+    Example,
+    TeaHome
   },
   data() {
     return {
@@ -285,9 +273,13 @@ export default {
   mounted() {
     this.getUserAccess();
     this.getNewMessage();
+    this.getQuestMessage();
     if (this.$store.state.user.lesson) {
+      let { setSessionStorage, getSessionStorage } = this.$tools;
       this.lessonText = this.$store.state.user.lesson.split("&nbsp;");
       this.formatLesson();
+      let lessonText = this.formatData(this.lessonText);
+      setSessionStorage("formatLesson", lessonText);
     }
   },
   methods: {
@@ -354,6 +346,33 @@ export default {
         }
       });
     },
+    formatData(strArr) {
+      let courseNameReg = /[\u4e00-\u9fa5]{4,}/g;
+      let teacherNameReg = /\s[\u4e00-\u9fa5]{3}\s/g;
+      let classNameReg = /[a-zA-Z]{3}\s/g;
+      let classIdReg = /[a-zA-Z]{1,}[0-9]{1,}/g;
+      let notNullReg = /周/g;
+      let obj = {};
+      let courseNameList = strArr.reduce((finalList, item, index) => {
+        // 排除没有'周字'的数据
+        if (notNullReg.test(item)) {
+          let courseName = item.match(courseNameReg)[0];
+
+          // 根据课程名去除重复数据
+          if (!obj[courseName]) {
+            obj[courseName] = true;
+            finalList.push({
+              courseName,
+              teacherName: item.match(teacherNameReg)[0],
+              className: item.match(classNameReg)[0],
+              classId: item.match(classIdReg)[0]
+            });
+          }
+        }
+        return finalList;
+      }, []);
+      return courseNameList;
+    },
     getNewMessage() {
       let uid = this.$store.state.user.guideTeacher;
       getNewMessage({ uid }).then(res => {
@@ -366,6 +385,15 @@ export default {
           this.$store.commit("setMsgCount", leftCount);
         }
       });
+    },
+    getQuestMessage() {
+      //获取答疑消息
+      getNewNotify({}).then((res)=>{
+        console.log(res.data.hasNewNotify)
+        this.$store.commit("setQuesCount", res.data.hasNewNotify);
+      }).catch((error)=>{
+        console.log(error)
+      })
     },
     getUserAccess() {
       this.getAccess().then(res => {
@@ -381,6 +409,8 @@ export default {
               this.$store.dispatch("setLesson", this.lessonText);
               this.lessonText = res.data.content.split("&nbsp;");
               this.formatLesson();
+              let lessonText = this.formatData(this.lessonText);
+              this.$store.commit("setFormatLesson", lessonText);
               this.$Notice.success({
                 title: "刷新成功"
               });
