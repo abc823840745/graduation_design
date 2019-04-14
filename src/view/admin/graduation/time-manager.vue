@@ -13,8 +13,8 @@
         <Modal v-model="timeModal" width="500px" title="确定设置该时间？"  >
             <p class="content_title">{{title}}</p>
             <Form :model="form" :label-width="120" >
-                <Form-item label="面向对象">
-                    <Input :value="form.time" disabled></Input>
+                <Form-item label="面向年级">
+                    <Input :value="form.time" ></Input>
                 </Form-item>
                 <Form-item prop="startEndDate" label="截至/开始时间">
                     <Date-picker v-model="form.startEndDate" type="daterange" placeholder="请选择开始和截至时间" style="width: 346px"></Date-picker>
