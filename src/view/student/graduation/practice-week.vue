@@ -195,6 +195,16 @@
                 this.missionReport[params.index].score)
             }
           },
+            {
+            title: "开始时间",
+            key: "score",
+            align: "center",
+            render: (h, params) => {
+              return h("span", {
+              },
+                this.missionReport[params.index].startTime)
+            }
+          },
           {
             title: '结束时间',
             key: 'dead_line'
@@ -277,6 +287,16 @@
                 this.weekReport[params.index].score)
             }
           },
+           {
+            title: "开始时间",
+            key: "startTime",
+            align: "center",
+            render: (h, params) => {
+              return h("div", {
+              },
+                this.weekReport[params.index].startTime)
+            }
+          },
           {
             title: '结束时间',
             key: 'dead_line'
@@ -346,6 +366,7 @@
             })
             oldReport.forEach((item) => {
               this.weekReport[item.week - 1].content = item.content
+               this.weekReport[item.week - 1].startTime = getMyDate(item.startTime, "yyyy-MM-dd")
               if (item.save == 0) {
                 this.weekReport[item.week - 1].status = 3
               } else if (item.status !=2&&item.save == 1) {
@@ -370,8 +391,10 @@
             let startTime = res.data.startTime * 1
             let oldReport = res.data.oldReport
             this.missionReport.forEach((item, index) => {
-              let countTime = startTime + (24 * 60 * 60 * 1000 * 14) * index
+              let countTime = startTime + (24 * 60 * 60 * 1000 * 14) * (index+1)
+              let beginTime = startTime + (24 * 60 * 60 * 1000 * 14) * index
               item.dead_line = getMyDate(countTime, "yyyy-MM-dd")
+              item.startTime = getMyDate(beginTime, "yyyy-MM-dd")
               if (now > countTime) {
                 item.status = -2
                 item.more_time = 1

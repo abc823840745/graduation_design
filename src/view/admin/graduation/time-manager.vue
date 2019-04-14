@@ -6,15 +6,16 @@
         <Tabs>
             <TabPane label="设置时间" icon="logo-windows">
                 <div>
-                    <Table :columns="missionCol" :data="missionReport"></Table>
+                    <Table :columns="missionCol" :data="times"></Table>
                 </div>
             </TabPane>
         </Tabs>
+        
         <Modal v-model="timeModal" width="500px" title="确定设置该时间？"  >
             <p class="content_title">{{title}}</p>
             <Form :model="form" :label-width="120" >
                 <Form-item label="面向年级">
-                    <Input :value="form.time" ></Input>
+                    <Input  v-model="form.time" ></Input>
                 </Form-item>
                 <Form-item prop="startEndDate" label="截至/开始时间">
                     <Date-picker v-model="form.startEndDate" type="daterange" placeholder="请选择开始和截至时间" style="width: 346px"></Date-picker>
@@ -50,32 +51,6 @@
                     title: '',
                     content: ''
                 },
-                missionReport: [
-                    {
-                        name: '选择毕设导师时间',
-                        type: 'choice',
-                        more_time: 0,
-                        dead_line: '',
-                        content: ''
-                    }, {
-                        name: '完成毕设周报时间',
-                        type: 'papper',
-                        more_time: 0,
-                        dead_line: '',
-                        content: ''
-                    }, {
-                        name: '完成论文时间',
-                        type: 'work',
-                        more_time: 0,
-                        dead_line: '',
-                        content: ''
-                    }, {
-                        name: "选择课题时间",
-                        more_time: 0,
-                        type: 'mission',
-                        dead_line: '',
-                        content: ''
-                    }],
                 missionCol: [
                     {
                         title: "名称",
@@ -83,24 +58,19 @@
                         align: "center",
                     },
                     {
+                        title: "面向年级",
+                        key: "year",
+                        align: "center"
+                    },
+                    {
                         title: "开始时间",
                         key: "start_time",
                         align: "center",
-                        render: (h, params) => {
-                            return h("span", {
-                            },
-                                this.times[this.missionReport[params.index].type] ? this.times[this.missionReport[params.index].type]['start_time'] : '暂时未设置')
-                        }
                     },
                     {
                         title: "截至时间",
-                        key: "dead_line",
+                        key: "end_time",
                         align: "center",
-                        render: (h, params) => {
-                            return h("span", {
-                            },
-                                this.times[this.missionReport[params.index].type] ? this.times[this.missionReport[params.index].type]['end_time'] : '暂时未设置')
-                        }
                     },
                     {
                         title: "操作",
@@ -119,12 +89,13 @@
                                         },
                                         on: {
                                             click: () => {
-                                                this.choiceType = this.missionReport[params.index].type
+                                                this.choiceType = this.times[params.index].type
+                                                this.form.time = this.times[params.index].year
                                                 this.timeModal = true
                                             }
                                         }
                                     },
-                                    this.times[this.missionReport[params.index].type] ? '重新设置' : '马上设置'
+                                    '重新设置' 
                                 )
                             ]);
                         }
@@ -137,18 +108,13 @@
         },
         methods: {
             getSetTime() {
-                let year = new Date().getFullYear() - 3
-                this.form.time = year
-                getSetTime(year).then((res) => {
+                getSetTime().then((res) => {
                     if (res.data.message == 'ok') {
-                        let times = {}
                         res.data.times.forEach((item) => {
-                            times[item.type] = {
-                               'start_time':getMyDate(item.time, "yyyy-MM-dd"),
-                               'end_time':getMyDate(item.deadline, "yyyy-MM-dd")
-                            }
+                            item['start_time'] = getMyDate(item.time, "yyyy-MM-dd")
+                            item['end_time'] = getMyDate(item.deadline, "yyyy-MM-dd")
                         })
-                        this.times = times
+                        this.times = res.data.times
                     }
                 })
             },
