@@ -344,7 +344,7 @@
                 item.status = 0
               }
             })
-            oldReport.map((item) => {
+            oldReport.forEach((item) => {
               this.weekReport[item.week - 1].content = item.content
               if (item.save == 0) {
                 this.weekReport[item.week - 1].status = 3

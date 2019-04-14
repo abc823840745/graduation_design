@@ -470,11 +470,9 @@
   }
   
   .choice_btn {
-    position: fixed;
+    position: relative;
     width: 430px;
     text-align: center;
-    left: 50%;
-    bottom: 80px;
     transform: translateX(-20px);
     margin: 0 auto;
   }

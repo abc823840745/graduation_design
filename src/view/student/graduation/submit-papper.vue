@@ -176,11 +176,10 @@
           let now = new Date().getTime()
           if (res.data.message == 'ok') {
             this.tid = res.data.tid
-            this.tableData = res.data.papperList
             let name = res.data.name
             let title = res.data.title
             let deadline = res.data.deadline
-            res.data.papperList.map((item) => {
+            this.tableData = res.data.papperList.map((item) => {
               item.name = name
               item.title = title
               if (item.time > deadline) {
@@ -190,7 +189,7 @@
               item.deadline = getMyDate(deadline, "yyyy-MM-dd")
               return item
             })
-            this.tableData = res.data.papperList
+         
             this.totalSize = res.data.count
 
           } else if (res.data.message == 'noStart') {
