@@ -79,7 +79,7 @@
             </Card>
           </div>
           <div class="class-introduce">
-            <my-pdf v-if="course_desc_url" :src="course_desc_url" :click_change="true" :full_screen="true" :show_notes="true" :course_id="$route.params.id" :course_time_id="$route.params.class_id" ref="course_class_pdf"></my-pdf>
+            <my-pdf v-if="course_desc_url" :src="course_desc_url" :click_change="true" :full_screen="true" :show_notes="true" :course_id="$route.params.id" :course_time_id="$route.params.class_id" @toParentScreenshot="handleScreenshotFromPdf" ref="course_class_pdf"></my-pdf>
             <span v-else>教师尚未上传本课讲义</span>
           </div>
         </TabPane>
@@ -328,6 +328,11 @@ export default {
       console.log('保存笔记')
       let str = `<p><img src="${this.return_base64_string_img.filePath}" alt="${this.return_base64_string_img.fileName}" /></p>`
       this.addNote(str)
+    },
+    // PDF组件截图功能传递
+    handleScreenshotFromPdf() {
+      // 打开截图
+      this.cutScreenShot.startScreenShot()
     }
   },
   created () {

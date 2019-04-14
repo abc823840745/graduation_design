@@ -32,6 +32,9 @@
         <div>
           <Input v-model="fast_note_content" type="textarea" :autosize="{maxRows: 3, minRows: 3}" placeholder="快速笔记，可回车保存..." @on-enter="saveNote" />
           <p class="add-note-btn">
+            <Tooltip content="讲义截图保存，快捷键Shift+A" :delay="1000" :transfer="true" placement="bottom">
+                <Button shape="circle" :disabled="is_full_screen" @click="openScreenShot" icon="ios-camera"></Button>
+            </Tooltip>
             <Button shape="circle" :disabled="is_full_screen" @click="showCreateNote = true">高级笔记</Button>
             <Button type="primary" shape="circle" @click="saveNote" :loading="save_loading">保存笔记</Button>
           </p>
@@ -365,6 +368,10 @@
             // this.loadingStatus = false;
             this.$Message.error('上传失败')
           })
+      },
+      // 触发父组件的截图
+      openScreenShot() {
+        this.$emit("toParentScreenshot")
       }
     }
   }
