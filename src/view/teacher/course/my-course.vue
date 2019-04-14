@@ -90,7 +90,8 @@
       </div>
     </div>
     <div class="none-course" v-if="total == 0">
-      本学期您还未新建课程哦~
+      <img :src="noneImg">
+      <p>本学期您还未新建课程哦~</p>
     </div>
     <div class="course-page-nav" v-else>
       <Page
@@ -139,10 +140,12 @@
 </template>
 <script>
 import { getTeaCourseList, createTeaCourse, delTeaCourse } from "@/api/course";
+import noneImg from "@/assets/images/none.png";
 export default {
   name: "teacher-my-course",
   data() {
     return {
+      noneImg,
       total: 0,
       page_size: 10,
       current: 1,
