@@ -216,6 +216,24 @@ export function getCommentQusetionList (obj) {
   })
 }
 
+// 是否有新的通知
+export function getNewNotify (obj) {
+  return axios.request({
+    params: {},
+    url: '/has/new/course/question/notify',
+    method: 'get'
+  })
+}
+
+// 已读消息
+export function getAlreadyReadNotify (obj) {
+  return axios.request({
+    data: {},
+    url: '/set/course/question/notify',
+    method: 'post'
+  })
+}
+
 /**
  * 学生部分
  */
@@ -311,15 +329,6 @@ export function editMyAskQuestion (obj) {
     },
     url: '/update/audit/fail/course/question',
     method: 'post'
-  })
-}
-
-// 是否有新的通知
-export function getNewNotify (obj) {
-  return axios.request({
-    params: {},
-    url: '/has/new/course/question/notify',
-    method: 'get'
   })
 }
 

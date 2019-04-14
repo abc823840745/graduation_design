@@ -72,6 +72,7 @@ import TeaHome from "@teaHomework/page/homework-main.vue";
 import { mapMutations, mapActions, mapGetters } from "vuex";
 import { getNewMessage } from "@/api/message";
 import { refreshCourse } from "@/api/user";
+import { getNewNotify } from '@/api/course'
 
 export default {
   name: "student-teacher-home",
@@ -272,6 +273,7 @@ export default {
   mounted() {
     this.getUserAccess();
     this.getNewMessage();
+    this.getQuestMessage();
     if (this.$store.state.user.lesson) {
       let { setSessionStorage, getSessionStorage } = this.$tools;
       this.lessonText = this.$store.state.user.lesson.split("&nbsp;");
@@ -383,6 +385,15 @@ export default {
           this.$store.commit("setMsgCount", leftCount);
         }
       });
+    },
+    getQuestMessage() {
+      //获取答疑消息
+      getNewNotify({}).then((res)=>{
+        console.log(res.data.hasNewNotify)
+        this.$store.commit("setQuesCount", res.data.hasNewNotify);
+      }).catch((error)=>{
+        console.log(error)
+      })
     },
     getUserAccess() {
       this.getAccess().then(res => {

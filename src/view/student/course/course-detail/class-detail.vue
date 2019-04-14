@@ -59,6 +59,9 @@
       z-index: 1000;
     }
   }
+  .uplaod-screenshot-modal {
+    width: 100%;
+  }
 }
 </style>
 <template>
@@ -76,7 +79,7 @@
             </Card>
           </div>
           <div class="class-introduce">
-            <my-pdf v-if="course_desc_url" :src="course_desc_url" :click_change="true" :full_screen="true" :show_notes="true" :course_id="$route.params.id" :course_time_id="$route.params.class_id"></my-pdf>
+            <my-pdf v-if="course_desc_url" :src="course_desc_url" :click_change="true" :full_screen="true" :show_notes="true" :course_id="$route.params.id" :course_time_id="$route.params.class_id" @toParentScreenshot="handleScreenshotFromPdf" ref="course_class_pdf"></my-pdf>
             <span v-else>教师尚未上传本课讲义</span>
           </div>
         </TabPane>
@@ -93,16 +96,54 @@
           </div>
         </TabPane>
     </Tabs>
+    <Modal
+        v-model="upload_screenshot_modal"
+        title="预览笔记截图"
+        :mask-closable="false"
+        ok-text="保存为笔记"
+        :loading="screenshot_loading"
+        @on-ok="handleSaveScreenShot"
+        @on-cancel="cancelUploadScreenShot">
+        <div class="uplaod-screenshot-modal">
+          <img style="max-width:100%" :src="base64_string">
+          <p style="margin-top:10px;">
+            <Button :disabled="is_upload_screen" :loading="upload_screenshot_loading" type="success" @click="uploadScreenShot">{{is_upload_screen?'已上传':'上传笔记截图'}}</Button>
+          </p>
+          <p style="font-size:14px;margin:10px 0;">笔记截图代码（将代码粘贴到笔记高级编辑面板即可）：</p>
+          <p>
+            <Input v-model="return_base64_string_code" :readonly="true" style="width: 100%" />
+          </p>
+        </div>
+    </Modal>
   </div>
 </template>
 <script>
 import { getMyDate } from '@/libs/tools'
 import myPdf from '@/view/pdf/pdf'
-import { getCourseClassDetail, getCourseClassFileList } from '@/api/course'
+import kscreenshot from 'kscreenshot'
+import { getCourseClassDetail, getCourseClassFileList, uploadImage, addStuNotes } from '@/api/course'
 export default {
   name: 'course-class-detail',
   data () {
+    const _this = this
     return {
+      // 截图
+      cutScreenShot: new kscreenshot({
+        key: 65, 
+        copyPath : function (base64) {
+          console.log(_this.total)
+          _this.base64_string = base64;
+          _this.upload_screenshot_modal = true;
+          return base64
+        }
+      }),
+      upload_screenshot_loading: false,
+      screenshot_loading: true,
+      base64_string: '',
+      return_base64_string_img: '',
+      return_base64_string_code: '',
+      upload_screenshot_modal: false,
+      is_upload_screen: false,
       current: 1,
       total: 20,
       page_size: 10,
@@ -219,6 +260,79 @@ export default {
     },
     changePage(page){
       console.log('页码改变'+page)
+    },
+    uploadScreenShot() {
+      this.upload_screenshot_loading = true
+      var base64String = this.base64_string;
+      //这里对base64串进行操作，去掉url头，并转换为byte
+      var bytes = window.atob(base64String.split(',')[1]);
+      var array = [];
+      for(var i = 0; i < bytes.length; i++){
+          array.push(bytes.charCodeAt(i));
+      }
+      var blob = new Blob([new Uint8Array(array)], {type: 'image/png'});
+      var formdata = new FormData();
+      formdata.append('file', blob, Date.now() + '.png');
+      uploadImage(formdata).then((res)=> {
+        console.log(res);
+        this.upload_screenshot_loading = false
+        this.$Message.success('上传成功')
+        this.is_upload_screen = true
+        this.return_base64_string_img = res.data.urls[0]
+        this.return_base64_string_code = `![${res.data.urls[0].fileName}](${res.data.urls[0].filePath})`
+      }).catch((err)=>{
+        console.log(err)
+        this.upload_screenshot_loading = false
+        this.$Message.error('上传失败')
+        this.is_upload_screen = false
+        this.return_base64_string_img = ''
+        this.return_base64_string_code = ''
+      })
+    },
+    cancelUploadScreenShot() {
+      this.upload_screenshot_loading = false
+      this.is_upload_screen = false
+      this.return_base64_string_img = ""
+      this.return_base64_string_code = ""
+      this.upload_screenshot_modal = false
+    },
+    // 添加笔记
+    addNote(value) {
+      addStuNotes({
+        course_id: this.$route.params.id,
+        course_time_id: this.$route.params.class_id,
+        content: value
+      }).then((res)=> {
+        console.log(res)
+        this.return_base64_string_img = ""
+        this.return_base64_string_code = ""
+        this.is_upload_screen = false
+        this.$Message.success('保存成功')
+        this.upload_screenshot_modal = false
+        this.$refs.course_class_pdf.getNotesList();
+      }).catch((err)=>{
+        console.log(err)
+        this.return_base64_string_img = ""
+        this.return_base64_string_code = ""
+        this.is_upload_screen = false
+        this.upload_screenshot_modal = false
+        this.$Message.error('新增笔记失败')
+      })
+    },
+    handleSaveScreenShot() {
+      if(!this.return_base64_string_img.filePath){
+        this.$Message.warning('请选择先上传笔记截图')
+        this.upload_screenshot_modal = false
+        return ;
+      }
+      console.log('保存笔记')
+      let str = `<p><img src="${this.return_base64_string_img.filePath}" alt="${this.return_base64_string_img.fileName}" /></p>`
+      this.addNote(str)
+    },
+    // PDF组件截图功能传递
+    handleScreenshotFromPdf() {
+      // 打开截图
+      this.cutScreenShot.startScreenShot()
     }
   },
   created () {
