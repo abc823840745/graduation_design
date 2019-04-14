@@ -256,13 +256,15 @@ export default {
     },
     // 清除已读小红点
     alreadyRead() {
-      this.$store.commit("setQuesCount", false);
-      // this.$emit("changeQues", false);
-      getAlreadyReadNotify({}).then((res)=>{
-        console.log(res)
-      }).catch((err)=>{
-        console.log(err)
-      })
+      if(this.$store.state.user.quesCount){
+        getAlreadyReadNotify({}).then((res)=>{
+          console.log(res)
+          this.$store.commit("setQuesCount", false);
+          this.$emit("changeQues", false);
+        }).catch((err)=>{
+          console.log(err)
+        })
+      }
     },
     // 刷新列表
     refreshList() {
