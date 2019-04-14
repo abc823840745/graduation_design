@@ -1,7 +1,7 @@
 <style lang="less">
  .teacher-question-reply {
     .teacher-questions-page-nav {
-      text-align: center;
+      text-align: right;
       margin-top: 20px;
     }
     .question-reply-comment-panel {
