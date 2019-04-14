@@ -10,15 +10,15 @@
                 </div>
             </TabPane>
         </Tabs>
-        <Modal v-model="timeModal" width="400px" title="确定设置该时间？"  >
+        <Modal v-model="timeModal" width="500px" title="确定设置该时间？"  >
             <p class="content_title">{{title}}</p>
-            <Form :model="form" :label-width="100">
+            <Form :model="form" :label-width="120" >
                 <Form-item label="面向对象">
                     <Input :value="form.time" disabled></Input>
                 </Form-item>
-                <FormItem prop="deadline" label="截至/开始时间">
-                    <DatePicker v-model="form.deadline" type="date" placeholder="请选择截至时间" style="width: 200px"></DatePicker>
-                </FormItem>
+                <Form-item prop="startEndDate" label="截至/开始时间">
+                    <Date-picker v-model="form.startEndDate" type="daterange" placeholder="请选择开始和截至时间" style="width: 346px"></Date-picker>
+                </Form-item>
             </Form>
             <div slot="footer">
                 <Button type="primary" size="large" long @click="updateTime">确定</Button>
@@ -36,7 +36,7 @@
                 choiceType: '',
                 form: {
                     time: '',
-                    deadline: ''
+                    startEndDate: ''
                 },
                 times: [],
                 title: '',
@@ -52,25 +52,25 @@
                 },
                 missionReport: [
                     {
-                        name: '开始选择毕设导师时间',
+                        name: '选择毕设导师时间',
                         type: 'choice',
                         more_time: 0,
                         dead_line: '',
                         content: ''
                     }, {
-                        name: '开始写毕设周报时间',
+                        name: '完成毕设周报时间',
                         type: 'papper',
                         more_time: 0,
                         dead_line: '',
                         content: ''
                     }, {
-                        name: '开始写论文时间',
+                        name: '完成论文时间',
                         type: 'work',
                         more_time: 0,
                         dead_line: '',
                         content: ''
                     }, {
-                        name: "开始选择课题时间",
+                        name: "选择课题时间",
                         more_time: 0,
                         type: 'mission',
                         dead_line: '',
@@ -83,13 +83,23 @@
                         align: "center",
                     },
                     {
+                        title: "开始时间",
+                        key: "start_time",
+                        align: "center",
+                        render: (h, params) => {
+                            return h("span", {
+                            },
+                                this.times[this.missionReport[params.index].type] ? this.times[this.missionReport[params.index].type]['start_time'] : '暂时未设置')
+                        }
+                    },
+                    {
                         title: "截至时间",
                         key: "dead_line",
                         align: "center",
                         render: (h, params) => {
                             return h("span", {
                             },
-                                this.times[this.missionReport[params.index].type] ? this.times[this.missionReport[params.index].type] : '暂时未设置')
+                                this.times[this.missionReport[params.index].type] ? this.times[this.missionReport[params.index].type]['end_time'] : '暂时未设置')
                         }
                     },
                     {
@@ -133,18 +143,22 @@
                     if (res.data.message == 'ok') {
                         let times = {}
                         res.data.times.forEach((item) => {
-                            times[item.type] = getMyDate(item.time, "yyyy-MM-dd")
+                            times[item.type] = {
+                               'start_time':getMyDate(item.time, "yyyy-MM-dd"),
+                               'end_time':getMyDate(item.deadline, "yyyy-MM-dd")
+                            }
                         })
                         this.times = times
                     }
                 })
             },
             updateTime() {
-                let {time, deadline} = this.form
+                let {time, startEndDate} = this.form
                 let type = this.choiceType
                 let post_time = new Date().getTime()
-                deadline = new Date(deadline).getTime()
-                updateTime(time, deadline, type, post_time).then((res) => {
+                let beginDate = new Date(startEndDate[0]).getTime()
+                let endDate = new Date(startEndDate[1]).getTime()
+                updateTime(time,beginDate,endDate, type, post_time).then((res) => {
                     if (res.data.message == 'ok') {
                         this.$Notice.success({
                             title: '更新成功！'
