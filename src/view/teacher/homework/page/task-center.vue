@@ -132,6 +132,25 @@ export default {
             }
           ],
           onChange: this.changeClassHour
+        },
+        {
+          tip: "作业类型",
+          value: "所有类型",
+          list: [
+            {
+              value: "所有类型",
+              label: "所有类型"
+            },
+            {
+              value: "课时作业",
+              label: "课时作业"
+            },
+            {
+              value: "在线作业",
+              label: "在线作业"
+            }
+          ],
+          onChange: this.changeHWClassify
         }
       ],
       columns: [
@@ -150,18 +169,15 @@ export default {
         {
           title: "作业类型",
           key: "classify",
-          sortable: true,
           render: (h, params) => {
-            if (params.row.type === "online") {
-              return h("p", {}, "在线作业");
-            }
+            const { classify } = params.row;
+            if (classify === "在线作业") return h("p", {}, "在线作业");
             return h("p", {}, "课时作业");
           }
         },
         {
           title: "截止时间",
-          key: "fintime",
-          sortable: true
+          key: "fintime"
         },
         {
           title: "操作",
@@ -222,17 +238,16 @@ export default {
         return arr;
       }, []);
       this.courseId = getId[0];
-      console.log(this.courseId);
       await this.getSubjectData(id);
     },
 
     goDelete(params) {
       let { index } = params;
-      let { type } = params.row;
+      let { classify } = params.row;
       this.$Modal.confirm({
         title: "确定要删除该任务？",
         onOk: async () => {
-          if (type === "offline") {
+          if (classify === "课时作业") {
             await this.delClassHWInfo(index);
             return;
           }
@@ -247,6 +262,7 @@ export default {
       let semester = this.selectList[0]["value"];
       let course = this.selectList[1]["value"];
       let classHour = this.selectList[2]["value"];
+      let type = this.selectList[3]["value"];
       await this.getTeaHW({
         page,
         course:
@@ -254,6 +270,7 @@ export default {
             ? this.allCourseList
             : this.selectCourse(course),
         semester,
+        type: this.transHwClassify(type),
         classHour: classHour === "所有课时" ? undefined : classHour,
         teacher: this.userName
       });
@@ -267,6 +284,7 @@ export default {
       let semester = value;
       let course = this.selectList[1]["value"];
       let classHour = this.selectList[2]["value"];
+      let type = this.selectList[3]["value"];
       await this.setCourseSelList(value);
       await this.getTeaHW({
         course:
@@ -274,6 +292,7 @@ export default {
             ? this.allCourseList
             : this.selectCourse(course),
         semester,
+        type: this.transHwClassify(type),
         classHour: classHour === "所有课时" ? undefined : classHour,
         teacher: this.userName
       });
@@ -287,6 +306,7 @@ export default {
       let semester = this.selectList[0]["value"];
       let course = value;
       let classHour = this.selectList[2]["value"];
+      let type = this.selectList[3]["value"];
       let getId = this.courseList.reduce((arr, item) => {
         if (item["name"] === value) {
           arr.push(item["id"]);
@@ -300,6 +320,7 @@ export default {
             ? this.allCourseList
             : this.selectCourse(course),
         semester,
+        type: this.transHwClassify(type),
         classHour: classHour === "所有课时" ? undefined : classHour,
         teacher: this.userName
       });
@@ -311,6 +332,7 @@ export default {
       this.loading = true;
       let semester = this.selectList[0]["value"];
       let course = this.selectList[1]["value"];
+      let type = this.selectList[3]["value"];
       let classHour = value;
       await this.getTeaHW({
         course:
@@ -318,10 +340,36 @@ export default {
             ? this.allCourseList
             : this.selectCourse(course),
         semester,
+        type: this.transHwClassify(type),
         classHour: classHour === "所有课时" ? undefined : classHour,
         teacher: this.userName
       });
       this.loading = false;
+    },
+
+    // 作业类型筛选
+    async changeHWClassify(value) {
+      this.loading = true;
+      let semester = this.selectList[0]["value"];
+      let course = this.selectList[1]["value"];
+      let classHour = this.selectList[2]["value"];
+      await this.getTeaHW({
+        course:
+          course === "所有课程"
+            ? this.allCourseList
+            : this.selectCourse(course),
+        semester,
+        type: this.transHwClassify(value),
+        classHour: classHour === "所有课时" ? undefined : classHour,
+        teacher: this.userName
+      });
+      this.loading = false;
+    },
+
+    transHwClassify(value) {
+      if (value === "所有类型") return undefined;
+      if (value === "课时作业") return "offline";
+      if (value === "在线作业") return "online";
     },
 
     // 重置所有选项
@@ -341,10 +389,17 @@ export default {
           label: "所有课时"
         }
       ];
+      selectList[3]["value"] = "所有类型";
+      selectList[3]["list"] = [
+        {
+          value: "所有类型",
+          label: "所有类型"
+        }
+      ];
       this.selectList = selectList;
     },
 
-    // 重置所有课时
+    // 重置所有课时和作业类型
     resetClassHour() {
       let selectList = this.selectList;
       selectList[2]["value"] = "所有课时";

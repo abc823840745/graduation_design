@@ -765,9 +765,9 @@ export default {
         webpath: url,
         localname: filename
       });
+      console.log(res);
       if (res["status"] === 1) {
-        console.log(res);
-        this.webpath = res.webpath;
+        this.$set(this.homeworkInfo, "webpath", url);
         this.$Notice.success({
           title: "重新上传成功！"
         });

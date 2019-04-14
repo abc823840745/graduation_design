@@ -145,18 +145,15 @@ export default {
         },
         {
           title: "开始时间",
-          key: "exper_startime",
-          sortable: true
+          key: "exper_startime"
         },
         {
           title: "截止时间",
-          key: "exper_fintime",
-          sortable: true
+          key: "exper_fintime"
         },
         {
           title: "完成状态",
           key: "status",
-          sortable: true,
           render: (h, params) => {
             let text = params.row.status;
             let btnColor = null;

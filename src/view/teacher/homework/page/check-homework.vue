@@ -239,7 +239,6 @@ export default {
             {
               title: "完成状态",
               key: "status",
-              sortable: true,
               render: (h, params) => {
                 let text = params.row.status;
                 let btnColor = text === "已完成" ? "success" : "error";

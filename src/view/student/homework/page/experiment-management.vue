@@ -144,19 +144,16 @@ export default {
         {
           title: "开始时间",
           key: "exper_startime",
-          sortable: true,
           minWidth: 10
         },
         {
           title: "截止时间",
           key: "exper_fintime",
-          sortable: true,
           minWidth: 10
         },
         {
           title: "完成状态",
           key: "status",
-          sortable: true,
           render: (h, params) => {
             let text = params.row.status;
             let btnColor = text === "已完成" ? "success" : "error";

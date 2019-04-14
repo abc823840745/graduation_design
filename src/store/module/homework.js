@@ -364,8 +364,9 @@ export default {
         let data = res.data.data.filter(item => item !== null);
         data.length > 0 &&
           data.forEach(item => {
-            item['classify'] = item['type'] === 'offline' ? '课时作业' : '在线作业';
+            item['classify'] = item['type'] === 'offline' || item['webpath'] ? '课时作业' : '在线作业';
           });
+        // console.log(data);
         commit('setTaskCenterInfo', {
           tableData: data,
           count: res.data.count,
@@ -736,7 +737,7 @@ export default {
         let res = await getStuMyHWlist(obj);
         let data = res.data.data.filter(item => item !== null);
         data.forEach(item => {
-          item['classify'] = item['type'] === 'offline' ? '课时作业' : '在线作业';
+          item['classify'] = item['type'] === 'offline' || item['webpath'] ? '课时作业' : '在线作业';
         });
         commit('setStuMyHWList', {
           tableData: data,

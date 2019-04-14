@@ -85,7 +85,24 @@ export default {
       stuId: state => state.user.stu_nmuber,
       courseList: state => state.homework.courseList,
       tableInfo: state => state.homework.stuMyHWList
-    })
+    }),
+
+    allCourseList() {
+      return this.courseList.map(item => {
+        let { name, classes, teacher } = item;
+        return {
+          course: name,
+          stuclass: classes,
+          teacher
+        };
+      });
+    },
+
+    selectCourse() {
+      return value => {
+        return this.allCourseList.filter(item => item["course"] === value);
+      };
+    }
   },
 
   data() {
@@ -125,6 +142,25 @@ export default {
             }
           ],
           onChange: this.changeClassHour
+        },
+        {
+          tip: "作业类型",
+          value: "所有类型",
+          list: [
+            {
+              value: "所有类型",
+              label: "所有类型"
+            },
+            {
+              value: "课时作业",
+              label: "课时作业"
+            },
+            {
+              value: "在线作业",
+              label: "在线作业"
+            }
+          ],
+          onChange: this.changeHWClassify
         }
       ],
       columns: [
@@ -143,18 +179,15 @@ export default {
         {
           title: "作业类型",
           key: "classify",
-          sortable: true,
           render: (h, params) => {
-            if (params.row.type === "online") {
-              return h("p", {}, "在线作业");
-            }
+            const { classify } = params.row;
+            if (classify === "在线作业") return h("p", {}, "在线作业");
             return h("p", {}, "课时作业");
           }
         },
         {
           title: "完成状态",
           key: "status",
-          sortable: true,
           render: (h, params) => {
             let text = params.row.status;
             let btnColor = null;
@@ -180,8 +213,8 @@ export default {
           title: "操作",
           key: "operation",
           render: (h, params) => {
-            let { status, type } = params.row;
-            if (type === "online") {
+            const { classify, status } = params.row;
+            if (classify === "在线作业") {
               if (status === "已完成") {
                 return h("div", [
                   this.btnStyle("查看", h, () => {
@@ -241,22 +274,123 @@ export default {
 
     // 获取表格数据
     async getTableData(page = 1) {
-      await this.getTableList("getStuMyHWlist", page);
+      this.loading = true;
+      let semester = this.selectList[0]["value"];
+      let course = this.selectList[1]["value"];
+      let classHour = this.selectList[2]["value"];
+      let type = this.selectList[3]["value"];
+      await this.getStuMyHWlist({
+        page,
+        obj:
+          course === "所有课程"
+            ? this.allCourseList
+            : this.selectCourse(course),
+        semester,
+        type: this.transHwClassify(type),
+        classHour: classHour === "所有课时" ? undefined : classHour,
+        student: this.userName,
+        stuId: this.stuId
+      });
+      this.loading = false;
     },
 
     // 学年选择
     async changeYear(value) {
-      await this.yearChange("getStuMyHWlist", value);
+      this.loading = true;
+      this.resetSelList();
+      let semester = value;
+      let course = this.selectList[1]["value"];
+      let classHour = this.selectList[2]["value"];
+      let type = this.selectList[3]["value"];
+      await this.setCourseSelList(value);
+      await this.getStuMyHWlist({
+        obj:
+          course === "所有课程"
+            ? this.allCourseList
+            : this.selectCourse(course),
+        semester,
+        type: this.transHwClassify(type),
+        classHour: classHour === "所有课时" ? undefined : classHour,
+        student: this.userName,
+        stuId: this.stuId
+      });
+      this.loading = false;
     },
 
     // 课程选择
     async changeCourse(value) {
-      await this.courseChange("getStuMyHWlist", value);
+      this.loading = true;
+      this.resetClassHour();
+      let semester = this.selectList[0]["value"];
+      let course = value;
+      let classHour = this.selectList[2]["value"];
+      let type = this.selectList[3]["value"];
+      let getId = this.courseList.reduce((arr, item) => {
+        if (item["name"] === value) {
+          arr.push(item["id"]);
+        }
+        return arr;
+      }, []);
+      await this.setClassHourSelList(getId[0]);
+      await this.getStuMyHWlist({
+        obj:
+          course === "所有课程"
+            ? this.allCourseList
+            : this.selectCourse(course),
+        semester,
+        type: this.transHwClassify(type),
+        classHour: classHour === "所有课时" ? undefined : classHour,
+        student: this.userName,
+        stuId: this.stuId
+      });
+      this.loading = false;
     },
 
-    // 学时选择
+    // 课时选择
     async changeClassHour(value) {
-      await this.classHourChange("getStuMyHWlist", value);
+      this.loading = true;
+      let semester = this.selectList[0]["value"];
+      let course = this.selectList[1]["value"];
+      let type = this.selectList[3]["value"];
+      let classHour = value;
+      await this.getStuMyHWlist({
+        obj:
+          course === "所有课程"
+            ? this.allCourseList
+            : this.selectCourse(course),
+        semester,
+        type: this.transHwClassify(type),
+        classHour: classHour === "所有课时" ? undefined : classHour,
+        student: this.userName,
+        stuId: this.stuId
+      });
+      this.loading = false;
+    },
+
+    // 作业类型筛选
+    async changeHWClassify(value) {
+      this.loading = true;
+      let semester = this.selectList[0]["value"];
+      let course = this.selectList[1]["value"];
+      let classHour = this.selectList[2]["value"];
+      await this.getStuMyHWlist({
+        obj:
+          course === "所有课程"
+            ? this.allCourseList
+            : this.selectCourse(course),
+        semester,
+        type: this.transHwClassify(value),
+        classHour: classHour === "所有课时" ? undefined : classHour,
+        student: this.userName,
+        stuId: this.stuId
+      });
+      this.loading = false;
+    },
+
+    transHwClassify(value) {
+      if (value === "所有类型") return undefined;
+      if (value === "课时作业") return "offline";
+      if (value === "在线作业") return "online";
     },
 
     // 获取在线作业题目

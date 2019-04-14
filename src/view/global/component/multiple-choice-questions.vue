@@ -40,7 +40,7 @@
           >
             <span class="choice-text"> {{ item["label"] }}</span>
             <span class="choice-text" v-if="type !== 'create'">
-              、{{ item["option"] }}
+              .{{ item["option"] }}
             </span>
 
             <Input
@@ -306,8 +306,7 @@ export default {
 
       .choice-text {
         font-size: 14px;
-        margin-right: 10px;
-        margin-left: 5px;
+        margin-left: 1px;
       }
     }
   }
