@@ -65,7 +65,9 @@ export default {
         yAxis: [
           {
             type: "value",
-            max: 100
+            max: value => {
+              return value.max + 20;
+            }
           }
         ],
         series: [

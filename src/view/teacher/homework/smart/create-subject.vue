@@ -393,6 +393,7 @@ export default {
             this.loading = false;
           }
         });
+        return;
       }
       this.loading = true;
       this.$emit("modalOk");

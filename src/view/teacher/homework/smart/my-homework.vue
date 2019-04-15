@@ -144,7 +144,7 @@
 import myMixin from "@/view/global/mixin";
 import config from "@/config";
 import { mapActions, mapState, mapMutations } from "vuex";
-import { debounce } from "@tools";
+import { debounce, isEmptyObject } from "@tools";
 
 export default {
   name: "my-homework",
@@ -292,7 +292,7 @@ export default {
         if (!name || !classify || !classHour || !stopTimeList.length) {
           return this.$Message.error("缺少必填信息");
         }
-        if (this.$tools.isEmptyObject(this.uploadFileInfo)) {
+        if (isEmptyObject(this.uploadFileInfo)) {
           return this.$Message.error("请上传课件");
         }
         if (classify === "课时作业") {
@@ -401,7 +401,6 @@ export default {
         this.homeworkInfo = {};
         this.setInputInfo([]);
         localStorage.removeItem("subjectList");
-        // localStorage.removeItem("remainTime");
         this.$Notice.success({
           title: "新建成功！"
         });
@@ -490,7 +489,6 @@ export default {
       this.setInputInfo([]);
       this.setOptionList([]);
       localStorage.removeItem("subjectList");
-      // localStorage.removeItem("remainTime");
       this.$Notice.success({
         title: "修改成功！"
       });
@@ -666,7 +664,10 @@ export default {
     // 更新课时作业信息
     async updateClassHWInfo() {
       let { submitterStatus } = this.info;
-      if (submitterStatus["isOperate"] === 0) {
+      if (
+        !isEmptyObject(submitterStatus) &&
+        submitterStatus["isOperate"] === 0
+      ) {
         this.$Modal.confirm({
           title: "已经有学生提交，确定要修改该任务？",
           onOk: async () => {
@@ -720,7 +721,10 @@ export default {
     // 更新在线作业信息
     async updateOnlineHWInfo() {
       let { submitterStatus } = this.info;
-      if (submitterStatus["isOperate"] === 0) {
+      if (
+        !isEmptyObject(submitterStatus) &&
+        submitterStatus["isOperate"] === 0
+      ) {
         this.$Modal.confirm({
           title: "已经有学生提交，确定要修改该任务？",
           onOk: async () => {
@@ -783,7 +787,6 @@ export default {
         webpath: url,
         localname: filename
       });
-      console.log(res);
       if (res["status"] === 1) {
         this.$set(this.homeworkInfo, "webpath", url);
         this.$Notice.success({

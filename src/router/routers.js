@@ -365,7 +365,7 @@ export default [
         },
         component: () => import('@/view/answering/answer-detail.vue'),
       },
-    ]
+    ],
   },
   {
     path: '/student/homework',
@@ -389,26 +389,26 @@ export default [
         component: () => import('@stuHomework/page/homework-main.vue'),
       },
       {
-        path: 'experimental-state',
-        name: 'student-experimental-state',
+        path: 'homework-state',
+        name: 'student-homework-state',
         meta: {
           icon: 'ios-list-box',
           title: '作业状态',
           notCache: true,
           access: ['student'],
         },
-        component: () => import('@stuHomework/page/experimental-state.vue'),
+        component: () => import('@stuHomework/page/homework-state.vue'),
       },
       {
-        path: 'experiment-management',
-        name: 'student-experiment-management',
+        path: 'offline-homework',
+        name: 'student-offline-homework',
         meta: {
           icon: 'ios-keypad',
-          title: '实验管理',
+          title: '课时作业',
           notCache: true,
           access: ['student'],
         },
-        component: () => import('@stuHomework/page/experiment-management.vue'),
+        component: () => import('@stuHomework/page/offline-homework.vue'),
       },
       {
         path: 'online-homework',

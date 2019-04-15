@@ -26,9 +26,9 @@ export default {
   // 学生作业管理
   'student-homework-main': '首页',
   'student-homework': '作业设计',
-  'student-experiment-management': '实验管理',
+  'student-offline-homework': '课时作业',
   'student-online-homework': '在线作业',
-  'student-experimental-state': '作业状态',
+  'student-homework-state': '作业状态',
 
   // 学生毕设管理
   'student-graduation': '毕业设计',

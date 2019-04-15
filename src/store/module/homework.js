@@ -325,7 +325,6 @@ export default {
           data.forEach(item => {
             item['classify'] = item['type'] === 'offline' || item['webpath'] ? '课时作业' : '在线作业';
           });
-        // console.log(data);
         commit('setTaskCenterInfo', {
           tableData: data,
           count: res.data.count,
