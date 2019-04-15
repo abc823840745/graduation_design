@@ -665,13 +665,22 @@ export default {
 
     // 更新课时作业信息
     async updateClassHWInfo() {
-      let { name, classHour, stopTimeList } = this.homeworkInfo;
       let { submitterStatus } = this.info;
       if (submitterStatus["isOperate"] === 0) {
-        return this.$Notice.warning({
-          title: "已经有学生提交，不能修改！"
+        this.$Modal.confirm({
+          title: "已经有学生提交，确定要修改该任务？",
+          onOk: async () => {
+            await this.doUpdateClassHWInfo();
+          }
         });
+        return;
       }
+      await this.doUpdateClassHWInfo();
+    },
+
+    // 调用更新课时作业信息接口
+    async doUpdateClassHWInfo() {
+      const { name, classHour, stopTimeList } = this.homeworkInfo;
       let res = await this.updateTeaClassHW({
         id: this.info.id,
         name,
@@ -688,15 +697,9 @@ export default {
       }
     },
 
-    // 更新在线作业信息
-    async updateOnlineHWInfo() {
-      let { name, classHour, stopTimeList, testingTime } = this.homeworkInfo;
-      let { submitterStatus } = this.info;
-      if (submitterStatus["isOperate"] === 0) {
-        return this.$Notice.warning({
-          title: "已经有学生提交，不能修改！"
-        });
-      }
+    // 调用更新在线作业信息接口
+    async doUpdateOnlineHWInfo() {
+      const { name, classHour, stopTimeList, testingTime } = this.homeworkInfo;
       let res = await this.updateTeaOnlineHW({
         id: this.info.id,
         name,
@@ -712,6 +715,21 @@ export default {
         this.$emit("getTableData");
         this.showModal = false;
       }
+    },
+
+    // 更新在线作业信息
+    async updateOnlineHWInfo() {
+      let { submitterStatus } = this.info;
+      if (submitterStatus["isOperate"] === 0) {
+        this.$Modal.confirm({
+          title: "已经有学生提交，确定要修改该任务？",
+          onOk: async () => {
+            await this.doUpdateOnlineHWInfo();
+          }
+        });
+        return;
+      }
+      await this.doUpdateOnlineHWInfo();
     },
 
     // 新建在线作业题目

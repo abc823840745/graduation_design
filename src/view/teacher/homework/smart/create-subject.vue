@@ -385,8 +385,13 @@ export default {
         !isEmptyObject(submitterStatus) &&
         submitterStatus["isOperate"] === 0
       ) {
-        return this.$Notice.warning({
-          title: "已经有学生提交，不能修改！"
+        this.$Modal.confirm({
+          title: "已经有学生提交，确定要修改该任务？",
+          onOk: () => {
+            this.loading = true;
+            this.$emit("modalOk");
+            this.loading = false;
+          }
         });
       }
       this.loading = true;

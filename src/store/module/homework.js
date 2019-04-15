@@ -1,45 +1,4 @@
-import {
-  getTeaClassHW,
-  getTeaSubject,
-  getStuHWList,
-  getStuOnlineHWList,
-  addTeaClassHW,
-  updateTeaClassHW,
-  delTeaClassHW,
-  teaUploadAgain,
-  teaScoreHW,
-  getTeaHW,
-  getStuHW,
-  getStuClassHW,
-  stuUploadAgain,
-  stuSubmitClassHW,
-  stuSubmitOnlineHW,
-  getStuOnlineSubject,
-  getStuOnlineHW,
-  delTeaOnlineSubject,
-  delTeaOnlineHW,
-  updateTeaOnlineSubject,
-  updateTeaOnlineHW,
-  addTeaOnlineSubject,
-  addTeaOnlineHW,
-  getTeaOnlineHW,
-  getStuMyHWlist,
-  searchMyHWlist,
-  getStuScoreSubject,
-  scoreOnlineHW,
-  changeSubject,
-  searchStuHW,
-  searchMyHW,
-  getTeaMainInfo,
-  getStuMainInfo,
-  searchStudentHW,
-  delSubHouse,
-  updateSubHouse,
-  getSubHouse,
-  createSubHouse,
-  searchSubHouse,
-  subHouseHistory,
-} from '@/api/homework';
+import * as homeworkApi from '@/api/homework';
 
 export default {
   state: {
@@ -134,7 +93,7 @@ export default {
     // 查看课时作业
     async getTeaClassHW({ commit }, obj) {
       try {
-        let res = await getTeaClassHW(obj);
+        let res = await homeworkApi.getTeaClassHW(obj);
         return res.data;
       } catch (err) {
         console.error(err);
@@ -144,7 +103,7 @@ export default {
     // 教师查看问题
     async getTeaSubject({ commit }, id) {
       try {
-        let res = await getTeaSubject(id);
+        let res = await homeworkApi.getTeaSubject(id);
         let data = res.data.data;
         let executeOnce = true;
         let inputInfo = data.reduce((arr, item, index) => {
@@ -220,7 +179,7 @@ export default {
     // 查看作业以及问题
     async getTeaOnlineHW({ commit }, obj) {
       try {
-        let res = await getTeaOnlineHW(obj);
+        let res = await homeworkApi.getTeaOnlineHW(obj);
         return res.data;
       } catch (err) {
         console.error(err);
@@ -230,7 +189,7 @@ export default {
     // 获取学生课时作业列表(用于评分)
     async getStuHWList({ commit }, obj) {
       try {
-        let res = await getStuHWList(obj);
+        let res = await homeworkApi.getStuHWList(obj);
         return res.data;
       } catch (err) {
         console.error(err);
@@ -240,7 +199,7 @@ export default {
     // 获取学生在线作业作业列表(用于评分)
     async getStuOnlineHWList({ commit }, obj) {
       try {
-        let res = await getStuOnlineHWList(obj);
+        let res = await homeworkApi.getStuOnlineHWList(obj);
         return res.data;
       } catch (err) {
         console.error(err);
@@ -250,7 +209,7 @@ export default {
     // 新增课时作业
     async addTeaClassHW({ commit }, obj) {
       try {
-        let res = await addTeaClassHW(obj);
+        let res = await homeworkApi.addTeaClassHW(obj);
         return res.data;
       } catch (err) {
         console.error(err);
@@ -260,7 +219,7 @@ export default {
     // 新建在线作业
     async addTeaOnlineHW({ commit }, obj) {
       try {
-        let res = await addTeaOnlineHW(obj);
+        let res = await homeworkApi.addTeaOnlineHW(obj);
         return res.data;
       } catch (err) {
         console.error(err);
@@ -270,7 +229,7 @@ export default {
     // 新增在线作业问题
     async addTeaOnlineSubject({ commit }, obj) {
       try {
-        let res = await addTeaOnlineSubject(obj);
+        let res = await homeworkApi.addTeaOnlineSubject(obj);
         return res.data;
       } catch (err) {
         console.error(err);
@@ -280,7 +239,7 @@ export default {
     // 更新课时作业
     async updateTeaClassHW({ commit }, obj) {
       try {
-        let res = await updateTeaClassHW(obj);
+        let res = await homeworkApi.updateTeaClassHW(obj);
         return res.data;
       } catch (err) {
         console.error(err);
@@ -290,7 +249,7 @@ export default {
     // 更新在线作业
     async updateTeaOnlineHW({ commit }, obj) {
       try {
-        let res = await updateTeaOnlineHW(obj);
+        let res = await homeworkApi.updateTeaOnlineHW(obj);
         return res.data;
       } catch (err) {
         console.error(err);
@@ -300,7 +259,7 @@ export default {
     // 更新在线作业问题
     async updateTeaOnlineSubject({ commit }, questions) {
       try {
-        let res = await updateTeaOnlineSubject(questions);
+        let res = await homeworkApi.updateTeaOnlineSubject(questions);
         return res.data;
       } catch (err) {
         console.error(err);
@@ -310,7 +269,7 @@ export default {
     // 删除课时作业
     async delTeaClassHW({ commit }, id) {
       try {
-        let res = await delTeaClassHW(id);
+        let res = await homeworkApi.delTeaClassHW(id);
         return res.data;
       } catch (err) {
         console.error(err);
@@ -320,7 +279,7 @@ export default {
     // 删除在线作业
     async delTeaOnlineHW({ commit }, id) {
       try {
-        let res = await delTeaOnlineHW(id);
+        let res = await homeworkApi.delTeaOnlineHW(id);
         return res.data;
       } catch (err) {
         console.error(err);
@@ -330,7 +289,7 @@ export default {
     // 删除在线作业问题
     async delTeaOnlineSubject({ commit }, id) {
       try {
-        let res = await delTeaOnlineSubject(id);
+        let res = await homeworkApi.delTeaOnlineSubject(id);
         return res.data;
       } catch (err) {
         console.error(err);
@@ -340,7 +299,7 @@ export default {
     // 重新上传课件
     async teaUploadAgain({ commit }, obj) {
       try {
-        let res = await teaUploadAgain(obj);
+        let res = await homeworkApi.teaUploadAgain(obj);
         return res.data;
       } catch (err) {
         console.error(err);
@@ -350,7 +309,7 @@ export default {
     // 课时作业评分
     async teaScoreHW({ commit }, obj) {
       try {
-        let res = await teaScoreHW(obj);
+        let res = await homeworkApi.teaScoreHW(obj);
         return res.data;
       } catch (err) {
         console.error(err);
@@ -360,7 +319,7 @@ export default {
     // 获取教师发布的作业列表
     async getTeaHW({ commit }, obj) {
       try {
-        let res = await getTeaHW(obj);
+        let res = await homeworkApi.getTeaHW(obj);
         let data = res.data.data.filter(item => item !== null);
         data.length > 0 &&
           data.forEach(item => {
@@ -380,7 +339,7 @@ export default {
     // 在线作业-教师-作业评分
     async scoreOnlineHW({ commit }, obj) {
       try {
-        let res = await scoreOnlineHW(obj);
+        let res = await homeworkApi.scoreOnlineHW(obj);
         return res.data;
       } catch (err) {
         console.error(err);
@@ -390,7 +349,7 @@ export default {
     // 在线作业-老师-问题操作（增删改一体）
     async changeSubject({ commit }, obj) {
       try {
-        let res = await changeSubject(obj);
+        let res = await homeworkApi.changeSubject(obj);
         return res.data;
       } catch (err) {
         console.error(err);
@@ -400,7 +359,7 @@ export default {
     // 教师搜索学生作业
     async searchStuHW({ commit }, obj) {
       try {
-        let res = await searchStuHW(obj);
+        let res = await homeworkApi.searchStuHW(obj);
         return res.data;
       } catch (err) {
         console.error(err);
@@ -410,7 +369,7 @@ export default {
     // 教师搜索自己的作业
     async searchMyHW({ commit }, obj) {
       try {
-        let res = await searchMyHW(obj);
+        let res = await homeworkApi.searchMyHW(obj);
         return res.data;
       } catch (err) {
         console.error(err);
@@ -420,7 +379,7 @@ export default {
     // 教师搜索学生不同类型作业
     async searchStudentHW({ commit }, obj) {
       try {
-        let res = await searchStudentHW(obj);
+        let res = await homeworkApi.searchStudentHW(obj);
         return res.data;
       } catch (err) {
         console.error(err);
@@ -430,7 +389,7 @@ export default {
     // 教师首页
     async getTeaMainInfo({ commit }, obj) {
       try {
-        let res = await getTeaMainInfo(obj);
+        let res = await homeworkApi.getTeaMainInfo(obj);
         return res.data.data;
       } catch (err) {
         console.error(err);
@@ -444,7 +403,7 @@ export default {
     // 删除题库
     async delSubHouse({ commit }, obj) {
       try {
-        let res = await delSubHouse(obj);
+        let res = await homeworkApi.delSubHouse(obj);
         return res.data;
       } catch (err) {
         console.error(err);
@@ -454,7 +413,7 @@ export default {
     // 更新题目
     async updateSubHouse({ commit }, obj) {
       try {
-        let res = await updateSubHouse(obj);
+        let res = await homeworkApi.updateSubHouse(obj);
         return res.data;
       } catch (err) {
         console.error(err);
@@ -464,7 +423,7 @@ export default {
     // 查看题目
     async getSubHouse({ commit }, obj) {
       try {
-        let res = await getSubHouse(obj);
+        let res = await homeworkApi.getSubHouse(obj);
         return res.data;
       } catch (err) {
         console.error(err);
@@ -474,7 +433,7 @@ export default {
     // 新增题目
     async createSubHouse({ commit }, obj) {
       try {
-        let res = await createSubHouse(obj);
+        let res = await homeworkApi.createSubHouse(obj);
         return res.data;
       } catch (err) {
         console.error(err);
@@ -484,7 +443,7 @@ export default {
     // 搜索题目
     async searchSubHouse({ commit }, obj) {
       try {
-        let res = await searchSubHouse(obj);
+        let res = await homeworkApi.searchSubHouse(obj);
         return res.data;
       } catch (err) {
         console.error(err);
@@ -494,7 +453,7 @@ export default {
     // 历史记录
     async subHouseHistory({ commit }, obj) {
       try {
-        let res = await subHouseHistory(obj);
+        let res = await homeworkApi.subHouseHistory(obj);
         return res.data;
       } catch (err) {
         console.error(err);
@@ -508,7 +467,7 @@ export default {
     // 学生首页
     async getStuMainInfo({ commit }, obj) {
       try {
-        let res = await getStuMainInfo(obj);
+        let res = await homeworkApi.getStuMainInfo(obj);
         return res.data.data;
       } catch (err) {
         console.error(err);
@@ -518,7 +477,7 @@ export default {
     // 查询课时作业
     async getStuClassHW({ commit }, obj) {
       try {
-        let res = await getStuClassHW(obj);
+        let res = await homeworkApi.getStuClassHW(obj);
         commit('setExperManger', {
           tableData: res.data.data,
           count: res.data.count,
@@ -532,7 +491,7 @@ export default {
     // 查看在线作业
     async getStuOnlineHW({ commit }, obj) {
       try {
-        let res = await getStuOnlineHW(obj);
+        let res = await homeworkApi.getStuOnlineHW(obj);
         commit('setOnlineHWInfo', {
           tableData: res.data.data,
           count: res.data.count,
@@ -547,9 +506,8 @@ export default {
     // 查看在线作业详细问题
     async getStuOnlineSubject({ commit, state }, id) {
       try {
-        let res = await getStuOnlineSubject(id);
+        let res = await homeworkApi.getStuOnlineSubject(id);
         let data = res.data.data;
-        // console.log(data[0]['context']);
         let executeOnce = true;
         let inputInfo = data.reduce((arr, item, index) => {
           let optionList = [
@@ -619,7 +577,7 @@ export default {
     // 查看评分后的作业问题
     async getStuScoreSubject({ commit }, obj) {
       try {
-        let res = await getStuScoreSubject(obj);
+        let res = await homeworkApi.getStuScoreSubject(obj);
         let data = res.data.data;
         let executeOnce = true;
         let subjectLength = 0;
@@ -694,7 +652,7 @@ export default {
     // 重新上传课件
     async stuUploadAgain({ commit }, obj) {
       try {
-        let res = await stuUploadAgain(obj);
+        let res = await homeworkApi.stuUploadAgain(obj);
         return res.data;
       } catch (err) {
         console.error(err);
@@ -704,7 +662,7 @@ export default {
     // 提交作业
     async stuSubmitClassHW({ commit }, obj) {
       try {
-        let res = await stuSubmitClassHW(obj);
+        let res = await homeworkApi.stuSubmitClassHW(obj);
         return res.data;
       } catch (err) {
         console.error(err);
@@ -714,7 +672,7 @@ export default {
     // 提交在线作业
     async stuSubmitOnlineHW({ commit }, obj) {
       try {
-        let res = await stuSubmitOnlineHW(obj);
+        let res = await homeworkApi.stuSubmitOnlineHW(obj);
         return res.data;
       } catch (err) {
         console.error(err);
@@ -724,7 +682,7 @@ export default {
     // 获取学生作业列表
     async getStuHW({ commit }, obj) {
       try {
-        let res = await getStuHW(obj);
+        let res = await homeworkApi.getStuHW(obj);
         return res.data.data;
       } catch (err) {
         console.error(err);
@@ -734,7 +692,7 @@ export default {
     // 学生获取自己的作业列表
     async getStuMyHWlist({ commit }, obj) {
       try {
-        let res = await getStuMyHWlist(obj);
+        let res = await homeworkApi.getStuMyHWlist(obj);
         let data = res.data.data.filter(item => item !== null);
         data.forEach(item => {
           item['classify'] = item['type'] === 'offline' || item['webpath'] ? '课时作业' : '在线作业';
@@ -752,7 +710,7 @@ export default {
     // 学生搜索自己的作业
     async searchMyHWlist({ commit }, obj) {
       try {
-        let res = await searchMyHWlist(obj);
+        let res = await homeworkApi.searchMyHWlist(obj);
         return res.data;
       } catch (err) {
         console.error(err);
