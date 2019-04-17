@@ -199,15 +199,16 @@ export default {
 
     goUpload(params) {
       let { index } = params;
-      let { exper_startime } = params.row;
+      let { exper_startime, exper_fintime } = params.row;
       let curDate = new Date();
       let startDate = new Date(exper_startime);
-      if (curDate >= startDate) {
+      let endDate = new Date(exper_fintime);
+      if (curDate >= startDate && curDate < endDate) {
         this.showModal = true;
         this.itemInfo = this.tableInfo["tableData"][index];
       } else {
-        this.$Notice.warning({
-          title: "还没到开始时间！"
+        this.$Notice.error({
+          title: "请在开始时间和结束时间内进行上传！"
         });
       }
     },
